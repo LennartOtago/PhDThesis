@@ -1,6 +1,7 @@
 # OxThesis
 
-**Commands to submit changes to gitHub**
+**Commands to submit changes to gitHub:**
+
 git add . 
 
 git commit -m "message"
