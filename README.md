@@ -1,5 +1,10 @@
 # OxThesis
 
+**Commands to submit changes to gitHub**
+git add . 
+git commit -m "message"
+git push
+
 **OxThesis** is a LaTeX template for an Oxford University thesis, originally published on [the Oxford Echoes blog](https://www.oxfordechoes.com/oxford-thesis-template/).
 
 Feel free to submit issues or push requests here, or comments on the blog post there.  And of course, happy thesis-writing!
