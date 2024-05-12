@@ -493,10 +493,10 @@ Note that in this case we define two hyper-parameters, but we can increase the d
  The posterior has the following from
  \begin{align}
      \label{eq:post}
-    \bm{x , \theta|y} &\sim \mathcal{N}( \mu_{\bm{x , \theta|y} } , ( \bm{Q} + \bm{F}^T\bm{\Sigma}\bm{F} )^{-1} ) \quad  \text{(posterior)}
+    \bm{x , \theta|y} &\sim \mathcal{N}( \mu_{\bm{x , \theta|y} } , ( \bm{Q} + \bm{F}^T\bm{\Sigma}^{-1}\bm{F} )^{-1} ) \quad  \text{(posterior)}
 \end{align}
 \end{subequations}
-with the mean $\mu_{\bm{x , \theta|y} } = \bm{\mu} + (\bm{Q} + \bm{F}^T \bm{\Sigma} \bm{F})^{-1} \bm{F}^T \, \bm{\Sigma} (\bm{y} - \bm{F \mu})$. 
+with the mean $\mu_{\bm{x , \theta|y} } = \bm{\mu} + (\bm{Q} + \bm{F}^T \bm{\Sigma}^{-1} \bm{F})^{-1} \bm{F}^T \, \bm{\Sigma}^{-1} (\bm{y} - \bm{F \mu})$. 
 
 
 Using \mccorrect{Bayes} theorem we can find an expression for the posterior distribution $\pi (\bm{x} , \bm{\theta} | \bm{y})$ for the parameters $\bm{x}$ and the hyper-parameters $\bm{\theta}$ given the observed data $\bm{y}$.
