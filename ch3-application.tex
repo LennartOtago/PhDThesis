@@ -10,13 +10,14 @@ This gives us a sample from the \mccorrect{full} posterior density.
 \section{The forward model}
 \label{subsec:atmosModel}
 \begin{figure}[thb!]
-\centering \input{figures/LIMB.pdf_tex}
+\centering \input{LIMB.pdf_tex}
 \caption[The Forward model describing $n$ atmospheric layers and $m$ measurement processes.]{\textbf{The Forward model describing $n$ atmospheric layers and $m$ measurement processes.} The Cube-Sat is located at a height of $300$km, where each of the $m$ measurements is described through a tangent height $h_t$. Through the measurements we try to capture the Ozone profile, an example is displayed in light green, between $5$km and $90$km, below and above it we set the volume mixing ratio of Ozone to zero.
 In order to do so we discretize the Ozone profile into $n$ atmospheric layers starting from the earth in black at ground level set to a height of $0$km.
 This gives us a Markov random field with $x^{(1)}, \dots, x^{(n)}$ parameters
 Along the golden line, we solve the path integral as formulated in Equation \ref{eq:pathInt} for each measurement.}
 \label{fig:forModel}
 \end{figure}
+
 We introduce a linear forward model to describe the measurement process of a microwave sounder at the limb of the atmosphere, around $300$km above the ground of the earth.
 Traces gases emit thermal radiation in the microwave regime, which we can capture with a resonator.
 This resonator is a whispering gallery resonator, which can capture microwaves in the THz domain as well as light in the optical domain.
@@ -171,7 +172,7 @@ We compare the MTC-Sampler against the T-Walk algorithm \cite{christen2010genera
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=1\textwidth]{OxThesis-master/figures/f_and_g.png} 
+\includegraphics[width=1\textwidth]{f_and_g.png} 
 \caption[Plotting $f(\lambda)$ and $g(\lambda)$ for a large range of $\lambda$ to characterize the marginal posterior distribution.]{\textbf{Plotting $f(\lambda)$, Eq. \ref{eq:gtay}, and $g(\lambda)$, Eq.m \ref{eq:gtay}, for a large range of $\lambda$ to characterize the marginal posterior distribution.}
 We included the samples mean of the MTC-Sampling (red) and T-walk algorithm (black) \cite{}. In the upper left corner of each figure, we plotted the Taylor series (red) of $f(\lambda)$ and $g(\lambda)$ around the mode of the marginal posterior $\pi(\delta_0, \gamma_0 | \bm{y})$, where $\lambda_0 = \delta_0 / \gamma_0 $. To display the Taylor series we computed up to the fifth derivatives of each function. Note that we usually only focus on a small range of $\lambda$ compared to the here shown range.}
 \label{fig:fandg}
@@ -186,19 +187,9 @@ For a large range of $\lambda$ we plotted $f(\lambda)$ and $g(\lambda)$ in Figur
 The top left corner of each figure shows the Taylor approximation around the mode of the marginal posterior distribution in red underneath the original function in blue.
 
 \begin{figure}[thb]
- \begin{subfigure}{0.5\textwidth}
-     \centering
-     \includegraphics[width=\textwidth]{OxThesis-master/figures/HistoResults.png}
-     \caption{}
-     \label{fig:MTCHisto}
- \end{subfigure}
- \hfill
- \begin{subfigure}{0.5\textwidth}
-     \centering
-     \includegraphics[width=\textwidth]{OxThesis-master/figures/PyTWalkHistoResults.png}
-      \caption{}
-     \label{fig:TWalkHisto}
- \end{subfigure}
+	\centering
+		\subfigure[caption]{\includegraphics[width=\textwidth]{HistoResults.png}}
+ 		\subfigure[caption]{\includegraphics[width=\textwidth]{PyTWalkHistoResults.png}}
 \caption[Sampling Results of the MTC-Sampler and the T-Walk algorithm \ref{fig:TWalkHisto}]{\textbf{Sampling Results of the MTC-Sampler \ref{fig:MTCHisto} and the T-Walk algorithm \ref{fig:TWalkHisto}.} The histograms present independent samples of the marginal posterior distribution according to their integrated Auto-correlation time $\tau_{int}$.
 Using the \textit{UWerr.m} function by U. Wolff we calculate integrated auto-correlation times of $\tau_{\text{int}, \text{MTC}, \gamma} = 5.4$, $\tau_{\text{int}, \text{MTC}, \delta} = 4.9$ and $\tau_{\text{int}, \text{MTC}, \lambda}= 10.2$ when utilizing the MTC-Sampler with an acceptance rate of 0.34 \cite{Uwerr}.
 Running the T-Walk algorithm we obtain following auto-correlation times: $\tau_{\text{int}, \text{T-walk}, \gamma} = 34.1$, $\tau_{\text{int}, \text{T-walk}, \delta} = 34.5$ and $\tau_{\text{int}, \text{T-walk}, \lambda}= 27.5$, with an acceptance rate of 0.42.}
@@ -218,7 +209,7 @@ The MTC-Sampler seems to have a bigger $\gamma$ sample mean compared to the true
 This reduces the value of $\lambda$ from around $2 \times 10^5$ to $5 \times 10^4$.}
 
 \begin{figure}[htb]
-\centering\includegraphics[width=0.7\textwidth]{OxThesis-master/figures/FirstRecRes.png} 
+\centering\includegraphics[width=0.7\textwidth]{FirstRecRes.png} 
 \caption[Randomize then Optimize (RTO) method to recover the Ozone profile in dependency of the height.]{\textbf{Randomize then Optimize (RTO) method to recover the Ozone profile in dependency of the height.} Here we plotted the mean of 10 posterior samples and their variance in red. We draw hyper-parameter samples according to the samples seen in Figure \ref{fig:MTCHisto}. In green, we displayed the true Ozone profile $\bm{x}$.
 We show the data $\bm{y}$ including noise in golden for each tangent height.}
 \label{fig:RecRes}
