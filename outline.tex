@@ -1,50 +1,35 @@
 \chapter{Introduction}
-\section{Radiative transform equation}
-\section{Bayes Theorem}
-\section{GMRF}
-\section{Inverse Rosenblatt transform}
 
-\chapter{Linear Forward model}
+\section{What is going on?, 3 facts, What is new in this thesis?}
 \begin{itemize}
-	\item algorithmic box ?  or in section?
-	\item define posterior
+	\item hierachical Bayesian model, sampling to TT approx
+	\item RTE as an example
+	\item nonLinear to Linear Affine funciton (affine RTO)
+\end{itemize}
+\section{What has been published?}
+
+\chapter{Building a physics based hierarchical Linear model}
+\begin{itemize}
+	\item two hyperparameters, marginal and then conditonal, MTC, use as a building block
+	\item  sampling, Gibbs-MH, t-walk
+	\item increase hyperparameters, Temperature and pressure, tt-approx
 \end{itemize}
 
-\section{Sampling}
+\section{two hyperameters, fast sampling paper}
 
-\subsection{two hyperparameter DAG}
-\subsubsection{Marginal -- Gibbs-MH}
-\subsubsection{Conditional -- RTO}
+\section{four hyperameters, t-walk and RTO}
 
-
-\subsection{four hyperparameter DAG}
-\subsubsection{Marginal -- t-walk}
-\subsubsection{Conditional -- RTO}
-
-\section{Extending Model to Temperature and Pressure}
-\begin{itemize}
-	\item algorithmic box ? updating scheme
-	\item write down DAG
-	\item define posterior
-\end{itemize}
-
+\section{Temperature and pressure hyperameters, tt-approx}
 \subsection{Squared Inverse Rosenblatt transform}
 
 
 \chapter{Nonlinear Forward model}
 \begin{itemize}
-	\item algorithmic box? updating scheme
+	\item updating scheme, slow
+	\item local linear map, strategy, schematic
+	\item affine function, RTO
 \end{itemize}
 \section{Sampling}
-\subsection{two or four hyperparameter DAG}
-\subsubsection{MTC or t-walk}
-
-\chapter{Nonlinear to Linear Forward model}
-
-\section{Stategie}
-\begin{itemize}
-	\item scheme image
-\end{itemize}
-
-\section{local linear Map}
+\section{local linear Map and strategy}
 \subsection{Machine learning vs Gaussian elimination}
+\section{affine RTO}
