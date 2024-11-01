@@ -111,6 +111,95 @@
 \usepackage{bookmark}
 \usepackage{subfigure}
 
+%for DAGs
+\usepackage{graphics} % Required for inserting images
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,calligraphy}
+\usetikzlibrary{positioning}
+\usetikzlibrary{positioning,shapes.symbols,fit}
+\tikzset{
+	roundnode2/.style={circle, draw=green!50!blue, very thick, minimum size=9mm}
+}
+\tikzset{
+	roundnode/.style={circle, draw=green!50!blue, fill=green!60!blue, very thick, minimum size=7mm},
+	rectnode/.style={rectangle, draw=green!50!blue, very thick, minimum size=8.5mm},
+	mydotted/.style = {dash pattern=on 6.1pt off 7pt}
+}
+
+
+
+\usetikzlibrary{calc}
+\newcounter{DynkinDiagram}
+\tikzset{DynkinNode/.style={circle,draw,minimum size=1em,inner sep=0pt,font=\scriptsize}}
+
+\newcommand{\EDynkin}[2][]{\stepcounter{DynkinDiagram}
+	\foreach\kthweight[count=\k] in {#2}{
+		\pgfmathtruncatemacro{\prevnode}{\k-1}
+		\ifnum\k=1\node[DynkinNode] (\theDynkinDiagram-\k) at (0,1) {\kthweight};\fi % exchanged 1 and 2
+		\ifnum\k>1
+		\node[DynkinNode] (\theDynkinDiagram-\k) at (4-\k,0) {\scriptsize\kthweight};
+		\ifnum\k>2\draw[-,#1] (\theDynkinDiagram-\k) -- (\theDynkinDiagram-\prevnode);\fi
+		\ifnum\k=4\draw[-,#1] (\theDynkinDiagram-\k) -- (\theDynkinDiagram-1);\fi
+		\fi
+	}
+}
+
+\newcommand{\DrawHalo}[2][]{%
+	\foreach \Node[count=\i] in {#2}
+	{
+		\xdef\imax{\i}
+		\coordinate (AuxNode-\i) at (\x\i,\y\i);
+	}
+	\ifnum\imax=3%
+	\draw[#1] ($(AuxNode-1)+(-0.50,0)$) -- ($(AuxNode-1)+(-0.50,0.50)$) -|  ($(AuxNode-2)+(-0.50,0.50)$)
+	-- ($(AuxNode-2)+(0.50,0.50)$) |-
+	($(AuxNode-3)+(0.50,0.50)$)
+	--($(AuxNode-3)+(0.50,-0.50)$) -- ($(AuxNode-1)+(-0.50,-0.50)$) -- cycle;
+	\else
+	\ifnum\imax=2%
+	\draw[#1] ($(AuxNode-1)+(-0.50,0.50)$) --  ($(AuxNode-2)+(0.50,0.50)$)
+	-- ($(AuxNode-2)+(0.50,-0.50)$) -- ($(AuxNode-1)+(-0.50,-0.50)$)--
+	cycle;
+	\else
+	\draw[#1] ($(AuxNode-1)+(-0.50,0.50)$) --  ($(AuxNode-1)+(0.50,0.50)$)
+	-- ($(AuxNode-1)+(0.50,-0.50)$) -- ($(AuxNode-1)+(-0.50,-0.50)$)--
+	cycle;
+	\fi 
+	\fi 
+}
+
+% for pgf plots
+\usepackage{pgfplots}
+
+\pgfplotsset{ every non boxed x axis/.append style={x axis line style=-}, every non boxed y axis/.append style={y axis line style=-}}
+\pgfplotsset{compat=1.10}
+\pgfplotsset{tick scale binop=\times}
+
+% for legend in  caption
+\usepackage{etoolbox}
+
+
+\newrobustcmd*{\myplus}[1]{\tikz{\filldraw[draw=#1,fill=#1] (0,0.2cm) -- (0.2cm,0.2cm) (0.1cm,0.1cm) -- (0.1cm,0.3cm);}}
+
+\newrobustcmd*{\mycircle}[1]{\tikz{\filldraw[draw=#1, fill = #1] (0,0) circle [radius=0.08cm];}}
+
+\newrobustcmd*{\myseccircle}[1]{\tikz{\filldraw[draw=#1, fill =#1] (0,0) circle [radius=0.08cm];}}
+
+\newrobustcmd*{\mytriangle}[1]{\tikz{\filldraw[draw=#1,fill=none] (0,0.1cm) -- (0.2cm,0.1cm) -- (0.1cm,-0.1cm) -- (0,0.1cm);}}
+
+
+\newrobustcmd*{\mysecstar}[1]{\tikz{ \filldraw[draw=#1,fill=#1] (0.1cm,0cm) -- (0.1cm,0.2cm)  (0,0.15cm) -- (0.2cm,0.05cm)  (0,0.05cm) -- (0.2cm,0.15cm) ;}}
+
+\newrobustcmd*{\mystar}[1]{\tikz{\filldraw[draw=#1,fill=#1] (0,-0.09511cm) -- (0.0809cm,-0.15388cm) -- (0.05cm,-0.2489cm) -- (0.1309cm,-0.19021cm)  -- (0.2118cm,-0.2489cm) -- (0.1809cm,-0.15388cm)-- (0.2618cm,-0.09511cm) -- (0.1618cm,-0.09511cm) -- (0.1309cm,0cm) -- (0.1cm,-0.09511cm) ;}}
+
+\newrobustcmd*{\myline}[1]{\tikz{ \filldraw[draw=#1,fill=#1] (0,0) -- (0.2cm,0) circle [radius=0.05cm] -- ( 0.4cm,0);}}
+
+\definecolor{star}{RGB}{214,39,40}
+\definecolor{plus}{RGB}{30,136,229}
+\definecolor{seccirc}{RGB}{0,0,0}
+\definecolor{circ}{RGB}{50,220, 0}
+\definecolor{squa}{RGB}{255,193,7}
+\definecolor{tri}{RGB}{216,27,96}
 
 %%%%% THE ACTUAL DOCUMENT STARTS HERE
 \begin{document}
@@ -210,7 +299,9 @@
 \flushbottom
 %\include{ch1-intro}
 %\include{ch2-litreview}
+\include{ch2_hierarchModel}
 %\include{ch3-application}
+\include{ch3_NonLinModel}
 \include{outline}
 %% APPENDICES %% 
 % Starts lettered appendices, adds a heading in table of contents, and adds a
