@@ -1,0 +1,268 @@
+
+\chapter{Building a physics based hierarchical Linear model}
+\begin{itemize}
+	\item two hyperparameters, marginal and then conditonal, MTC, use as a building block
+	\item  sampling, Gibbs-MH, t-walk
+	\item increase hyperparameters, Temperature and pressure, tt-approx
+\end{itemize}
+
+\section{Linear model}
+\begin{itemize}
+	\item define model
+	\item explain parameters
+\end{itemize}
+
+\section{two hyperameters, fast sampling paper}
+\begin{itemize}
+	\item similar to MTC paper
+	\item can compare to regularization and can integrate easily with less solves to regularization or RTO
+\end{itemize}
+
+\begin{figure}[thb!]
+	\centering
+	\begin{tikzpicture}
+		\node[roundnode2] at (0,6) (Q)     {$\bm{Q}$};
+		\node[roundnode2] at (0,4) (x)     {$\bm{x}$};
+		\node[roundnode2] at (0,2) (A)    {$\bm{A}$};
+		\node[roundnode2] at (0,0) (u)    {$\bm{u}$};
+		\node[rectnode] at (0,-2) (y)    {$\bm{y}$};
+		\node[roundnode2] at (-1.5,6) (S)    {$\bm{\Sigma}$};
+		\node[roundnode2] at (-1.5,7.5) (s)    {$\sigma$};
+		\node[roundnode2] at (0,7.5) (d)    {$\delta$};
+		
+		%text
+		%\draw (-1,2.5) node[align=center, text width=1.5cm] {\footnotesize \textbf{hydrostatic \\ equation}};
+		\draw (1.75,2) node[align=center, text width=1.5cm] {\footnotesize \textbf{A \\ forward model }};
+		%\draw (6.75,-1.5) node[align=center, text width=2.5cm] {\footnotesize \textbf{hyper\-parameters}};
+		%\draw (5.5,-1.5) node[align=center, text width=0.5cm] { $\bm{\theta}$};
+		\draw (1.75,-2) node[align=center, text width=3cm] {\footnotesize \textbf{observations}};
+		\draw (3.75,7) node[align=center, text width=3cm] {\footnotesize \textbf{hyper-\\parameters}};
+		\draw (3.75,5) node[align=center, text width=3cm] {\footnotesize \textbf{parameters}};
+		\draw (2,6) node[align=center, text width=3cm] {\footnotesize \textbf{spatial dependencies}};
+		%\draw (-1.4,-2.3) node[align=center, text width=3cm] {\footnotesize \textbf{hyper-prior}};
+		\draw (-3,6) node[align=center, text width=3cm] {\footnotesize \textbf{noise}};
+		% Calligraphic brace
+		%\draw[very thick, decorate,decoration = {brace}] (5,-1) --  (5,-2);
+		
+		%Lines
+		\draw[->, very thick] (S.south) -- (y.north west);
+		\draw[->, very thick] (s.south) -- (S.north);
+		\draw[->, very thick] (u.south) -- (y.north);
+		\draw[->, mydotted, very thick] (A.south) -- (u.north);
+		\draw[->, mydotted,  very thick] (x.south) -- (A.north);
+		
+		\draw[->, very thick] (d.south) -- (Q.north); 
+		\draw[->, very thick] (Q.south) -- (x.north); 
+		
+		
+	\end{tikzpicture} 
+	\caption[]{}
+\end{figure}
+
+\begin{figure}[!ht]
+	\centering
+	\renewcommand\sffamily{}
+	\renewcommand{\mathbf}{\bm}
+	%\includegraphics[width = 0.99\columnwidth]{f_and_g_paper.png}
+	%\scalebox{0.637}{\input{f_and_g_paper.pgf}}
+	\scalebox{0.637}{\input{f_and_g_paper.pdf_tex}}
+	\caption{Functions $f(\lambda)$, dotted, and $g(\lambda)$, dashed, of the marginal posterior distribution for the specific forward model used in this study. Both functions are well-behaved over a large range of $\lambda$. In the support region of the MWG the pink square refers to the mode of the marginal posterior. Additionally, we plot the Taylor series of fourth order for $f(\lambda)$ and $g(\lambda)$ around the mode, see black line.}
+	\label{fig:f_and_g}
+\end{figure}
+
+\begin{figure}[!ht]
+	\centering
+	\renewcommand\sffamily{}
+	\renewcommand{\mathbf}{\bm}
+	%\scalebox{0.66}{\input{AllHistoResults.pgf}}
+	\scalebox{0.66}{\input{ScatterplusHisto.pgf}}
+	\caption{The scatter plot shows independent samples of $\delta$ and $\gamma$ as the result of the MWG algorithm.
+		The histogram displays independent samples of $\lambda \sim \pi(\lambda | \bm{y}, \gamma)$.
+		The vertical line corresponds to the optimal regularization parameter.}
+	\label{fig:AllHistRes}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{TraceMTCPara.png}
+	\caption[]{text}
+	\label{fig:Results}
+\end{figure}
+
+
+
+\begin{figure}[!ht]
+	\centering
+	\renewcommand\sffamily{}
+	\renewcommand{\mathbf}{\bm}
+	\scalebox{0.66}{\input{LCurve.pgf}}
+	\caption{For varying $\lambda$ we plot the seminorm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against data misfit $\lVert \bm{Ax}_\lambda - \bm{y} \rVert$ of the regularised profiles.
+		The triangle marks the point of maximum curvature closest to the origin of the L-curve.
+		We plot the seminorm and the data misfit of the conditional posterior samples as well as of the posterior mean.}
+	\label{fig:RegCurv}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\renewcommand\sffamily{}
+	\renewcommand{\mathbf}{\bm}
+	%\fontfamily{cmr}\selectfont
+	\input{FirstRecRes1.pgf}
+	%\includegraphics[width =0.99 \columnwidth]{FirstRecRes.png}
+	\caption{Plot of the true ozone profile (\mycircle{circ}), posterior samples (\myplus{plus}), and posterior mean (\myseccircle{seccirc}). We display the optimal regularised solution (\mytriangle{tri}) and the simulated data (\mysecstar{gray}) in spectral radiance.}
+	\label{fig:Results}
+\end{figure}
+
+
+
+\section{four hyperameters, t-walk, TT approx, and RTO}
+
+\begin{itemize}
+	\item motivation why more hyper-parameters, explain parabula
+	\item how sample from them, compared to TT approx
+	\item explain Rosenblatt and SIRT trasnport
+	\item RTO
+\end{itemize}
+
+
+\begin{figure}[thb!]
+	\centering
+	\begin{tikzpicture}
+		\node[roundnode2] at (0,6) (Q)     {$\bm{Q}$};
+		\node[roundnode2] at (0,4) (x)     {$\bm{x}$};
+		\node[roundnode2] at (0,2) (A)    {$\bm{A}$};
+		\node[roundnode2] at (0,0) (u)    {$\bm{u}$};
+		\node[rectnode] at (0,-2) (y)    {$\bm{y}$};
+		\node[roundnode2] at (-1.5,6) (S)    {$\bm{\Sigma}$};
+		\node[roundnode2] at (-2.5,7.5) (s)    {$\sigma$};
+		\node[roundnode2] at (-1.25,7.5) (d)    {$\delta_0$};
+		\node[roundnode2] at (0,7.5) (a)    {$a$};
+		\node[roundnode2] at (1.25,7.5) (h0)    {$h_0$};
+		
+		%text
+		%\draw (-1,2.5) node[align=center, text width=1.5cm] {\footnotesize \textbf{hydrostatic \\ equation}};
+		\draw (1.75,2) node[align=center, text width=1.5cm] {\footnotesize \textbf{A \\ forward model }};
+		%\draw (6.75,-1.5) node[align=center, text width=2.5cm] {\footnotesize \textbf{hyper\-parameters}};
+		%\draw (5.5,-1.5) node[align=center, text width=0.5cm] { $\bm{\theta}$};
+		\draw (1.75,-2) node[align=center, text width=3cm] {\footnotesize \textbf{observations}};
+		\draw (3.75,7) node[align=center, text width=3cm] {\footnotesize \textbf{hyper-\\parameters}};
+		\draw (3.75,5) node[align=center, text width=3cm] {\footnotesize \textbf{parameters}};
+		\draw (2,6) node[align=center, text width=3cm] {\footnotesize \textbf{spatial dependencies}};
+		%\draw (-1.4,-2.3) node[align=center, text width=3cm] {\footnotesize \textbf{hyper-prior}};
+		\draw (-3,6) node[align=center, text width=3cm] {\footnotesize \textbf{noise}};
+		% Calligraphic brace
+		%\draw[very thick, decorate,decoration = {brace}] (5,-1) --  (5,-2);
+		
+		%Lines
+		\draw[->, very thick] (S.south) -- (y.north west);
+		\draw[->, very thick] (s.south) -- (S.north);
+		\draw[->, very thick] (u.south) -- (y.north);
+		\draw[->, mydotted, very thick] (A.south) -- (u.north);
+		\draw[->, mydotted,  very thick] (x.south) -- (A.north);
+		\draw[->, very thick] (a.south) -- (Q.north); 
+		\draw[->, very thick] (h0.south) -- (Q.north east); 
+		\draw[->, very thick] (d.south) -- (Q.north west); 
+		\draw[->, very thick] (Q.south) -- (x.north); 
+		
+		
+	\end{tikzpicture} 
+	\caption[short text]{text}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{DeltaSamp.png}
+	\caption[]{text}
+	\label{fig:Results}
+\end{figure}
+\subsection{Sampling}
+
+\subsection{ Rosenblatt Transform}
+\subsection{(Squared) Inverse Rosenblatt Transform}
+\subsection{Tensor-Train Approximation}
+
+\section{Temperature and pressure hyperameters, tt-approx}
+
+\begin{itemize}
+	\item updating scheme
+\end{itemize}
+
+\begin{figure}[thb!]
+	\centering
+	\begin{tikzpicture}
+		\node[roundnode2] at (-3.5,6) (Q)     {$\bm{Q}$};
+		\node[roundnode2] at (-2,4) (x)     {$\bm{x}$};
+		\node[roundnode2] at (0,2) (A)    {$\bm{A}$};
+		\node[roundnode2] at (0,0) (u)    {$\bm{u}$};
+		\node[rectnode] at (0,-2) (y)    {$\bm{y}$};
+		\node[roundnode2] at (-5.5,6) (S)    {$\bm{\Sigma}$};
+		\node[roundnode2] at (-6.25,7.5) (s)    {$\sigma$};
+		\node[roundnode2] at (-4.5,7.5) (d)    {$\delta_0$};
+		\node[roundnode2] at (-3.5,7.5) (a)    {$a$};
+		\node[roundnode2] at (-2.5,7.5) (h0)    {$h_0$};
+		\node[roundnode2] at (4,6) (t)     {$\bm{t}$};
+		\node[roundnode2] at (0,6) (p)     {$\bm{p}$};
+		\node[roundnode2] at (1.5,4) (pt)     {$\bm{p}/\bm{t}$};
+		\node[roundnode2] at (1,7.5) (b1)    {$b_1$};
+		\node[roundnode2] at (2,7.5) (b2)    {$b_2$};
+		\node[roundnode2] at (-1,7.5) (h1)    {$h_1$};
+		\node[roundnode2] at (-0,7.5) (p0)    {$p_0$};
+		\node[roundnode2] at (3.25,7.5) (ht)    {$\bm{h_t}$};
+		\node[roundnode2] at (4.25,7.5) (ct)    {$\bm{c_t}$};
+		\node[roundnode2] at (5.25,7.5) (at)    {$\bm{a_t}$};
+		
+		\draw (1.75,2) node[align=center, text width=1.5cm] {\footnotesize \textbf{A \\ forward model }};
+		
+		\draw (1.75,-2) node[align=center, text width=3cm] {\footnotesize \textbf{observations}};
+		\draw (3.75,9) node[align=center, text width=3cm] {\footnotesize \textbf{hyper-\\parameters}};
+		\draw (3.75,5) node[align=center, text width=3cm] {\footnotesize \textbf{parameters}};
+		\draw (-3.75,8.5) node[align=center, text width=3cm] {\footnotesize \textbf{spatial dependencies}};
+		\draw (-3.75,1) node[align=center, text width=3cm] {\footnotesize \textbf{noise}};
+		
+		
+		%Lines
+		\draw[->, very thick] (S.south) -- (y.west);
+		\draw[->, very thick] (s.south) -- (S.north west);
+		\draw[->, very thick] (u.south) -- (y.north);
+		\draw[->, mydotted, very thick] (A.south) -- (u.north);
+		\draw[->, mydotted,  very thick] (x.south east) -- (A.north west);
+		\draw[->, very thick] (p.south) -- (pt.north west);
+		\draw[->, very thick] (t.south west) -- (pt.north east);
+		\draw[->,  mydotted, very thick] (pt.south west) -- (A.north east);
+		\draw[->, very thick] (h1.south) -- (p.north west);
+		\draw[->, very thick] (p0.south) -- (p.north);
+		\draw[->, very thick] (b1.south) -- (p.north east); 
+		\draw[->, very thick] (b2.south) -- (p.east); 
+		
+		\draw[->, very thick] (a.south) -- (Q.north); 
+		\draw[->, very thick] (h0.south) -- (Q.north east); 
+		\draw[->, very thick] (d.south) -- (Q.north west); 
+		\draw[->, very thick] (Q.south) -- (x.north west); 
+		\draw[->, very thick] (ht.south) -- (t.north west);
+		\draw[->, very thick] (ct.south) -- (t.north);
+		\draw[->, very thick] (at.south) -- (t.north east);
+		
+	\end{tikzpicture} 
+	\caption[short text]{text}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{TemperatureSamp.png}
+	\caption[]{text}
+	\label{fig:Results}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{samplesPressure.png}
+	\caption[]{text}
+	\label{fig:Results}
+\end{figure}
+
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{HistSampTT.png}
+	\caption[]{text}
+	\label{fig:Results}
+\end{figure}
