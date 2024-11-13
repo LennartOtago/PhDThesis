@@ -178,6 +178,7 @@
 
 \begin{itemize}
 	\item  define priors
+	\item how solve inverse and determinant
 	\item how many steps, integrated autocorrealtion time
 	\item relative error
 \end{itemize}
@@ -223,6 +224,13 @@
 	\caption[]{text}
 	\label{fig:Results}
 \end{figure}
+\begin{figure}[h]
+	\centering
+	%\includegraphics[width=\textwidth]{DeltaSamp.png}
+	\scalebox{0.66}{\input{DeltaSIRTSamp.pdf_tex}}
+	\caption[]{text}
+	\label{fig:Results}
+\end{figure}
 
 \begin{figure}[h]
 	\centering
@@ -231,6 +239,7 @@
 	\caption[]{text}
 	\label{fig:Results}
 \end{figure}
+
 
 \section{Temperature and pressure hyperameters, tt-approx}
 
@@ -259,7 +268,7 @@
 		\node[roundnode2] at (-1,7.5) (h1)    {$h_1$};
 		\node[roundnode2] at (-0,7.5) (p0)    {$p_0$};
 		\node[roundnode2] at (3.25,7.5) (ht)    {$\bm{h_t}$};
-		\node[roundnode2] at (4.25,7.5) (ct)    {$\bm{c_t}$};
+		\node[roundnode2] at (4.25,7.5) (t0)    {$\bm{t_0}$};
 		\node[roundnode2] at (5.25,7.5) (at)    {$\bm{a_t}$};
 		
 		\draw (1.75,2) node[align=center, text width=1.5cm] {\footnotesize \textbf{A \\ forward model }};
@@ -290,7 +299,7 @@
 		\draw[->, very thick] (d.south) -- (Q.north west); 
 		\draw[->, very thick] (Q.south) -- (x.north west); 
 		\draw[->, very thick] (ht.south) -- (t.north west);
-		\draw[->, very thick] (ct.south) -- (t.north);
+		\draw[->, very thick] (t0.south) -- (t.north);
 		\draw[->, very thick] (at.south) -- (t.north east);
 		
 	\end{tikzpicture} 
@@ -298,24 +307,55 @@
 \end{figure}
 
 
-\begin{figure}[h]
+
+
+\begin{figure}[t!]
 	\centering
-	\includegraphics[width=\textwidth]{TemperatureSamp.png}
-	\caption[]{text}
-	\label{fig:Results}
+	\begin{subfigure}[]{.49\columnwidth}
+		\centering
+		\scalebox{0.42}{\input{SIRTALLTempResults.pdf_tex}}
+		\caption{}
+	\end{subfigure}%
+	\begin{subfigure}[]{.49\columnwidth}
+		\centering
+		\scalebox{0.42}{\input{SIRTALLPressResults.pdf_tex}}
+		\caption{}
+	\end{subfigure}
+	\caption{}
 \end{figure}
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{samplesPressure.png}
+	\scalebox{0.66}{\input{SIRTALLO3Results.pdf_tex}}
 	\caption[]{text}
 	\label{fig:Results}
 \end{figure}
+
 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{HistSampTT.png}
-	\caption[]{text}
+	\scalebox{0.66}{\input{PTHistSampP.pdf_tex}}
+	\caption[]{complementary}
 	\label{fig:Results}
 \end{figure}
+
+
+
+\begin{figure}[h]
+	\centering
+	\scalebox{1}{\input{PTHistSampT1.pdf_tex}}
+	\caption[]{complementary}
+	\label{fig:Results}
+\end{figure}
+
+
+
+\begin{figure}[h]
+	\centering
+	\scalebox{1}{\input{PTHistSampT2.pdf_tex}}
+	\caption[]{complementary}
+	\label{fig:Results}
+\end{figure}
+
+
