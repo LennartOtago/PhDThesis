@@ -1,26 +1,26 @@
 
 \chapter{Building a physics based hierarchical Linear model}
 \begin{itemize}
-	\item two hyperparameters, marginal and then conditonal, MTC, use as a building block
-	\item  sampling, Gibbs-MH, t-walk
-	\item increase hyperparameters, Temperature and pressure, tt-approx
+	\item two hyperparameters, marginal and then conditonal, MTC, use as a building block \cite{fox2016fast, rue2005gaussian}
+	\item  sampling, Gibbs-MH, t-walk \cite{christen2010general}
+	\item increase hyperparameters, Temperature and pressure, tt-approx, SIRT \cite{cui2022deep, atmosphere1976us}
 \end{itemize}
 
 \section{Linear model}
 \begin{itemize}
-	\item define model
-	\item explain parameters
-	\item how pressure to height and temperature
+	\item define model \cite{readings2000envisat}
+	\item explain parameters and constants \cite{gordon2022hitran2020}
+	\item how pressure to height and temperature hydro-static equilibrium equation \cite{atmosphere1976us}
 \end{itemize}
 
 \section{two hyperameters, fast sampling paper}
 \begin{itemize}
-	\item similar to MTC paper, ref
-	\item can compare to regularization and can integrate easily with less solves to regularization or RTO, ref
-	\item define priors
+	\item similar to MTC paper,  \cite{fox2016fast}
+	\item can compare to regularization and can integrate easily with less solves to regularization or RTO, \cite{hansen1993use}
+	\item define priors make table
 	\item how many steps, integrated autocorrealtion time , ref
 	\item relative error
-	\item how I found max curvature, ref
+	\item how I found max curvature, \cite{satopaa2011kneedle}
 	\item how many taylor series
 \end{itemize}
 
