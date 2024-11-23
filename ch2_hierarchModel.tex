@@ -308,34 +308,35 @@
 
 \begin{table}
 	\centering
-\begin{tabular}{ |c||c|c|c|   }
+\begin{tabular}{ |c||c|c|c|c|   }
 	\hline
-	& &\multicolumn{2}{|c|}{TT bounds}\\
+	& &\multicolumn{2}{|c|}{TT bounds}&\\
 	\hline
-	model parameters& priors&\makecell{lower\\ bound}& \makecell{upper\\ bound}\\
+	model parameters& priors&\makecell{lower}& \makecell{upper\\
+	}&Context\\
 	\hline
-	$\gamma$ & $\mathcal{T}(1,1e-4)$ &- &-\\
-	$\delta$ &$\mathcal{T}(1,1e-10)$ & -&-\\
-	$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9  \\
-	$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4\\
-	$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5\\
-	$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35\\
-	$h_{p,1}$ &  $\mathcal{N}(34.3,0.5)$& 32.8&35.64\\
-	$p_0$ &  $\mathcal{N}(6.5,0.1)$&6.17 &6.73\\
-	$b_1$ &  $\mathcal{N}(0.15,0.0051)$& 0.138  &0.167\\
-	$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32\\
-	$h_{t,0}$ &  $\mathcal{N}(11,0.5)$&9.6 &12.4\\
-	$h_{t,1}$ &  $\mathcal{N}(20,3)$&11.6 &28.4\\
-	$h_{t,2}$ &  $\mathcal{N}(32,1)$&29.2 &34.8\\
-	$h_{t,3}$ &  $\mathcal{N}(47,2)$&41.4 &52.6\\
-	$h_{t,4}$ &  $\mathcal{N}(51,2)$&45.4 &56.6\\
-	$h_{t,5}$ &  $\mathcal{N}(71,2)$&65.4 &76.6\\
-	$a_{t,1}$ &  $\mathcal{N}(-6.5,0.01)$&-6.528 &-6.472\\
-	$a_{t,2}$ &  $\mathcal{N}(1,0.01)$&0.972 &1.028\\
-	$a_{t,3}$ &  $\mathcal{N}(2.8,0.1)$&2.52 &3.078\\
-	$a_{t,4}$ &  $\mathcal{N}(-2.8,0.01)$&-2.828 &-2.772\\
-	$a_{t,5}$ & $\mathcal{N}(-2,0.01)$ &-2.028 &-1.972\\
-	$t_{0}$ &  $\mathcal{N}(288,2)$& 282.54 &293.75\\
+	$\gamma$ & $\mathcal{T}(1,1e-4)$ &- &-& $\bm{x}$\\
+	$\delta$ &$\mathcal{T}(1,1e-10)$ & -&-& $\bm{x}$\\
+	$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
+	$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
+	$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\
+	$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\
+	$h_{p,1}$ &  $\mathcal{N}(34.3,0.5)$& 32.8&35.64&$\bm{p/t}$\\
+	$p_0$ &  $\mathcal{N}(6.5,0.1)$&6.17 &6.73&$\bm{p/t}$\\
+	$b_1$ &  $\mathcal{N}(0.15,0.0051)$& 0.138  &0.167&$\bm{p/t}$\\
+	$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/t}$\\
+	$h_{t,0}$ &  $\mathcal{N}(11,0.5)$&9.6 &12.4&$\bm{p/t}$\\
+	$h_{t,1}$ &  $\mathcal{N}(20,3)$&11.6 &28.4&$\bm{p/t}$\\
+	$h_{t,2}$ &  $\mathcal{N}(32,1)$&29.2 &34.8&$\bm{p/t}$\\
+	$h_{t,3}$ &  $\mathcal{N}(47,2)$&41.4 &52.6&$\bm{p/t}$\\
+	$h_{t,4}$ &  $\mathcal{N}(51,2)$&45.4 &56.6&$\bm{p/t}$\\
+	$h_{t,5}$ &  $\mathcal{N}(71,2)$&65.4 &76.6&$\bm{p/t}$\\
+	$a_{t,1}$ &  $\mathcal{N}(-6.5,0.01)$&-6.528 &-6.472&$\bm{p/t}$\\
+	$a_{t,2}$ &  $\mathcal{N}(1,0.01)$&0.972 &1.028&$\bm{p/t}$\\
+	$a_{t,3}$ &  $\mathcal{N}(2.8,0.1)$&2.52 &3.078&$\bm{p/t}$\\
+	$a_{t,4}$ &  $\mathcal{N}(-2.8,0.01)$&-2.828 &-2.772&$\bm{p/t}$\\
+	$a_{t,5}$ & $\mathcal{N}(-2,0.01)$ &-2.028 &-1.972&$\bm{p/t}$\\
+	$t_{0}$ &  $\mathcal{N}(288,2)$& 282.54 &293.75&$\bm{p/t}$\\
 	\hline
 \end{tabular}
 \caption{Gaussian $\mathcal{N}(\mu,\sigma)$ and gamma distribution $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$
