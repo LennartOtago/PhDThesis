@@ -315,10 +315,10 @@
 	model parameters& priors&\makecell{lower}& \makecell{upper\\
 	}&Context\\
 	\hline
-	$\gamma$ & $\mathcal{T}(1,1e-4)$ &- &-& $\bm{x}$\\
+	$\gamma$ & $\mathcal{T}(1,1e-10)$ &- &-& $\bm{x}$\\
 	$\delta$ &$\mathcal{T}(1,1e-10)$ & -&-& $\bm{x}$\\
-	$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
-	$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
+	%$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
+	%$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
 	$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\
 	$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\
 	$h_{p,1}$ &  $\mathcal{N}(34.3,0.5)$& 32.8&35.64&$\bm{p/t}$\\
@@ -372,7 +372,41 @@ round pressure approx and  test if would work with previous gamma prior or fix g
 \begin{figure}[h]
 	\centering
 	\scalebox{0.66}{\input{PTHistSampP.pdf_tex}}
-	\caption[]{complementary}
+	\caption[]{pritor}
+	\label{fig:Results}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\scalebox{0.66}{\input{TTHistSampP.pdf_tex}}
+	\caption[]{posteriore doesnt work with TT format}
+	\label{fig:Results}
+\end{figure}
+
+
+\begin{figure}[h]
+	\centering
+	\scalebox{0.66}{\input{pressHistRes.pdf_tex}}
+	\caption[]{t-walk does work with posterioer}
+	\label{fig:Results}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\scalebox{0.66}{\input{tempHistRes1.pdf_tex}}
+	\caption[]{t-walk does work with posterioer}
+	\label{fig:Results}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\scalebox{0.66}{\input{tempHistRes2.pdf_tex}}
+	\caption[]{t-walk does work with posterioer}
+	\label{fig:Results}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\scalebox{0.66}{\input{}}
+	\caption[]{tt does not work woth posterior}
 	\label{fig:Results}
 \end{figure}
 
@@ -381,16 +415,23 @@ round pressure approx and  test if would work with previous gamma prior or fix g
 \begin{figure}[h]
 	\centering
 	\scalebox{1}{\input{PTHistSampT1.pdf_tex}}
-	\caption[]{complementary}
+	\caption[]{priors work}
 	\label{fig:Results}
 \end{figure}
 
+
+\begin{figure}[h]
+	\centering
+	\scalebox{1}{\input{TempPriorHistSamp.pdf_tex}}
+	\caption[]{priorsTT work}
+	\label{fig:Results}
+\end{figure}
 
 
 \begin{figure}[h]
 	\centering
 	\scalebox{1}{\input{PTHistSampT2.pdf_tex}}
-	\caption[]{complementary}
+	\caption[]{priors work}
 	\label{fig:Results}
 \end{figure}
 
