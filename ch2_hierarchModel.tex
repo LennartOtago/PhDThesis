@@ -6,6 +6,20 @@
 	\item increase hyperparameters, Temperature and pressure, tt-approx, SIRT \cite{cui2022deep, atmosphere1976us}
 \end{itemize}
 
+\begin{table}
+	\centering
+	\begin{tabular}{ |c||c|c|c|c|  }
+		\hline
+		\makecell{parameter\\ and context}& \makecell{$m$, number of\\ measurements}& \makecell{pointing\\ accuracy }& \makecell{$n$, number of \\atmospheric layers}& \makecell{signal-to-noise\\ voltage ratio}\\
+		\hline
+		$\bm{y}$, data& 33&  $0.009^{\circ}$ &43& 10\\
+		\hline
+	\end{tabular}
+	\caption{Data Spec}
+	\label{tab:}
+\end{table}
+
+
 \section{Linear model}
 \begin{itemize}
 	\item define model \cite{readings2000envisat}
@@ -243,6 +257,37 @@
 
 \section{Temperature and pressure hyperameters, tt-approx}
 
+\begin{table}
+	\centering
+	\begin{tabular}{ |c||c|c|c|c|   }
+		\hline
+		model context& burn in& steps & dimension & time\\ 
+		\hhline{|=||=|=|=|=|}
+		$\bm{x}$, MTC& 4 & \makecell[b]{ $10^{-10}$} &2 &\\ \hline
+		$\bm{x}$, t-walk& 500& &4 &\\ \hline
+		$\bm{p}$, t-walk & 500& &5 &\\ \hline
+		$\bm{t}$, t-walk & 2500 & &13 &\\
+		\hline
+	\end{tabular}
+	\caption{T walk settting}
+	\label{tab:}
+\end{table}
+
+\begin{table}
+	\centering
+	\begin{tabular}{ |c||c|c|c|c|c|  }
+		\hline
+		model context& \makecell{max number \\of swaps (TT-cross)}& \makecell{maximum relative \\ error (TT-cross)}&\makecell{QMC samples \\per dimension}& \makecell{SIRT\\ error} & time\\ \hline
+		\hline
+		$\bm{x}$ & 4 & $10^{-10}$ &4& &\\ \hline
+		$\bm{p}$ & 5& &5& &\\ \hline
+		$\bm{t}$ & 5 & &13& &\\ 
+		\hline
+	\end{tabular}
+	\caption{Sirt and TT settting}
+	\label{tab:}
+\end{table}
+
 \begin{itemize}
 	\item updating scheme
 \end{itemize}
@@ -315,27 +360,28 @@
 	model parameters& priors&\makecell{lower}& \makecell{upper\\
 	}&Context\\
 	\hline
-	$\gamma$ & $\mathcal{T}(1,1e-10)$ &- &-& $\bm{x}$\\
-	$\delta$ &$\mathcal{T}(1,1e-10)$ & -&-& $\bm{x}$\\
+
+	$\gamma$ & $\mathcal{T}(1,10^{-10})$ &- &-& $\bm{x}$\\ \hhline{|=||=|=|=|=|}
+	$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& $\bm{x}$\\ \hline
 	%$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
 	%$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
-	$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\
-	$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\
-	$h_{p,1}$ &  $\mathcal{N}(34.3,0.5)$& 32.8&35.64&$\bm{p/t}$\\
-	$p_0$ &  $\mathcal{N}(6.5,0.1)$&6.17 &6.73&$\bm{p/t}$\\
-	$b_1$ &  $\mathcal{N}(0.15,0.0051)$& 0.138  &0.167&$\bm{p/t}$\\
-	$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/t}$\\
-	$h_{t,0}$ &  $\mathcal{N}(11,0.5)$&9.6 &12.4&$\bm{p/t}$\\
-	$h_{t,1}$ &  $\mathcal{N}(20,3)$&11.6 &28.4&$\bm{p/t}$\\
-	$h_{t,2}$ &  $\mathcal{N}(32,1)$&29.2 &34.8&$\bm{p/t}$\\
-	$h_{t,3}$ &  $\mathcal{N}(47,2)$&41.4 &52.6&$\bm{p/t}$\\
-	$h_{t,4}$ &  $\mathcal{N}(51,2)$&45.4 &56.6&$\bm{p/t}$\\
-	$h_{t,5}$ &  $\mathcal{N}(71,2)$&65.4 &76.6&$\bm{p/t}$\\
-	$a_{t,1}$ &  $\mathcal{N}(-6.5,0.01)$&-6.528 &-6.472&$\bm{p/t}$\\
-	$a_{t,2}$ &  $\mathcal{N}(1,0.01)$&0.972 &1.028&$\bm{p/t}$\\
-	$a_{t,3}$ &  $\mathcal{N}(2.8,0.1)$&2.52 &3.078&$\bm{p/t}$\\
-	$a_{t,4}$ &  $\mathcal{N}(-2.8,0.01)$&-2.828 &-2.772&$\bm{p/t}$\\
-	$a_{t,5}$ & $\mathcal{N}(-2,0.01)$ &-2.028 &-1.972&$\bm{p/t}$\\
+	$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\ \hline
+	$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\ \hline
+	$h_{p,1}$ &  $\mathcal{N}(34.3,0.5)$& 32.8&35.64&$\bm{p/t}$\\ \hline
+	$p_0$ &  $\mathcal{N}(6.5,0.1)$&6.17 &6.73&$\bm{p/t}$\\ \hline
+	$b_1$ &  $\mathcal{N}(0.15,0.0051)$& 0.138  &0.167&$\bm{p/t}$\\ \hline
+	$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/t}$\\ \hline
+	$h_{t,0}$ &  $\mathcal{N}(11,0.5)$&9.6 &12.4&$\bm{p/t}$\\ \hline
+	$h_{t,1}$ &  $\mathcal{N}(20,3)$&11.6 &28.4&$\bm{p/t}$\\ \hline
+	$h_{t,2}$ &  $\mathcal{N}(32,1)$&29.2 &34.8&$\bm{p/t}$\\ \hline
+	$h_{t,3}$ &  $\mathcal{N}(47,2)$&41.4 &52.6&$\bm{p/t}$\\ \hline
+	$h_{t,4}$ &  $\mathcal{N}(51,2)$&45.4 &56.6&$\bm{p/t}$\\ \hline
+	$h_{t,5}$ &  $\mathcal{N}(71,2)$&65.4 &76.6&$\bm{p/t}$\\ \hline
+	$a_{t,1}$ &  $\mathcal{N}(-6.5,0.01)$&-6.528 &-6.472&$\bm{p/t}$\\ \hline
+	$a_{t,2}$ &  $\mathcal{N}(1,0.01)$&0.972 &1.028&$\bm{p/t}$\\ \hline
+	$a_{t,3}$ &  $\mathcal{N}(2.8,0.1)$&2.52 &3.078&$\bm{p/t}$\\ \hline
+	$a_{t,4}$ &  $\mathcal{N}(-2.8,0.01)$&-2.828 &-2.772&$\bm{p/t}$\\ \hline
+	$a_{t,5}$ & $\mathcal{N}(-2,0.01)$ &-2.028 &-1.972&$\bm{p/t}$\\ \hline
 	$t_{0}$ &  $\mathcal{N}(288,2)$& 282.54 &293.75&$\bm{p/t}$\\
 	\hline
 \end{tabular}
@@ -393,22 +439,17 @@ round pressure approx and  test if would work with previous gamma prior or fix g
 
 \begin{figure}[h]
 	\centering
-	\scalebox{0.66}{\input{tempHistRes1.pdf_tex}}
+	\scalebox{0.33}{\input{tempHistRes1.pdf_tex}}
 	\caption[]{t-walk does work with posterioer}
 	\label{fig:Results}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\scalebox{0.66}{\input{tempHistRes2.pdf_tex}}
+	\scalebox{0.33}{\input{tempHistRes2.pdf_tex}}
 	\caption[]{t-walk does work with posterioer}
 	\label{fig:Results}
 \end{figure}
-\begin{figure}[h]
-	\centering
-	\scalebox{0.66}{\input{}}
-	\caption[]{tt does not work woth posterior}
-	\label{fig:Results}
-\end{figure}
+
 
 
 
