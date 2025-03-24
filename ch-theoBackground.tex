@@ -10,8 +10,8 @@
 
 In this section we describe the forward model which we use to simulate data and base the Bayesian inference on.
 
-As previously mentioned and in Figure~\ref{fig:forModel} shown, one measurement of a stationary satellite can be describes as the path integral along the line of sight $\Gamma_j$ for $j=1,2,\ldots,m$.
-For each measurement we can define a tangent height $\ell_j$ as the shortest distance along the line of sight to the earth.
+As shown in Figure~\ref{fig:forModel}, one measurement of a stationary satellite can be describes as the path integral along the line of sight $\Gamma_j$ for $j=1,2,\ldots,m$.
+For each measurement we can define a tangent height $h_{\ell_j}$ as the shortest distance along the line of sight to the earth.
 %and call that the limb height.
 
 %A stationary satellite takes $m$ measurements in pointing directions that define the lines of sight from the satellite $\Gamma_j$ for $j=1,2,\ldots,m$. Each line of sight $\Gamma_j$ is tangent to a sphere around Earth called a limb, and the tangent height $\ell_j$ is called the limb height. Hence the limb height $\ell_j$ is the lowest height to Earth along the line-of-sight $\Gamma_j$.
@@ -26,8 +26,9 @@ The $j^\text{th}$ measurement, taken on line of sight $\Gamma_j$  is modelled by
 	\tau(r) = \exp{ \Bigl\{ - \int^{r}_{r_\text{obs}}  k(\nu, T)   \frac{\bm{p}(T)}{k_B \bm{T}(r^{\prime})}  \bm{x}(r^{\prime}) \text{d}r^{\prime} \Bigr\} }
 	\label{eq:RTE}
 \end{align}
-where $\Gamma_j$ is the path from the satellite along the line-of-sight of the $j^\text{th}$ pointing direction, $\bm{x}(r)$ is the the ozone concentration at distance $r$ from the radiometer, and $\tau(r)\leq 1$ is a factor that accounts for re-absorption of the radiation  along the line-of-sight. 
-The noise $\eta_j$ is added to each path integral, where the noise vector $ \bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \mathbf{I} )$ is normally distributed around zeror with the noise precision $\gamma$.
+where the path from the satellite along the line-of-sight of the $j^\text{th}$ pointing direction is $\Gamma_j$ and the ozone concentration$\bm{x}(r)$ at distance $r$ from the radiometer.
+The factor $\tau(r)\leq 1$ accounts for re-absorption of the radiation along the line-of-sight, which makes the RTE non linear.
+The noise $\eta_j$ is added to each path integral, where the noise vector $ \bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \mathbf{I} )$ is normally distributed around zero with the noise precision $\gamma$.
 The absorption constant $k(\nu, T)$ for a single gas molecule at a specific wavenumber $\nu$ is given by the HITRAN database \cite{gordon2022hitran2020} and acts as a source function when multiplied with the black body radiation $B(\nu,T)$, given by Planck`s law.
 Within the stratosphere the number density $p(T) / (k_{\text{B}} T(r))$ of molecules is dependent on the pressure $p(T)$, the temperature $T(r)$, and the Boltzmann constant $k_{\text{B}}$.
 For fundamentals on the Radiative transfer equation we recommend 79BOOKRadiativeProcess.
@@ -36,30 +37,32 @@ For fundamentals on the Radiative transfer equation we recommend 79BOOKRadiative
 We parametrize the ozone profile as a function of height, discretized into the $n$ values in each of $n$ layers of the discretized stratosphere where the $i^\text{th}$ layer is defined by two spheres of radii  $h_{i-1} < h_{i}$, $i = 1, \dots, n$, with $h_0$ and $h_{n} $.
 In between the heights $h_{i-1}$ and $h_{i}$, each of the ozone concentration $x_{i}$, the pressure $p_{i}$, the temperature $T_{i}$, and thermal radiation is assumed to be constant.
 Above $h_{n}$ and below $h_0$, the ozone concentration is set to zero, so no signal can be obtained.
-Then the term $ B(\nu,T) S(\nu, T)   \frac{\bm{p}(T)}{k_{\text{B}} \bm{T}(r)}  \bm{x}(r)$ in~\eqref{eq:RTE} defines the kernel $\bm{A_{j}}$. The $m$ kernels are assembled as the matrix $\bm{A} \in \mathbb{R}^{m \times n}$, with $\bm{A_{j}}$ as the $j^\text{th}$ row of $\bm{A}$.
-Since we are interested in multiple parameter vectors, we define the matrix $\bm{A_{pT}}$ as the linear forward map independent of the ozone concentration $\bm{x}$ and consequently $\bm{A_{x}}$ independent of pressure $\bm{p}$ and temperature $\bm{T}$.
-So that
+Then depending on the parameter of interest, which is either the ozone volume mixing ratio $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$ or the fraction of pressure and temperature $\bm{p/T}= \{p_1/T_1,p_2/T_2,\ldots,p_n/T_n\} \in \mathbb{R}^{n} $, we can rewrite the integral in Eq.~\eqref{eq:RTE} as e.g. $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} $, where the absorption $\tau(r)$ induces non-linearity.
+Here, the row vector $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{n}$  defines a Kernel for each measurement so that the data vector
 \begin{align}
-	\bm{A_{pT}} \, \bm{x} = \bm{A_{x}} \,
-	\frac{ \bm{p}}{\bm{T}} \, .
+	\bm{y} = \bm{A}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} + \bm{\eta}= \bm{A}(\bm{x},  \bm{p},\bm{T}) \,
+	\frac{ \bm{p}}{\bm{T}} + \bm{\eta} \, .
 \end{align}
+can be written as a matrix vector multiplication, where the matrix $\bm{A}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{m \times n}$  and the noise vector $\bm{\eta} \in \mathbb{R}^{m}$.
 
-Since absorption and hence  $\tau(r)$ depends on the ozone concentration $\bm{x}(r)$ as well as pressure $\bm{p}$ and temperature $\bm{T}$ , the RTE is non-linear in $\bm{x}$, $\bm{T}$ and $\bm{p}$. However, absorption reduces measurements by of order $1\%$, or less, making the inverse problem only weakly non-linear. 
-%When we neglect absorption term $\tau(r)$, i.e. set $\tau\equiv 1$ in~\eqref{eq:RTE},
-When approximation the non-linear forward map with an affine map $\bm{M}$, calculating the VMR (volume mixing ratio) of ozone $\bm{x}=\{x_1,x_2,\ldots,x_n\}$ or the ratio of temperature and pressure $\bm{p}/\bm{T} = \{p_1/T_1,p_2/T_2,\ldots,p_n/T_n\} $ poses a linear inverse problem with the forward map defined by the matrix $\bm{M} \, \bm{A_{pT}}$ or $\bm{M} \, \bm{A_x}$.
+Since the absorption $\tau(r)$ reduces measurements by of order $1\%$, or less, making the inverse problem only weakly non-linear. 
+We use that to approximate the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T})$ with a map $\bm{M}$ so that $\bm{A}(\bm{x},  \bm{p},\bm{T}) \approx \bm{M} \bm{A}_L $
+Where each row $\bm{A}_{L,j} $ of matrix as $\bm{A}_L \in \mathbb{R}^{m \times n}$ is defined by the linear forward model, where absorption is neglected, e.g. $\tau = 1$. 
+Then $\bm{A}_{L,j} $ is either defined by $ B(\nu,T) S(\nu, T)   \frac{\bm{p}(T)}{k_{\text{B}} \bm{T}(r)}  \text{d}r$ or $B(\nu,T) S(\nu, T)   \frac{\bm{x}}{k_{\text{B}}}  \text{d}r$, as in Eq..~\eqref{eq:RTE}, depending on the parameter of interest.
+This poses a linear inverse problem with the forward map defined by the matrix $\bm{A} = \bm{M} \bm{A}_L$, where $\bm{M}$ is, more specifically, an affine map.
 
-Within the linear model absorption is neglected, e.g. $\tau = 1$.
+
 \section{Affine Map}
 
-To approximate the non-linear forward model we use an affine map $ M:\bm{A} \bm{x} \rightarrow \bm{A}_{NL} (\bm{x}) $, which maps the linear forward model $\bm{A}\bm{x}$ onto the non-linear forward model $\bm{A}_{NL}(\bm{x}) $.
+To approximate the non-linear forward model we use an affine map $ M:\bm{A}_L \bm{x} \rightarrow \bm{A}(\bm{x},  \bm{p},\bm{T})) \bm{x}$, which maps the linear forward model $\bm{A}_L \bm{x}$ onto the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T}) \bm{x}$.
 
 
 An affine map is any linear map in between two vector spaces is or affine spaces, where in affine space does not need to have a zero origin. 2.3.1. PROPOSITION AND DEFINITIOn Berge book\cite{}.
 In other words an affine map does not need to preserve the origin, or is a linear map on vector spaces including translation, or in the words of my supervisor, C. F., an affine map is a Taylor series of first order.
 For more information on affine spaces and maps we refer to \cite{two books}
 
-We generate two affine subspaces spaces \newline $V = \big\{ \bm{A}_{NL}(\bm{x}^{(1)}), \dots ,\bm{A}_{NL}(\bm{x}^{(m)})\big\} $ and $W = \big\{ \bm{A}\bm{x}^{(1)}, \dots ,\bm{A}\bm{x}^{(m)}\big\}$ over the same field, with fixed $\bm{p,T}$
-Where we the parameter $\bm{x}$ is distributed as the so-called posterior distribution $\big\{  \bm{x}^{(1)} , \dots, \bm{x}^{(m)} \big\} \sim \pi(\bm{x}|\bm{\theta},\bm{y})$, with hyper-parameters $\bm{\theta}$, according to a Bayesian hierarchical model.
+We generate two affine subspaces spaces \newline $V = \big\{ \bm{A}(\bm{x}^{(1)}, \bm{p,T}), \dots ,\bm{A}(\bm{x}^{(m)}, \bm{p,T})\big\} $ and $W = \big\{ \bm{A}\bm{x}^{(1)}, \dots ,\bm{A}\bm{x}^{(m)}\big\}$ over the same field, with fixed $\bm{p,T}$.
+The parameter $\bm{x}$ is distributed as the so-called posterior distribution $\big\{  \bm{x}^{(1)} , \dots, \bm{x}^{(m)} \big\} \sim \pi(\bm{x}|\bm{\theta},\bm{y})$, with hyper-parameters $\bm{\theta}$, according to a Bayesian hierarchical model.
 
 
 
@@ -71,7 +74,7 @@ Where we the parameter $\bm{x}$ is distributed as the so-called posterior distri
 		\draw[<-, very thick] (NL.west) -- (L.east); 
 		\node[align=center] at (-5.5,-4) (f3) {linear forward model};
 		\node[align=center] at (5.5,-4) (f4) {non-linear forward model};
-		\node[align=center] at (0,-5) (f5) {$\bm{A}_{NL}(\bm{x}) \approx \bm{M A} \bm{x} $ };
+		\node[align=center] at (0,-5) (f5) {$\bm{A}(\bm{x},  \bm{p},\bm{T}) \bm{x}  \approx \bm{M A}_L  \bm{x} = \bm{A x} $ };
 		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
 	\end{tikzpicture}
 	\caption[Schematics of Affine Map]{Schematics of Affine Map, which approximates the linear forward model to the non-linear forward model.}
