@@ -83,10 +83,12 @@ The parameter $\bm{x}$ is distributed as the so-called posterior distribution $\
 \section{Bayesian Inference}
 In this this section we give a short introduction to Bayesian inference for a general parameter $\bm{x}$ given some data $\bm{y}$, later in section \ref{} we set up a more sophisticated Bayesian framework applied to the forward model in section \ref{}.
 
-A observations process naturally includes some random noise which we can include in some hyper-parameters $\bm{\theta}$ and order a Bayesian model hierarchically.
- added to some obersovation from the space of all measurables $\bm{u}$.
-This space is deterministicaly defined through the linear forward model $\bm{A}$.
-We can visualize this hierarchial model through a directed acyclic graph (DAG), see Figure \ref{fig:FirstDAG}.
+We can visualize a measuremnt process through a hierarchiallly ordered directed acyclic graph (DAG), see Figure \ref{fig:FirstDAG}.
+As an observatory process naturally includes some random noise we classify the noise precision for example as hyper-parameters $\bm{\theta}$ as well as other hyperparameters influence the parmeters $\bm{x}$ detemernistaclly.
+Then through the forward model the parameters $\bm{x}$ are mapped onto the space of all measurables $\bm{u}$, from which we observe some data including noise as previoously described.
+This help us to inderstand correlation wiotin in the measiuremnt and modelling process.
+To inferer the underling parameters and hyperparmeters we follow the arrows backwards and set up a Bayesain hierachlly orded model.
+
 
 \begin{figure}[ht!]
 	\centering
@@ -118,7 +120,7 @@ We can visualize this hierarchial model through a directed acyclic graph (DAG), 
 	\label{fig:FirstDAG}
 \end{figure}
 
-Within a linear Bayesian hierarchial model we need to define distribution over the unknown parameters and hyper-parameters
+Within a linear Bayesian hierarchial model we need to define a likelihood function as well as distribution over the unknown parameters $\bm{x}$ and hyper-parameters $\bm{\theta}$.
 \begin{subequations}
 	\begin{align}
 		\bm{y}|\bm{x}, \bm{\theta}&\sim \mathcal{N}(\bm{A} \bm{x}, \bm{\Sigma}(\bm{\theta})) \label{eq:likelihood}  \\
@@ -127,18 +129,20 @@ Within a linear Bayesian hierarchial model we need to define distribution over t
 	\end{align}
 	\label{eq:BayMode}
 \end{subequations}
-with the noise covarince matrix $\bm{\Sigma}(\bm{\theta})$, so that $\bm{\eta}  \sim \mathcal{N}(0, \bm{\Sigma}(\bm{\theta})) $ as in Eq. \ref{}, the prior precision matrix $\bm{Q}(\bm{\theta})$, prior mean $\bm{\mu}$
-and some distribution over the hyper-parameters $\pi(\bm{\theta})$.
-Then this becomes a linear-Gaussian Bayesian hierarchical model.
+with the noise covariance matrix $\bm{\Sigma}(\bm{\theta})$, so that $\bm{\eta}  \sim \mathcal{N}(0, \bm{\Sigma}(\bm{\theta})) $ as in Eq. \ref{}, the prior precision matrix $\bm{Q}(\bm{\theta})$, prior mean $\bm{\mu}$
+and some prior distribution over the hyper-parameters $\pi(\bm{\theta})$.
+Trhough the prior distributions  $\pi(\bm{x}|\bm{y})$ and $\pi(\bm{\theta})$., we can incorpate functional depende ncies as well physical propetires.
+The likelhood function $\pi(\bm{y}|\bm{x}, \bm{\theta})$ includes information about how the parameters and hyper-parameters fit to the data according to our forward model and including the measurement process.
 
-Describe Prior likelihood 
+With a normally distributed prior and likelihood function this becomes a linear-Gaussian Bayesian hierarchical model.
+For more detailed byesiasn analys we recoomend \cite{}.
 
 According to Bayes' theorem we focus on the posterior distribution
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \, ,
 \end{align}
-with the likelihood function $\pi(\bm{y} | \bm{x}, \bm{\theta} )$ and the prior distribution $\pi(\bm{x}, \bm{\theta})$.
-If the normalising constant $\pi(\bm{y})$ is finite and non-zero we can approximate the posterior distribution
+with the prior distribution $\pi(\bm{x}, \bm{\theta})$ and the normalising constant $\pi(\bm{y})$.
+If the normalising constant is finite and non-zero we can approximate the posterior distribution
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, .
 \end{align}
