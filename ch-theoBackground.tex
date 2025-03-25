@@ -81,8 +81,10 @@ The parameter $\bm{x}$ is distributed as the so-called posterior distribution $\
 \end{figure}
 
 \section{Bayesian Inference}
-Given some data $\bm{y}$, see Eq. \ref{}, from the Satellite limb sounder we like to use Bayesian inference to recover the parameter of iterest $\bm{x}$.
-In doing so we set up a hierarchially order Bayesian model which naturally inlcudes hyperparameters $\bm{\theta}$, such as the radnom noise added to some obersovation from the space of all measurables $\bm{u}$.
+In this this section we give a short introduction to Bayesian inference for a general parameter $\bm{x}$ given some data $\bm{y}$, later in section \ref{} we set up a more sophisticated Bayesian framework applied to the forward model in section \ref{}.
+
+A observations process naturally includes some random noise which we can include in some hyper-parameters $\bm{\theta}$ and order a Bayesian model hierarchically.
+ added to some obersovation from the space of all measurables $\bm{u}$.
 This space is deterministicaly defined through the linear forward model $\bm{A}$.
 We can visualize this hierarchial model through a directed acyclic graph (DAG), see Figure \ref{fig:FirstDAG}.
 
@@ -101,63 +103,66 @@ We can visualize this hierarchial model through a directed acyclic graph (DAG), 
         \draw[->, very thick, mydotted] (u.south) -- (y.north); 
         \draw[->, very thick, mydotted] (th) edge[bend right=60] (y);  
   
-        \node[align=center] at (3,4) (tht) {hyperparameters};
+        \node[align=center] at (3,4) (tht) {hyper-parameters};
         \node[align=center] at (3,2) (xt) {parameters};
         \node[align=center] at (3,0) (At) {forward model};
         \node[align=center] at (3,-2) (ut) {space of all measurables};
         \node[align=center] at (3,-4) (yt) {data};
         \node[align=center] at (-3,0) (nt) {noise};
 	\end{tikzpicture}
-	\caption[Bayesian Inference DAG]{The directed acyclic graph (DAG) for a typical linear inverse problem shows deterministic dependecys as solid line arrows and statistical dependencies as dotted arrows.
-	Naturally the data $\bm{y}$ has some noise described through some hyperparameters $\bm{\theta}$ which determine the parameters $\bm{x}$. Those determine the space of all measurables $\bm{u}$ according to the forward model matrix $A$, so that $\bm{Ax}$ is a linear operation.
+	\caption[Bayesian Inference DAG]{The directed acyclic graph (DAG) for a typical linear inverse problem visualises forward dependencies as solid line arrows for deterministic dependencies and dotted arrows for statistical dependencies.
+	Naturally the data $\bm{y}$ has some noise described through included in some hyper-parameters $\bm{\theta}$.
+	The parameters $\bm{x}$ have some dependency of those hyper-parameters $\bm{\theta}$. The parameter $\bm{x}$ is mapped onto the space of all measurables $\bm{u}$ through the linear forward model $\bm{A}$, so that $\bm{Ax}$ is a linear operation.
 	From the space of all measurables we can observe some data $\bm{y}$, statistically, where as prevoiusly mentioned some random noise is added.
-	We set up a more sophisticated Bayesian model in chapter \ref{} explicity including all hyper-parameters and parameters of interest.}
+	We set up a more sophisticated Bayesian model in chapter \ref{} explicitly including all hyper-parameters and parameters of interest according to the forward model in section \ref{}.}
 	\label{fig:FirstDAG}
 \end{figure}
 
 Within a linear Bayesian hierarchial model we need to define distribution over the unknown parameters and hyper-parameters
 \begin{subequations}
 	\begin{align}
-		\bm{y}|\bm{x}, \bm{\theta}&\sim \mathcal{N}(\bm{A} \bm{x}, \bm{\Sigma}) \label{eq:likelihood}  \\
-		\bm{x}| \bm{\theta} & \sim  \mathcal{N}( \bm{\mu}, \bm{Q}^{-1}  ) \label{eq:xPrior} \\
+		\bm{y}|\bm{x}, \bm{\theta}&\sim \mathcal{N}(\bm{A} \bm{x}, \bm{\Sigma}(\bm{\theta})) \label{eq:likelihood}  \\
+		\bm{x}| \bm{\theta} & \sim  \mathcal{N}( \bm{\mu}, \bm{Q}^{-1}(\bm{\theta})  ) \label{eq:xPrior} \\
 		\bm{\theta} &\sim  \pi(\bm{\theta}) \label{eq:gammaPrior}\, ,
 	\end{align}
 	\label{eq:BayMode}
 \end{subequations}
-with the noise covarince matrix $\bm{\Sigma}$, so that $\bm{\eta}  \sim \mathcal{N}(0, \bm{\Sigma}) $ as in Eq. \ref{}, the prior precision matrix $\bm{Q}$, prior mean $\bm{\mu}$
-and some distribtion over the hyperparameters $\pi(\bm{\theta})$.
-Then this becomes a linear-Gaussian Bayesian hierachial model.
+with the noise covarince matrix $\bm{\Sigma}(\bm{\theta})$, so that $\bm{\eta}  \sim \mathcal{N}(0, \bm{\Sigma}(\bm{\theta})) $ as in Eq. \ref{}, the prior precision matrix $\bm{Q}(\bm{\theta})$, prior mean $\bm{\mu}$
+and some distribution over the hyper-parameters $\pi(\bm{\theta})$.
+Then this becomes a linear-Gaussian Bayesian hierarchical model.
+
+Describe Prior likelihood 
 
 According to Bayes' theorem we focus on the posterior distribution
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \, ,
 \end{align}
 with the likelihood function $\pi(\bm{y} | \bm{x}, \bm{\theta} )$ and the prior distribution $\pi(\bm{x}, \bm{\theta})$.
-If the normalizing contant $\pi(\bm{y})$ is fintie and non-zero we can approximate the posterior distribution
+If the normalising constant $\pi(\bm{y})$ is finite and non-zero we can approximate the posterior distribution
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, .
 \end{align}
 
-Then the expecation of any a function $h(\bm{x})$ can be described as 
+Then the expectation of any a function $h(\bm{x})$ can be described as 
 \begin{align}
 	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})] =  \int \int   h(\bm{x}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}   \label{eq:expPos} \, ,
 \end{align}
 which is usually a high dimensional integral and computationally not feasible to solve.
 
-One way to work around the high dimensionality is to parameterize $\bm{x}$ using hyperparmaters $\bm{\theta}$ so that $\bm{x}(\bm{\theta})$. 
-Another way is to seperate the posterior distribution over latent field $\bm{x}$ and the hyperparameters $\bm{\theta}$.
-This is particular benefitial, when $\bm{x}$ is high dimesnional, e.g. $\bm{x} \in \mathbb{R}^n$ with $n = 45$, and can not be parameterized, and $\bm{\theta}$ is low dimensional, e.g. two dimensional.
+One way to work around the high dimensionality is to parameterise $\bm{x}$ using hyper-parameters $\bm{\theta}$ so that $\bm{x}(\bm{\theta})$. 
+Another way is to seperate the posterior distribution over latent field $\bm{x}$ and the hyper-parameters $\bm{\theta}$.
+This is particular benefitial, when $\bm{x}$ is high dimensional, e.g. $\bm{x} \in \mathbb{R}^n$ with $n = 45$, and can not be parametrised, and $\bm{\theta}$ is low dimensional, e.g. two dimensional.
 
 
 \subsection{Marginal and then Conditional}
-The marginal and then conditional (MTC) method factorizes the full posterior distribution 
+The marginal and then conditional (MTC) method factorises the full posterior distribution 
 \begin{align}
 	\pi(\bm{x}, \bm{\theta}|\bm{y}) = \pi(\bm{x}| \bm{\theta}, \bm{y}) \pi(\bm{\theta}|\bm{y})
 \end{align}
 into the marginal posterior distribtion $ \pi(\bm{\theta}|\bm{y})$ and conditional posterior distribution $\pi(\bm{x}| \bm{\theta}, \bm{y})$.
 
 
-For the in Eq. \ref{} specified linear-Gaussian Bayesian hierarchial model the marginal posterior distribution is given as
+For the in Eq. \ref{} specified linear-Gaussian Bayesian hierarchical model the marginal posterior distribution is given as
 \begin{align}
 	\pi(\bm{\theta} | \bm{y}) &= \int \pi(\bm{x}, \bm{\theta} | \bm{y}) \diff \bm{x} \\ 
 	\label{eq:condHyper}
@@ -167,56 +172,77 @@ with
 \begin{align}
 	\bm{Q}_{\bm{\theta|y}} = \bm{\Sigma}^{-1} - \bm{\Sigma}^{-1} \bm{A} (\bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} )^{-1} \bm{A}^T \bm{\Sigma}^{-1} \,  .
 \end{align}
+
 See lemma \cite{}.
 
-Then conditioned on the hyperparameters $\bm{\theta}$ we can draw samples of the conditional posterior distribution
+Then conditioned on the hyper-parameters $\bm{\theta}$ we can draw samples of the conditional posterior distribution
 \begin{align}
 	\bm{x}| \bm{y} , \bm{\theta} \sim \mathcal{N}\big( \bm{\mu} + (\bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} )^{-1} \bm{A}^T \bm{\Sigma}^{-1} (\bm{y} - \bm{A} \bm{\mu}), (\bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} )^{-1} \big) \, ,
 \end{align}
-see section \ref{} or caculate weighted expections of a function $h(\bm{x})$
+see section \ref{} or calculate weighted expectations of a function $h(\bm{x})$
 \begin{align}
 	\label{eq:lte}
 	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \int   \text{E}_{\bm{x}|\bm{\theta},\bm{y}} [h(\bm{x})] \, \pi(\bm{\theta} | \bm{y} )  \, \text{d} \bm{\theta} \,  ,
 \end{align}
 with weights given by $\pi(\bm{\theta} | \bm{y} )$.
 \cite{}
+Note that the noise covariance $\bm{\Sigma}^{-1} = \bm{\Sigma}^{-1}( \bm{\theta}) $ and the prior precision $\bm{Q} = \bm{Q}( \bm{\theta})$ are dependent of hyper-parameters $\bm{\theta}$.
 
-In this thesis we will use sampling and deterministic methods to characterise the posterior distribtion over the hyperparameters and present the basics of those in the following sections.
+In this thesis we will use sampling and deterministic methods to characterise the posterior distribution over the hyper-parameters and present the basics of those in the following sections.
 
 
-\section{Sampling Methods -- MCMC}
-The aim of sampling methods is to draw enough samples from the distribution of interest so that
-the distrnution can characterised with sample based methods
-Here we present the sampling methods/algorithms we are using.
-Generating a Markov-Chain $ (\bm{x}, \bm{\theta} )^{(0)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $ we accept and reject proposed samples to accurately calculate the sample mean.
-Ergodicity
+\section{Sampling Methods}
+In this section we present the sampling based methods used in this thesis to generate an ergodic Markov-Chain $ (\bm{x}, \bm{\theta} )^{(0)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $, where the samples $(\bm{x}, \bm{\theta} )^{(k)}$ are distributed as $\pi(\bm{x},\bm{\theta}| \bm{y}) $.
+Ergodicity is implied if an aperiodic and irreduce chain \ref{} proves to be reversible, then the chain converges and has a unique  equilibrium distribution.
+In other words if from a state in the chain we can reach every other state in the sampling space and the previous state, and we do not get stuck in periodic loop, then it converges.
+Instead of proving ergodicity we can in practise look e.g. at the output samples and their trace $\pi(\bm{x}^{(k)},\bm{\theta}^{(k)}| \bm{y})$ to see convergence.
 
+Then for large enough $N$ the samples based estimate of Eq. \ref{} and of any function $h(\bm{x}, \bm{\theta})$ is
 \begin{align}
 	\label{eq:sampMean}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})] \approx \frac{1}{N} \sum_{k=1}^{N} h (\bm{x}^{(k)}) \, ,
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}, \bm{\theta})] \approx \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)},\bm{\theta}^{(k)}) \, .
 \end{align}
+
+In practise of this thesis we use Markoc-chain Monte-Carlo (MCMC) methods on target distributions such as $\pi(\bm{\theta}| \bm{y})$ and so we will illustrate the sampling procedures for the following three subsections on that distribution.
 
 \subsection{Metropolis}
-Metropolis algorithm is special case of the Metropolis-Hastings algorithm, with a symmetric proposal distribution $q(\cdot|\cdot)$ \cite{}.
 
+The Metropolis algorithm is special case of the Metropolis-Hastings algorithm, with a symmetric proposal distribution $q(i|j) =q(j|i) $ \cite{}.
+
+The Metropolis-Hastings algorithm starts with a initial sample $\bm{\theta}^{(t)}$ at  at $t=0$.
+We propose a new sample $\bm{\theta}\sim q(\bm{\theta} | \bm{\theta}^{(t-1)})$ according to the proposal distribution $q(\bm{\theta} | \bm{\theta}^{(t-1)})$ given the previous state.
+Then accept the $ \bm{\theta}^{(t)} = \bm{\theta}$ with
 \begin{align}
-\alpha(\bm{\theta}^{(t)}  | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta}^{(t)}  | \bm{y}) \cdot 	q(\bm{\theta}^{(t-1)} | \bm{\theta})}{\pi(\bm{\theta}^{(t-1)}|  \bm{y}) \cdot q(\bm{\theta} | \bm{\theta}^{(t-1)})} \right\}= \min \left\{ 1, \frac{\pi(\bm{\theta}^{(t)}  | \bm{y}) }{\pi(\bm{\theta}^{(t-1)}| \bm{y})} \right\}
+\alpha(\bm{\theta} | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta} | \bm{y}) \cdot 	q(\bm{\theta}^{(t-1)} | \bm{\theta})}{\pi(\bm{\theta}^{(t-1)}|  \bm{y}) \cdot q(\bm{\theta} | \bm{\theta}^{(t-1)})} \right\}= \min \left\{ 1, \frac{\pi(\bm{\theta}  | \bm{y}) }{\pi(\bm{\theta}^{(t-1)}| \bm{y})} \right\}
 \end{align}
+or reject and set $\bm{\theta}^{(t)} = \bm{\theta}^{(t-1)}$.
+To assure convergence independent of the intial sample we discard samples after the so-called burn-in period and effectivally generate a Markov-Chain of length $N - N_{\text{burn-in}}$.
 
 \begin{algorithm}
 	\caption{Metropolis}
 	\begin{algorithmic}[1]
-		\STATE Initialize \( \bm{\theta}^{(0)} \).
+		\STATE Initialize \( \bm{\theta}^{(0)} \)
 		\FOR{ \( k = 1, \dots, N \)}
-		\STATE Propose \( \bm{\theta}^{(t)} \sim \mathcal{N}(\bm{\theta} | \bm{\theta}^{(t-1)}) \)
+		\STATE Propose \( \bm{\theta} \sim \mathcal{N}( \bm{\theta}^{(t-1)} , \bm{\Sigma} ) \)
 		\STATE Compute
-			\[ \alpha(\bm{\theta}^{(t)} | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta}^{(t)}  | \bm{y}) }{\pi(\bm{\theta}^{(t-1)}| \bm{y}) } \right\} \]
-		\STATE Accept and set \( \bm{\theta}^{(t)} = \bm{\theta} \) with probability \( \alpha(\bm{\theta}^{(t)}  | \bm{\theta}^{(t-1)}) \), otherwise set \(\bm{\theta}^{(t)} = \bm{\theta}^{(t-1)} \).
+			\[ \alpha(\bm{\theta} | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta}  | \bm{y}) }{\pi(\bm{\theta}^{(t-1)}| \bm{y}) } \right\} \]
+		\STATE Draw $u \sim \mathcal{U}(0,1)$
+		\IF{$\alpha \geq u$ }
+		\STATE Accept and set \( \bm{\theta}^{(t)} = \bm{\theta} \)
+		\ELSE  
+		\STATE Reject and set \(\bm{\theta}^{(t)} = \bm{\theta}^{(t-1)} \)
+		\ENDIF
 		\ENDFOR
+		\STATE Output: $ \bm{\theta}^{(0)}, \dots,  \bm{\theta}^{(k)} , \dots,   \bm{\theta}^{(N)} \sim \pi(\bm{\theta}| \bm{y}) $
 	\end{algorithmic}
 \end{algorithm}
 
+
+Since using a symmetric proposal distribution, Metropolis chains are reversible and as you can see in $\alpha(\bm{\theta} | \bm{\theta}^{(t-1)})$ converge towards $\pi(\bm{\theta}| \bm{y})$.
+A more mathematical prove of ergodicity can be found in \cite{}.
+
 \subsection{Gibbs}
+Each transition follows a specific rule: selecting one variable and sampling it from its conditional distribution while keeping the others fixed.
 \begin{algorithm}
 	\caption{Gibbs}
 	\begin{algorithmic}[1]
