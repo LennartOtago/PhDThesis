@@ -1,4 +1,4 @@
-\chapter{Theoretical Background}
+\chapter{Theoretical and Technical Background}
 
 \section{Forward Model}
 
@@ -83,11 +83,11 @@ The parameter $\bm{x}$ is distributed as the so-called posterior distribution $\
 \section{Bayesian Inference}
 In this this section we give a short introduction to Bayesian inference for a general parameter $\bm{x}$ given some data $\bm{y}$, later in section \ref{} we set up a more sophisticated Bayesian framework applied to the forward model in section \ref{}.
 
-We can visualize a measuremnt process through a hierarchiallly ordered directed acyclic graph (DAG), see Figure \ref{fig:FirstDAG}.
-As an observatory process naturally includes some random noise we classify the noise precision for example as hyper-parameters $\bm{\theta}$ as well as other hyperparameters influence the parmeters $\bm{x}$ detemernistaclly.
-Then through the forward model the parameters $\bm{x}$ are mapped onto the space of all measurables $\bm{u}$, from which we observe some data including noise as previoously described.
-This help us to inderstand correlation wiotin in the measiuremnt and modelling process.
-To inferer the underling parameters and hyperparmeters we follow the arrows backwards and set up a Bayesain hierachlly orded model.
+We can visualise the correlation structure of a measurement process through a hierarchiallly ordered directed acyclic graph (DAG), see Figure \ref{fig:FirstDAG}.
+As an observatory process naturally includes some random noise we include that in our DAG and classify the noise as a hyper-parameter in $\bm{\theta}$.
+Other hyper-parameters influence the parmeters $\bm{x}$ detemernistaclly, which are then mapped through the forward model onto the space of all measurables $\bm{u}$, from which we observe some data $\bm{y}$ including noise as previously mentioned.
+Drawing a DAG can help us to dependences within the measurement and modelling process.
+Given some data we inferer the distribution of the underling parameters and hyper-parameters by following the arrows in Figure \ref{} backwards and set up a Bayesain hierachlly ordered model.
 
 
 \begin{figure}[ht!]
@@ -120,6 +120,30 @@ To inferer the underling parameters and hyperparmeters we follow the arrows back
 	\label{fig:FirstDAG}
 \end{figure}
 
+\begin{figure}[ht!]
+	\centering
+	\begin{tikzpicture}
+		\node[roundnode2] at (0,3.5) (th)    {$\bm{\theta}$};
+		\node[roundnode2] at (0,1.5) (x)    {$\bm{x}$};
+		\node[roundnode2] at (0,-1.5) (u)    {$\bm{u}$};
+		\node[rectnode] at (0,-3.5) (y)    {$\bm{y}$};
+		
+		\draw[->, very thick] (th.south) -- (x.north); 
+		\draw[->, very thick] (x.south) -- (u.north); 
+		\draw[->, very thick, mydotted] (u.south) -- (y.north); 
+		\draw[->, very thick, mydotted] (th) edge[bend right=60] (y);  
+		
+		\node[align=center] at (3,3.5) (tht) {hyper-parameters};
+		\node[align=center] at (3,1.5) (xt) {parameters};
+		\node[align=center] at (1.1,0) (At) {$\bm{A}$ \quad forward model};
+		\node[align=center] at (3,-1.5) (ut) {space of all measurables};
+		\node[align=center] at (3,-3.5) (yt) {data};
+		\node[align=center] at (-3,0) (nt) {noise};
+	\end{tikzpicture}
+
+\end{figure}
+
+
 Within a linear Bayesian hierarchial model we need to define a likelihood function as well as distribution over the unknown parameters $\bm{x}$ and hyper-parameters $\bm{\theta}$.
 \begin{subequations}
 	\begin{align}
@@ -131,31 +155,31 @@ Within a linear Bayesian hierarchial model we need to define a likelihood functi
 \end{subequations}
 with the noise covariance matrix $\bm{\Sigma}(\bm{\theta})$, so that $\bm{\eta}  \sim \mathcal{N}(0, \bm{\Sigma}(\bm{\theta})) $ as in Eq. \ref{}, the prior precision matrix $\bm{Q}(\bm{\theta})$, prior mean $\bm{\mu}$
 and some prior distribution over the hyper-parameters $\pi(\bm{\theta})$.
-Trhough the prior distributions  $\pi(\bm{x}|\bm{y})$ and $\pi(\bm{\theta})$., we can incorpate functional depende ncies as well physical propetires.
-The likelhood function $\pi(\bm{y}|\bm{x}, \bm{\theta})$ includes information about how the parameters and hyper-parameters fit to the data according to our forward model and including the measurement process.
+Through sensibly choosing the prior distributions  $\pi(\bm{x}|\bm{y})$ as well as the hyper-parameters $\bm{\theta}$ and their prior distribution  $\pi(\bm{\theta})$, we can incorporate functional dependencies as well physical properties of the parameters.
+The likelhood function $\pi(\bm{y}|\bm{x}, \bm{\theta})$ is a measure of how the parameters and hyper-parameters fit to the data according to our forward model, including information of the measurement process.
 
 With a normally distributed prior and likelihood function this becomes a linear-Gaussian Bayesian hierarchical model.
-For more detailed byesiasn analys we recoomend \cite{}.
+For more detailed Bayesian analysis we recommend \cite{}.
 
-According to Bayes' theorem we focus on the posterior distribution
+The posterior distribution, the function of interest,
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \, ,
 \end{align}
-with the prior distribution $\pi(\bm{x}, \bm{\theta})$ and the normalising constant $\pi(\bm{y})$.
+is given according to Bayes' theorem \cite{}, with the prior distribution $\pi(\bm{x}, \bm{\theta})$ and the normalising constant $\pi(\bm{y})$.
 If the normalising constant is finite and non-zero we can approximate the posterior distribution
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, .
 \end{align}
 
-Then the expectation of any a function $h(\bm{x})$ can be described as 
+Then the expectation of any a function $h(\bm{x},\bm{\theta})$ can be described as 
 \begin{align}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})] =  \int \int   h(\bm{x}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}   \label{eq:expPos} \, ,
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})] =  \int \int   h(\bm{x},\bm{\theta}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}   \label{eq:expPos} \, ,
 \end{align}
 which is usually a high dimensional integral and computationally not feasible to solve.
 
 One way to work around the high dimensionality is to parameterise $\bm{x}$ using hyper-parameters $\bm{\theta}$ so that $\bm{x}(\bm{\theta})$. 
 Another way is to seperate the posterior distribution over latent field $\bm{x}$ and the hyper-parameters $\bm{\theta}$.
-This is particular benefitial, when $\bm{x}$ is high dimensional, e.g. $\bm{x} \in \mathbb{R}^n$ with $n = 45$, and can not be parametrised, and $\bm{\theta}$ is low dimensional, e.g. two dimensional.
+This is particular benefitial, when $\bm{x}$ is high dimensional, e.g. $\bm{x} \in \mathbb{R}^n$ with $n = 45$ and can not be parametrised, and $\bm{\theta}$ is low dimensional, e.g. two dimensional.
 
 
 \subsection{Marginal and then Conditional}
@@ -190,7 +214,7 @@ see section \ref{} or calculate weighted expectations of a function $h(\bm{x})$
 \end{align}
 with weights given by $\pi(\bm{\theta} | \bm{y} )$.
 \cite{}
-Note that the noise covariance $\bm{\Sigma}^{-1} = \bm{\Sigma}^{-1}( \bm{\theta}) $ and the prior precision $\bm{Q} = \bm{Q}( \bm{\theta})$ are dependent of hyper-parameters $\bm{\theta}$.
+Note that the noise covariance $\bm{\Sigma}^{-1} = \bm{\Sigma}^{-1}( \bm{\theta}) $ and the prior precision $\bm{Q} = \bm{Q}( \bm{\theta})$ are depending on hyper-parameters $\bm{\theta}$.
 
 In this thesis we will use sampling and deterministic methods to characterise the posterior distribution over the hyper-parameters and present the basics of those in the following sections.
 
@@ -215,11 +239,12 @@ The Metropolis algorithm is special case of the Metropolis-Hastings algorithm, w
 
 The Metropolis-Hastings algorithm starts with a initial sample $\bm{\theta}^{(t)}$ at  at $t=0$.
 We propose a new sample $\bm{\theta}\sim q(\bm{\theta} | \bm{\theta}^{(t-1)})$ according to the proposal distribution $q(\bm{\theta} | \bm{\theta}^{(t-1)})$ given the previous state.
-Then accept the $ \bm{\theta}^{(t)} = \bm{\theta}$ with
+Then accept and set $ \bm{\theta}^{(t)} = \bm{\theta}$ with
 \begin{align}
-\alpha(\bm{\theta} | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta} | \bm{y}) \cdot 	q(\bm{\theta}^{(t-1)} | \bm{\theta})}{\pi(\bm{\theta}^{(t-1)}|  \bm{y}) \cdot q(\bm{\theta} | \bm{\theta}^{(t-1)})} \right\}= \min \left\{ 1, \frac{\pi(\bm{\theta}  | \bm{y}) }{\pi(\bm{\theta}^{(t-1)}| \bm{y})} \right\}
+\alpha(\bm{\theta} | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta}  | \bm{y}) q(\bm{\theta}^{(t-1)} | \bm{\theta})  }{\pi(\bm{\theta}^{(t-1)}| \bm{y}) q(\bm{\theta} | \bm{\theta}^{(t-1)}) } \right\}
 \end{align}
-or reject and set $\bm{\theta}^{(t)} = \bm{\theta}^{(t-1)}$.
+or reject and keep $\bm{\theta}^{(t)} = \bm{\theta}^{(t-1)}$, which we do by comparing $\alpha$ to a uniform random number $u \sim \mathcal{U}(0,1)$.
+Note that symmetrical proposal distribution $q(\bm{\theta} | \bm{\theta}^{(t-1)}) = q(\bm{\theta}^{(t-1)} | \bm{\theta}) $ cancel, then we call that a Metropolis-algorithm \cite{}.
 To assure convergence independent of the intial sample we discard samples after the so-called burn-in period and effectivally generate a Markov-Chain of length $N - N_{\text{burn-in}}$.
 
 \begin{algorithm}
@@ -227,14 +252,14 @@ To assure convergence independent of the intial sample we discard samples after 
 	\begin{algorithmic}[1]
 		\STATE Initialize \( \bm{\theta}^{(0)} \)
 		\FOR{ \( k = 1, \dots, N \)}
-		\STATE Propose \( \bm{\theta} \sim \mathcal{N}( \bm{\theta}^{(t-1)} , \bm{\Sigma} ) \)
+		\STATE Propose \( \bm{\theta} \sim q(\bm{\theta} | \bm{\theta}^{(t-1)}) = q(\bm{\theta}^{(t-1)} | \bm{\theta}) \)
 		\STATE Compute
-			\[ \alpha(\bm{\theta} | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta}  | \bm{y}) }{\pi(\bm{\theta}^{(t-1)}| \bm{y}) } \right\} \]
+			\[ \alpha(\bm{\theta} | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta}  | \bm{y}) \cancel{q(\bm{\theta}^{(t-1)} | \bm{\theta}) } }{\pi(\bm{\theta}^{(t-1)}| \bm{y}) \cancel{q(\bm{\theta} | \bm{\theta}^{(t-1)})} } \right\} \]
 		\STATE Draw $u \sim \mathcal{U}(0,1)$
 		\IF{$\alpha \geq u$ }
 		\STATE Accept and set \( \bm{\theta}^{(t)} = \bm{\theta} \)
 		\ELSE  
-		\STATE Reject and set \(\bm{\theta}^{(t)} = \bm{\theta}^{(t-1)} \)
+		\STATE Reject and keep \(\bm{\theta}^{(t)} = \bm{\theta}^{(t-1)} \)
 		\ENDIF
 		\ENDFOR
 		\STATE Output: $ \bm{\theta}^{(0)}, \dots,  \bm{\theta}^{(k)} , \dots,   \bm{\theta}^{(N)} \sim \pi(\bm{\theta}| \bm{y}) $
@@ -242,11 +267,16 @@ To assure convergence independent of the intial sample we discard samples after 
 \end{algorithm}
 
 
-Since using a symmetric proposal distribution, Metropolis chains are reversible and as you can see in $\alpha(\bm{\theta} | \bm{\theta}^{(t-1)})$ converge towards $\pi(\bm{\theta}| \bm{y})$.
-A more mathematical prove of ergodicity can be found in \cite{}.
+Since the proposal distribution is symmetric, Metropolis chains are reversible and as you can see in $\alpha(\bm{\theta} | \bm{\theta}^{(t-1)})$ converge towards $\pi(\bm{\theta}| \bm{y})$.
+A more mathematical prove of ergodicity for the general Metropolis-Hastings algorithm can be found in \cite{}.
 
-\subsection{Gibbs}
-Each transition follows a specific rule: selecting one variable and sampling it from its conditional distribution while keeping the others fixed.
+\subsection{Gibbs Sampling}
+Gibb sampling is a special case of the metropolis hastings algorihtm with the acceptance probaility of 1.
+In Gibbs sampling according to \cite{} we move one directional by fixing all other direction.
+
+Assume $\bm{\theta} \in \mathbb{R}^d$ is d-dimesnional and $\{\bm{\theta}_{<j}, \bm{\theta}_{>j} \}  = \{\bm{\theta}_{1}, \dots, \bm{\theta}_{j-1}, \bm{\theta}_{j+1}, \dots, \bm{\theta}_{d} \} $ denotes all dimesnions except $ \bm{\theta}_{j}$.
+Then to draw a new sample $\bm{\theta}^{(t)}$, we iterate through each dimension to draw a sample $\bm{\theta}_j^{(t)} \sim  \pi(\bm{\theta}_j | \bm{\theta}_{<j}, \bm{\theta}_{>j} , \bm{y} )$ from the conditional distribution.
+
 \begin{algorithm}
 	\caption{Gibbs}
 	\begin{algorithmic}[1]
@@ -254,23 +284,27 @@ Each transition follows a specific rule: selecting one variable and sampling it 
 		\FOR{ \( k = 1, \dots, N \)}
 		\FOR{ \( j = 1, \dots, d \)}
 		\STATE Draw \(\bm{\theta}_j^{(t)} \sim  \pi(\bm{\theta}_j | \bm{\theta}_{<j}, \bm{\theta}_{>j} , \bm{y} )\) 
-
 		\ENDFOR
 		\ENDFOR
+		\STATE Output: $ \bm{\theta}^{(0)}, \dots,  \bm{\theta}^{(k)} , \dots,   \bm{\theta}^{(N)} \sim \pi(\bm{\theta}| \bm{y}) $
 	\end{algorithmic}
 \end{algorithm}
 
-$ \bm{\theta}_{<j} = \{\bm{\theta}_{1}, \dots, \bm{\theta}_{j-1} \} $ 
-$ \bm{\theta}_{>j} = \{\bm{\theta}_{j+1}, \dots, \bm{\theta}_{d}\} $which denotes all dimesnions except $ \bm{\theta}_{j}$
+If the target distribution is well behaved $\pi(\bm{\theta}_j | \bm{\theta}_{<j}, \bm{\theta}_{>j} , \bm{y} ) > 0$ in the sampling space the chain produced by the gibbs sampling algorithm is aperiodic and ireducabile.
+We can also show that the criterium, the detailed balance condition, for reveribility is met \cite{}.
+Then a Gibbs sampler prodices an ergodic markov chain.
+
+
 \subsection{t-walk}
-We use the t-walk sampler as a black box sampling algorithm
-\cite{}, so it prodices a ergodic markov chain
+We use the t-walk sampler developed By Christens and Fox as a black box sampler\cite{}.
+Within the t-walk there are three differnt moves in the sampling space availbe and by construction of the t-walk is ergodic, see section \cite{}.
 
 
-\subsection{Draw a sample from the Conditional posterior distribution -- RTO}
-In the case of marginalising out the latent field we use a smaple of choice to genrate a amrkov chain.
-Then we can draw a sample from that markov chain and condition on it so that we can draw a sample from the 
-As the full conditional distribution for $\bm{x}| \bm{y} , \bm{\theta} $ is a normal distribution we can rewrite to:
+\subsection{Draw a sample from a multivariate normal distribution}
+for Linear Gaussian Bayesian hierarchical model We need to draw a sample from the multivariate normal distribution.
+We can do this using the radomize then optimise (RTO) method \cite{}, with a perturb exponential.
+
+In this thesis we use the RTO method to draw a sample from the full conditional distribution $\pi( \bm{x}| \bm{y} , \bm{\theta} )$, see section \ref{}, which is a normal distribution we can rewrite to:
 \begin{align}
 	\pi(\bm{x}|\bm{y}, \bm{\theta} ) &\propto \pi(\bm{y} | \bm{x} , \bm{\theta} ) \pi(\bm{x}| \bm{\theta}) \\
 	&= \exp  \lVert \hat{\bm{A}} \bm{x} - \hat{\bm{y}} \rVert^2 \, ,
@@ -286,84 +320,114 @@ where
 	\begin{bmatrix}
 		\bm{\Sigma}^{-1/2}(\bm{\theta})  \bm{y} \\
 		\bm{Q}^{1/2}(\bm{\theta}) \bm{\mu}
-	\end{bmatrix} \, .
+	\end{bmatrix} \, \text{\cite{}}.
 \end{align}
-One sample from the posterior can be computed by minimizing the following equation with respect to $\hat{\bm{x}}$ :
+
+Then one sample can be computed by minimising the following equation with respect to $\hat{\bm{x}}$ :
 \begin{align}
 	\bm{x}_i = \arg \min_{\hat{\bm{x}}} \lVert \hat{\bm{A}} \hat{\bm{x}} - ( \hat{\bm{y}} + \bm{\eta} ) \rVert^2 , \quad \bm{\eta} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
 \end{align}
-where we add a randomized perturbation $\bm{\eta}$.
+where we add a randomised perturbation $\bm{\eta}$.
 Next, we substitute $ - \hat{\bm{A}}^T  \bm{\eta}  = \bm{v}_1 + \bm{v}_2$ we can rewrite the argument of Eq. \ref{eq:minimizer} to 
 \begin{align}
 	\label{eq:RTO}
-	(\bm{A}^T \bm{\Sigma}^{-1} \bm{A}+
-	\bm{Q} ) \bm{x}_i &= \bm{A}^T \bm{\Sigma}^{-1} \bm{y} +  \bm{Q} \bm{\mu} + \bm{v}_1 + \bm{v}_2 \,  ,
+	(\bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A}+
+	\bm{Q}(\bm{\theta}) ) \bm{x}_i &= \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{y} +  \bm{Q}(\bm{\theta}) \bm{\mu} + \bm{v}_1 + \bm{v}_2 \,  ,
 \end{align}
-where $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}^T \bm{\Sigma}^{-1} \bm{A}) $ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q} )$ are independent random variables.
-Finally, we can draw an independent sample from the posterior $(\bm{x}_i, \bm{\theta}_i) \sim \pi(\bm{x}, \bm{\theta} | \bm{y})$.
+where $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A}) $ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}(\bm{\theta}) )$ are independent random variables \cite{}.
 
 
-\section{Numerical Approxiamtion Methods}
-To approximate multi dimesnioan functions we can use the tensor train format to approximate marginal funcitons
+\section{Numerical Approxiamtion Methods - Tensor Train}
+Using the tensor train format to approximate multidimensional functions  $\pi$ enables us to compute marginal posterior probability distribution cheaply.
+As the name suggest the tensor train format is a train of tensors, more specifically two and three dimensional tensors which we call cores $\pi_{k}$ and which are connected through a rank $r$.
+As in Figure \ref{} displayed, each tensor $\pi_{k} \in \mathbb{R}^{r_{k-1} \times n \times r_{k}}$  of a $d$ - dimensional space is basically a three dimesnional matrix, for $k = 1 ,\dots, d$.
+gridsize $n$
+In the first and last dimension we have two dimensional tensor where $r_0  = r_d = 1$.
 
 
 
-\subsection{Tensor Train}
 
-One of the main contributions of this paper is to show that the conditional distribution method is feasible, and efficient, once a PDF has been put into TT format. This section presents those calculations.
+\begin{figure}[ht!]
+	\centering
+\begin{tikzpicture} 
+	\node[rectnode] at (-5,0) (T1)    {$1 \times n \times r_1$};
+	\node[rectnode] at (-2,0) (T2)    {$r_1 \times n \times r_{2}$};
+	
+	\node[rectnode] at (3,0) (Tn1)    {$r_{d-2} \times n \times r_{d-1} $};
+	\node[rectnode] at (6.75,0) (Tn)    {$r_{d-1} \times n \times 1$};
+	\draw[-, very thick] (T1.east) -- (T2.west); 
+	\draw[-, very thick] (Tn.west) -- (Tn1.east); 
+	\draw[-, mydotted, very thick] (T2.east) -- (Tn1.west);
+	
+	\node[align=center] at (-3.5,0.25) (R) {$r_1$};
+	\node[align=center] at (5,0.25) (R) {$r_{d-1}$};
+	
+\end{tikzpicture} 
+\caption{text}
+\label{key}
+	
+\end{figure}
 
-First, we describe the computation of the marginal PDFs \( p_k \), defined in (2), given \( \pi \) in a TT format (3). Note that integrals over the variable \( x_k \) appear in all conditionals (2) with \( k < d \). The TT format allows computing the \( r_{k-1} \times 1 \) vector \( P_k \) required for evaluating the marginal PDF \( p_{k-1} \) by the following algorithm:
 
-\begin{algorithm}
-	\caption{Computation of marginal PDFs}
-	\begin{algorithmic}[1]
-		\STATE Initialize \( P_{d+1} = 1 \).
-		\FOR{ \( k = d, d-1, \dots, 2 \)}
-		\STATE Compute
-		\[
-		(P_k)_{\alpha_{k-1}} =
-		\sum_{\alpha_k=1}^{r_k} \left( \int_{\mathbb{R}} \pi^{(k)}_{\alpha_{k-1},\alpha_k} (x_k) \, dx_k \right) (P_{k+1})_{\alpha_k}
-		\]
-		\ENDFOR
-	\end{algorithmic}
-\end{algorithm}
+\begin{figure}[ht!]
+	\centering
 
-Since \( \pi^{(k)}(x_k) \in \mathbb{R}^{r_{k-1} \times r_k} \) for each fixed \( x_k \), the integral \( \int \pi^{(k)}(x_k)dx_k \) is a \( r_{k-1} \times r_k \) matrix, where \( \alpha_{k-1} \) is the row index and \( \alpha_k \) is the column index. Hence, we can write Line 3 as the matrix–vector product:
+	\caption{nice matries picture}
+	\label{key}
+	
+\end{figure}
 
-\[
-P_k = \left( \int_{\mathbb{R}} \pi^{(k)}(x_k)dx_k \right) P_{k+1}.
-\]
 
-Assuming \( n \) quadrature points for each \( x_k \), and the uniform rank bound \( r_k \leq r \), the asymptotic complexity of this algorithm is \( O(dnr^2) \).
+Then we find the marginal function by integrating over each of the cores
+\begin{align}
+	\begin{split}
+	f_{X_k}(x_k) = 
+	\Big|  &\left( \int_{\mathbb{R}} \pi_{1}(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \pi_{k-1}(x_{k-1})\text{d}x_{k-1} \right) \\ & \quad{} \pi_{k}(x_k) \left( \int_{\mathbb{R}} \pi_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \pi_{d}(x_d)\text{d}x_d \right) \Big| \, .
+	\end{split} 
+\end{align}
+define
+\\
 
-The first marginal PDF is approximated by \( p^*_1(x_1) = |\pi^{(1)}(x_1) P_2| \). We take the absolute value because the TT approximation \( \pi^* \) (and hence, \( \pi^{(1)}(x_1) P_2 \)) may be negative at some locations. In the \( k \)-th step of the sampling procedure, the marginal PDF also requires the first \( k-1 \) TT blocks, restricted to the components of the sample that are already determined:
 
-\[
-p^*_k(x_1, \dots, x_{k-1}|x_k) = \left| \pi^{(1)}(x_1) \cdots \pi^{(k-1)}(x_{k-1}) \pi^{(k)}(x_k) P_{k+1} \right|.
-\]
+For more numerical stability we approximate the square root of $\sqrt{\pi}$, where the tt-cross \cite{} gives us the cores $\bm{A}_k$.
+We follow the noitation of \cite{} closely.
 
-However, since the loop goes sequentially from \( k = 1 \) to \( k = d \), the sampled TT blocks can be accumulated in the same fashion as the integrals \( P_k \). Again, we take the absolute value to ensure positivity.
 
-The \textbf{full} marginals are then defined as:
-\[
-p^*_k(x_k) = \left|  \left( \int_{\mathbb{R}} \pi^{(1)}(x_1)dx_{1} \right) \cdots \left( \int_{\mathbb{R}} \pi^{(k-1)}(x_{k-1})dx_{k-1} \right)  \pi^{(k)}(x_k) \left( \int_{\mathbb{R}} \pi^{(k+1)}(x_{k+1})dx_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \pi^{(d)}(x_d)dx_{d} \right) \right|.
-\]
-
-\section{SIRT - Marginal Functions and Conditional PDFs}
-We represent each TT core of the decomposition in (18) as
+ and $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the associated $k$-th coefficient tensor. For the $k$-th set of basis functions, we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ by
 \begin{equation}
-	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, ..., d,
+	\bm{M}_k[i, j] = \int_{X_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \lambda(x_k) \,dx_k, \quad i = 1, ..., n_k, \quad j = 1, ..., n_k,
 \end{equation}
-where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ is the set of basis functions for the $k$-th coordinate and $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the associated $k$-th coefficient tensor. For the $k$-th set of basis functions, we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ by
+where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ is the set of basis functions for the $k$-th coordinate.
+In the case of cartesian basis with $\lambda= 1$ M is the identity matrix, which we need to compute the marginals.
+For a boundend Parameter space we consider the weihtin funcitn $\lambda(x) = 1$
+lesbegue measure 
+\subsection{Marginal Functions}
+
+We define$ \gamma^{\prime}$
+
+The marginal PDF of $X_1$ can be expressed as
 \begin{equation}
-	\bm{M}_k[i, j] = \int_{X_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \lambda(x_k) \,dx_k, \quad i = 1, ..., n_k, \quad j = 1, ..., n_k.
+	f_{X_1}(x_1) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=2}^{d} \lambda_i(X_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \lambda_1(x_1),
 \end{equation}
+where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$.\\
+The marginal PDF of $X_n$ can be expressed as
+\begin{equation}
+	f_{X_n}(x_n) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{d-1} \lambda_i(X_i) + \sum_{l_{n-1}=1}^{r_{n-1}} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_n[l_{n-1},i] \right)^2 \right) \lambda_n(x_n),
+\end{equation}
+where $\bm{D}_n[l_{n-1},i] = \bm{B}_{pre,n}[l_{n-1}, i, \alpha_n]$ and $\alpha_n = 1$.
 
 
-\section{right to left}
 
-\begin{prop}
-	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. Suppose for the first $k$ dimensions ($d > k\geq  1$), we have a coefficient tensor $\bm{B}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ that defines a marginal function $\pi_{\leq k}(x_{\leq k})$ as in (??). The following procedure \textbf{can} be used to obtain the coefficient tensor $\bm{B}_{k-1} \in \mathbb{R}^{r_{k-2} \times n_{k-1} \times r_{k-1}}$ for defining the next marginal function $\pi_{<k}(x_{<k})$:
+We caclute the amtrixes $\bm{B}_k$ through backward marginalisation and  $\bm{B}_{pre,n}$
+
+Through process called orthogonalisation \cite{} as used in \cite{}.
+
+
+
+
+This subsection to caculte $\bm{B}_k$  is taken from \cite{}.
+\begin{prop}[Backward Marginalisation]
+	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k-1} \in \mathbb{R}^{r_{k-2} \times n_{k-1} \times r_{k-1}}$, which we need for defining the marginal function $f_{X_k}(x_k)$:
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
 		\begin{equation}
@@ -380,14 +444,12 @@ where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ is the set of basis functions for the 
 	\end{enumerate}
 \end{prop}
 
+Then we need to do this the other way as well.
 
 
-
-
-\section{left to right}
-
-\begin{prop}
-	Starting with the first coordinate $k = 1$, we set $\bm{B}_{pre,1} = \bm{A}_1$. Suppose for the last $k$ dimensions ($k < d$), we have a coefficient tensor $\bm{B}_{pre,k} \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ that defines a marginal function $\pi_{\leq k}(x_{\leq k})$ as in (??). The following procedure \textbf{can} be used to obtain the coefficient tensor $\bm{B}_{pre,k+1} \in \mathbb{R}^{r_{k} \times n_{k+1} \times r_{k+1}}$ for defining the next marginal function $\pi_{>k}(x_{>k})$:
+In addiotn we also have to  do forward marginalistion starig with the first dimension
+\begin{prop}[Forward Marginalistaion]
+	Starting with the first coordinate $k = 1$, we set $\bm{B}_{pre,1} = \bm{A}_1$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{pre,k+1} \in \mathbb{R}^{r_{k} \times n_{k+1} \times r_{k+1}}$ for defining the marginal function $f_{X_k}(x_k)$:
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
 		\begin{equation}
@@ -403,27 +465,14 @@ where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ is the set of basis functions for the 
 		\end{equation}
 	\end{enumerate}
 \end{prop}
-\section{Calc Marginals}
-\begin{prop}
-	The marginal PDF of $X_1$ can be expressed as
-	\begin{equation}
-		f_{X_1}(x_1) = \frac{1}{z} \left(\gamma \prod_{i=2}^{d} \lambda_i(X_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \lambda_1(x_1),
-	\end{equation}
-	where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$.\\
-	The marginal PDF of $X_n$ can be expressed as
-	\begin{equation}
-		f_{X_n}(x_n) = \frac{1}{z} \left(\gamma \prod_{i=1}^{d-1} \lambda_i(X_i) + \sum_{l_{n-1}=1}^{r_{n-1}} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_n[l_{n-1},i] \right)^2 \right) \lambda_n(x_n),
-	\end{equation}
-	where $\bm{D}_n[l_{n-1},i] = \bm{B}_{pre,n}[l_{n-1}, i, \alpha_n]$ and $\alpha_n = 1$.
-	
-	The marginal PDF of $X_{k}$ can be expressed as
-	\begin{equation}
-		f_{X_k}(x_k) = \frac{1}{\pi_{<k}(x_{<k}) \pi_{>k}(x_{>k})} \left(\gamma \prod_{i=1}^{k-1} \lambda_i(X_i) \prod_{i=k+1}^{d} \lambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \lambda_k(x_k),
-	\end{equation}
-	where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and $\bm{R}_{pre,k-1}\in \mathbb{R}^{r_{k-1} \times r_{k-1}}$ and $\bm{B}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$
-	\begin{equation}
-		\bm{D}_k[l_{k-1},i,l_k] = \sum_{\alpha_{k-1}=1}^{r_{k-1}}  \bm{R}_{pre,k-1}[l_{k-1}, \alpha_{k-1}] \bm{B}_k[\alpha_{k-1}, i, l_k].
-	\end{equation}
-\end{prop}
 
 
+
+The marginal PDF of $X_{k}$ can be expressed as
+\begin{equation}
+	f_{X_k}(x_k) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{k-1} \lambda_i(X_i) \prod_{i=k+1}^{d} \lambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \lambda_k(x_k),
+\end{equation}
+where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and $\bm{R}_{pre,k-1}\in \mathbb{R}^{r_{k-1} \times r_{k-1}}$ and $\bm{B}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$
+\begin{equation}
+	\bm{D}_k[l_{k-1},i,l_k] = \sum_{\alpha_{k-1}=1}^{r_{k-1}}  \bm{R}_{pre,k-1}[l_{k-1}, \alpha_{k-1}] \bm{B}_k[\alpha_{k-1}, i, l_k].
+\end{equation}

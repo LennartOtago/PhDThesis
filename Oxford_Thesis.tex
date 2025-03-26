@@ -34,8 +34,22 @@
 \usepackage{csquotes}
 
 \usepackage{algorithmic}
-\newtheorem{prop}{Proposition}
+%\newtheorem{prop}{Proposition}
+\usepackage{amsthm}
+\usepackage{mdframed}
+\newtheoremstyle{theoremdd}% name of the style to be used
+{\topsep}% measure of space to leave above the theorem. E.g.: 3pt
+{\topsep}%{\topsep}% measure of space to leave below the theorem. E.g.: 3pt
+{}% name of font to use in the body of the theorem
+{0pt}% measure of space to indent
+{\bfseries}% name of head font
+{: }% punctuation between head and body
+{ }% space after theorem head; " " = normal interword space
+{\thmname{#1}\thmnumber{ #2}\textnormal{\thmnote{ (#3)}}}
 
+\theoremstyle{theoremdd}
+%\newtheorem{prop}{Proposition}
+\newmdtheoremenv{prop}{Proposition}
 
 %%%%% SELECT YOUR DRAFT OPTIONS
 % Three options going on here; use in any combination.  But remember to turn the first two off before
@@ -212,6 +226,9 @@
 \definecolor{circ}{RGB}{50,220, 0}
 \definecolor{squa}{RGB}{255,193,7}
 \definecolor{tri}{RGB}{216,27,96}
+
+
+
 
 %%%%% THE ACTUAL DOCUMENT STARTS HERE
 \begin{document}
