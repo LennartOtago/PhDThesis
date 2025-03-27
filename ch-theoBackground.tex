@@ -218,12 +218,82 @@ Note that the noise covariance $\bm{\Sigma}^{-1} = \bm{\Sigma}^{-1}( \bm{\theta}
 
 In this thesis we will use sampling and deterministic methods to characterise the posterior distribution over the hyper-parameters and present the basics of those in the following sections.
 
+\section{Regularisation}
+
+Data
+
+linear problem
+\begin{align}
+	\bm{y} = \bm{A}\bm{x} + \bm{\eta}
+\end{align}
+
+\begin{align}
+	\left\lVert \bm{y} - \bm{A}\bm{x}  \right\rVert^2
+\end{align}
+data misfit norm
+
+solution semi norm
+
+\begin{align}
+	\lambda \left\lVert \bm{x}\bm{L}\bm{x}  \right\rVert^2
+\end{align}
+$\lambda \geq 0$
+
+\begin{align}
+	\text{arg min} \left\lVert \bm{y} - \bm{A}\bm{x}  \right\rVert^2 + \lambda \left\lVert \bm{T}\bm{x}  \right\rVert^2
+\end{align}
+Derivative of solution
+With $   \bm{T}^T \bm{T} = \bm{L}$
+\begin{align}
+	\text{arg min} \left\lVert \bm{y} - \bm{A}\bm{x}  \right\rVert^2 + \lambda \bm{x}^T  \bm{L}\bm{x} 
+\end{align}
+
+minizer function
+
+L graph lapacian for example see late what we choose
+
+Typically, L is the identity matrix or
+a banded matrix approximation to the (n  p)th derivative.
+
+to the 2nd derivative
+
+
+
+
+The primary difficulty with linear ill-posed problems is that the inverse image is undetermined
+due to small (or zero) singular values of A. Actually the situation is a little worse in practice
+because A depends on our model of the measurement process and that is typically not
+precisely known, leading to a slight imprecision in the singular values. Usually that is not
+significant for the large singular values, but may lead to ambiguity in the small singular values
+so that we do not know if they are small or zero.
+As an introduction to regularization, which is one method for surmounting the problems
+associated with small singular vectors, we consider a framework for describing the quality of
+a reconstruction fin an inverse problem.
+3.1
+The data misfit and the solution semi-norms
+In the last chapter, we considered the linear problem
+d = Af  n
+and focused on the structure of the operator A
+ . As far as the data are concerned, areconstructed image is good provided that it gives rise to ‘mock data’ A which are closeto the observed data. Thus, one of the quantities for measuring the quality of fis the data
+misfit function which is usually the square of the residual norm
+
+
+Since the data do not give us any information about some aspects of f , it is necessary to
+include additional information which allows us to select from among several feasible recon-
+structions. Analytical solutions are available if we choose sufficiently simple criteria. One way
+of doing this is to introduce a second function representing our aversion to a particular
+49reconstruction. For example, we may decide that the solution having minimum norm should
+be chosen from among the feasible set. This can be done by choosing
+
+
 
 \section{Sampling Methods}
 In this section we present the sampling based methods used in this thesis to generate an ergodic Markov-Chain $ (\bm{x}, \bm{\theta} )^{(0)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $, where the samples $(\bm{x}, \bm{\theta} )^{(k)}$ are distributed as $\pi(\bm{x},\bm{\theta}| \bm{y}) $.
 Ergodicity is implied if an aperiodic and irreduce chain \ref{} proves to be reversible, then the chain converges and has a unique  equilibrium distribution.
 In other words if from a state in the chain we can reach every other state in the sampling space and the previous state, and we do not get stuck in periodic loop, then it converges.
 Instead of proving ergodicity we can in practise look e.g. at the output samples and their trace $\pi(\bm{x}^{(k)},\bm{\theta}^{(k)}| \bm{y})$ to see convergence.
+
+Ergodicity important so that we can from the sample based estimate
 
 Then for large enough $N$ the samples based estimate of Eq. \ref{} and of any function $h(\bm{x}, \bm{\theta})$ is
 \begin{align}
@@ -338,11 +408,9 @@ where $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) 
 
 
 \section{Numerical Approxiamtion Methods - Tensor Train}
-Using the tensor train format to approximate multidimensional functions  $\pi$ enables us to compute marginal posterior probability distribution cheaply.
-As the name suggest the tensor train format is a train of tensors, more specifically two and three dimensional tensors which we call cores $\pi_{k}$ and which are connected through a rank $r$.
-As in Figure \ref{} displayed, each tensor $\pi_{k} \in \mathbb{R}^{r_{k-1} \times n \times r_{k}}$  of a $d$ - dimensional space is basically a three dimesnional matrix, for $k = 1 ,\dots, d$.
-gridsize $n$
-In the first and last dimension we have two dimensional tensor where $r_0  = r_d = 1$.
+Using the tensor train format to approximate a $d$-dimensional function $\pi(x)$ enables us to compute marginal posterior probability distribution cheaply.
+As the name suggest the tensor train format is a train of tensors, more specifically two and three dimensional tensors which we call cores $\pi_{k} \in \mathbb{R}^{r_{k-1} \times n \times r_{k}}$  and which are connected through a ranks $r_{k}$ and $r_{k-1}$ for the $k$th dimension and defined by the number of gridpoints $n$, as in Figure \ref{} displayed.
+For the first and last dimensional core the outer ranks are $r_0  = r_d = 1$.
 
 
 
@@ -378,54 +446,71 @@ In the first and last dimension we have two dimensional tensor where $r_0  = r_d
 \end{figure}
 
 
-Then we find the marginal function by integrating over each of the cores
+The approximated marginal target function
 \begin{align}
 	\begin{split}
-	f_{X_k}(x_k) = 
-	\Big|  &\left( \int_{\mathbb{R}} \pi_{1}(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \pi_{k-1}(x_{k-1})\text{d}x_{k-1} \right) \\ & \quad{} \pi_{k}(x_k) \left( \int_{\mathbb{R}} \pi_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \pi_{d}(x_d)\text{d}x_d \right) \Big| \, .
+	f_{X_k}(x_k) = \frac{1}{z}
+	\Big|  &\left( \int_{\mathbb{R}} \pi_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \pi_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \qquad \pi_{k}(x_k)\uplambda_k(x_{k}) \\ &\quad \left( \int_{\mathbb{R}} \pi_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \pi_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Big| \, ,
 	\end{split} 
 \end{align}
-define
+is given by integration over each core, where $k$th is in $\mathbb{R}^{r_{k-1} \times r_{k}}$ and z is some normalising constant.
+Here we introduce some Lebesgue measurable weight function  $\uplambda(x) = \prod^d_{i=1} \uplambda_i(x_i)$.
+Why? \cite{}.
 \\
 
 
-For more numerical stability we approximate the square root of $\sqrt{\pi}$, where the tt-cross \cite{} gives us the cores $\bm{A}_k$.
-We follow the noitation of \cite{} closely.
-
-
- and $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the associated $k$-th coefficient tensor. For the $k$-th set of basis functions, we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ by
+%%%%%% Squared and Basis Function %%%%%
+From here the notation and procedure is taken mostly from \cite{}.
+For numerical stability we can approximate the sqaure root of
+\begin{align}
+	\sqrt{\pi(x)} \approx \tilde{g}(x) = \bm{G}_1(x_1), \dots ,  \bm{G}_k(x_k), \dots ,  \bm{G}_d(x_d)
+\end{align}
+where the TT-core
 \begin{equation}
-	\bm{M}_k[i, j] = \int_{X_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \lambda(x_k) \,dx_k, \quad i = 1, ..., n_k, \quad j = 1, ..., n_k,
+	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, ..., d,
+\end{equation}
+with the associated $k$th coefficient tensor $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and the $k$-th  basis functions $\phi^{(i)}_k(x_k)$.
+
+We assume the function
+\begin{align}
+	\pi(x) \approx \gamma^{\prime} + g^2(x) \, ,
+\end{align} 
+where $g(x)$ is defined through the tensor train decomposition plus an error $\gamma^{\prime}$  according to the l2 norm.
+Then the normalised target function is 
+\begin{align}
+	f_X(x) = \frac{1}{z} \pi(x) \uplambda(x) = \frac{1}{z} ( \gamma^{\prime} \uplambda(x) + g^2(x) \uplambda(x))
+\end{align} 
+with a normalisation constant $z$.
+Consquently the approximated marginal functions can be expressed as
+\begin{align}
+	\begin{split}
+		f_{X_k}(x_k) = \frac{1}{z}  \Bigg( \gamma^{\prime}& \prod_{i=1}^{k-1} \uplambda_i(\mathcal{X}_i) \prod_{i=k+1}^{d} \uplambda_i(\mathcal{X}_i) \\&+  \left( \int_{\mathbb{R}} \bm{G}^2_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \bm{G}^2_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \bm{G}^2_{k}(x_k)\uplambda_k(x_{k})\\ & \left( \int_{\mathbb{R}}  \bm{G}^2_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \bm{G}^2_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Bigg) \, ,
+	\end{split} 
+\end{align}
+where $\uplambda_k( \mathcal{X}_k) = \int_{ \mathcal{X}_k} \uplambda_k (x_k) \text{d}x_k$.
+
+To effeciently calculate these marginals on can us a procedure which is called left and right orthogonalization of cores \cite{} [32].
+To do so we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ by
+\begin{equation}
+	\bm{M}_k[i, j] = \int_{X_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k)  \uplambda(x_k) \,dx_k, \quad i = 1, ..., n_k, \quad j = 1, ..., n_k,
 \end{equation}
 where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ is the set of basis functions for the $k$-th coordinate.
-In the case of cartesian basis with $\lambda= 1$ M is the identity matrix, which we need to compute the marginals.
-For a boundend Parameter space we consider the weihtin funcitn $\lambda(x) = 1$
-lesbegue measure 
+%In the case of cartesian basis with $\uplambda= 1$ M is the identity matrix, which we need to compute the marginals.
+%For a boundend Parameter space we consider the weihtin funcitn $\uplambda(x) = 1$
+
+
+
+
 \subsection{Marginal Functions}
 
-We define$ \gamma^{\prime}$
-
-The marginal PDF of $X_1$ can be expressed as
-\begin{equation}
-	f_{X_1}(x_1) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=2}^{d} \lambda_i(X_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \lambda_1(x_1),
-\end{equation}
-where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$.\\
-The marginal PDF of $X_n$ can be expressed as
-\begin{equation}
-	f_{X_n}(x_n) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{d-1} \lambda_i(X_i) + \sum_{l_{n-1}=1}^{r_{n-1}} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_n[l_{n-1},i] \right)^2 \right) \lambda_n(x_n),
-\end{equation}
-where $\bm{D}_n[l_{n-1},i] = \bm{B}_{pre,n}[l_{n-1}, i, \alpha_n]$ and $\alpha_n = 1$.
-
-
-
-We caclute the amtrixes $\bm{B}_k$ through backward marginalisation and  $\bm{B}_{pre,n}$
-
-Through process called orthogonalisation \cite{} as used in \cite{}.
+We calculate the marginal functions through procedures, which we call backward marginalisation \cite{} and forward marginalisation.
+We gain the coefficient matrices $\bm{B}_k$ through backward marginalisation and the coefficient matrices $\bm{B}_{pre,n}$ through forward marginalisation, which enables us to calculate marginal fuunction similar to \cite{}.
 
 
 
 
-This subsection to caculte $\bm{B}_k$  is taken from \cite{}.
+The proposition \ref{prob:backMarg} to caculte $\bm{B}_k$  is taken from \cite{}.
+
 \begin{prop}[Backward Marginalisation]
 	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k-1} \in \mathbb{R}^{r_{k-2} \times n_{k-1} \times r_{k-1}}$, which we need for defining the marginal function $f_{X_k}(x_k)$:
 	\begin{enumerate}
@@ -442,6 +527,7 @@ This subsection to caculte $\bm{B}_k$  is taken from \cite{}.
 			\bm{B}_{k-1}[\alpha_{k-2}, i, l_{k-1}] = \sum_{\alpha_{k-1}=1}^{r_{k-1}} \bm{A}_{k-1}[\alpha_{k-2}, i, \alpha_{k-1}] \bm{R}_k[l_{k-1}, \alpha_{k-1}].
 		\end{equation}
 	\end{enumerate}
+\label{prob:backMarg}
 \end{prop}
 
 Then we need to do this the other way as well.
@@ -476,3 +562,16 @@ where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and $\bm{R}_{pre
 \begin{equation}
 	\bm{D}_k[l_{k-1},i,l_k] = \sum_{\alpha_{k-1}=1}^{r_{k-1}}  \bm{R}_{pre,k-1}[l_{k-1}, \alpha_{k-1}] \bm{B}_k[\alpha_{k-1}, i, l_k].
 \end{equation}
+
+
+Special Cases
+The marginal PDF of $X_1$ can be expressed as
+\begin{equation}
+	f_{X_1}(x_1) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1),
+\end{equation}
+where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$.\\
+The marginal PDF of $X_n$ can be expressed as
+\begin{equation}
+	f_{X_n}(x_n) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{n-1}=1}^{r_{n-1}} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_n[l_{n-1},i] \right)^2 \right) \uplambda_n(x_n),
+\end{equation}
+where $\bm{D}_n[l_{n-1},i] = \bm{B}_{pre,n}[l_{n-1}, i, \alpha_n]$ and $\alpha_n = 1$.

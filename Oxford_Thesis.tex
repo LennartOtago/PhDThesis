@@ -38,7 +38,7 @@
 \usepackage{amsthm}
 \usepackage{mdframed}
 \newtheoremstyle{theoremdd}% name of the style to be used
-{\topsep}% measure of space to leave above the theorem. E.g.: 3pt
+{1pt}% measure of space to leave above the theorem. E.g.: 3pt or \topsep
 {\topsep}%{\topsep}% measure of space to leave below the theorem. E.g.: 3pt
 {}% name of font to use in the body of the theorem
 {0pt}% measure of space to indent
@@ -48,8 +48,22 @@
 {\thmname{#1}\thmnumber{ #2}\textnormal{\thmnote{ (#3)}}}
 
 \theoremstyle{theoremdd}
-%\newtheorem{prop}{Proposition}
-\newmdtheoremenv{prop}{Proposition}
+\newtheorem{prop}{Proposition}
+%\newmdtheoremenv{prop}{Proposition}
+
+\usepackage[many]{tcolorbox}
+\tcolorboxenvironment{prop}{
+	sharp corners,
+	boxrule=0.4pt,
+	colback=white,
+	before skip=\topsep,
+	after skip=\topsep,
+}
+
+%\renewcommand\rmdefault{ptm} %change text font to Times New Roman
+\DeclareSymbolFont{myletters}{OML}{ztmcm}{m}{it}
+\DeclareMathSymbol{\uplambda}{\mathord}{myletters}{"15}
+
 
 %%%%% SELECT YOUR DRAFT OPTIONS
 % Three options going on here; use in any combination.  But remember to turn the first two off before
