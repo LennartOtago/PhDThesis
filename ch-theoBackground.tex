@@ -288,11 +288,17 @@ be chosen from among the feasible set. This can be done by choosing
 
 
 \section{Sampling Methods}
-In this section we present the sampling based methods used in this thesis to generate an ergodic Markov-Chain $ (\bm{x}, \bm{\theta} )^{(0)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $, where the samples $(\bm{x}, \bm{\theta} )^{(k)}$ are distributed as $\pi(\bm{x},\bm{\theta}| \bm{y}) $.
-Ergodicity is implied if an aperiodic and irreduce chain \ref{} proves to be reversible, then the chain converges and has a unique  equilibrium distribution.
+In this section we present the sampling based methods used in this thesis to generate an ergodic Markov-Chain $ (\bm{x}, \bm{\theta} )^{(0)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $.
+Ergodicty implies that if an aperiodic and irreducable Markov chain is reversible \ref{} it converges towards a stationnary distrbution unique equilibirum distribution $\pi(\bm{x},\bm{\theta}| \bm{y}) $.
 In other words if from a state in the chain we can reach every other state in the sampling space and the previous state, and we do not get stuck in periodic loop, then it converges.
 Instead of proving ergodicity we can in practise look e.g. at the output samples and their trace $\pi(\bm{x}^{(k)},\bm{\theta}^{(k)}| \bm{y})$ to see convergence towards a stationary distribtuion.
 
+Then we can use sample based estimates
+\begin{align}
+	\label{eq:sampMean}
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}, \bm{\theta})] =  \int \int h(\bm{x}^{(k)},\bm{\theta}^{(k)}) \text{d} \bm{\theta} \text{d} \bm{x} \approx \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)},\bm{\theta}^{(k)}) \, .
+\end{align}
+, if $\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}, \bm{\theta})^2] < \infty $ as given by the central limit theorem.
 
 Ergodicity important so that we can from the sample based estimate
 
