@@ -288,45 +288,32 @@ be chosen from among the feasible set. This can be done by choosing
 
 
 \section{Sampling Methods}
-In this section we present the sampling based methods used in this thesis to generate an ergodic Markov-Chain $ (\bm{x}, \bm{\theta} )^{(0)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $.
-Ergodicty implies that if an aperiodic and irreducable Markov chain is reversible \ref{} it converges towards a stationnary distrbution unique equilibirum distribution $\pi(\bm{x},\bm{\theta}| \bm{y}) $.
+The expectation of  any function  $h(\bm{x}, \bm{\theta})$ is given by
+\begin{align}
+	\label{eq:sampMean}
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}, \bm{\theta})] = \underbrace{ \int \int h(\bm{x},\bm{\theta}) \, \text{d} \bm{\theta} \, \text{d} \bm{x} }_{\bm{\mu}_{int}} .
+\end{align}
+In the case where the calculation of the integral is not feasible we can approximate Eq. \ref{} acorrding to the central limit theorem with a sample based Monte-Carlo estimate
+\begin{align}
+	\label{eq:sampMean}
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}, \bm{\theta})] \approx \underbrace{ \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)},\bm{\theta}^{(k)})  }_{\bm{\mu}_{samp}} \, ,
+\end{align}
+for large enough samples size $N$ and with samples $ (\bm{x}, \bm{\theta} )^{(0)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $ and if $ \frac{ \sigma^2 }{n} < \infty$
+The central limit theorem states that
+\begin{align}
+	\frac{\sum_{i = 1}^{n} \bm{\mu}^{(i)}_{samp}}{n} \overset{n \rightarrow \infty}{\longrightarrow} \mathcal{N} \Bigg(\mu_{int}, \frac{ \sigma^2 }{n} \Bigg),
+\end{align}
+ if the variance of the samples means $\sigma^2 =  \text{Var}(\bm{\mu}^{(i)}_{samp} ) < \infty$, where each independent sample mean  $ \bm{\mu}^{(i)}_{samp} $  from a set of samples distributed as the target distribution.
+That also implies that the error $\bm{\mu}_{int} - \bm{\mu}_{samp}$ is bounded  and in order of $1/n$.(large sample sizes)
+
+For us it is now important to show that we the methods used draw samples from target distribution so that we produce a Markov-Chain $ (\bm{x}, \bm{\theta} )^{(0)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $ and that we then use sample based estimates as in.
+In doing so the ergodiyt theorem states that  if an aperiodic and irreducable Markov chain is reversible \ref{} it converges towards a stationnary distrbution unique equilibirum distribution $\pi(\bm{x},\bm{\theta}| \bm{y}) $.
 In other words if from a state in the chain we can reach every other state in the sampling space and the previous state, and we do not get stuck in periodic loop, then it converges.
 Instead of proving ergodicity we can in practise look e.g. at the output samples and their trace $\pi(\bm{x}^{(k)},\bm{\theta}^{(k)}| \bm{y})$ to see convergence towards a stationary distribtuion.
 
-Then we can use sample based estimates
-\begin{align}
-	\label{eq:sampMean}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}, \bm{\theta})] =  \int \int h(\bm{x}^{(k)},\bm{\theta}^{(k)}) \text{d} \bm{\theta} \text{d} \bm{x} \approx \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)},\bm{\theta}^{(k)}) \, .
-\end{align}
-, if $\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}, \bm{\theta})^2] < \infty $ as given by the central limit theorem.
-
-Ergodicity important so that we can from the sample based estimate
-
-if the pi(f 2) is samller than inf
-General state space Markov chains and
-MCMC algorithms
-
-This gives an unbiased estimate, having standard deviation of order O(1/ sqrt N ).
-Furthermore, if pi(f 2) < inf, then by the classical Central Limit Theorem, the
-error pi(f ) - pi(f ) 
-practical markov chain methods
-
-if egodic then converges
-then CLT holds for
-anc coverges in distribution to
-
-
-Then for large enough $N$ the samples based estimate of Eq. \ref{} and of any function $h(\bm{x}, \bm{\theta})$ is
-\begin{align}
-	\label{eq:sampMean}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}, \bm{\theta})] \approx \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)},\bm{\theta}^{(k)}) \, .
-\end{align}
 
 In practise of this thesis we use Markoc-chain Monte-Carlo (MCMC) methods on target distributions such as $\pi(\bm{\theta}| \bm{y})$ and so we will illustrate the sampling procedures for the following three subsections on that distribution.
 
-
-convergence of 
-MTC
 
 \subsection{Metropolis- within Gibbs sampling}
 Ergodic staatsion ary distributon 
@@ -338,22 +325,41 @@ By Gareth O. Roberts and Jeffrey S. Rosentha 2006
 
 for 2 D
 
+The Metropolis algorithm is special case of the Metropolis-Hastings algorithm, with a symmetric proposal distribution $q(i|j) =q(j|i) $ \cite{}.
+
+The Metropolis-Hastings algorithm starts with a initial sample $\bm{\theta}^{(t)}$ at  at $t=0$.
+We propose a new sample $\bm{\theta}\sim q(\bm{\theta} | \bm{\theta}^{(t-1)})$ according to the proposal distribution $q(\bm{\theta} | \bm{\theta}^{(t-1)})$ given the previous state.
+Then accept and set $ \bm{\theta}^{(t)} = \bm{\theta}$ with
+\begin{align}
+	\alpha(\bm{\theta} | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta}  | \bm{y}) q(\bm{\theta}^{(t-1)} | \bm{\theta})  }{\pi(\bm{\theta}^{(t-1)}| \bm{y}) q(\bm{\theta} | \bm{\theta}^{(t-1)}) } \right\}
+\end{align}
+or reject and keep $\bm{\theta}^{(t)} = \bm{\theta}^{(t-1)}$, which we do by comparing $\alpha$ to a uniform random number $u \sim \mathcal{U}(0,1)$.
+Note that symmetrical proposal distribution $q(\bm{\theta} | \bm{\theta}^{(t-1)}) = q(\bm{\theta}^{(t-1)} | \bm{\theta}) $ cancel, then we call that a Metropolis-algorithm \cite{}.
+To assure convergence independent of the intial sample we discard samples after the so-called burn-in period and effectivally generate a Markov-Chain of length $N - N_{\text{burn-in}}$.
+
+
+Gibb sampling is a special case of the metropolis hastings algorihtm with the acceptance probaility of 1.
+In Gibbs sampling according to \cite{} we move one directional by fixing all other direction.
+
+
+Since the proposal distribution is symmetric, Metropolis chains are reversible and as you can see in $\alpha(\bm{\theta} | \bm{\theta}^{(t-1)})$ converge towards $\pi(\bm{\theta}| \bm{y})$.
+A more mathematical prove of ergodicity for the general Metropolis-Hastings algorithm can be found in \cite{}.
 
 \begin{algorithm}
 	\caption{Metropolis within Gibbs}
 	\begin{algorithmic}[1]
-		\STATE Initialize \( \bm{\theta}^{(0)} \)
+		\STATE Initialize and suppose two dimensional vector \( \bm{\theta}^{(0)}  =( \theta_1^{(0)} , \theta_2^{(0)}  ) \)
 		\FOR{ \( k = 1, \dots, N \)}
-		\STATE Propose \( \bm{\theta} \sim q(\bm{\theta} | \bm{\theta}^{(t-1)}) = q(\bm{\theta}^{(t-1)} | \bm{\theta}) \)
+		\STATE Propose \( \theta_1 \sim q(\cdot   | \theta_1 ^{(t-1)}) = q(\theta_1 ^{(t-1)} |\cdot  ) \)
 		\STATE Compute
-		\[ \alpha(\bm{\theta} | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta}  | \bm{y}) \cancel{q(\bm{\theta}^{(t-1)} | \bm{\theta}) } }{\pi(\bm{\theta}^{(t-1)}| \bm{y}) \cancel{q(\bm{\theta} | \bm{\theta}^{(t-1)})} } \right\} \]
+		\[ \alpha( \theta_1  | \theta_1^{(t-1)}) = \min \left\{ 1, \frac{\pi(\theta_1  | \theta^{(t-1)}_2, \bm{y}) \cancel{q(\theta_1^{(t-1)} | \theta_1 ) } }{\pi(\theta_1^{(t-1)}| \theta_2^{(t-1)}, \bm{y}) \cancel{q(\theta_1 | \theta_1^{(t-1)})} } \right\} \]
 		\STATE Draw $u \sim \mathcal{U}(0,1)$
 		\IF{$\alpha \geq u$ }
-		\STATE Accept and set \( \bm{\theta}^{(t)} = \bm{\theta} \)
+		\STATE Accept and set \( \theta_1^{(t)} = \theta_1 \)
 		\ELSE  
-		\STATE Reject and keep \(\bm{\theta}^{(t)} = \bm{\theta}^{(t-1)} \)
+		\STATE Reject and keep \(\theta_1^{(t)} = \theta_1^{(t-1)} \)
 		\ENDIF
-		\STATE Draw \(\bm{\theta}_j^{(t)} \sim  \pi(\bm{\theta}_j | \bm{\theta}_{<j}, \bm{\theta}_{>j} , \bm{y} )\) 
+		\STATE Draw \(\theta_2^{(t)} \sim  \pi( \cdot | \theta_1^{(t)} , \bm{y} )\) 
 		\ENDFOR
 		\STATE Output: $ \bm{\theta}^{(0)}, \dots,  \bm{\theta}^{(k)} , \dots,   \bm{\theta}^{(N)} \sim \pi(\bm{\theta}| \bm{y}) $
 	\end{algorithmic}
@@ -398,51 +404,9 @@ where $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) 
 
 this converges due to acosta and ...
 
-\subsection{Metropolis}
-
-The Metropolis algorithm is special case of the Metropolis-Hastings algorithm, with a symmetric proposal distribution $q(i|j) =q(j|i) $ \cite{}.
-
-The Metropolis-Hastings algorithm starts with a initial sample $\bm{\theta}^{(t)}$ at  at $t=0$.
-We propose a new sample $\bm{\theta}\sim q(\bm{\theta} | \bm{\theta}^{(t-1)})$ according to the proposal distribution $q(\bm{\theta} | \bm{\theta}^{(t-1)})$ given the previous state.
-Then accept and set $ \bm{\theta}^{(t)} = \bm{\theta}$ with
-\begin{align}
-\alpha(\bm{\theta} | \bm{\theta}^{(t-1)}) = \min \left\{ 1, \frac{\pi(\bm{\theta}  | \bm{y}) q(\bm{\theta}^{(t-1)} | \bm{\theta})  }{\pi(\bm{\theta}^{(t-1)}| \bm{y}) q(\bm{\theta} | \bm{\theta}^{(t-1)}) } \right\}
-\end{align}
-or reject and keep $\bm{\theta}^{(t)} = \bm{\theta}^{(t-1)}$, which we do by comparing $\alpha$ to a uniform random number $u \sim \mathcal{U}(0,1)$.
-Note that symmetrical proposal distribution $q(\bm{\theta} | \bm{\theta}^{(t-1)}) = q(\bm{\theta}^{(t-1)} | \bm{\theta}) $ cancel, then we call that a Metropolis-algorithm \cite{}.
-To assure convergence independent of the intial sample we discard samples after the so-called burn-in period and effectivally generate a Markov-Chain of length $N - N_{\text{burn-in}}$.
-
-
-
-Since the proposal distribution is symmetric, Metropolis chains are reversible and as you can see in $\alpha(\bm{\theta} | \bm{\theta}^{(t-1)})$ converge towards $\pi(\bm{\theta}| \bm{y})$.
-A more mathematical prove of ergodicity for the general Metropolis-Hastings algorithm can be found in \cite{}.
-
-\subsection{Gibbs Sampling}
-Gibb sampling is a special case of the metropolis hastings algorihtm with the acceptance probaility of 1.
-In Gibbs sampling according to \cite{} we move one directional by fixing all other direction.
-
-Assume $\bm{\theta} \in \mathbb{R}^d$ is d-dimesnional and $\{\bm{\theta}_{<j}, \bm{\theta}_{>j} \}  = \{\bm{\theta}_{1}, \dots, \bm{\theta}_{j-1}, \bm{\theta}_{j+1}, \dots, \bm{\theta}_{d} \} $ denotes all dimesnions except $ \bm{\theta}_{j}$.
-Then to draw a new sample $\bm{\theta}^{(t)}$, we iterate through each dimension to draw a sample $\bm{\theta}_j^{(t)} \sim  \pi(\bm{\theta}_j | \bm{\theta}_{<j}, \bm{\theta}_{>j} , \bm{y} )$ from the conditional distribution.
-
-\begin{algorithm}
-	\caption{Gibbs}
-	\begin{algorithmic}[1]
-		\STATE Initialize \( \bm{\theta}^{(0)} = \{\bm{\theta}^{(0)}_{1}, \dots, \bm{\theta}^{(0)}_{j},\dots,\bm{\theta}^{(0)}_{d} \} \).
-		\FOR{ \( k = 1, \dots, N \)}
-		\FOR{ \( j = 1, \dots, d \)}
-		\STATE Draw \(\bm{\theta}_j^{(t)} \sim  \pi(\bm{\theta}_j | \bm{\theta}_{<j}, \bm{\theta}_{>j} , \bm{y} )\) 
-		\ENDFOR
-		\ENDFOR
-		\STATE Output: $ \bm{\theta}^{(0)}, \dots,  \bm{\theta}^{(k)} , \dots,   \bm{\theta}^{(N)} \sim \pi(\bm{\theta}| \bm{y}) $
-	\end{algorithmic}
-\end{algorithm}
-
-If the target distribution is well behaved $\pi(\bm{\theta}_j | \bm{\theta}_{<j}, \bm{\theta}_{>j} , \bm{y} ) > 0$ in the sampling space the chain produced by the gibbs sampling algorithm is aperiodic and ireducabile.
-We can also show that the criterium, the detailed balance condition, for reveribility is met \cite{}.
-Then a Gibbs sampler prodices an ergodic markov chain.
-
 
 \subsection{t-walk}
+Use t-walk on $	\pi(\bm{\theta}|\bm{y} )$
 We use the t-walk sampler developed By Christens and Fox as a black box sampler\cite{}.
 Within the t-walk there are three differnt moves in the sampling space availbe and by construction of the t-walk is ergodic, see section \cite{}.
 
