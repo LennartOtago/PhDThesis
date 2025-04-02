@@ -6,38 +6,31 @@
 	\centering
 	\scalebox{0.9}{\input{FirstLIMB.pdf_tex}}
 	\label{fig:FirstLIMB}
+	\caption{text}
 \end{figure}
 
-In this section we describe the forward model which we use to simulate data and base the Bayesian inference on.
+In this section we describe the forward model which we use to simulate data, as in section \ref{} and base the Bayesian inference, see section \ref{} and \ref{}.
 
-As shown in Figure~\ref{fig:forModel}, one measurement of a stationary satellite can be describes as the path integral along the line of sight $\Gamma_j$ for $j=1,2,\ldots,m$.
+As shown in Figure~\ref{fig:FirstLIMB}, one measurement of a stationary satellite can be describes as the path integral along the line of sight $\Gamma_j$ for $j=1,2,\ldots,m$.
 For each measurement we can define a tangent height $h_{\ell_j}$ as the shortest distance along the line of sight to the earth.
-%and call that the limb height.
 
-%A stationary satellite takes $m$ measurements in pointing directions that define the lines of sight from the satellite $\Gamma_j$ for $j=1,2,\ldots,m$. Each line of sight $\Gamma_j$ is tangent to a sphere around Earth called a limb, and the tangent height $\ell_j$ is called the limb height. Hence the limb height $\ell_j$ is the lowest height to Earth along the line-of-sight $\Gamma_j$.
-
-The $j^\text{th}$ measurement, taken on line of sight $\Gamma_j$  is modelled by the the radiative transfer equation (RTE)~\cite{united2006handbook}
-% \begin{align}
-	%    y_j =   \int_{\Gamma_j} \underbrace{  S(\nu, T)   \frac{p(T)}{k_{\text{B}} T(r)} B(\nu,T)}_{ \bm{A_{j}} }  x(r) \tau(r) \text{d}r \, 
-	%    \label{eq:RTE}
-	% \end{align}
+The $j^\text{th}$ measurement, taken on line of sight $\Gamma_j$  is modelled by the radiative transfer equation (RTE)~\cite{mipas2000handbook}
 \begin{align}
-	y_j =   \int_{\Gamma_j}  B(\nu,T) k(\nu, T)   \frac{\bm{p}(T)}{k_{\text{B}} \bm{T}(r)}  \bm{x}(r)  \tau(r) \text{d}r + \eta_j \, \\
-	\tau(r) = \exp{ \Bigl\{ - \int^{r}_{r_\text{obs}}  k(\nu, T)   \frac{\bm{p}(T)}{k_B \bm{T}(r^{\prime})}  \bm{x}(r^{\prime}) \text{d}r^{\prime} \Bigr\} }
-	\label{eq:RTE}
+	\label{eq:RTE} 
+	y_j =   \int_{\Gamma_j}  B(\nu,T) k(\nu, T)   \frac{p(T)}{k_{\text{B}} T(r)}  x(r)  \tau(r) \text{d}r + \eta_j \, \\
+	\tau(r) = \exp{ \Bigl\{ - \int^{r}_{r_\text{obs}}  k(\nu, T)   \frac{p(T)}{k_B T(r^{\prime})}  x(r^{\prime}) \text{d}r^{\prime} \Bigr\} }
 \end{align}
-where the path from the satellite along the line-of-sight of the $j^\text{th}$ pointing direction is $\Gamma_j$ and the ozone concentration$\bm{x}(r)$ at distance $r$ from the radiometer.
-The factor $\tau(r)\leq 1$ accounts for re-absorption of the radiation along the line-of-sight, which makes the RTE non linear.
-The noise $\eta_j$ is added to each path integral, where the noise vector $ \bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \mathbf{I} )$ is normally distributed around zero with the noise precision $\gamma$.
-The absorption constant $k(\nu, T)$ for a single gas molecule at a specific wavenumber $\nu$ is given by the HITRAN database \cite{gordon2022hitran2020} and acts as a source function when multiplied with the black body radiation $B(\nu,T)$, given by Planck`s law.
+where the path from the satellite along the line-of-sight of the $j^\text{th}$ pointing direction is $\Gamma_j$ and the ozone concentration at distance $r$ from the radiometer is $x(r)$ plus some noise $\eta_j$.
 Within the stratosphere the number density $p(T) / (k_{\text{B}} T(r))$ of molecules is dependent on the pressure $p(T)$, the temperature $T(r)$, and the Boltzmann constant $k_{\text{B}}$.
-For fundamentals on the Radiative transfer equation we recommend 79BOOKRadiativeProcess.
+The factor $\tau(r)\leq 1$ accounts for re-absorption of the radiation along the line-of-sight, which makes the RTE non linear.
+The absorption constant $k(\nu, T)$ for a single gas molecule at a specific wavenumber $\nu$ is given by the HITRAN database \cite{gordon2022hitran2020} and acts as a source function when multiplied with the black body radiation $B(\nu,T)$, given by Planck`s law \cite{rybicki2000rte}.
+For fundamentals on the Radiative transfer equation we recommend Chapter one in \cite{rybicki2000rte}.
 
 %The path integral over the line $\Gamma_j$ from the satellite to the end of the atmosphere defines the kernel $\bm{A_{j}}$ that is independent of ozone concentration $x$. 
-We parametrize the ozone profile as a function of height, discretized into the $n$ values in each of $n$ layers of the discretized stratosphere where the $i^\text{th}$ layer is defined by two spheres of radii  $h_{i-1} < h_{i}$, $i = 1, \dots, n$, with $h_0$ and $h_{n} $.
+To enable Matrix-Vector multiplication, we parametrise the ozone profile as a function of height, discretised into the $n$ values in each of $n$ layers of the discretised stratosphere where the $i^\text{th}$ layer is defined by two spheres of radii  $h_{i-1} < h_{i}$, $i = 1, \dots, n$, with $h_0$ and $h_{n} $.
 In between the heights $h_{i-1}$ and $h_{i}$, each of the ozone concentration $x_{i}$, the pressure $p_{i}$, the temperature $T_{i}$, and thermal radiation is assumed to be constant.
 Above $h_{n}$ and below $h_0$, the ozone concentration is set to zero, so no signal can be obtained.
-Then depending on the parameter of interest, which is either the ozone volume mixing ratio $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$ or the fraction of pressure and temperature $\bm{p/T}= \{p_1/T_1,p_2/T_2,\ldots,p_n/T_n\} \in \mathbb{R}^{n} $, we can rewrite the integral in Eq.~\eqref{eq:RTE} as e.g. $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} $, where the absorption $\tau(r)$ induces non-linearity.
+Then depending on the parameter of interest, which is either the ozone volume mixing ratio $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$ or the fraction of pressure and temperature $\bm{p/T}= \{p_1/T_1,p_2/T_2,\ldots,p_n/T_n\} \in \mathbb{R}^{n} $, we can rewrite the integral in Eq.~\eqref{eq:RTE} as e.g. as a vector multiplication $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} $, where the non-linear absorption $\tau(r)$ is included in $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T})$.
 Here, the row vector $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{n}$  defines a Kernel for each measurement so that the data vector
 \begin{align}
 	\bm{y} = \bm{A}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} + \bm{\eta}= \bm{A}(\bm{x},  \bm{p},\bm{T}) \,
@@ -45,25 +38,25 @@ Here, the row vector $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{n}$  de
 \end{align}
 can be written as a matrix vector multiplication, where the matrix $\bm{A}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{m \times n}$  and the noise vector $\bm{\eta} \in \mathbb{R}^{m}$.
 
-Since the absorption $\tau(r)$ reduces measurements by of order $1\%$, or less, making the inverse problem only weakly non-linear. 
+Since the measurement process includes absorption $\tau(r)$ reducing measurements slighty and making the inverse problem only weakly non-linear. 
 We use that to approximate the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T})$ with a map $\bm{M}$ so that $\bm{A}(\bm{x},  \bm{p},\bm{T}) \approx \bm{M} \bm{A}_L $
 Where each row $\bm{A}_{L,j} $ of matrix as $\bm{A}_L \in \mathbb{R}^{m \times n}$ is defined by the linear forward model, where absorption is neglected, e.g. $\tau = 1$. 
-Then $\bm{A}_{L,j} $ is either defined by $ B(\nu,T) S(\nu, T)   \frac{\bm{p}(T)}{k_{\text{B}} \bm{T}(r)}  \text{d}r$ or $B(\nu,T) S(\nu, T)   \frac{\bm{x}}{k_{\text{B}}}  \text{d}r$, as in Eq..~\eqref{eq:RTE}, depending on the parameter of interest.
+Then each entry in the row vector $\bm{A}_{L,j} $ is either defined by $ B(\nu,T) S(\nu, T)   \frac{\bm{p}(T)}{k_{\text{B}} \bm{T}(r)}  \text{d}r$ or $B(\nu,T) S(\nu, T)   \frac{\bm{x}}{k_{\text{B}}}  \text{d}r$, as in Eq..~\eqref{eq:RTE}, depending on the parameter of interest.
 This poses a linear inverse problem with the forward map defined by the matrix $\bm{A} = \bm{M} \bm{A}_L$, where $\bm{M}$ is, more specifically, an affine map.
 
 
 \section{Affine Map}
 
-To approximate the non-linear forward model we use an affine map $ M:\bm{A}_L \bm{x} \rightarrow \bm{A}(\bm{x},  \bm{p},\bm{T})) \bm{x}$, which maps the linear forward model $\bm{A}_L \bm{x}$ onto the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T}) \bm{x}$.
+To approximate the non-linear forward model we use an affine map $ M:\bm{A}_L \bm{x} \rightarrow \bm{A}(\bm{x},  \bm{p},\bm{T}) \bm{x}$, which maps the linear forward model $\bm{A}_L \bm{x}$ onto the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T}) \bm{x}$.
 
 
-An affine map is any linear map in between two vector spaces is or affine spaces, where in affine space does not need to have a zero origin. 2.3.1. PROPOSITION AND DEFINITIOn Berge book\cite{}.
-In other words an affine map does not need to preserve the origin, or is a linear map on vector spaces including translation, or in the words of my supervisor, C. F., an affine map is a Taylor series of first order.
-For more information on affine spaces and maps we refer to \cite{two books}
+An affine map is any linear map in between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin, see Def. 2.3.1. in \cite{berger2009geometry}.
+In other words an affine map does not need to map to the origin of the associated vector space, or is a linear map on vector spaces including translation, or in the words of my supervisor, C. F., an affine map is a Taylor series of first order.
+For more information on affine spaces and maps we refer to the books \cite{berger2009geometry, katsumi1994affine}
 
-We generate two affine subspaces spaces \newline $V = \big\{ \bm{A}(\bm{x}^{(1)}, \bm{p,T}), \dots ,\bm{A}(\bm{x}^{(m)}, \bm{p,T})\big\} $ and $W = \big\{ \bm{A}\bm{x}^{(1)}, \dots ,\bm{A}\bm{x}^{(m)}\big\}$ over the same field, with fixed $\bm{p,T}$.
-The parameter $\bm{x}$ is distributed as the so-called posterior distribution $\big\{  \bm{x}^{(1)} , \dots, \bm{x}^{(m)} \big\} \sim \pi(\bm{x}|\bm{\theta},\bm{y})$, with hyper-parameters $\bm{\theta}$, according to a Bayesian hierarchical model.
-
+To find the affine map, we generate two affine subspaces spaces \newline $V = \big\{ \bm{A}(\bm{x}^{(1)}, \bm{p,T}), \dots ,\bm{A}(\bm{x}^{(m)}, \bm{p,T})\big\} $ and $W = \big\{ \bm{A}_L\bm{x}^{(1)}, \dots ,\bm{A}_L\bm{x}^{(m)}\big\}$ over the same field, with fixed $\bm{p,T}$.
+Then we can use a linear solver to find the affine map $\bm{M}$ so that we can approximate the non linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T}) \approx \bm{M} \bm{A}_L$ with a linear forward model, we go into further detail in section \ref{}.
+The parameter $\bm{x}$ is distributed as the so-called posterior distribution $\big\{  \bm{x}^{(1)} , \dots, \bm{x}^{(m)} \big\} \sim \pi(\bm{x}|\bm{\theta},\bm{y})$ conditioned on the hyper-parameters $\bm{\theta}$, according to a Bayesian hierarchical model.`
 
 
 \begin{figure}[ht!]
@@ -84,17 +77,16 @@ The parameter $\bm{x}$ is distributed as the so-called posterior distribution $\
 In this this section we give a short introduction to Bayesian inference for a general parameter $\bm{x}$ given some data 
 \begin{align}
 	\bm{y} = \bm{Ax} + \bm{\eta} \, 
+	\label{eq:LinDat}
 \end{align}
 based on a linear forward model $\bm{A}$ and some noise $ \bm{\eta}$.
 Later in section \ref{} we set up a more sophisticated Bayesian framework applied to the forward model in section \ref{}.
 
 We can visualise the correlation structure of a measurement process through a hierarchiallly ordered directed acyclic graph (DAG), see Figure \ref{fig:FirstDAG}.
-As an observatory process naturally includes some random noise we include that in our DAG and classify the noise as a hyper-parameter in $\bm{\theta}$.
+As an observatory process naturally includes some random noise we include that in our DAG and classify the noise as a hyper-parameter in $\bm{\theta}$ \cite{fox2016fast}.
 Other hyper-parameters influence the parmeters $\bm{x}$ detemernistaclly, which are then mapped through the forward model onto the space of all measurables $\bm{u}$, from which we observe some data $\bm{y}$ including noise as previously mentioned.
 Drawing a DAG can help us to dependences within the measurement and modelling process.
-Given some data we inferer the distribution of the underling parameters and hyper-parameters by following the arrows in Figure \ref{} backwards and set up a Bayesain hierachlly ordered model.
-
-
+Given some data we inferer the distribution of the underling parameters and hyper-parameters by following the arrows in Figure \ref{fig:FirstDAG} backwards and set up a Bayesian model, hierarchially ordered.
 \begin{figure}[ht!]
 	\centering
 	\begin{tikzpicture}
@@ -126,53 +118,56 @@ Given some data we inferer the distribution of the underling parameters and hype
 
 
 
-Within a linear Bayesian hierarchial model we need to define a likelihood function as well as distribution over the unknown parameters $\bm{x}$ and hyper-parameters $\bm{\theta}$.
+Within a linear Bayesian hierarchial model we need to define a likelihood function as well as a distribution over the unknown parameters $\bm{x}$ and hyper-parameters $\bm{\theta}$.
 \begin{subequations}
 	\begin{align}
 		\bm{y}|\bm{x}, \bm{\theta}&\sim \mathcal{N}(\bm{A} \bm{x}, \bm{\Sigma}(\bm{\theta})) \label{eq:likelihood}  \\
 		\bm{x}| \bm{\theta} & \sim  \mathcal{N}( \bm{\mu}, \bm{Q}^{-1}(\bm{\theta})  ) \label{eq:xPrior} \\
-		\bm{\theta} &\sim  \pi(\bm{\theta}) \label{eq:gammaPrior}\, ,
+		\bm{\theta} &\sim  \pi(\bm{\theta}) \label{eq:gammaPrior}\, .
 	\end{align}
 	\label{eq:BayMode}
 \end{subequations}
-with the noise covariance matrix $\bm{\Sigma}(\bm{\theta})$, so that $\bm{\eta}  \sim \mathcal{N}(0, \bm{\Sigma}(\bm{\theta})) $ as in Eq. \ref{}, the prior precision matrix $\bm{Q}(\bm{\theta})$, prior mean $\bm{\mu}$
-and some prior distribution over the hyper-parameters $\pi(\bm{\theta})$.
-Through sensibly choosing the prior distributions  $\pi(\bm{x}|\bm{y})$ as well as the hyper-parameters $\bm{\theta}$ and their prior distribution  $\pi(\bm{\theta})$, we can incorporate functional dependencies as well physical properties of the parameters.
-The likelhood function $\pi(\bm{y}|\bm{x}, \bm{\theta})$ is a measure of how the parameters and hyper-parameters fit to the data according to our forward model, including information of the measurement process.
+Due to the assumption of Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \bm{\Sigma}(\bm{\theta})) $ the likelhood function $\pi(\bm{y}|\bm{x}, \bm{\theta})$, which includes information about the measurement process and gives a measure of how well parametersand  hyperparemters fit given some data, is normally distributed with the noise covariance matrix $\bm{\Sigma}(\bm{\theta})$. 
+More specifically because we choose a normally distributed prior $\pi(\bm{x}| \bm{\theta})$ with the prior precision matrix $\bm{Q}(\bm{\theta})$ and prior mean $\bm{\mu}$ this is a linear-Gaussian Bayesian hierarchical model as in \cite{fox2016fast}, including some distribution over the hyper-parameters $\pi(\bm{\theta})$.
+One of the main strengths of a Bayesian framework is that through those prior and hyper-prior distributions we can incorporate functional dependencies as well model physical properties of the parameters $\bm{x}$. 
 
-With a normally distributed prior and likelihood function this becomes a linear-Gaussian Bayesian hierarchical model.
-For more detailed Bayesian analysis we recommend \cite{}.
-
-The posterior distribution, the function of interest,
+Then Bayes Theorem gives the posterior distribution, the function of interest,
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \, ,
 \end{align}
-is given according to Bayes' theorem \cite{}, with the prior distribution $\pi(\bm{x}, \bm{\theta})$ and the normalising constant $\pi(\bm{y})$.
+with the prior distribution $\pi(\bm{x}, \bm{\theta}) = \pi(\bm{x}| \bm{\theta}) \pi(\bm{\theta}) $ and the normalising constant $\pi(\bm{y})$.
 If the normalising constant is finite and non-zero we can approximate the posterior distribution
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, .
 \end{align}
-
-Then the expectation of any a function $h(\bm{x},\bm{\theta})$ can be described as 
+and the expectation of any a function $h(\bm{x}(\bm{\theta}))$, where $\bm{x}$ may be depending on $\bm{\theta}$, can be described as 
 \begin{align}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})] =  \int \int   h(\bm{x},\bm{\theta}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}   \label{eq:expPos} \, ,
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}(\bm{\theta}))] =  \int \int   h(\bm{x}(\bm{\theta})) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}   \label{eq:expPos} \, ,
 \end{align}
 which is usually a high dimensional integral and computationally not feasible to solve.
+
 
 One way to work around the high dimensionality is to parameterise $\bm{x}$ using hyper-parameters $\bm{\theta}$ so that $\bm{x}(\bm{\theta})$. 
 Another way is to seperate the posterior distribution over latent field $\bm{x}$ and the hyper-parameters $\bm{\theta}$.
 This is particular benefitial, when $\bm{x}$ is high dimensional, e.g. $\bm{x} \in \mathbb{R}^n$ with $n = 45$ and can not be parametrised, and $\bm{\theta}$ is low dimensional, e.g. two dimensional.
+Then by the law of total expectation eq. \ref{eq:expPos} becomes
+\begin{align}
+	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \text{E}_{\bm{\theta}|\bm{y}}   \big[ \text{E}_{\bm{x}|\bm{\theta},\bm{y}} [h(\bm{x}(\bm{\theta}))] \big]=  \int 	\text{E}_{\bm{x}| \bm{\theta},\bm{y}}  [h(\bm{x}(\bm{\theta}))] \,  \pi( \bm{\theta} | \bm{y} )  \, \text{d} \bm{\theta}   \label{eq:MargExpPos} \, ,
+\end{align}
+where in the case of a linear-Gaussian Bayesian hierarchical model $\text{E}_{\bm{x}| \bm{\theta},\bm{y}}  [h(\bm{x}(\bm{\theta}))]$ is well defined.
+The marginal and then condtional method, does exactly that.
 
 
 \subsection{Marginal and then Conditional}
+\label{subsec:MTC}
 The marginal and then conditional (MTC) method factorises the full posterior distribution 
 \begin{align}
 	\pi(\bm{x}, \bm{\theta}|\bm{y}) = \pi(\bm{x}| \bm{\theta}, \bm{y}) \pi(\bm{\theta}|\bm{y})
 \end{align}
-into the marginal posterior distribtion $ \pi(\bm{\theta}|\bm{y})$ and conditional posterior distribution $\pi(\bm{x}| \bm{\theta}, \bm{y})$.
+into the marginal posterior distribution $ \pi(\bm{\theta}|\bm{y})$ and conditional posterior distribution $\pi(\bm{x}| \bm{\theta}, \bm{y})$.
 
 
-For the in Eq. \ref{} specified linear-Gaussian Bayesian hierarchical model the marginal posterior distribution is given as
+For the in Eq. \ref{eq:BayMode} specified linear-Gaussian Bayesian hierarchical model the marginal posterior distribution is given as
 \begin{align}
 	\pi(\bm{\theta} | \bm{y}) &= \int \pi(\bm{x}, \bm{\theta} | \bm{y}) \diff \bm{x} \\ 
 	\label{eq:condHyper}
@@ -180,40 +175,31 @@ For the in Eq. \ref{} specified linear-Gaussian Bayesian hierarchical model the 
 \end{align}
 with
 \begin{align}
-	\bm{Q}_{\bm{\theta|y}} = \bm{\Sigma}^{-1} - \bm{\Sigma}^{-1} \bm{A} (\bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} )^{-1} \bm{A}^T \bm{\Sigma}^{-1} \,  .
+	\bm{Q}_{\bm{\theta|y}} = \bm{\Sigma}^{-1} - \bm{\Sigma}^{-1} \bm{A} (\bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} )^{-1} \bm{A}^T \bm{\Sigma}^{-1} \,  ,
 \end{align}
-
-See lemma \cite{}.
-
-Then conditioned on the hyper-parameters $\bm{\theta}$ we can draw samples of the conditional posterior distribution
+see Lemma 2 in \cite{fox2016fast}.
+Conditioned on the hyper-parameters $\bm{\theta}$ we can draw samples from the conditional posterior distribution
 \begin{align}
-	\bm{x}| \bm{y} , \bm{\theta} \sim \mathcal{N}\big( \bm{\mu} + (\bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} )^{-1} \bm{A}^T \bm{\Sigma}^{-1} (\bm{y} - \bm{A} \bm{\mu}), (\bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} )^{-1} \big) \, ,
+	\bm{x}| \bm{\theta}, \bm{y}  \sim \mathcal{N}\big( \underbrace{\bm{\mu} + (\bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} )^{-1} \bm{A}^T \bm{\Sigma}^{-1} (\bm{y} - \bm{A} \bm{\mu})}_{\bm{\mu}_{\bm{x}|  \bm{\theta}, \bm{y}}} , \underbrace{ (\bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} )^{-1}}_{\bm{\Sigma}_{\bm{x}| \bm{y} , \bm{\theta}}} \big) \, 
 \end{align}
-see section \ref{} or calculate weighted expectations of a function $h(\bm{x})$
-\begin{align}
-	\label{eq:lte}
-	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \int   \text{E}_{\bm{x}|\bm{\theta},\bm{y}} [h(\bm{x})] \, \pi(\bm{\theta} | \bm{y} )  \, \text{d} \bm{\theta} \,  ,
-\end{align}
-with weights given by $\pi(\bm{\theta} | \bm{y} )$.
-\cite{}
-Note that the noise covariance $\bm{\Sigma}^{-1} = \bm{\Sigma}^{-1}( \bm{\theta}) $ and the prior precision $\bm{Q} = \bm{Q}( \bm{\theta})$ are depending on hyper-parameters $\bm{\theta}$.
-
-In this thesis we will use sampling and deterministic methods to characterise the posterior distribution over the hyper-parameters and present the basics of those in the following sections.
+using the Randomis then optimize (RTO) method, see section \ref{subsec:RTO},
+or calculate weighted expectations e.g. $ \text{E}_{\bm{x}|\bm{\theta},\bm{y}} [\bm{x}| \bm{\theta}, \bm{y}] = \bm{\mu}_{\bm{x}| \bm{\theta}, \bm{y} }$ or use Eq. \ref{eq:MargExpPos} to calculate weighted expectations of $\text{E}_{\bm{x}|\bm{\theta},\bm{y}} [\text{Var}(\bm{x}| \bm{\theta}, \bm{y})]  = \bm{\Sigma}_{\bm{x}| \bm{y} , \bm{\theta}}$ with weights given by $\pi(\bm{\theta} | \bm{y} )$.
+Note that the noise covariance $\bm{\Sigma}= \bm{\Sigma}( \bm{\theta}) $ and the prior precision $\bm{Q} = \bm{Q}( \bm{\theta})$ are depending on hyper-parameters $\bm{\theta}$.
 
 \section{Regularisation}
-Another method to find a solution to a linear inverse problem as in Eq. \ref{} is to find a solution $\bm{x}_{\lambda}$ accdoring to a data misfit norm and a regularisation semi-norm \cite{}.
-We will discuss the case of Tikhonov regularisation.
+Another method to find a solution to a linear inverse problem as in Eq. \ref{eq:LinDat} is to find a solution $\bm{x}_{\lambda}$ according to a data misfit norm and a regularisation semi-norm as in \cite{fox2016fast}.
+We will discuss the case of Tikhonov regularisation \cite{kaipio2005statinv,tan2016LecNot} as this is the most similar to a linear-Gaussian hierarchial Bayesian model.
 
-For a parameter $\bm{x}$ a linear forward model and some data $\bm{y}$ the data misfit norm is defined as 
+For a parameter $\bm{x}$ a linear forward model matrix $\bm{A}$ and some data $\bm{y}$ the data misfit norm
 \begin{align}
-	\left\lVert \bm{y} - \bm{A}\bm{x} \right\rVert \, .
+	\left\lVert \bm{y} - \bm{A}\bm{x} \right\rVert \, 
 \end{align}
-The regularisation semi norm 
+gives a measure of how good data fits to a mapped parameter $\bm{Ax}$ and the regularisation semi norm 
 \begin{align}
 	\lambda \left\lVert \bm{T}\bm{x}  \right\rVert
 \end{align}
-penalises $\bm{x}$ according to $\bm{T}$ and the regularisation parameter $\lambda \geq 0$.
-Given $\lambda$ the regularised soltuion
+penalises $\bm{x}$ according to $\bm{T}$ and the regularisation parameter $\lambda > 0$.
+Given $\lambda$ a regularised solution
 \begin{align}
 	\bm{x}_{\lambda} = \underset{\bm{x}}{\text{arg min}} \left\lVert \bm{y} - \bm{A}\bm{x}  \right\rVert^2 + \lambda \left\lVert \bm{T}\bm{x} \right\rVert^2
 \end{align}
@@ -221,75 +207,62 @@ can be found by the derivativ
 \begin{align}
 &  &\nabla_{\bm{x}} \big\{  (\bm{y} - \bm{A}\bm{x}_{\lambda} )^T  (\bm{y} - \bm{A}\bm{x}_{\lambda})  + \lambda \bm{x}_{\lambda}^T  \bm{T}^T \bm{T} \bm{x}_{\lambda} \big\} &= 0 \\
 &\iff &\nabla_{\bm{x}} \big\{ \bm{y}^T \bm{y} + \bm{x}_{\lambda}^T \bm{A}^T  \bm{A}\bm{x}_{\lambda} - \bm{y}^T \bm{A}\bm{x}_{\lambda} - \bm{x}_{\lambda}^T \bm{A}^T   \bm{y}   + \lambda \bm{x}_{\lambda}^T  \bm{T}^T \bm{T} \bm{x}_{\lambda} \big\} & = 0  \\
-& \iff& 2\bm{A}^T  \bm{A}\bm{x}_{\lambda} -2 \bm{A}^T   \bm{y}  + 2 \lambda   \bm{T}^T \bm{T} \bm{x}_{\lambda}  & = 0 
+& \iff& 2\bm{A}^T  \bm{A}\bm{x}_{\lambda} -2 \bm{A}^T   \bm{y}  + 2 \lambda   \bm{T}^T \bm{T} \bm{x}_{\lambda}  & = 0.
 \end{align}
 Then a regularised solution is given as:
 \begin{align}
-	\bm{A}^T   \bm{y}  (\bm{A}^T  \bm{A} + \lambda   \bm{L} )^{-1} = \bm{x}_{\lambda}, 
+	(\bm{A}^T  \bm{A} + \lambda   \bm{L} )^{-1} \bm{A}^T   \bm{y}   = \bm{x}_{\lambda}, 
 \end{align}
-where we can set $\bm{T}^T \bm{T} = \bm{L}$, which is typically, banded matrix approximation to the nth derivative\cite{}.
-To find the best regularised solution $\bm{x}_{\lambda}$ is calculated for a range of $\lambda$ so thate the regularised solution minimizes the data-misfit as well as the regularised semi-norm, which can be done via a L-Curve.
-We will further specify $\bm{L}$ in section \ref{} as well as plot an L-Curve.
-
+where we can set $\bm{T}^T \bm{T} = \bm{L}$, which is typically matrix approximation of the nth derivative \cite{tan2016LecNot}.
+In practise $\bm{x}_{\lambda}$ is calculated for a range of $\lambda$, and is evaluated by the data-misfit norm with respect to the regularised semi-norm so that the best $\bm{x}_{\lambda}$ lays on the point of maximum curvature of a so-called L-Curve \cite{hansen1993use}, which we will show in section \ref{}.
 
 
 \section{Sampling Methods}
-In this chapter we present the sampling methods used in this thesis and also argue why we use sampling methods to calculate the expectation
+In this chapter we present the sampling methods used in this thesis and also argue why we can use sampling methods to calculate the expectation
 \begin{align}
-	\label{eq:sampMean}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}, \bm{\theta})] = \underbrace{ \int \int h(\bm{x},\bm{\theta}) \, \text{d} \bm{\theta} \, \text{d} \bm{x} }_{\bm{\mu}_{\text{int}}} 
+	\label{eq:intMean}
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}( \bm{\theta}))] = \underbrace{ \int \int h(\bm{x}(\bm{\theta})) \pi(\bm{x},\bm{\theta}|\bm{y}) \, \text{d} \bm{\theta} \, \text{d} \bm{x} }_{\bm{\mu}_{\text{int}}} 
 \end{align}
-of a function  $h(\bm{x}, \bm{\theta})$ with respect to a probability density $\pi( \bm{x},\bm{\theta}|\bm{y})$.
-In the case where the calculation of the integral is not feasible we can approximate Eq. \ref{} with a sample based estimate
+of a function  $h(\bm{x}(\bm{\theta}))$ with respect to a probability density $\pi( \bm{x},\bm{\theta}|\bm{y})$.
+In the case where the calculation of the integral is not feasible we can approximate Eq. \ref{eq:intMean} with a sample based estimate
 \begin{align}
 	\label{eq:sampMean}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}, \bm{\theta})] \approx \underbrace{ \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)},\bm{\theta}^{(k)})  }_{\bm{\mu}_{\text{samp}}} \, ,
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}( \bm{\theta}))] \approx \underbrace{ \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}(\bm{\theta}^{(k)}))  }_{\bm{\mu}_{\text{samp}}} \, ,
 \end{align}
 for large enough samples size $N$ of a sample set $\mathcal{M} = \{  (\bm{x}, \bm{\theta} )^{(1)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)}  \} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $.
-The variance of this unbiased estimator is $\mathcal{O}(1/N)$ so large samples sizes can reduce the uncertainty of $\bm{\mu}_{samp}$ \cite{}. see chapter 5 in Ridley and Roberts 2004
+The variance of this unbiased estimator is $\mathcal{O}(1/N)$ so large samples sizes can reduce the uncertainty of $\bm{\mu}_{samp}$ \cite{roberts2004general}.
+%chapter 5 Ridley
 We can do this as the central limit theorem states that the samples means $ \bm{\mu}^{(i)}_{samp} $, of samples sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution , converge in distribution to a normal distribution so that
 \begin{align}
-	 \sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) ,
+	 \sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
 \end{align}
-if $\sigma^2 < \infty$ with a bound error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $.
+and if $\sigma^2 < \infty$ the error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bound.
 
-For us it is now important to show that we the methods we use draw samples from a target distribution so that $ \mathcal{M} = \{ (\bm{x}, \bm{\theta} )^{(1)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $ and that we then use sample based estimates as in Eq. \ref{}.
-In doing so we will use Markov-Chain Monte Carlo (MCMC) methods, where we hava to show that the produces Markov-Chain $\mathcal{M}$ is ergodic.
-The ergodicy theorem states that, if an aperiodic and irreducible Markov chain $\mathcal{M}$ is reversible \ref{} then it converges towards a stationnary distrbution unique equilibirum distribution $\pi(\bm{x},\bm{\theta}| \bm{y}) $.
-In other words if from a state in the chain we can reach every other state in the sampling space and the previous state, and we do not get stuck in periodic loop, then the chain converges and we can use sample based estimates.
+Now, we have to show that the methods we use actually draw samples $ \mathcal{M} = \{ (\bm{x}, \bm{\theta} )^{(1)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $ from the desired target distribution so that we can use sample based estimates as in Eq. \ref{eq:sampMean}.
+In doing so we will use Markov-Chain Monte Carlo (MCMC) methods, where ergodicity of a Markov-Chain $\mathcal{M}$ is a sufficient criterium to use samples based estimates \cite{tan2016LecNot, roberts2004general}.
+The ergodicy theorem in \cite{tan2016LecNot} states that, if an aperiodic and irreducible Markov chain $\mathcal{M}$ is reversible then it converges towards a stationary unique equilibirum distribution $\pi(\bm{x},\bm{\theta}| \bm{y}) $.
+In other words if from any state in the chain we can reach any other state in the sampling space and the previous state, and we do not get stuck in periodic loop, then the chain converges towards a stationary distribution.
 In practise one can look at the trace $\pi(\bm{x}^{(k)},\bm{\theta}^{(k)}| \bm{y}) $ for $k = 1, \dots, N$ of the samples and eyeball ergodicity.
 
-
 The sampling methods used in this thesis have proven ergodic properties, so we will cite and refer the reader to the respective documents.
-Next we will introduce the methods used in this thesis.
 
 \subsection{Metropolis- within Gibbs sampling}
 
-As introduced in the MTC sektion we will sample from $\pi(\bm{\theta}| \bm{y})$ seperatly from $\pi(\bm{x}|\bm{\theta}, \bm{y}) $.
-To sample from $\pi(\bm{\theta}| \bm{y})$ we use a Metropolis-within-Gibbs sampler and introduce this for the 2 dimesnional case, as this is what we deal with in this tehsis, where $\bm{\theta}  =( \theta_1 , \theta_2) $, we do a metroplis step in $\theta_1$ deirection and a gibbs stepp in $\theta_2$ direction.
-
-
+As introduced in section \ref{subsec:MTC} when using the MTC method will sample seperatly from $\pi(\bm{\theta}| \bm{y})$ and $\pi(\bm{x}|\bm{\theta}, \bm{y}) $.
+To sample from $\pi(\bm{\theta}| \bm{y})$ we use a Metropolis-within-Gibbs sampler as in \cite{fox2016fast} and discuss the 2 dimesnional case, as used in this thesis, with $\bm{\theta}  =( \theta_1 , \theta_2) $, where we do a metroplis step in $\theta_1$ deirection and a gibbs stepp in $\theta_2$ direction.
+Ergodicity is proven here \cite{roberts2006harris}.
 
 The Metropolis-within-Gibbs algorithm starts with a initial guess $\bm{\theta}^{(t)}$ at $t=0$.
-We propose a new sample $\theta_1 \sim q( \theta_1 | \theta^{(t-1)}_1 )$ condition on the previous state according to a symmetric proposal distribution $q(\theta_1 | \theta^{(t-1)}_1 ) = q( \theta^{(t-1)}_1|\theta_1 ) $ , which is a special case of the Metropolis-Hastings algorithm \cite{} and cancels when computing the accpetacne probailiy $\alpha$. We accept and set $ \theta^{(t)}_1 = \theta_1$ with
+Then, we propose a new sample $\theta_1 \sim q( \theta_1 | \theta^{(t-1)}_1 )$ conditioned on the previous state according to a symmetric proposal distribution $q(\theta_1 | \theta^{(t-1)}_1 ) = q( \theta^{(t-1)}_1|\theta_1 ) $ , which is a special case of the Metropolis-Hastings algorithm \cite{roberts2006harris} and cancels when computing the acceptance probability $\alpha$. We accept and set $ \theta^{(t)}_1 = \theta_1$ with
 \begin{align}
 \alpha( \theta_1  | \theta_1^{(t-1)}) = \min \left\{ 1, \frac{\pi(\theta_1  | \theta^{(t-1)}_2, \bm{y}) q(\theta_1^{(t-1)} | \theta_1 )  }{\pi(\theta_1^{(t-1)}| \theta_2^{(t-1)}, \bm{y}) q(\theta_1 | \theta_1^{(t-1)})}  \right\}
 \end{align}
 or reject and keep $\theta^{(t)}_1 = \theta^{(t-1)}_1$, which we do by comparing $\alpha$ to a uniform random number $u \sim \mathcal{U}(0,1)$.
+Next, we do a Gibbs step in $\theta_2$ direction, where Gibbs sampling is a special case of the Metropolis-Hastings algorithm with acceptance probaility of 1, and draw the next sample $\theta_2^{(t)} \sim  \pi( \cdot | \theta_1^{(t)} , \bm{y} ) $ conditioned on $\theta_1^{(t)}$ at step $t$.
+We reapet this $N$ times and assure convergence independent of the intial sample (irreducibility) as we discard samples after the so-called burn-in period so that we produce a Markov-Chain of length $N - N_{\text{burn-in}}$.
 
 
-The we do a gibbs step in $\theta_2$ direction, where Gibbs sampling is a special case of the metropolis hastings algorihtm with the acceptance probaility of 1.
-The next samples $\theta_2^{(t)} \sim  \pi( \cdot | \theta_1^{(t)} , \bm{y} ) $ conditioned on $\theta_1^{(t)}$ at step $t$.
-
-We reapet this $N$ times where and assure convergence independent of the intial sample (irreducibility) we discard samples after the so-called burn-in period so that we produce a Markov-Chain of length $N - N_{\text{burn-in}}$.
-
-A more mathematical prove of ergodicity for a more general Metropolis-within-Gibbs algorithm can be found in \cite{}.
-ARRIS RECURRENCE OF METROPOLIS-WITHIN-GIBBS AND
-TRANS-DIMENSIONAL MARKOV CHAINS
-By Gareth O. Roberts and Jeffrey S. Rosentha 2006
-
-
-\begin{algorithm}
+\begin{algorithm}[!ht]
 	\caption{Metropolis within Gibbs}
 	\begin{algorithmic}[1]
 		\STATE Initialize and suppose two dimensional vector \( \bm{\theta}^{(0)}  =( \theta_1^{(0)} , \theta_2^{(0)}  ) \)
@@ -312,9 +285,10 @@ By Gareth O. Roberts and Jeffrey S. Rosentha 2006
 
 
 
-\subsection{Draw a sample from a multivariate normal distribution}
+\subsection{Draw a sample from a multivariate normal distribution \label{subsec:RTO}}
+
 after sampling from $\pi(\bm{\theta}| \bm{y})$ we draw samples from $\pi(\bm{x}|\bm{\theta}, \bm{y}) $ within the MTC scheme.
-For Linear Gaussian Bayesian hierarchical model we can draw a sample $\bm{x}$ from the multivariate normal distribution$\pi(\bm{x}|\bm{\theta}, \bm{y})$  using the radomize then optimise (RTO) method \cite{}.
+For Linear Gaussian Bayesian hierarchical model we can draw a sample $\bm{x}$ from the multivariate normal distribution$\pi(\bm{x}|\bm{\theta}, \bm{y})$  using the radomize then optimise (RTO) method \cite{bardsley2012mcmc}.
 
 In doing so we can rewrite the full conditional normal distribution $\pi( \bm{x}| \bm{y} , \bm{\theta} )$ to:
 \begin{align}
@@ -332,7 +306,7 @@ where
 	\begin{bmatrix}
 		\bm{\Sigma}^{-1/2}(\bm{\theta})  \bm{y} \\
 		\bm{Q}^{1/2}(\bm{\theta}) \bm{\mu}
-	\end{bmatrix} \, \text{\cite{}}.
+	\end{bmatrix} \, \text{\cite{bardsley2014randomize}}.
 \end{align}
 
 Then one sample can be computed by minimising the following equation with respect to $\hat{\bm{x}}$ :
@@ -346,14 +320,14 @@ Similarly as in section \ref{} we can rewrite the argument of Eq. \ref{eq:minimi
 	(\bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A}+
 	\bm{Q}(\bm{\theta}) ) \bm{x}_i &= \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{y} +  \bm{Q}(\bm{\theta}) \bm{\mu} + \bm{v}_1 + \bm{v}_2 \,  ,
 \end{align}
-where we substitute $ - \hat{\bm{A}}^T  \bm{b}  = \bm{v}_1 + \bm{v}_2$ so that $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A}) $ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}(\bm{\theta}) )$ are independent random variables \cite{}.
+where we substitute $ - \hat{\bm{A}}^T  \bm{b}  = \bm{v}_1 + \bm{v}_2$ so that $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A}) $ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}(\bm{\theta}) )$ are independent random variables \cite{bardsley2012mcmc, fox2016fast}.
 
 
-Within the MTC scheme ergodicity is implied if the Metropolis-within-Gibbs produces an ergodic chain $ , \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)} , \dots,  \bm{\theta}^{(N)}  \} \sim \pi(\bm{\theta}| \bm{y})$ then $\mathcal{M} = \{  (\bm{x}, \bm{\theta} )^{(1)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)}  \} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $ is ergodic as well with independent samples $\bm{x}^{(k)}$ from the full conditional $\pi(\bm{x}|\bm{\theta}, \bm{y})$ \cite{}.
+If within the MTC scheme the Markov chain from the marginal posterior is ergodic then with independent samples $\bm{x}^{(k)}$ from the full conditional $\pi(\bm{x}|\bm{\theta}, \bm{y})$ the combined chain $\{  (\bm{x}, \bm{\theta} )^{(1)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)}  \} \sim \pi(\bm{x},\bm{\theta}| \bm{y})$ is ergodic as well \cite{acosta2014markov}.
 
 \subsection{t-walk}
 If there is a functional dependency of the parameters $\bm{x}$ and the hyper-parameters $\bm{\theta}$ so that $\bm{x}(\bm{\theta})$ we can use the t-walk algorithm by Christens and Fox on $\pi(\bm{\theta}|\bm{y} )$.
-We use the t-walk as a black box sampler, where convergence is guaranteed by construction \cite{}.
+We use the t-walk as a black box sampler, where convergence is guaranteed by construction \cite{christen2010general}.
 
 
 
@@ -403,14 +377,14 @@ The approximated marginal target function
 	\Big|  &\left( \int_{\mathbb{R}} \pi_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \pi_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \qquad \pi_{k}(x_k)\uplambda_k(x_{k}) \\ &\quad \left( \int_{\mathbb{R}} \pi_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \pi_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Big| \, ,
 	\end{split} 
 \end{align}
-is given by integration over each core, where $k$th is in $\mathbb{R}^{r_{k-1} \times r_{k}}$ and z is some normalising constant.
+is given by integration over each core, where $k$th is in $\mathbb{R}^{r_{k-1} \times r_{k}}$ and z is some normalising constant \cite{dolgov2020approximation}.
 Here we introduce some Lebesgue measurable weight function  $\uplambda(x) = \prod^d_{i=1} \uplambda_i(x_i)$.
 Why? \cite{}.
 \\
 
 
 %%%%%% Squared and Basis Function %%%%%
-From here the notation and procedure is taken mostly from \cite{}.
+From here the notation and procedure is taken mostly from \cite{cui2022deep}.
 For numerical stability we can approximate the sqaure root of
 \begin{align}
 	\sqrt{\pi(x)} \approx \tilde{g}(x) = \bm{G}_1(x_1), \dots ,  \bm{G}_k(x_k), \dots ,  \bm{G}_d(x_d)
@@ -439,7 +413,7 @@ Consquently the approximated marginal functions can be expressed as
 \end{align}
 where $\uplambda_k( \mathcal{X}_k) = \int_{ \mathcal{X}_k} \uplambda_k (x_k) \text{d}x_k$.
 
-To effeciently calculate these marginals on can us a procedure which is called left and right orthogonalization of cores \cite{} [32].
+To effeciently calculate these marginals on can use a procedure similiar to something that is called left and right orthogonalization of cores \cite{oseledets2011tensor}.
 To do so we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ by
 \begin{equation}
 	\bm{M}_k[i, j] = \int_{X_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k)  \uplambda(x_k) \,dx_k, \quad i = 1, ..., n_k, \quad j = 1, ..., n_k,
