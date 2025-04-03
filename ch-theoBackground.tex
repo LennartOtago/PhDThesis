@@ -96,23 +96,21 @@ Given some data we inferer the distribution of the underling parameters and hype
 	\node[rectnode] at (0,-3.5) (y)    {$\bm{y}$};
 	
 	\draw[->, very thick] (th.south) -- (x.north); 
-	\draw[->, very thick] (x.south) -- (u.north); 
-	\draw[->, very thick, mydotted] (u.south) -- (y.north); 
-	\draw[->, very thick, mydotted] (th) edge[bend right=60] (y);  
+	\draw[->, very thick, mydotted] (x.south) -- (u.north); 
+	\draw[->, very thick] (u.south) -- (y.north); 
+	\draw[->, very thick] (th) edge[bend right=60] (y);  
 	
-	\node[align=center] at (3,3.5) (tht) {hyper-parameters};
-	\node[align=center] at (3,1.5) (xt) {parameters};
-	\node[align=center] at (1.1,0) (At) {$\bm{A}$ \quad forward model};
+	\node[align=center] at (2.8,3.5) (tht) {$\sim \pi_{\bm{\theta}}(\cdot) $ hyper-parameters};
+	\node[align=center] at (2.4,1.5) (xt) {$\sim \pi_{\bm{x}}(\cdot|\bm{\theta}) $ parameters};
+	\node[align=center] at (2.25,0) (At) {$\bm{u} = \bm{Ax}$ noise free data};
 	\node[align=center] at (3,-1.5) (ut) {space of all measurables};
-	\node[align=center] at (3,-3.5) (yt) {data};
+	\node[align=center] at (2,-3.5) (yt) {$\sim \pi_{\bm{y}}(\cdot|\bm{\theta},\bm{u})$ data};
 	\node[align=center] at (-3,0) (nt) {noise};
 \end{tikzpicture}
 
-	\caption[Bayesian Inference DAG]{The directed acyclic graph (DAG) for a typical linear inverse problem visualises forward dependencies as solid line arrows for deterministic dependencies and dotted arrows for statistical dependencies.
-	Naturally the data $\bm{y}$ has some noise described through included in some hyper-parameters $\bm{\theta}$.
-	The parameters $\bm{x}$ have some dependency of those hyper-parameters $\bm{\theta}$. The parameter $\bm{x}$ is mapped onto the space of all measurables $\bm{u}$ through the linear forward model $\bm{A}$, so that $\bm{Ax}$ is a linear operation.
-	From the space of all measurables we can observe some data $\bm{y}$, statistically, where as prevoiusly mentioned some random noise is added.
-	We set up a more sophisticated Bayesian model in chapter \ref{} explicitly including all hyper-parameters and parameters of interest according to the forward model in section \ref{}.}
+	\caption[Bayesian Inference DAG]{The directed acyclic graph (DAG) for a linear inverse problem visualises statistical dependencies as solid line arrows and deterministic dependencies as dotted arrows.
+	The parameters $\bm{x}$ have some statistical dependency of those hyper-parameters $\bm{\theta}$, which are distributed as $\pi(\bm{\theta})$. Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is mapped onto the space of all measurables $\bm{u}=\bm{Ax}$ deterministically through the linear forward model $\bm{A}$.
+	From the space of all measurables we observe some data $\bm{y} = \bm{Ax} + \bm{\eta}$, statistically,  so that $\bm{y}\sim \pi_{\bm{y}}(\cdot|\bm{\theta},\bm{u})$ , with naturally some random noise $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$.}
 	\label{fig:FirstDAG}
 \end{figure}
 
@@ -150,7 +148,7 @@ which is usually a high dimensional integral and computationally not feasible to
 One way to work around the high dimensionality is to parameterise $\bm{x}$ using hyper-parameters $\bm{\theta}$ so that $\bm{x}(\bm{\theta})$. 
 Another way is to seperate the posterior distribution over latent field $\bm{x}$ and the hyper-parameters $\bm{\theta}$.
 This is particular benefitial, when $\bm{x}$ is high dimensional, e.g. $\bm{x} \in \mathbb{R}^n$ with $n = 45$ and can not be parametrised, and $\bm{\theta}$ is low dimensional, e.g. two dimensional.
-Then by the law of total expectation eq. \ref{eq:expPos} becomes
+Then by the law of total expectation \cite{champ2022generalizedlawtotalcovariance} eq. \ref{eq:expPos} becomes
 \begin{align}
 	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \text{E}_{\bm{\theta}|\bm{y}}   \big[ \text{E}_{\bm{x}|\bm{\theta},\bm{y}} [h(\bm{x}(\bm{\theta}))] \big]=  \int 	\text{E}_{\bm{x}| \bm{\theta},\bm{y}}  [h(\bm{x}(\bm{\theta}))] \,  \pi( \bm{\theta} | \bm{y} )  \, \text{d} \bm{\theta}   \label{eq:MargExpPos} \, ,
 \end{align}
@@ -187,6 +185,7 @@ or calculate weighted expectations e.g. $ \text{E}_{\bm{x}|\bm{\theta},\bm{y}} [
 Note that the noise covariance $\bm{\Sigma}= \bm{\Sigma}( \bm{\theta}) $ and the prior precision $\bm{Q} = \bm{Q}( \bm{\theta})$ are depending on hyper-parameters $\bm{\theta}$.
 
 \section{Regularisation}
+\label{sec:reg}
 Another method to find a solution to a linear inverse problem as in Eq. \ref{eq:LinDat} is to find a solution $\bm{x}_{\lambda}$ according to a data misfit norm and a regularisation semi-norm as in \cite{fox2016fast}.
 We will discuss the case of Tikhonov regularisation \cite{kaipio2005statinv,tan2016LecNot} as this is the most similar to a linear-Gaussian hierarchial Bayesian model.
 
@@ -314,7 +313,7 @@ Then one sample can be computed by minimising the following equation with respec
 	\bm{x}_i = \arg \min_{\hat{\bm{x}}} \lVert \hat{\bm{A}} \hat{\bm{x}} - ( \hat{\bm{y}} + \bm{b} ) \rVert^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
 \end{align}
 where we add a randomised perturbation $\bm{b}$.
-Similarly as in section \ref{} we can rewrite the argument of Eq. \ref{eq:minimizer} to 
+Similarly as in section \ref{sec:reg} we can rewrite the argument of Eq. \ref{eq:minimizer} to 
 \begin{align}
 	\label{eq:RTO}
 	(\bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A}+
@@ -332,12 +331,9 @@ We use the t-walk as a black box sampler, where convergence is guaranteed by con
 
 
 \section{Numerical Approxiamtion Methods - Tensor Train}
-Using the tensor train format to approximate a $d$-dimensional function $\pi(x)$ enables us to compute marginal posterior probability distribution cheaply.
-As the name suggest the tensor train format is a train of tensors, more specifically two and three dimensional tensors which we call cores $\pi_{k} \in \mathbb{R}^{r_{k-1} \times n \times r_{k}}$  and which are connected through a ranks $r_{k}$ and $r_{k-1}$ for the $k$th dimension and defined by the number of gridpoints $n$, as in Figure \ref{} displayed.
-For the first and last dimensional core the outer ranks are $r_0  = r_d = 1$.
-
-
-
+Using the tensor train (TT) format to approximate a $d$-dimensional function $\pi(\bm{x},\bm{\theta}|\bm{y})$ which we set to $\pi(x) \equiv \pi(\bm{x},\bm{\theta}|\bm{y})$, with $x \in \mathbb{R}^n$ to improve readability, enables us to compute marginal posterior probability distributions cheaply.
+As the name suggest the tensor train format is a train of tensors, more specifically two and three dimensional tensors which we call cores $\pi_{k} \in \mathbb{R}^{r_{k-1} \times n \times r_{k}}$  and are connected through ranks $r_{k}$ and $r_{k-1}$ for each $k = 1, \dots , d$, with the number of grid points $n$, as in Figures \ref{fig:TTtikz} and \ref{} displayed.
+For the first and last dimensional the core outer ranks are $r_0  = r_d = 1$, so that for $x = {x_1, \dots, x_d}$ the function value $\pi(x) = \big( \pi_1(x_1) \dots \pi_d(x_d) \big)\in \mathbb{R}$ is a vector-matrix-vector multiplication and each core $\pi_k(x_k)$ at $x_k$ has dimensions $r_{k-1} \times 1 \times r_{k} =r_{k-1} \times r_{k}$.
 
 \begin{figure}[ht!]
 	\centering
@@ -356,64 +352,61 @@ For the first and last dimensional core the outer ranks are $r_0  = r_d = 1$.
 	
 \end{tikzpicture} 
 \caption{text}
-\label{key}
-	
+\label{fig:TTtikz}
 \end{figure}
-
-
 \begin{figure}[ht!]
 	\centering
 
-	\caption{nice matries picture}
-	\label{key}
+	\caption{nice matries picture \cite{fox2021grid}}
+	\label{fig:TTdraw}
 	
 \end{figure}
 
-
-The approximated marginal target function
+Consequently we can approximate the marginal target function
 \begin{align}
 	\begin{split}
 	f_{X_k}(x_k) = \frac{1}{z}
 	\Big|  &\left( \int_{\mathbb{R}} \pi_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \pi_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \qquad \pi_{k}(x_k)\uplambda_k(x_{k}) \\ &\quad \left( \int_{\mathbb{R}} \pi_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \pi_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Big| \, ,
 	\end{split} 
-\end{align}
-is given by integration over each core, where $k$th is in $\mathbb{R}^{r_{k-1} \times r_{k}}$ and z is some normalising constant \cite{dolgov2020approximation}.
-Here we introduce some Lebesgue measurable weight function  $\uplambda(x) = \prod^d_{i=1} \uplambda_i(x_i)$.
+\end{align} 
+by integration over each core \cite{dolgov2020approximation} with some normalising constant $z$ and some Lebesgue measurable weight $ \uplambda_i(x_i)$ for $i = 1, \dots , d$ \cite{cui2022deep}.
 Why? \cite{}.
 \\
 
 
 %%%%%% Squared and Basis Function %%%%%
-From here the notation and procedure is taken mostly from \cite{cui2022deep}.
-For numerical stability we can approximate the sqaure root of
+From here we follow the notation and procedure mostly from \cite{cui2022deep} as for numerical stability we approximate the square root
 \begin{align}
-	\sqrt{\pi(x)} \approx \tilde{g}(x) = \bm{G}_1(x_1), \dots ,  \bm{G}_k(x_k), \dots ,  \bm{G}_d(x_d)
+	\sqrt{\pi(x)} \approx g(x) = \bm{G}_1(x_1), \dots ,  \bm{G}_k(x_k), \dots ,  \bm{G}_d(x_d)
 \end{align}
-where the TT-core
+where each TT-core
 \begin{equation}
 	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, ..., d,
 \end{equation}
 with the associated $k$th coefficient tensor $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and the $k$-th  basis functions $\phi^{(i)}_k(x_k)$.
-
 We assume the function
 \begin{align}
 	\pi(x) \approx \gamma^{\prime} + g^2(x) \, ,
 \end{align} 
-where $g(x)$ is defined through the tensor train decomposition plus an error $\gamma^{\prime}$  according to the l2 norm.
-Then the normalised target function is 
+is approximated through the TT decomposition $g(x)$ plus an error $\gamma^{\prime}$ to assure positivity.
+The error $\gamma^{\prime}$  is chosen according to the L2 norm 
 \begin{align}
-	f_X(x) = \frac{1}{z} \pi(x) \uplambda(x) = \frac{1}{z} ( \gamma^{\prime} \uplambda(x) + g^2(x) \uplambda(x))
+	\gamma^{\prime} \leq \frac{1}{\uplambda( \mathcal{X})} \lVert g - \sqrt{\pi}\rVert^2_2 ,
+\end{align}
+with $\uplambda( \mathcal{X}) = \prod_{i = 1}^{d}  \uplambda_i( \mathcal{X}_i) $ and  $\uplambda_i( \mathcal{X}_i) = \int_{ \mathcal{X}_i} \uplambda_i (x_i) \text{d}x_i$, and .
+Then the normalised target function with respect to the weigth $\uplambda(x) = \prod_{i=1}^{d} \uplambda_i(x_i) $ is: 
+\begin{align}
+	f_X(x) = \frac{1}{z} \pi(x) \uplambda(x) = \frac{1}{z} ( \gamma^{\prime} \uplambda(x) + g^2(x) \uplambda(x)) \, ,
 \end{align} 
 with a normalisation constant $z$.
 Consquently the approximated marginal functions can be expressed as
 \begin{align}
 	\begin{split}
-		f_{X_k}(x_k) = \frac{1}{z}  \Bigg( \gamma^{\prime}& \prod_{i=1}^{k-1} \uplambda_i(\mathcal{X}_i) \prod_{i=k+1}^{d} \uplambda_i(\mathcal{X}_i) \\&+  \left( \int_{\mathbb{R}} \bm{G}^2_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \bm{G}^2_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \bm{G}^2_{k}(x_k)\uplambda_k(x_{k})\\ & \left( \int_{\mathbb{R}}  \bm{G}^2_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \bm{G}^2_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Bigg) \, ,
+		f_{X_k}(x_k) = \frac{1}{z}  \Bigg( \gamma^{\prime}& \prod_{i=1}^{k-1} \uplambda_i(\mathcal{X}_i) \prod_{i=k+1}^{d} \uplambda_i(\mathcal{X}_i) \\&+  \left( \int_{\mathbb{R}} \bm{G}^2_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \bm{G}^2_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \bm{G}^2_{k}(x_k)\uplambda_k(x_{k})\\ & \left( \int_{\mathbb{R}}  \bm{G}^2_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \bm{G}^2_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Bigg) \, .
 	\end{split} 
 \end{align}
-where $\uplambda_k( \mathcal{X}_k) = \int_{ \mathcal{X}_k} \uplambda_k (x_k) \text{d}x_k$.
 
-To effeciently calculate these marginals on can use a procedure similiar to something that is called left and right orthogonalization of cores \cite{oseledets2011tensor}.
+To efficiently calculate these marginals on can use a procedure similar to something that is called left and right orthogonalisation of cores \cite{oseledets2011tensor}.
 To do so we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ by
 \begin{equation}
 	\bm{M}_k[i, j] = \int_{X_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k)  \uplambda(x_k) \,dx_k, \quad i = 1, ..., n_k, \quad j = 1, ..., n_k,
@@ -427,15 +420,11 @@ where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ is the set of basis functions for the 
 
 \subsection{Marginal Functions}
 
-We calculate the marginal functions through procedures, which we call backward marginalisation \cite{} and forward marginalisation.
-We gain the coefficient matrices $\bm{B}_k$ through backward marginalisation and the coefficient matrices $\bm{B}_{pre,n}$ through forward marginalisation, which enables us to calculate marginal fuunction similar to \cite{}.
-
-
-
-
-The proposition \ref{prob:backMarg} to caculte $\bm{B}_k$  is taken from \cite{}.
-
+We calculate the marginal functions through procedures, which we call backward marginalisation \cite{cui2022deep} and forward marginalisation.
+We gain the coefficient matrices $\bm{B}_k$ through backward marginalisation and the coefficient matrices $\bm{B}_{pre,n}$ through forward marginalisation, which enables us to calculate marginal function similar to \cite{cui2022deep}.
+The proposition \ref{prob:backMarg} to caculte $\bm{B}_k$  is taken from \cite{cui2022deep}.
 \begin{prop}[Backward Marginalisation]
+	\label{prob:backMarg}
 	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k-1} \in \mathbb{R}^{r_{k-2} \times n_{k-1} \times r_{k-1}}$, which we need for defining the marginal function $f_{X_k}(x_k)$:
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
@@ -451,14 +440,10 @@ The proposition \ref{prob:backMarg} to caculte $\bm{B}_k$  is taken from \cite{}
 			\bm{B}_{k-1}[\alpha_{k-2}, i, l_{k-1}] = \sum_{\alpha_{k-1}=1}^{r_{k-1}} \bm{A}_{k-1}[\alpha_{k-2}, i, \alpha_{k-1}] \bm{R}_k[l_{k-1}, \alpha_{k-1}].
 		\end{equation}
 	\end{enumerate}
-\label{prob:backMarg}
 \end{prop}
-
-Then we need to do this the other way as well.
-
-
-In addiotn we also have to  do forward marginalistion starig with the first dimension
+We start the forward marginalisation with the first dimension as in Proposition \ref{prob:ForMarg}.
 \begin{prop}[Forward Marginalistaion]
+	\label{prob:ForMarg}
 	Starting with the first coordinate $k = 1$, we set $\bm{B}_{pre,1} = \bm{A}_1$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{pre,k+1} \in \mathbb{R}^{r_{k} \times n_{k+1} \times r_{k+1}}$ for defining the marginal function $f_{X_k}(x_k)$:
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
@@ -476,8 +461,6 @@ In addiotn we also have to  do forward marginalistion starig with the first dime
 	\end{enumerate}
 \end{prop}
 
-
-
 The marginal PDF of $X_{k}$ can be expressed as
 \begin{equation}
 	f_{X_k}(x_k) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{k-1} \lambda_i(X_i) \prod_{i=k+1}^{d} \lambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \lambda_k(x_k),
@@ -488,13 +471,13 @@ where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and $\bm{R}_{pre
 \end{equation}
 
 
-Special Cases
-The marginal PDF of $X_1$ can be expressed as
+
+In the special case for the first dimension, $f_{X_1}(x_1)$ can be expressed as
 \begin{equation}
 	f_{X_1}(x_1) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1),
 \end{equation}
-where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$.\\
-The marginal PDF of $X_n$ can be expressed as
+where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$,
+and similiarly in the last dimesnion
 \begin{equation}
 	f_{X_n}(x_n) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{n-1}=1}^{r_{n-1}} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_n[l_{n-1},i] \right)^2 \right) \uplambda_n(x_n),
 \end{equation}
