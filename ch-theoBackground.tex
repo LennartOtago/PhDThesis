@@ -154,7 +154,7 @@ Then by the law of total expectation \cite{champ2022generalizedlawtotalcovarianc
 \end{align}
 where in the case of a linear-Gaussian Bayesian hierarchical model $\text{E}_{\bm{x}| \bm{\theta},\bm{y}}  [h(\bm{x}(\bm{\theta}))]$ is well defined.
 The marginal and then condtional method, does exactly that.
-
+Why MTC sperate hiughky correlated \cite{}
 
 \subsection{Marginal and then Conditional}
 \label{subsec:MTC}
@@ -238,12 +238,15 @@ We can do this as the central limit theorem states that the samples means $ \bm{
 and if $\sigma^2 < \infty$ the error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bound.
 
 Now, we have to show that the methods we use actually draw samples $ \mathcal{M} = \{ (\bm{x}, \bm{\theta} )^{(1)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $ from the desired target distribution so that we can use sample based estimates as in Eq. \ref{eq:sampMean}.
-In doing so we will use Markov-Chain Monte Carlo (MCMC) methods, where ergodicity of a Markov-Chain $\mathcal{M}$ is a sufficient criterium to use samples based estimates \cite{tan2016LecNot, roberts2004general}.
+Here $ \mathcal{M}$ is a Markov-Chain, where each sample $ (\bm{x}, \bm{\theta})^{(k)}$ is only depending on the previous sample  $ (\bm{x}, \bm{\theta})^{(k-1)}$ \cite{}.
+Markov-chain Monte Carlo method generates such a Markov-Chain $\mathcal{M}$ with random (Monte Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |(\bm{x}, \bm{\theta})^{(k-1)})$, where ergodicity of $\mathcal{M}$ is a sufficient criterium to use samples based estimates \cite{tan2016LecNot, roberts2004general}.
 The ergodicy theorem in \cite{tan2016LecNot} states that, if an aperiodic and irreducible Markov chain $\mathcal{M}$ is reversible then it converges towards a stationary unique equilibirum distribution $\pi(\bm{x},\bm{\theta}| \bm{y}) $.
 In other words if from any state in the chain we can reach any other state in the sampling space and the previous state, and we do not get stuck in periodic loop, then the chain converges towards a stationary distribution.
 In practise one can look at the trace $\pi(\bm{x}^{(k)},\bm{\theta}^{(k)}| \bm{y}) $ for $k = 1, \dots, N$ of the samples and eyeball ergodicity.
 
 The sampling methods used in this thesis have proven ergodic properties, so we will cite and refer the reader to the respective documents.
+
+INtrodue markov concept
 
 \subsection{Metropolis- within Gibbs sampling}
 
@@ -331,9 +334,10 @@ We use the t-walk as a black box sampler, where convergence is guaranteed by con
 
 
 \section{Numerical Approxiamtion Methods - Tensor Train}
-Using the tensor train (TT) format to approximate a $d$-dimensional function $\pi(\bm{x},\bm{\theta}|\bm{y})$ which we set to $\pi(x) \equiv \pi(\bm{x},\bm{\theta}|\bm{y})$, with $x \in \mathbb{R}^n$ to improve readability, enables us to compute marginal posterior probability distributions cheaply.
-As the name suggest the tensor train format is a train of tensors, more specifically two and three dimensional tensors which we call cores $\pi_{k} \in \mathbb{R}^{r_{k-1} \times n \times r_{k}}$  and are connected through ranks $r_{k}$ and $r_{k-1}$ for each $k = 1, \dots , d$, with the number of grid points $n$, as in Figures \ref{fig:TTtikz} and \ref{} displayed.
-For the first and last dimensional the core outer ranks are $r_0  = r_d = 1$, so that for $x = {x_1, \dots, x_d}$ the function value $\pi(x) = \big( \pi_1(x_1) \dots \pi_d(x_d) \big)\in \mathbb{R}$ is a vector-matrix-vector multiplication and each core $\pi_k(x_k)$ at $x_k$ has dimensions $r_{k-1} \times 1 \times r_{k} =r_{k-1} \times r_{k}$.
+Using the tensor train (TT) format to approximate a $d$-dimensional function $\pi(x)$, with $x \in \mathbb{R}^d$ on a discrete grid with $n^d$ points, enables us to compute marginal posterior probability distributions cheaply.
+As the name suggest the tensor train format is a train of tensors, more specifically two and three dimensional tensors which we call cores $\pi_{k} \in \mathbb{R}^{r_{k-1} \times n \times r_{k}}$  and are connected through ranks $r_{k}$ and $r_{k-1}$ for each $k = 1, \dots , d$, with the number of grid points in each dimension $n$, as in Figures \ref{fig:TTtikz} and \ref{} displayed.
+For the first and last dimensional the core outer ranks are $r_0  = r_d = 1$, so that for $x = {x_1, \dots, x_d}$ the function value $\pi(x) = \big( \pi_1(x_1) \dots \pi_d(x_d) \big)\in \mathbb{R}$ is a vector-matrix-vector multiplication and each core $\pi_k(x_k)$ at a fixed $x_k$ on the approximated grid has dimensions $r_{k-1} \times 1 \times r_{k} =r_{k-1} \times r_{k}$.
+
 
 \begin{figure}[ht!]
 	\centering
@@ -348,8 +352,7 @@ For the first and last dimensional the core outer ranks are $r_0  = r_d = 1$, so
 	\draw[-, mydotted, very thick] (T2.east) -- (Tn1.west);
 	
 	\node[align=center] at (-3.5,0.25) (R) {$r_1$};
-	\node[align=center] at (5,0.25) (R) {$r_{d-1}$};
-	
+	\node[align=center] at (5,0.25) (R) {$r_{d-1}$};	
 \end{tikzpicture} 
 \caption{text}
 \label{fig:TTtikz}
@@ -361,16 +364,23 @@ For the first and last dimensional the core outer ranks are $r_0  = r_d = 1$, so
 	\label{fig:TTdraw}
 	
 \end{figure}
-
+Here we introduce a weight function $\lambda$
+\begin{align}
+	\int \lambda(x) \diff \nu_{\pi}
+\end{align}
+and the integral with respect to a reference measure $\diff \nu_{\pi}$ can be rewritten to
+\begin{align}
+	\int \lambda(x) \frac{\diff \nu_{\pi} }{\diff x} \diff x = \int \lambda(x) \pi(x) \diff x
+\end{align}
+accodring to the theorem which is an integral with respect to the Cartesian measure.
 Consequently we can approximate the marginal target function
 \begin{align}
 	\begin{split}
 	f_{X_k}(x_k) = \frac{1}{z}
-	\Big|  &\left( \int_{\mathbb{R}} \pi_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \pi_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \qquad \pi_{k}(x_k)\uplambda_k(x_{k}) \\ &\quad \left( \int_{\mathbb{R}} \pi_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \pi_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Big| \, ,
+	\Big|  &\left( \int_{\mathbb{R}} \pi_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \pi_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \qquad \pi_{k}(x_k)\uplambda_k(x_{k}) \\ &\quad \left( \int_{\mathbb{R}} \pi_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \pi_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Big| \, 
 	\end{split} 
-\end{align} 
-by integration over each core \cite{dolgov2020approximation} with some normalising constant $z$ and some Lebesgue measurable weight $ \uplambda_i(x_i)$ for $i = 1, \dots , d$ \cite{cui2022deep}.
-Why? \cite{}.
+\end{align}  
+by integration over each core \cite{dolgov2020approximation} with some normalising constant $z$ \cite{cui2022deep}.
 \\
 
 
