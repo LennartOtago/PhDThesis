@@ -239,7 +239,7 @@ and if $\sigma^2 < \infty$ the error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{
 
 Now, we have to show that the methods we use actually draw samples $ \mathcal{M} = \{ (\bm{x}, \bm{\theta} )^{(1)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $ from the desired target distribution so that we can use sample based estimates as in Eq. \ref{eq:sampMean}.
 Here $ \mathcal{M}$ is a Markov-Chain, where each sample $ (\bm{x}, \bm{\theta})^{(k)}$ is only depending on the previous sample  $ (\bm{x}, \bm{\theta})^{(k-1)}$ \cite{}.
-Markov-chain Monte Carlo method generates such a Markov-Chain $\mathcal{M}$ with random (Monte Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |(\bm{x}, \bm{\theta})^{(k-1)})$, where ergodicity of $\mathcal{M}$ is a sufficient criterium to use samples based estimates \cite{tan2016LecNot, roberts2004general}.
+Markov-chain Monte Carlo methods generates such a chain $\mathcal{M}$ with random (Monte Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |(\bm{x}, \bm{\theta})^{(k-1)})$ according to a proposal distribution, where ergodicity of $\mathcal{M}$ is a sufficient criterium to use samples based estimates \cite{tan2016LecNot, roberts2004general}.
 The ergodicy theorem in \cite{tan2016LecNot} states that, if an aperiodic and irreducible Markov chain $\mathcal{M}$ is reversible then it converges towards a stationary unique equilibirum distribution $\pi(\bm{x},\bm{\theta}| \bm{y}) $.
 In other words if from any state in the chain we can reach any other state in the sampling space and the previous state, and we do not get stuck in periodic loop, then the chain converges towards a stationary distribution.
 In practise one can look at the trace $\pi(\bm{x}^{(k)},\bm{\theta}^{(k)}| \bm{y}) $ for $k = 1, \dots, N$ of the samples and eyeball ergodicity.
@@ -364,6 +364,34 @@ For the first and last dimensional the core outer ranks are $r_0  = r_d = 1$, so
 	\label{fig:TTdraw}
 	
 \end{figure}
+
+Asumme that the triple $(\Omega, \mathcal{F} , \mathbb{P})$ is called a probability space over the whole sample space $\Omega$ with the collection $\mathcal{F}$ of very countable subset $\{ A _n \}_{n\in \mathbb{N}}$, where a Event $A_n$ is a subset of $\Omega$, $A_n \subseteq  \Omega$, and a map $P : \mathcal{F} \longrightarrow \mathbb{R}$. 
+We assume $P$ fullfils probality measure and  $\mathcal{F}$ is a sigma algebra see Appedndix.
+Then a random variabe $X: \Omega \longrightarrow \mathbb{R} $
+We call $\mathbb{P}(A)$ the probaility of an event $A$ 
+\begin{align}
+	\mathbb{P}(A) = \int_A \diff \mathbb{P} \text{\cite{}}.
+\end{align}
+And the Radon-Nikodym  derivativ
+\begin{align}
+	\mathbb{P}(A) = \int_{A}  \frac{\diff \mathbb{P}}{\diff x} \diff x
+\end{align}
+where $\diff x$ is a measure on the same probality space and we call this the lebesgue measure so that $A \in \mathbb{R}^d$
+\begin{align}
+	\mathbb{P}(A) = \int_{A} \lambda(x)   \pi(x) \diff x
+\end{align}
+with the desnsity $\pi(x)$, which we call weight funciton for quadraure.
+One could argure from the case $\mathbb{E}(\lambda)$ to justofy $\lambda$.
+In \cite{cui2022deep} $\lambda$ is called lebsebue meauerbl weigth ufnciton.
+ 
+%A map $P : \mathcal{F} \longrightarrow \mathbb{R}$ is a probability measure if $\mathbb{P}(\Omega) = 1$ for an event $A \subseteq  \Omega$ $\mathbb{P}(A) \in [0,1] $ and $\mathbb{P}(\emptyset) = 0$.
+\begin{align}
+	f_x(X) = \int_{X} dP = \int_{\mathbb{R}^d} \lambda(x) \pi(x) \diff x
+\end{align}
+where we intrduce a weight funciton for qudraruter rule and $\pi(x) = \frac{\diff P}{\diff x} $, Radon-Nikodym  derivative.
+THis is an intgral with reosect to the lesbeue measuer $dx$.
+$\pi(x)$ is the density 
+
 Here we introduce a weight function $\lambda$
 \begin{align}
 	\int \lambda(x) \diff \nu_{\pi}
