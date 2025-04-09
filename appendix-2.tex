@@ -1,0 +1,53 @@
+\chapter{Correlation Structure}
+\label{ap:Correlatation}
+The book by Rue and Held shows the correlation structur between the hyperparameter $\mu$ and the laten field $\bm{x}$
+We consider the hierarchal formuation 
+\begin{align}
+	\mu \sim \mathcal{N}(0,1)\\
+	\bm{x}|\mu \sim \mathcal{N}(\mu\bm{1},\bm{Q}^{-1})
+\end{align}
+Gibbs sampler Since both full conditional
+\begin{align}
+	\mu^{(k)} | \bm{x}^{(k)} &\sim \mathcal{N} \Bigg(\frac{\bm{1}^T\bm{Q}\bm{x}^{(k-1)}}{1 + \bm{1}^T\bm{Q}\bm{1}}, (1 + \bm{1}^T\bm{Q}\bm{1})^{-1} \Bigg)\\
+	\bm{x}^{(k)} | \mu^{(k)} &\sim \mathcal{N} (	\mu^{(k)}\bm{1}, \bm{Q}^{-1})
+\end{align}
+
+\begin{figure}[ht!]
+	\centering
+	
+	\caption[Correlation structur]{Figure 4.1 Figure (a) shows the marginal chain for µ over 1000 iterations of
+		the marginal chain for the hyperparmeter with a specuifuc autoregressive proces defined in $\bm{Q}$ The algorithm
+		updates successively $\mu$ and $x$ from their full conditionals. Figure (b) displays
+		the pairs ($\mu(k)$ ,  $1^T\bm{Q}x(k)$ ), with$\mu(k)$ on the horizontal axis. The slow mixing
+		(and convergence) of $\mu$is due to the strong dependence with $1^T\bm{Q}x(k)$  as only
+		horizontal and vertical moves are allowed. The arrows illustrate how a joint
+		update can improve the mixing (and convergence)}
+	\label{fig:FirstDAG}
+\end{figure}
+
+Our solution is to update $(\mu, x)$ jointly, where effectefally the 
+
+Note that only the marginal density of µ is needed in (4.6): Since we
+sample x from its full conditional, we eﬀectively integrate x out of the
+joint density $\pi(\mu, x)$.
+
+
+\chapter{Mesure theroy}
+\label{ap:Correlatation}
+Recall that
+\section{sigma alrgbea}
+A collections of subsets $\mathcal{F}$ is called sigma algreab if
+\begin{itemize}
+	\item $\emptyset, \Omega \in \mathcal{F} $
+	\item if $A \in \mathcal{F} $ then $A^C \coloneqq A / \Omega \in A$
+	\item if $A_1 , A_2, \dots  \in \mathcal{F} $ then $ \bigcup_{j=1}^{\infty} A_j \in A$
+\end{itemize}
+\section{probailty measure}
+
+a probailty measure has to full fil the folowing criterion 
+\begin{itemize}
+	\item $\mathbb{P}(\Omega) = 1$ and $\mathbb{P}(\emptyset) = 1$
+	\item $\mathbb{P}(A) \in [0,1]$
+	\item $\mathbb{P}(A \cup B) =\mathbb{P}(A) + \mathbb{P}(B) $ if $A, B$ are disjoint or $A\cap B = \emptyset$
+	\item $\mathbb{P}(\bigcup_{j = 1}^{\infty} A_j) = \sum_{j=1}^{\infty} \mathbb{P}(A_j)$ if we have pairwise dijoint sets or $A_i \cap A_j = \emptyset$ for $i \neq j $
+\end{itemize}

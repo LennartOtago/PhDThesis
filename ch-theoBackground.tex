@@ -156,6 +156,9 @@ where in the case of a linear-Gaussian Bayesian hierarchical model $\text{E}_{\b
 The marginal and then condtional method, does exactly that.
 Why MTC sperate hiughky correlated \cite{}
 
+Figure 4.1 in RUE and Held  see appemdix
+Hight correlation bewten $\bm{\theta}$ and $\bm{x}$
+
 \subsection{Marginal and then Conditional}
 \label{subsec:MTC}
 The marginal and then conditional (MTC) method factorises the full posterior distribution 
@@ -245,8 +248,6 @@ In other words if from any state in the chain we can reach any other state in th
 In practise one can look at the trace $\pi(\bm{x}^{(k)},\bm{\theta}^{(k)}| \bm{y}) $ for $k = 1, \dots, N$ of the samples and eyeball ergodicity.
 
 The sampling methods used in this thesis have proven ergodic properties, so we will cite and refer the reader to the respective documents.
-
-INtrodue markov concept
 
 \subsection{Metropolis- within Gibbs sampling}
 
@@ -365,79 +366,62 @@ For the first and last dimensional the core outer ranks are $r_0  = r_d = 1$, so
 	
 \end{figure}
 
-Asumme that the triple $(\Omega, \mathcal{F} , \mathbb{P})$ is called a probability space over the whole sample space $\Omega$ with the collection $\mathcal{F}$ of very countable subset $\{ A _n \}_{n\in \mathbb{N}}$, where a Event $A_n$ is a subset of $\Omega$, $A_n \subseteq  \Omega$, and a map $P : \mathcal{F} \longrightarrow \mathbb{R}$. 
-We assume $P$ fullfils probality measure and  $\mathcal{F}$ is a sigma algebra see Appedndix.
-Then a random variabe $X: \Omega \longrightarrow \mathbb{R} $
-We call $\mathbb{P}(A)$ the probaility of an event $A$ 
+Asumme that the triple $(\Omega, \mathcal{F} , \mathbb{P})$ is called a probability space over the whole sample space $\Omega$ with the collection $\mathcal{F}$ of very countable subset $\{ A _n \}_{n\in \mathbb{N}}$, where a Event $A_n$ is a subset of $\Omega$, $A_n \subseteq  \Omega$, and a map $\mathbb{P} : \mathcal{F} \longrightarrow \mathbb{R}$. 
+We assume $\mathbb{P}$ fullfils probality measure and  $\mathcal{F}$ is a $\sigma $-algebra see Appendix \ref{}.
+We call $\mathbb{P}(A)$ the probaility of an event $A \subseteq \mathcal{F}$ 
 \begin{align}
 	\mathbb{P}(A) = \int_A \diff \mathbb{P} \text{\cite{}}.
 \end{align}
-And the Radon-Nikodym  derivativ
+using the Radon-Nikodym theroem \cite{}
 \begin{align}
 	\mathbb{P}(A) = \int_{A}  \frac{\diff \mathbb{P}}{\diff x} \diff x
 \end{align}
-where $\diff x$ is a measure on the same probality space and we call this the lebesgue measure so that $A \in \mathbb{R}^d$
+where $\diff x$ is a measure on the same probality space and we call this the lebesgue measure and $\frac{\diff \mathbb{P}}{\diff x}$ is often called Radon-Nikodym derivativ, which can be set to the probaility density $ \pi(x)$ of a random variable $X: \Omega \longrightarrow \mathbb{R}$.
+Next we intrdouce a weight function $\uplambda(x) $, which can be helpful for qraudrature rules, so that
 \begin{align}
-	\mathbb{P}(A) = \int_{A} \lambda(x)   \pi(x) \diff x
+	\mathbb{P}(A) = \int_{A} \uplambda(x)   \pi(x) \diff x \, ,
 \end{align}
-with the desnsity $\pi(x)$, which we call weight funciton for quadraure.
-One could argure from the case $\mathbb{E}(\lambda)$ to justofy $\lambda$.
-In \cite{cui2022deep} $\lambda$ is called lebsebue meauerbl weigth ufnciton.
- 
-%A map $P : \mathcal{F} \longrightarrow \mathbb{R}$ is a probability measure if $\mathbb{P}(\Omega) = 1$ for an event $A \subseteq  \Omega$ $\mathbb{P}(A) \in [0,1] $ and $\mathbb{P}(\emptyset) = 0$.
-\begin{align}
-	f_x(X) = \int_{X} dP = \int_{\mathbb{R}^d} \lambda(x) \pi(x) \diff x
-\end{align}
-where we intrduce a weight funciton for qudraruter rule and $\pi(x) = \frac{\diff P}{\diff x} $, Radon-Nikodym  derivative.
-THis is an intgral with reosect to the lesbeue measuer $dx$.
-$\pi(x)$ is the density 
+ where Cui et al. \cite{cui2022deep} call $\uplambda(x)$ the ' product-from Lebsegue measurable weighting functions" and define it as $\uplambda( \mathcal{X}) = \prod_{i = 1}^{d}  \uplambda_i( \mathcal{X}_i) $ and  $\uplambda_i( \mathcal{X}_i) = \int_{ \mathcal{X}_i} \uplambda_i (x_i) \text{d}x_i$.
 
-Here we introduce a weight function $\lambda$
+ 
+For the caclultion of marginal PDF, asuume the random variabes $(X_1 , \dots, X_d): \Omega \longrightarrow \mathbb{R}^d $ define a joint distributiont trought the probailty density  function $\pi(x)$ then the marginal distribution is 
 \begin{align}
-	\int \lambda(x) \diff \nu_{\pi}
+		f_{X_k}(x_k) = \int_{\mathbb{R}} \cdots \int_{\mathbb{R}} \uplambda(x) \pi(x) \diff x_1 \cdots \diff x_{k-1} \diff x_{k+1} \cdots \diff x_d
 \end{align}
-and the integral with respect to a reference measure $\diff \nu_{\pi}$ can be rewritten to
-\begin{align}
-	\int \lambda(x) \frac{\diff \nu_{\pi} }{\diff x} \diff x = \int \lambda(x) \pi(x) \diff x
-\end{align}
-accodring to the theorem which is an integral with respect to the Cartesian measure.
-Consequently we can approximate the marginal target function
+Consequently, using a tensor train approxiamtion, the marginal target function
 \begin{align}
 	\begin{split}
 	f_{X_k}(x_k) = \frac{1}{z}
 	\Big|  &\left( \int_{\mathbb{R}} \pi_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \pi_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \qquad \pi_{k}(x_k)\uplambda_k(x_{k}) \\ &\quad \left( \int_{\mathbb{R}} \pi_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \pi_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Big| \, 
 	\end{split} 
 \end{align}  
-by integration over each core \cite{dolgov2020approximation} with some normalising constant $z$ \cite{cui2022deep}.
+is given by integration over each core \cite{dolgov2020approximation} including some normalising constant $z$ \cite{cui2022deep}.
 \\
 
 
 %%%%%% Squared and Basis Function %%%%%
-From here we follow the notation and procedure mostly from \cite{cui2022deep} as for numerical stability we approximate the square root
+From here we follow the notation and procedure mostly from Cui et al. \cite{cui2022deep} and approximate the square root
 \begin{align}
 	\sqrt{\pi(x)} \approx g(x) = \bm{G}_1(x_1), \dots ,  \bm{G}_k(x_k), \dots ,  \bm{G}_d(x_d)
 \end{align}
-where each TT-core
+for numerical stability, where each TT-core
 \begin{equation}
 	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, ..., d,
 \end{equation}
-with the associated $k$th coefficient tensor $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and the $k$-th  basis functions $\phi^{(i)}_k(x_k)$.
+is associated $k$th coefficient tensor $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and the $k$-th  basis functions $\phi^{(i)}_k(x_k)$.
 We assume the function
 \begin{align}
 	\pi(x) \approx \gamma^{\prime} + g^2(x) \, ,
 \end{align} 
-is approximated through the TT decomposition $g(x)$ plus an error $\gamma^{\prime}$ to assure positivity.
-The error $\gamma^{\prime}$  is chosen according to the L2 norm 
+is approximated through the TT decomposition $g(x)$, where the error $\gamma^{\prime}$ assures positivity and is chosen according to the $L_2$ norm 
 \begin{align}
-	\gamma^{\prime} \leq \frac{1}{\uplambda( \mathcal{X})} \lVert g - \sqrt{\pi}\rVert^2_2 ,
+	\gamma^{\prime} \leq \frac{1}{\uplambda( \mathcal{X})} \lVert g - \sqrt{\pi}\rVert^2_2 \, .
 \end{align}
-with $\uplambda( \mathcal{X}) = \prod_{i = 1}^{d}  \uplambda_i( \mathcal{X}_i) $ and  $\uplambda_i( \mathcal{X}_i) = \int_{ \mathcal{X}_i} \uplambda_i (x_i) \text{d}x_i$, and .
-Then the normalised target function with respect to the weigth $\uplambda(x) = \prod_{i=1}^{d} \uplambda_i(x_i) $ is: 
+Then the normalised target function is
 \begin{align}
-	f_X(x) = \frac{1}{z} \pi(x) \uplambda(x) = \frac{1}{z} ( \gamma^{\prime} \uplambda(x) + g^2(x) \uplambda(x)) \, ,
+	f_X(x) = \frac{1}{z} \pi(x) \uplambda(x) = \frac{1}{z} ( \gamma^{\prime} \uplambda(x) + g^2(x) \uplambda(x)) \, .
 \end{align} 
-with a normalisation constant $z$.
-Consquently the approximated marginal functions can be expressed as
+Given the tensor train approximation of the sqared rooted function $\sqrt{\pi}$ can be expressed as
 \begin{align}
 	\begin{split}
 		f_{X_k}(x_k) = \frac{1}{z}  \Bigg( \gamma^{\prime}& \prod_{i=1}^{k-1} \uplambda_i(\mathcal{X}_i) \prod_{i=k+1}^{d} \uplambda_i(\mathcal{X}_i) \\&+  \left( \int_{\mathbb{R}} \bm{G}^2_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \bm{G}^2_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \bm{G}^2_{k}(x_k)\uplambda_k(x_{k})\\ & \left( \int_{\mathbb{R}}  \bm{G}^2_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \bm{G}^2_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Bigg) \, .
@@ -457,7 +441,6 @@ where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ is the set of basis functions for the 
 
 
 \subsection{Marginal Functions}
-
 We calculate the marginal functions through procedures, which we call backward marginalisation \cite{cui2022deep} and forward marginalisation.
 We gain the coefficient matrices $\bm{B}_k$ through backward marginalisation and the coefficient matrices $\bm{B}_{pre,n}$ through forward marginalisation, which enables us to calculate marginal function similar to \cite{cui2022deep}.
 The proposition \ref{prob:backMarg} to caculte $\bm{B}_k$  is taken from \cite{cui2022deep}.
@@ -501,7 +484,7 @@ We start the forward marginalisation with the first dimension as in Proposition 
 
 The marginal PDF of $X_{k}$ can be expressed as
 \begin{equation}
-	f_{X_k}(x_k) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{k-1} \lambda_i(X_i) \prod_{i=k+1}^{d} \lambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \lambda_k(x_k),
+	f_{X_k}(x_k) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \uplambda_k(x_k),
 \end{equation}
 where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and $\bm{R}_{pre,k-1}\in \mathbb{R}^{r_{k-1} \times r_{k-1}}$ and $\bm{B}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$
 \begin{equation}
@@ -520,3 +503,6 @@ and similiarly in the last dimesnion
 	f_{X_n}(x_n) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{n-1}=1}^{r_{n-1}} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_n[l_{n-1},i] \right)^2 \right) \uplambda_n(x_n),
 \end{equation}
 where $\bm{D}_n[l_{n-1},i] = \bm{B}_{pre,n}[l_{n-1}, i, \alpha_n]$ and $\alpha_n = 1$.
+
+
+%he dx refers to integration with respect to Lebesgue measure, which is “uniform measure”, λ((a, b)) = b−a (here λ(A) is the Lebesgue measure of A, applied to A = (a, b)).
