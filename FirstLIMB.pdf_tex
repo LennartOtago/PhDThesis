@@ -38,7 +38,7 @@
   \newcommand*\fsize{\dimexpr\f@size pt\relax}%
   \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{548.03861843bp}%
+    \setlength{\unitlength}{421bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -50,31 +50,31 @@
   \global\let\svgwidth\undefined%
   \global\let\svgscale\undefined%
   \makeatother%
-  \begin{picture}(1,0.30228998)%
+  \begin{picture}(1,0.39350732)%
     \lineheight{1}%
     \setlength\tabcolsep{0pt}%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{FirstLIMB.pdf}}%
-    \put(0.18035625,0.0799658){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}n\end{tabular}}}}%
+    \put(0.12583866,0.10118903){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}n\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{FirstLIMB.pdf}}%
-    \put(0.13149072,0.1600118){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Satellite\end{tabular}}}}%
+    \put(0.0714514,0.20742827){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Satellite\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=3]{FirstLIMB.pdf}}%
-    \put(0.53966541,0.01484939){\color[rgb]{0.72156863,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\text{\color{white}EARTH}\end{tabular}}}}%
-    \put(0,0.11788426){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
-    \put(0.22241413,0.16053271){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Gamma_j$\end{tabular}}}}%
+    \put(0.59357095,0.01642344){\color[rgb]{0.72156863,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\text{\color{white}EARTH}\end{tabular}}}}%
+    \put(-0.10894089,0.15054958){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.18058768,0.20606736){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Gamma_j$\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=4]{FirstLIMB.pdf}}%
-    \put(0.29129741,0.16021714){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_n$\end{tabular}}}}%
-    \put(0.74838478,0.12230556){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_n$\end{tabular}}}}%
-    \put(0.57695335,0.13556408){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_{\ell_j}$\end{tabular}}}}%
-    \put(0.47498637,0.14422532){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_{\ell_j}$\end{tabular}}}}%
-    \put(0.37362914,0.1524074){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_{n-1}$\end{tabular}}}}%
-    \put(0.67355103,0.1267315){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_{n-1}$\end{tabular}}}}%
+    \put(0.2702568,0.20565657){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_n$\end{tabular}}}}%
+    \put(0.86527233,0.15630501){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_n$\end{tabular}}}}%
+    \put(0.64211069,0.17356435){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_{\ell_j}$\end{tabular}}}}%
+    \put(0.50937472,0.18483915){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_{\ell_j}$\end{tabular}}}}%
+    \put(0.3774325,0.19549019){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_{n-1}$\end{tabular}}}}%
+    \put(0.76785711,0.16206647){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Delta r_{n-1}$\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=5]{FirstLIMB.pdf}}%
-    \put(0.25038972,0.04890095){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}i\end{tabular}}}}%
+    \put(0.21700503,0.06075023){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}i\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=6]{FirstLIMB.pdf}}%
-    \put(0.33571722,0.01950378){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}0\end{tabular}}}}%
-    \put(0.24671481,0.07609371){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{obs}$\end{tabular}}}}%
-    \put(0.53973996,0.04846271){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$R_{E}$\end{tabular}}}}%
-    \put(0.54895466,0.09978678){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{\ell_j}$\end{tabular}}}}%
+    \put(0.32808048,0.02248233){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}0\end{tabular}}}}%
+    \put(0.2122212,0.09614852){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{obs}$\end{tabular}}}}%
+    \put(0.59366798,0.06017973){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$R_{E}$\end{tabular}}}}%
+    \put(0.60566325,0.12699107){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{\ell_j}$\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=7]{FirstLIMB.pdf}}%
   \end{picture}%
 \endgroup%

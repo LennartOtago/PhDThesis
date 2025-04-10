@@ -8,11 +8,13 @@ We try to keep it as general as possible, as we get more specific in the results
 \begin{figure}[ht!]
 	\centering
 	\scalebox{0.9}{\input{FirstLIMB.pdf_tex}}
+	\caption{This figure vsiualises the line of sight of a sattelite at height $h_{obs}$ in a discretiesed atmosphere. The atmosphere has $n$ layers so the line of sight can be disctreized in $\Delta r_i$ for $i = \ell_j , \dots, n$.
+	Where $\ell_j \in \mathbb{N}$ denotes a tagent hieght $h_{\ell_j}$  with respect to $R_E$ the erth radius. We use this set up to solve the radiative transfer equation numerically.}
 	\label{fig:FirstLIMB}
-	\caption{text}
 \end{figure}
 
 In this section we describe the forward model which we use to simulate data, as in section \ref{} and base the Bayesian inference, see section \ref{} and \ref{}.
+
 
 As shown in Figure~\ref{fig:FirstLIMB}, one measurement of a stationary satellite can be describes as the path integral along the line of sight $\Gamma_j$ for $j=1,2,\ldots,m$.
 For each measurement we can define a tangent height $h_{\ell_j}$ as the shortest distance along the line of sight to the earth.
@@ -141,21 +143,21 @@ If the normalising constant is finite and non-zero we can approximate the poster
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, .
 \end{align}
-and the expectation of any a function $h(\bm{x}(\bm{\theta}))$, where $\bm{x}$ may be depending on $\bm{\theta}$, can be described as 
+and the expectation of any a function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}$ may be depending on $\bm{\theta}$, can be described as 
 \begin{align}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}(\bm{\theta}))] =  \int \int   h(\bm{x}(\bm{\theta})) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}   \label{eq:expPos} \, ,
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] =  \int \int   h(\bm{x}_{\bm{\theta}}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}   \label{eq:expPos} \, ,
 \end{align}
 which is usually a high dimensional integral and computationally not feasible to solve.
 
 
-One way to work around the high dimensionality is to parameterise $\bm{x}$ using hyper-parameters $\bm{\theta}$ so that $\bm{x}(\bm{\theta})$. 
+One way to work around the high dimensionality is to parameterise $\bm{x}$ using hyper-parameters $\bm{\theta}$ so that $\bm{x}_{\bm{\theta}}$. 
 Another way is to seperate the posterior distribution over latent field $\bm{x}$ and the hyper-parameters $\bm{\theta}$.
 This is particular benefitial, when $\bm{x}$ is high dimensional, e.g. $\bm{x} \in \mathbb{R}^n$ with $n = 45$ and can not be parametrised, and $\bm{\theta}$ is low dimensional, e.g. two dimensional.
 Then by the law of total expectation \cite{champ2022generalizedlawtotalcovariance} eq. \ref{eq:expPos} becomes
 \begin{align}
-	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \text{E}_{\bm{\theta}|\bm{y}}   \big[ \text{E}_{\bm{x}|\bm{\theta},\bm{y}} [h(\bm{x}(\bm{\theta}))] \big]=  \int 	\text{E}_{\bm{x}| \bm{\theta},\bm{y}}  [h(\bm{x}(\bm{\theta}))] \,  \pi( \bm{\theta} | \bm{y} )  \, \text{d} \bm{\theta}   \label{eq:MargExpPos} \, ,
+	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \text{E}_{\bm{\theta}|\bm{y}}   \big[ \text{E}_{\bm{x}|\bm{\theta},\bm{y}} [h(\bm{x}_{\bm{\theta}})] \big]=  \int 	\text{E}_{\bm{x}| \bm{\theta},\bm{y}}  [h(\bm{x}_{\bm{\theta}})] \,  \pi( \bm{\theta} | \bm{y} )  \, \text{d} \bm{\theta}   \label{eq:MargExpPos} \, ,
 \end{align}
-where in the case of a linear-Gaussian Bayesian hierarchical model $\text{E}_{\bm{x}| \bm{\theta},\bm{y}}  [h(\bm{x}(\bm{\theta}))]$ is well defined.
+where in the case of a linear-Gaussian Bayesian hierarchical model $\text{E}_{\bm{x}| \bm{\theta},\bm{y}}  [h(\bm{x}_{\bm{\theta}})]$ is well defined.
 The marginal and then condtional method, does exactly that.
 Why MTC sperate hiughky correlated \cite{}
 
@@ -226,13 +228,13 @@ In practise $\bm{x}_{\lambda}$ is calculated for a range of $\lambda$, and is ev
 In this chapter we present the sampling methods used in this thesis and also argue why we can use sampling methods to calculate the expectation
 \begin{align}
 	\label{eq:intMean}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}( \bm{\theta}))] = \underbrace{ \int \int h(\bm{x}(\bm{\theta})) \pi(\bm{x},\bm{\theta}|\bm{y}) \, \text{d} \bm{\theta} \, \text{d} \bm{x} }_{\bm{\mu}_{\text{int}}} 
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] = \underbrace{ \int \int h(\bm{x}_{\bm{\theta}}) \pi(\bm{x},\bm{\theta}|\bm{y}) \, \text{d} \bm{\theta} \, \text{d} \bm{x} }_{\bm{\mu}_{\text{int}}} 
 \end{align}
-of a function  $h(\bm{x}(\bm{\theta}))$ with respect to a probability density $\pi( \bm{x},\bm{\theta}|\bm{y})$.
+of a function  $h(\bm{x}_{\bm{\theta}})$ with respect to a probability density $\pi( \bm{x},\bm{\theta}|\bm{y})$.
 In the case where the calculation of the integral is not feasible we can approximate Eq. \ref{eq:intMean} with a sample based estimate
 \begin{align}
 	\label{eq:sampMean}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}( \bm{\theta}))] \approx \underbrace{ \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}(\bm{\theta}^{(k)}))  }_{\bm{\mu}_{\text{samp}}} \, ,
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] \approx \underbrace{ \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}})  }_{\bm{\mu}_{\text{samp}}} \, ,
 \end{align}
 for large enough samples size $N$ of a sample set $\mathcal{M} = \{  (\bm{x}, \bm{\theta} )^{(1)}, \dots, (\bm{x}, \bm{\theta} )^{(k)} , \dots,  (\bm{x}, \bm{\theta})^{(N)}  \} \sim \pi(\bm{x},\bm{\theta}| \bm{y}) $.
 The variance of this unbiased estimator is $\mathcal{O}(1/N)$ so large samples sizes can reduce the uncertainty of $\bm{\mu}_{samp}$ \cite{roberts2004general}.
@@ -338,13 +340,48 @@ We use the t-walk as a black box sampler, where convergence is guaranteed by con
 
 
 \section{Numerical Approxiamtion Methods - Tensor Train}
-Using the tensor train (TT) format to approximate a $d$-dimensional function $\pi(x)$, with $x \in \mathbb{R}^d$ on a discrete grid with $n^d$ points, enables us to compute marginal posterior probability distributions cheaply.
-As the name suggest the tensor train format is a train of tensors, more specifically two and three dimensional tensors which we call cores $\pi_{k} \in \mathbb{R}^{r_{k-1} \times n \times r_{k}}$  and are connected through ranks $r_{k}$ and $r_{k-1}$ for each $k = 1, \dots , d$, with the number of grid points in each dimension $n$, as in Figures \ref{fig:TTtikz} and \ref{} displayed.
+First we will derive how we find marginal probality distribution funcitons and then give a brief introduction into tensor train format.
+Asumme that the triple $(\Omega, \mathcal{F} , \mathbb{P})$ is called a probability space over the whole sample (or parameter) space $\Omega$ with the collection $\mathcal{F}$ of very countable subset $\{ A _n \}_{n\in \mathbb{N}}$ in $\Omega$, so that $A_n \subseteq  \Omega$, and $\mathbb{P}$ is a measure on $\mathcal{F}$. 
+We assume $\mathbb{P}$ fullfils the requirements of a probality measure and $\mathcal{F}$ is a $\sigma $-algebra see Appendix \ref{ch:Mesure}.
+We call $\mathbb{P}(A)$ the probaility of an event $A \subseteq \mathcal{F}$ 
+\begin{align}
+	\mathbb{P}(A) = \int_A \diff \mathbb{P} \text{\cite{}}.
+\end{align}
+We change variables using the Radon-Nikodym theroem \cite{kopp2004measintprob}
+\begin{align}
+	\mathbb{P}(A) = \int_{A}  \frac{\diff \mathbb{P}}{\diff x} \diff x
+\end{align}
+where $\diff x$ is a measure on the same probality space, also known as the lebesgue measure and $\frac{\diff \mathbb{P}}{\diff x}$ is often called Radon-Nikodym derivativ of $\mathbb{P}$ with repect to $x$.
+We can say that $\mathbb{P}$ has a density $ \pi(x)$, with repect to $x$ \cite[Chapter 10]{simonnet1996measprob}.
+Next, we can define $x: \Omega \longrightarrow X$ as a random variable connecting to the measurable space $(X,\mathcal{X})$ through the probability density function $ \pi(x)$ \cite{kopp2004measintprob}.
+For a $d$-dimensional $x$ we call the cartesioan product $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ the parameter space in $X$, which we set to $\mathbb{R}^d$, so that ervey subset $\mathcal{X}_k \subseteq \mathbb{R}$ for $k = 1, \dots , d$.
+Next we intrdouce a weight function $\uplambda(x) $ \cite{davis2007methods}, which can be helpful for qraudrature rules, so that
+\begin{align}
+	\mathbb{P}(A) = \int_{A} \uplambda(x)   \pi(x) \diff x \, ,
+\end{align}
+where Cui et al. \cite{cui2022deep} call $\uplambda(x)$ the ' product-from Lebsegue measurable weighting functions" and define it as $\uplambda( \mathcal{X}) = \prod_{i = 1}^{d}  \uplambda_i( \mathcal{X}_i) $ and  $\uplambda_i( \mathcal{X}_i) = \int_{ \mathcal{X}_i} \uplambda_i (x_i) \text{d}x_i$.
+The marginal function
+\begin{align}
+	f_{X_k}(x_k) = \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_d} \uplambda(x) \pi(x) \diff x_1 \cdots \diff x_{k-1} \diff x_{k+1} \cdots \diff x_d \, ,
+\end{align}
+of $x_k \in \mathcal{X}_k$, as a realization/event in $X_k \subseteq X$ is calculated by integrating the probility desnity funciton $\pi(x)$ over the parameter space in all other dimensions.
+
+Using the tensor train (TT) format we can approximate $d$-dimensional function $\pi(x)$ and compute marginal probailty functions distributions cheaply.
+In doing so we have to define a d-dimesnional discrete univariate grid in the parameter space $\mathcal{X}$ with $n$ grid points in each direction.
+Then, as the name suggest the tensor train format is a train of tensors which represent this d-dimesnional grid.
+More specifically each tensor is a two and three dimensional matrix, which we call core, $\pi_{k} \in \mathbb{R}^{r_{k-1} \times n \times r_{k}}$ and connected with the neighbouring tensor through ranks $r_{k}$ and $r_{k-1}$ for each $k = 1, \dots , d$, as in Figure \ref{fig:TTfig} displayed.
 For the first and last dimensional the core outer ranks are $r_0  = r_d = 1$, so that for $x = {x_1, \dots, x_d}$ the function value $\pi(x) = \big( \pi_1(x_1) \dots \pi_d(x_d) \big)\in \mathbb{R}$ is a vector-matrix-vector multiplication and each core $\pi_k(x_k)$ at a fixed $x_k$ on the approximated grid has dimensions $r_{k-1} \times 1 \times r_{k} =r_{k-1} \times r_{k}$.
 
 
 \begin{figure}[ht!]
 	\centering
+\begin{subfigure}{\textwidth}
+	\input{TTSchem.pdf_tex}
+	%\includegraphics[width = \textwidth]{Figures/TTSchem.png}
+	\caption{}
+\end{subfigure}
+	\centering
+\begin{subfigure}{\textwidth}
 \begin{tikzpicture} 
 	\node[rectnode] at (-5,0) (T1)    {$1 \times n \times r_1$};
 	\node[rectnode] at (-2,0) (T2)    {$r_1 \times n \times r_{2}$};
@@ -358,44 +395,18 @@ For the first and last dimensional the core outer ranks are $r_0  = r_d = 1$, so
 	\node[align=center] at (-3.5,0.25) (R) {$r_1$};
 	\node[align=center] at (5,0.25) (R) {$r_{d-1}$};	
 \end{tikzpicture} 
-\caption{text}
-\label{fig:TTtikz}
-\end{figure}
-\begin{figure}[ht!]
-	\centering
-\includegraphics[width = \textwidth]{Figures/TTSchem.png}
-	\caption{nice matries picture \cite{fox2021grid}}
-	\label{fig:TTdraw}
-	
+	\caption{}
+\end{subfigure}
+\caption[Visualization of Tensor Train cores]{Here we visualize the tensor train cores as two and three dimesnional matrices. Each matrix has a length $n$ according to the gridsize and ther cores are connected through ranks $r$. More specifiaclly a core $\pi_k$ has dimesnions $r_{k-1} \times  n \times r_k$, where $r_0 = r_d = 1$. Figure (a) is taken from \cite{fox2021grid}.}
+\label{fig:TTfig}
 \end{figure}
 
-Asumme that the triple $(\Omega, \mathcal{F} , \mathbb{P})$ is called a probability space over the whole sample space $\Omega$ with the collection $\mathcal{F}$ of very countable subset $\{ A _n \}_{n\in \mathbb{N}}$, where a Event $A_n$ is a subset of $\Omega$, $A_n \subseteq  \Omega$, and a map $\mathbb{P} : \mathcal{F} \longrightarrow \mathbb{R}$. 
-We assume $\mathbb{P}$ fullfils probality measure and  $\mathcal{F}$ is a $\sigma $-algebra see Appendix \ref{}.
-We call $\mathbb{P}(A)$ the probaility of an event $A \subseteq \mathcal{F}$ 
-\begin{align}
-	\mathbb{P}(A) = \int_A \diff \mathbb{P} \text{\cite{}}.
-\end{align}
-using the Radon-Nikodym theroem \cite{}
-\begin{align}
-	\mathbb{P}(A) = \int_{A}  \frac{\diff \mathbb{P}}{\diff x} \diff x
-\end{align}
-where $\diff x$ is a measure on the same probality space and we call this the lebesgue measure and $\frac{\diff \mathbb{P}}{\diff x}$ is often called Radon-Nikodym derivativ, which can be set to the probaility density $ \pi(x)$ of a random variable $X: \Omega \longrightarrow \mathbb{R}$.
-Next we intrdouce a weight function $\uplambda(x) $, which can be helpful for qraudrature rules, so that
-\begin{align}
-	\mathbb{P}(A) = \int_{A} \uplambda(x)   \pi(x) \diff x \, ,
-\end{align}
- where Cui et al. \cite{cui2022deep} call $\uplambda(x)$ the ' product-from Lebsegue measurable weighting functions" and define it as $\uplambda( \mathcal{X}) = \prod_{i = 1}^{d}  \uplambda_i( \mathcal{X}_i) $ and  $\uplambda_i( \mathcal{X}_i) = \int_{ \mathcal{X}_i} \uplambda_i (x_i) \text{d}x_i$.
 
- 
-For the caclultion of marginal PDF, asuume the random variabes $(X_1 , \dots, X_d): \Omega \longrightarrow \mathbb{R}^d $ define a joint distributiont trought the probailty density  function $\pi(x)$ then the marginal distribution is 
-\begin{align}
-		f_{X_k}(x_k) = \int_{\mathbb{R}} \cdots \int_{\mathbb{R}} \uplambda(x) \pi(x) \diff x_1 \cdots \diff x_{k-1} \diff x_{k+1} \cdots \diff x_d
-\end{align}
 Consequently, using a tensor train approxiamtion, the marginal target function
 \begin{align}
 	\begin{split}
 	f_{X_k}(x_k) = \frac{1}{z}
-	\Big|  &\left( \int_{\mathbb{R}} \pi_{1}(x_1) \uplambda_1(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \pi_{k-1}(x_{k-1}) \uplambda_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \qquad \pi_{k}(x_k)\uplambda_k(x_{k}) \\ &\quad \left( \int_{\mathbb{R}} \pi_{k+1}(x_{k+1})\uplambda_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \pi_{d}(x_d)\uplambda_d(x_{d})\text{d}x_d \right) \Big| \, 
+	\Big|  &\left( \int_{\mathbb{R}} \uplambda_1(x_1) \pi_{1}(x_1)\text{d}x_{1} \right) \cdots \left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \pi_{k-1}(x_{k-1}) \text{d}x_{k-1} \right) \\ & \qquad \uplambda_k(x_{k}) \pi_{k}(x_k) \\ &\quad \left( \int_{\mathbb{R}} \uplambda_{k+1}(x_{k+1}) \pi_{k+1}(x_{k+1})\text{d}x_{k+1} \right) \cdots  \left( \int_{\mathbb{R}} \uplambda_d(x_{d}) \pi_{d}(x_d)\text{d}x_d \right) \Big| \, 
 	\end{split} 
 \end{align}  
 is given by integration over each core \cite{dolgov2020approximation} including some normalising constant $z$ \cite{cui2022deep}.
@@ -487,9 +498,9 @@ We start the forward marginalisation with the first dimension as in Proposition 
 
 The marginal PDF of $X_{k}$ can be expressed as
 \begin{equation}
-	f_{X_k}(x_k) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \uplambda_k(x_k),
+	f_{X_k}(x_k) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \uplambda_k(x_k),
 \end{equation}
-where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and $\bm{R}_{pre,k-1}\in \mathbb{R}^{r_{k-1} \times r_{k-1}}$ and $\bm{B}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$
+where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ and $\bm{R}_{pre,k-1}\in \mathbb{R}^{r_{k-1} \times r_{k-1}}$ and $\bm{B}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$
 \begin{equation}
 	\bm{D}_k[l_{k-1},i,l_k] = \sum_{\alpha_{k-1}=1}^{r_{k-1}}  \bm{R}_{pre,k-1}[l_{k-1}, \alpha_{k-1}] \bm{B}_k[\alpha_{k-1}, i, l_k].
 \end{equation}
@@ -498,14 +509,14 @@ where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ and $\bm{R}_{pre
 
 In the special case for the first dimension, $f_{X_1}(x_1)$ can be expressed as
 \begin{equation}
-	f_{X_1}(x_1) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1),
+	f_{X_1}(x_1) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1),
 \end{equation}
 where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$,
 and similiarly in the last dimesnion
 \begin{equation}
-	f_{X_n}(x_n) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{n-1}=1}^{r_{n-1}} \left(\sum_{i=1}^{n_1} \phi^{(i)}_1(x_1) \bm{D}_n[l_{n-1},i] \right)^2 \right) \uplambda_n(x_n),
+	f_{X_d}(x_d) = \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{n-1}=1}^{r_{d-1}} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_d[l_{n-1},i] \right)^2 \right) \uplambda_d(x_d),
 \end{equation}
-where $\bm{D}_n[l_{n-1},i] = \bm{B}_{pre,n}[l_{n-1}, i, \alpha_n]$ and $\alpha_n = 1$.
+where $\bm{D}_d[l_{n-1},i] = \bm{B}_{pre,d}[l_{n-1}, i, \alpha_{n+1}]$ and $\alpha_{d+1} = 1$.
 
 
 %he dx refers to integration with respect to Lebesgue measure, which is “uniform measure”, λ((a, b)) = b−a (here λ(A) is the Lebesgue measure of A, applied to A = (a, b)).
