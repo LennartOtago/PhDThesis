@@ -1,12 +1,16 @@
 \chapter{Correlation Structure}
 \label{ap:Correlatation}
-In the book Gaussian Markov Random Fields~\cite{rue2005gaussian}, Rue and Held demonstrate that strong correlation between the hyper-parameter $\mu$ and the latent field $\bm{x}$ can significantly slow down convergence when using samplers, in particularly Gibbs samplers. 
+In the book Gaussian Markov Random Fields~\cite{rue2005gaussian}, Rue and Held demonstrate that a strong correlation between the hyper-parameter $\mu$ and the latent field $\bm{x}$ can significantly slow down convergence when using samplers, in particularly Gibbs samplers. 
 They consider the hierarchical model
+
+\begin{subequations}
 \begin{align}
-	\mu &\sim \mathcal{N}(0, 1) \\
-	\bm{x} | \mu &\sim \mathcal{N}(\mu \bm{1}, \bm{Q}^{-1}),
-	\label{eq:rueMod}
+\mu &\sim \mathcal{N}(0, 1) \\
+\bm{x} | \mu &\sim \mathcal{N}(\mu \bm{1}, \bm{Q}^{-1}),
 \end{align}
+\label{eq:rueMod}
+\end{subequations}
+
 and apply a Gibbs sampler based on the full conditional distributions
 \begin{align}
 	\mu^{(k)} | \bm{x}^{(k)} &\sim \mathcal{N} \left( \frac{\bm{1}^T \bm{Q} \bm{x}^{(k-1)}}{1 + \bm{1}^T \bm{Q} \bm{1}}, \, \left(1 + \bm{1}^T \bm{Q} \bm{1} \right)^{-1} \right) \\
@@ -17,11 +21,11 @@ This inefficiency arises from the high correlation between $\mu$ and $\bm{x}$, v
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width = \textwidth]{Figures/RueHeldBookFig.png}
-	\caption[Correlation structure in between parameters and hyper-parameters]{The figure taken from~\cite[Figure 4.1 (b)]{rue2005gaussian}, shows samples from a marginal chain for $\mu$ and $\bm{1}^T \bm{Q} \bm{x}^{(k)}$ over 1000 iterations, based on the hierarchical model in Eq.~\ref{rueMod}, with an autoregressive process encoded in $\bm{Q}$. The algorithm updates $\mu$ and $\bm{x}$ successively from their full conditional distributions. The plot displays $(\mu^{(k)}, \bm{1}^T \bm{Q} \bm{x}^{(k)})$, with $\mu^{(k)}$ on the horizontal axis and $\bm{1}^T \bm{Q} \bm{x}^{(k)}$ on the vertical axis. The slow mixing and convergence of $\mu$ result from its strong dependence on $\bm{1}^T \bm{Q} \bm{x}^{(k)}$, while the sampler permits only axis-aligned (horizontal and vertical) and does not allow diagonal moves, as illustrated by the arrows.}
+	\caption[Correlation structure in between parameters and hyper-parameters]{The figure taken from~\cite[Figure 4.1 (b)]{rue2005gaussian}, shows samples from a marginal chain for $\mu$ and $\bm{1}^T \bm{Q} \bm{x}^{(k)}$ over 1000 iterations, based on the hierarchical model in Eq.~\ref{eq:rueMod}, with an autoregressive process encoded in $\bm{Q}$. The algorithm updates $\mu$ and $\bm{x}$ successively from their full conditional distributions. The plot displays $(\mu^{(k)}, \bm{1}^T \bm{Q} \bm{x}^{(k)})$, with $\mu^{(k)}$ on the horizontal axis and $\bm{1}^T \bm{Q} \bm{x}^{(k)}$ on the vertical axis. The slow mixing and convergence of $\mu$ result from its strong dependence on $\bm{1}^T \bm{Q} \bm{x}^{(k)}$, while the sampler permits only axis-aligned (horizontal and vertical) and does not allow diagonal moves, as illustrated by the arrows.}
 	\label{fig:RueHeld}
 \end{figure}
 
-A solution to the slow mixing problem is to update $(\mu, x)$ jointly.
+A solution to the slow mixing problem is to update $(\mu, \bm{x})$ jointly.
 Since here $\mu$ is one dimensional, effectively only marginal density of $\mu$ is needed.
 \begin{align}
 	\mu^{\star}  &\sim q (\mu^{\star}|	\mu^{(k-1)} ) \\
@@ -36,7 +40,7 @@ In the following, we describe the conditions required for $\mathcal{F}$ to be a 
 We refer to \cite{lawler2016notes} \cite{kopp2004measintprob} for further reading.
 
 \section{probailty measure}
-For a probability measure we require:
+For a probability measure, we require:
 \begin{itemize}
 	\item $\mathbb{P}(\Omega) = 1$ and $\mathbb{P}(\emptyset) = 0$
 	\item $\mathbb{P}(A) \in [0,1]$
@@ -44,7 +48,7 @@ For a probability measure we require:
 \end{itemize}
 In other words, the probability assigned to the entire sample space must be equal to one, $\mathbb{P}(\Omega) = 1$, and the probability of the empty set must be zero, $\mathbb{P}(\emptyset) = 0$. For any subset $A \subseteq \Omega$, the probability $\mathbb{P}(A)$ must lie between zero and one, i.e., $\mathbb{P}(A) \in [0,1]$.
 If e.g. two subsets $A$ and $B$ are disjoint (i.e., $A \cap B = \emptyset$), then the probability of their union satisfies $\mathbb{P}(A \cup B) = \mathbb{P}(A) + \mathbb{P}(B)$.
-This property, must also hold for a countable sequence of disjoint sets $\{A_j\}_{j \in \mathbb{N}}$, such that $\mathbb{P}\left( \bigcup_{j \in \mathbb{N}} A_j \right) = \sum_{j \in \mathbb{N}} \mathbb{P}(A_j)$.
+This property must also hold for a countable sequence of disjoint sets $\{A_j\}_{j \in \mathbb{N}}$, such that $\mathbb{P}\left( \bigcup_{j \in \mathbb{N}} A_j \right) = \sum_{j \in \mathbb{N}} \mathbb{P}(A_j)$.
 
 \section{$\sigma$-algebra}
 A collections of subsets $\mathcal{F}$ is called $\sigma$-algebra if:
