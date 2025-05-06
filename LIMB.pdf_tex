@@ -59,7 +59,7 @@
     \put(0.59615723,0.0297921){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\lticks{$h_0=$10km}\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{LIMB.pdf}}%
     \put(0.66,0.21991858){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\lticks{$h_{\text{sat}}\gtrsim 500$km}\end{tabular}}}}%
-    \put(0.645,0.148){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\lsc{$\Gamma_j$}\end{tabular}}}}%
+    \put(0.645,0.148){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Gamma_j$\end{tabular}}}}%
     \put(0.71988592,0.11329397){\color[rgb]{0,0,0}\rotatebox{44.665751}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\ISc{...}\end{tabular}}}}}%
     \put(0.65773061,0.05788155){\color[rgb]{0,0,0}\rotatebox{44.988095}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\ISc{...}\end{tabular}}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=3]{LIMB.pdf}}%

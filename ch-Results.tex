@@ -1,29 +1,33 @@
 \chapter{Results}
+\label{ch:res}
 
+In this chapter we explain how we use the forward model to generate data and how we set up a Bayesian framework to then give distribution of solutions.
+Here we make it explicit and proivde all information to be able to replciate our results.
+In this work we simulate datawith an ozone profile from \cite{}.
+We follow the U.S. standard atmosphere, 1976 \cite{} to relate pressure and temperature and hieght and the HITRANonline \cite{} database to calculate the measured signal.\expandafter\string\the\font 
+
+\section{Simulate Data}
 \begin{figure}[ht!]
 	\centering
-	\scalebox{1.5}{\input{LIMB.pdf_tex}}
+	\input{LIMB.pdf_tex}
 	\label{fig:LIMB}
 	\caption{Schematic of measurement and analysis geometry, not to scale.
 		The stationary satellite, at a constant height $h_\text{sat}$ above  Earth, takes $m$ measurements.
-		The red dashed lines show the line-of-sight from the satellite for each measurement, defining the line $\Gamma_j$ from the satellite with limb height $\ell_j$, $j=1,2,\ldots,m$ (not shown).
-		Between $h_0 = 10$km and $h_{n} = 38$km, the stratosphere is discretized into $n$ layers as illustrated by the solid green lines.}
+		The red dashed lines show the line-of-sight from the satellite for each measurement, defining the line $\Gamma_j$ from the satellite with limb height $\ell_j$, $j=1,2,\dots,m$ (not shown).
+		Between $h_0 = 10$km and $h_{n} = 38$km, the stratosphere is discretised into $n$ layers as illustrated by the solid green lines.}
 \end{figure}
+We put the satellite at a constant observe height of $h_{obs} =$ and take $m = $ along the line of sight $\Gamma_j$ in between $h_0= $ and $h_n = $ as requested by Annika et. al. since the pointing accuracy is .
+we assume no signal above and below and that the we have a constant LTE atmosphere in each layer.
+As in section \ref{sec:formodel} the atmosphere is discretised into $n = $ layers
+Where we take the same discretization as given by an ozone profile taken from NASA's (Microwave limb sounder) MLS \cite{}.
 
-\begin{itemize}
-	\item explain set up of satellite
-\end{itemize}
-
-\section{Simulate Data}
-In this work we simulate data according to a temperature pressure and ozone profile.
-We follow the U.S. standard atmosphere, 1976 \cite{} and the HITRANonline \cite{} database to calculate measurements.
 
 
 \subsection{Ozone}
 \begin{figure}[ht!]
 	\centering
 	%\scalebox{1}{\input{TrueO3.pdf_tex}}
-	\caption{We take the ozone profile from \cite{}, relate pressure and height and discretize according to the source.
+	\caption{We take the ozone profile from \cite{}, relate pressure and height and discretise according to the source.
 		This will serve as our true Ozone profile.}
 	\label{fig:nter-label}
 \end{figure}
@@ -32,16 +36,14 @@ Up until $86$km we can relate pressure $p$ and geometric height $h$ through the 
 \begin{align}
 	\text{d} \ln p= \frac{\text{d}p}{p} = \frac{- g M}{R^* T} \text{d} h \, ,
 \end{align}
-with the universal gas consant $R^* \approx 8.314  \, \text{N m} / \text{mol} / \text{K}$ and $M = M_0 \approx 28.97 \, \text{kg}/\text{mol}$ for altiudes below 79km \cite{}.
+with the universal gas consant $R^* \approx 8.314  \, \text{N m} / \text{mol} / \text{K}$. The moledus numebr ... is $M = M_0 \approx 28.97 \, \text{kg}/\text{mol}$ for altiudes below 79km \cite{}.
 At altitude $h$ the gravitational constant
 \begin{align}
 	g = g_0 \Bigg( \frac{r_0}{r_0 + h} \Bigg) \, ,
 \end{align}
 with $r_0 \approx 6356 \, \text{km}$ (also known as the polar radius of the earth) and $g_0 \approx 9.81 \text{m}/\text{s}^2$ and \cite{}.
-In the discretized case, we approximate $g(h) \approx g(h_i) $ at $h_i = \Delta h + h_{i-1}$ for the $ith$ layer in the atmosphere.
-
 \subsection{Pressure}
-We parametrize the pressure by fitting two exponentials to the pressure values $p$ related to the height $h$ by Eq. \ref{}.
+We parametrize the pressure by fitting one exponential to the pressure values $p$ related to the height $h$ by Eq. \ref{}.
 \begin{figure}[ht!]
 	\centering
 	%\scalebox{1}{\input{TruePress.pdf_tex}}
@@ -52,18 +54,14 @@ We parametrize the pressure by fitting two exponentials to the pressure values $
 \end{figure}
 The pressure function,
 \begin{align}
-	p(h) = \begin{cases*}
-		\exp{ \{ -a_{p,0} \,  (h - h_{p,0} ) \} } \,  p_0, & \text{$h < h_{p,0}$}\\\
-		p_0,  & \text{$h = h_{p,0}$}\\
-		\exp{ \{ -  a_{p,1} \, (h - h_{p,0} )  \} \, p_0}, & \text{$h > h_{p,0}$}\
-	\end{cases*} \, ,
+	p(h) =
+		\exp{ \{ -b \,  (h - h_{0} ) \} } \,  p_0 \, ,
 \end{align}
-is depending on four different parameters, the gradient $a_{p,1}$ above $h_{p,0}$ and $a_{p,0}$ below $h_{p,0}$.
-Both exponentials meet at $p_0$.
+is depending on three different parameters, the gradient $a_{p,1}$ and the tuple $(p_0,h_{p,0})$.
 
 
 \subsection{Temperature}
-The temperature is taken from \cite{}.
+
 \begin{figure}[ht!]
 	\centering
 	%\scalebox{1}{\input{TrueTemp.pdf_tex}}
@@ -71,17 +69,17 @@ The temperature is taken from \cite{}.
 		The gradients $a_0,a_1,a_2,a_3,a_4$ and the corresponding height $h_0,h_1,h_2,h_3,h_4,h_5$ as well as the temperature $T_0$ at $h = 0$ are taken from the us standard atmosphere and parametrize the temperature profile.}
 	\label{fig:nter-label}
 \end{figure}
-We can formulate a temperature function
+We can formulate a temperature function from \cite{atmosphere1976us}
 \begin{align}
 	T(h) = \begin{cases*}
 		T_0 & \text{$h = 0$}\\
-		a_0 h  + T_0, & \text{$0 \leq h < h_{0}$}\\
-		a_0 h_0  + T_0  , & \text{$h_{0} \leq  h < h_{1}$}\\
-		a_1 (h -h_1)+ a_0 h_0 + T_0 , & \text{$h_{1} \leq h < h_{2}$}\\
-		a_2 (h -h_2) + a_1 (h_2 - h_1) + a_0 h_0  + T_0, & \text{$h_{2} \leq h < h_{3}$}\\
-		a_2  (h_3 - h_2) +  a_1 (h_2 - h_1) + a_0 h_0 + T_0, & \text{$h_{3} \leq h < h_{4}$}\\
-		a_3 (h -h_4) + a_2  (h_3 - h_2) + a_1 (h_2 - h_1)+ a_0 h_0 + T_0, & \text{$h_{4} \leq h < h_{5}$}\\
-		a_4 (h -h_5) + a_3 (h_4 - h_4)+ a_2  (h_3 - h_2) + a_1 (h_2 - h_1)+ a_0 h_0 + T_0, & \text{$h_{5} \leq h < 84.852\text{km}$}
+		T_0 + a_0 h, & \text{$0 \leq h < h_{0}$}\\
+		T_0 + a_0 h_0, & \text{$h_{0} \leq  h < h_{1}$}\\
+		T_0 + a_0 h_0 + a_1 (h -h_1) , & \text{$h_{1} \leq h < h_{2}$}\\
+		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h - h_2), & \text{$h_{2} \leq h < h_{3}$}\\
+		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h_3 - h_2), & \text{$h_{3} \leq h < h_{4}$}\\
+		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h_3 - h_2) + a_3 (h -h_4), & \text{$h_{4} \leq h < h_{5}$}\\
+		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h_3 - h_2) + a_3 (h_4 - h_4) + a_4 (h -h_5), & \text{$h_{5} \leq h < 84.852\text{km}$}
 	\end{cases*} 
 \end{align}
 depending on 12 parameters with values provided by \cite{}, also see table \ref{}.
@@ -100,7 +98,7 @@ The absorption constant
 \begin{align}
 	k(\nu, T) = L(\nu, T_{\text{ref}}) \frac{Q(T_{\text{ref}})}{Q(T)} \frac{ \exp{\{ - c_2 E^{\prime \prime} / T\}} }{\exp{\{ - c_2 E^{\prime \prime} / T_{\text{ref}} \}}} \frac{ 1- \exp{\{ - c_2 \nu  / T \}} }{1 - \exp{\{ - c_2 \nu / T_{\text{ref}} \}}}
 \end{align}
-is depend on the line intensity $L(\nu, T_{\text{ref}}$ at reference temperature $T_{\text{ref}} =296K $, the lower-state energy of the transition $ E^{\prime \prime} $, the second radiation constant $c2=1.4387769\text{cmK}$ all provided by \cite{}.
+is depend on the line intensity $L(\nu, T_{\text{ref}})$ at reference temperature $T_{\text{ref}} =296K $, the lower-state energy of the transition $ E^{\prime \prime} $, the second radiation constant $c2=1.4387769\text{cmK}$ all provided by \cite{}.
 Since we only consider one transition namely the lower-state one the partition function becomes
 \begin{align}
 	Q(T )= g^{\prime \prime} \exp{\{ - \frac{ c_2 E^{\prime \prime} }{T}\}} \, ,
@@ -114,20 +112,22 @@ Under the assumption of local thermodynamic (LTE) equilibrium t source function 
 \end{align}
 with Planck's constant $h$, velocity of light $c$ and Boltzmann's constant $k_B$ \cite{}.
 
+Then we can calculate measurement with the RTE in Eq. \ref{eq:RTE} using the trapezoidal rule.
 
 
 
 \section{Bayesian Model and prior analysis}
-
+In this section we present the explicit Bayesian we will use to recover pressure temperature and ozone values.
 
 \subsection{DAG}
+Again we draw a DAG and specify prior disribtoin over those
 
 \begin{figure}[thb!]
 	\centering
 	\begin{tikzpicture}
 		\node[roundnode2] at (-4.5,6.5) (Q)     {$\bm{Q}$};
 		\node[roundnode2] at (-3,5) (x)     {$\bm{x}$};
-		\node[roundnode2] at (-1,4) (A)    {$\bm{A}_{NL}$};
+		\node[align=center] at (-1,4) (A)    {$\bm{A}(\bm{x},\bm{p},\bm{T})$};
 		\node[roundnode2] at (-1,2.5) (u)    {$\bm{u}$};
 		\node[rectnode] at (-1,1) (y)    {$\bm{y}$};
 		\node[roundnode2] at (-5.25,4.5) (S)    {$\bm{\Sigma}$};
@@ -136,8 +136,8 @@ with Planck's constant $h$, velocity of light $c$ and Boltzmann's constant $k_B$
 		\node[roundnode2] at (3,6.5) (t)     {$\bm{T}$};
 		\node[roundnode2] at (-1,6.5) (p)     {$\bm{p}$};
 		\node[roundnode2] at (1,5) (pt)     {$\bm{p}/\bm{T}$};
-		\node[roundnode2] at (0,8) (b1)    {$b_1$};
-		\node[roundnode2] at (1,8) (b2)    {$b_2$};
+		\node[roundnode2] at (0,8) (b1)    {$b$};
+		%\node[roundnode2] at (1,8) (b2)    {$b_2$};
 		\node[roundnode2] at (-2,8) (h1)    {$h_0$};
 		\node[roundnode2] at (-1,8) (p0)    {$p_0$};
 		\node[roundnode2] at (2.25,8) (ht)    {$\bm{h_T}$};
@@ -156,7 +156,7 @@ with Planck's constant $h$, velocity of light $c$ and Boltzmann's constant $k_B$
 		\draw[->, very thick] (h1.south) -- (p.north west);
 		\draw[->, very thick] (p0.south) -- (p.north);
 		\draw[->, very thick] (b1.south) -- (p.north east); 
-		\draw[->, very thick] (b2.south) -- (p.east); 
+		%\draw[->, very thick] (b2.south) -- (p.east); 
 		
 		\draw[->, very thick] (d.south) -- (Q.north west); 
 		
@@ -164,13 +164,62 @@ with Planck's constant $h$, velocity of light $c$ and Boltzmann's constant $k_B$
 		\draw[->, very thick] (ht.south) -- (t.north west);
 		\draw[->, very thick] (ct.south) -- (t.north);
 		\draw[->, very thick] (at.south) -- (t.north east);
-		
-		
-		\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
-		
+		%\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
 	\end{tikzpicture} 
+\caption[]{Here $\bm{h_T}$, $\bm{c_T}$,$\bm{a_T}$ are the cuntino parameters}
 \end{figure}
 
+\subsection{Prior Modelling}
+\begin{table}
+	\centering
+	\begin{tabular}{ |c||c|c|c|c|   }
+		\hline
+		& &\multicolumn{2}{|c|}{TT bounds}&\\
+		\hline
+		model parameters& priors&\makecell{lower}& \makecell{upper\\
+		}&Context\\
+		\hline
+		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &0 &1& $\bm{y}$\\ \hhline{|=||=|=|=|=|}
+		$\delta$ &$\mathcal{T}(1,10^{-10})$ & 0&1& $\bm{x}$\\ \hline
+		$\bm{x}$ &$\mathcal{N}(0,\delta \bm{L})$ & -&-& $\bm{x}$\\ \hhline{|=||=|=|=|=|}
+		%$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
+		%$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
+		%$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\ \hline
+		%$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\ \hline
+		$h_0$ &  $\mathcal{N}(34.3,0.5)$& 32.8&35.64&$\bm{p/T}$\\ \hline
+		$p_0$ &  $\mathcal{N}(6.5,0.1)$&6.17 &6.73&$\bm{p/T}$\\ \hline
+		$b$ &  $\mathcal{N}(0.15,0.0051)$& 0.138  &0.167&$\bm{p/T}$\\ \hline
+		%$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/T}$\\ \hline
+		$h_{T,0}$ &  $\mathcal{N}(11,0.5)$&9.6 &12.4&$\bm{p/T}$\\ \hline
+		$h_{T,1}$ &  $\mathcal{N}(20,3)$&11.6 &28.4&$\bm{p/T}$\\ \hline
+		$h_{T,2}$ &  $\mathcal{N}(32,1)$&29.2 &34.8&$\bm{p/T}$\\ \hline
+		$h_{T,3}$ &  $\mathcal{N}(47,2)$&41.4 &52.6&$\bm{p/T}$\\ \hline
+		$h_{T,4}$ &  $\mathcal{N}(51,2)$&45.4 &56.6&$\bm{p/T}$\\ \hline
+		$h_{T,5}$ &  $\mathcal{N}(71,2)$&65.4 &76.6&$\bm{p/T}$\\ \hline
+		$a_{T,1}$ &  $\mathcal{N}(-6.5,0.01)$&-6.528 &-6.472&$\bm{p/T}$\\ \hline
+		$a_{T,2}$ &  $\mathcal{N}(1,0.01)$&0.972 &1.028&$\bm{p/T}$\\ \hline
+		$a_{T,3}$ &  $\mathcal{N}(2.8,0.1)$&2.52 &3.078&$\bm{p/T}$\\ \hline
+		$a_{T,4}$ &  $\mathcal{N}(-2.8,0.01)$&-2.828 &-2.772&$\bm{p/T}$\\ \hline
+		$a_{T,5}$ & $\mathcal{N}(-2,0.01)$ &-2.028 &-1.972&$\bm{p/T}$\\ \hline
+		$t_{0}$ &  $\mathcal{N}(288,2)$& 282.54 &293.75&$\bm{p/T}$\\
+		\hline
+	\end{tabular}
+	\caption{Gaussian $\mathcal{N}(\mu,\sigma)$ and gamma distribution $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$
+		Bounds for t and p 2.8 times the variance around the mean
+		round pressure approx and  test if would work with previous gamma prior or fix gamma prior with set values}
+	\label{tab:1}
+\end{table}
+
+\begin{itemize}
+	\item prior of ozone (picture), with samples drawn from gamma distr
+	\item prior of pressure and temperature
+\end{itemize}
+In practise we sperate OPzone and conditoin on tempreature and pressure  or vice versa. 
+\subsubsection{Ozone}
+graph lacoiacn 
+wigthing in between
+similiar to a ciuop;led osscialtors
+what heught is change of weights
 \begin{align}
 	\bm{Q}= \delta \bm{L} =
 	\delta
@@ -185,51 +234,17 @@ with Planck's constant $h$, velocity of light $c$ and Boltzmann's constant $k_B$
 	\end{bmatrix}  
 \end{align}
 
-\begin{table}
-	\centering
-	\begin{tabular}{ |c||c|c|c|c|   }
-		\hline
-		& &\multicolumn{2}{|c|}{TT bounds}&\\
-		\hline
-		model parameters& priors&\makecell{lower}& \makecell{upper\\
-		}&Context\\
-		\hline
-		
-		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &- &-& $\bm{x}$\\ \hhline{|=||=|=|=|=|}
-		$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& $\bm{x}$\\ \hline
-		%$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
-		%$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
-		$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\ \hline
-		$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\ \hline
-		$h_{p,1}$ &  $\mathcal{N}(34.3,0.5)$& 32.8&35.64&$\bm{p/T}$\\ \hline
-		$p_0$ &  $\mathcal{N}(6.5,0.1)$&6.17 &6.73&$\bm{p/T}$\\ \hline
-		$b_1$ &  $\mathcal{N}(0.15,0.0051)$& 0.138  &0.167&$\bm{p/T}$\\ \hline
-		$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/T}$\\ \hline
-		$h_{t,0}$ &  $\mathcal{N}(11,0.5)$&9.6 &12.4&$\bm{p/T}$\\ \hline
-		$h_{t,1}$ &  $\mathcal{N}(20,3)$&11.6 &28.4&$\bm{p/T}$\\ \hline
-		$h_{t,2}$ &  $\mathcal{N}(32,1)$&29.2 &34.8&$\bm{p/T}$\\ \hline
-		$h_{t,3}$ &  $\mathcal{N}(47,2)$&41.4 &52.6&$\bm{p/T}$\\ \hline
-		$h_{t,4}$ &  $\mathcal{N}(51,2)$&45.4 &56.6&$\bm{p/T}$\\ \hline
-		$h_{t,5}$ &  $\mathcal{N}(71,2)$&65.4 &76.6&$\bm{p/T}$\\ \hline
-		$a_{t,1}$ &  $\mathcal{N}(-6.5,0.01)$&-6.528 &-6.472&$\bm{p/T}$\\ \hline
-		$a_{t,2}$ &  $\mathcal{N}(1,0.01)$&0.972 &1.028&$\bm{p/T}$\\ \hline
-		$a_{t,3}$ &  $\mathcal{N}(2.8,0.1)$&2.52 &3.078&$\bm{p/T}$\\ \hline
-		$a_{t,4}$ &  $\mathcal{N}(-2.8,0.01)$&-2.828 &-2.772&$\bm{p/T}$\\ \hline
-		$a_{t,5}$ & $\mathcal{N}(-2,0.01)$ &-2.028 &-1.972&$\bm{p/T}$\\ \hline
-		$t_{0}$ &  $\mathcal{N}(288,2)$& 282.54 &293.75&$\bm{p/T}$\\
-		\hline
-	\end{tabular}
-	\caption{Gaussian $\mathcal{N}(\mu,\sigma)$ and gamma distribution $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$
-		Bounds for t and p 2.8 times the variance around the mean
-		round pressure approx and  test if would work with previous gamma prior or fix gamma prior with set values}
-	\label{tab:1}
-\end{table}
+\subsubsection{pressure over temperature}
 
-\subsection{Prior Modelling}
+
 \begin{itemize}
-	\item prior of ozone (picture), with samples drawn from gamma distr
-	\item prior of pressure and temperature
+	\item show that pressure is dominant
+	\item appendix
 \end{itemize}
+
+
+
+
 
 \subsection{Posterior distributions}
 \begin{itemize}
@@ -239,12 +254,20 @@ with Planck's constant $h$, velocity of light $c$ and Boltzmann's constant $k_B$
 	\item taylor expansion
 	\item maybe make  metroplis explixit
 \end{itemize}
+conditioned on a ozone profile
+\subsubsection{pressure over temperature}
+
+conditioned on a temperauter opver pressure profile
+\subsubsection{Ozone -- marginal posterior}
+
+\subsubsection{Ozone -- conditional posterior}
 
 
 \section{Affine Map}
 \begin{itemize}
-	\item explicit, why we need ozone porifles, bcause it is faster
+	\item explicit, why we need ozone profiles, because it is faster and temperature and pressure are more well defined within the atmosphere
 \end{itemize}
+We do MTC with linear forward map no updadeted
 In this specific case we find the affine map
 \begin{align}
 	\bm{M} = \begin{bmatrix}
@@ -284,18 +307,19 @@ Then the non-linear forward model can be approximated so that
 \subsection{First MTC}
 \begin{itemize}
 	\item make table with set up for TT and sampling 
+	\item normalize in evrey step
 \end{itemize}
 \begin{figure}[thb!]
 	\centering
 	\begin{tikzpicture}
-		\node[roundnode2] at (-4.5,6.5) (Q)     {$\bm{Q}$};
-		\node[roundnode2] at (-3,5) (x)     {$\bm{x}$};
-		\node[roundnode2] at (-1,4) (A)    {$\bm{A}_{NL}$};
-		\node[roundnode2] at (-1,2.5) (u)    {$\bm{u}$};
-		\node[rectnode] at (-1,1) (y)    {$\bm{y}$};
-		\node[roundnode2] at (-5.25,4.5) (S)    {$\bm{\Sigma}$};
-		\node[roundnode2] at (-6.5,6.25) (s)    {$\gamma$};
-		\node[roundnode2] at (-5.5,8) (d)    {$\delta$};
+	\node[roundnode2] at (-4.5,6.5) (Q)     {$\bm{Q}$};
+	\node[roundnode2] at (-3,5) (x)     {$\bm{x}$};
+	\node[align=center] at (-1.55,4) (A)    {$\bm{A}_L$};
+	\node[roundnode2] at (-1.55,2.5) (u)    {$\bm{u}$};
+	\node[rectnode] at (-1.55,1) (y)    {$\bm{y}$};
+	\node[roundnode2] at (-5.25,4.5) (S)    {$\bm{\Sigma}$};
+	\node[roundnode2] at (-6.5,6.25) (s)    {$\gamma$};
+	\node[roundnode2] at (-5.5,8) (d)    {$\delta$};
 		
 		%Lines
 		\draw[->, mydotted, very thick] (S.south east) -- (y.west);
@@ -308,13 +332,15 @@ Then the non-linear forward model can be approximated so that
 		
 		\draw[->, very thick] (Q.south east) -- (x.north west); 
 		%\node[align=center] at (0,4) (f3) {$= \bm{A}$};
-		\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
-		
+		%\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
 	\end{tikzpicture} 
+\caption[]{}
 \end{figure}
 
 \subsubsection{Marginal Posterior}
-
+\begin{itemize}
+	\item samples vs calc values
+\end{itemize}
 
 \begin{figure}[ht!]
 	\centering
@@ -323,7 +349,11 @@ Then the non-linear forward model can be approximated so that
 	\label{fig:}
 \end{figure}
 
-\subsubsection{cinditional osterior Posterior}
+\subsubsection{sampling from conditional posterior Posterior}
+\begin{itemize}
+	\item draw samples using RTO, when variance is hard to calculate
+	\item or calc mean and variance using see other section
+\end{itemize}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{FirstTestRes.png}
@@ -349,7 +379,7 @@ Then the non-linear forward model can be approximated so that
 \end{itemize}
 
 
-\section{Ozone Retrieval }
+\subsection{Ozone Retrieval}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{secRecRes.png}
@@ -357,14 +387,14 @@ Then the non-linear forward model can be approximated so that
 	\label{fig:}
 \end{figure}
 
-\subsection{Marginal Posterior}
+\subsubsection{MTC --  sampling vs TT}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{secSIRTMargMargO3Res.png}
 	\caption[]{}
 	\label{fig:}
 \end{figure}
-\subsection{Regularized Solution}
+\subsubsection{Regularized Solution}
 \begin{itemize}
 	\item similar to MTC model
 	\item picture of L-Curve and samples 
@@ -377,23 +407,24 @@ Then the non-linear forward model can be approximated so that
 	\caption[]{}
 	\label{fig:}
 \end{figure}
-\section{Posterior Pressure and Temperature}
+\subsection{Posterior Pressure and Temperature}
 \begin{itemize}
-	\item make table with set up for TT and sampling 
+	\item make table with set up for TT and sampling t-walk
+	\item talk to colin about Error
 \end{itemize}
 \begin{figure}[thb!]
 	\centering
 	\begin{tikzpicture}
 		
-		\node[roundnode2] at (-1,4) (A)    {$\bm{A}_{NL}$};
+		\node[align=center] at (-1,4) (A)    {$\bm{M A}_L$};
 		\node[roundnode2] at (-1,2.5) (u)    {$\bm{u}$};
 		\node[rectnode] at (-1,1) (y)    {$\bm{y}$};
 		
 		\node[roundnode2] at (3,6.5) (t)     {$\bm{T}$};
 		\node[roundnode2] at (-1,6.5) (p)     {$\bm{p}$};
 		\node[roundnode2] at (1,5) (pt)     {$\bm{p}/\bm{T}$};
-		\node[roundnode2] at (0,8) (b1)    {$b_1$};
-		\node[roundnode2] at (1,8) (b2)    {$b_2$};
+		\node[roundnode2] at (0,8) (b1)    {$b$};
+		%\node[roundnode2] at (1,8) (b2)    {$b_2$};
 		\node[roundnode2] at (-2,8) (h1)    {$h_0$};
 		\node[roundnode2] at (-1,8) (p0)    {$p_0$};
 		\node[roundnode2] at (2.25,8) (ht)    {$\bm{h_T}$};
@@ -401,7 +432,6 @@ Then the non-linear forward model can be approximated so that
 		\node[roundnode2] at (4.25,8) (at)    {$\bm{a_T}$};
 		
 		%Lines
-		
 		\draw[->, very thick] (u.south) -- (y.north);
 		\draw[->, mydotted, very thick] (A.south) -- (u.north);
 		
@@ -411,18 +441,15 @@ Then the non-linear forward model can be approximated so that
 		\draw[->, very thick] (h1.south) -- (p.north west);
 		\draw[->, very thick] (p0.south) -- (p.north);
 		\draw[->, very thick] (b1.south) -- (p.north east); 
-		\draw[->, very thick] (b2.south) -- (p.east); 
-		
-		
+		%\draw[->, very thick] (b2.south) -- (p.east); 
 		
 		\draw[->, very thick] (ht.south) -- (t.north west);
 		\draw[->, very thick] (ct.south) -- (t.north);
 		\draw[->, very thick] (at.south) -- (t.north east);
 		
-		
-		\node[align=center] at (0.25,4) (f3) {$\approx \bm{M A}_L$};
-		
+		%\node[align=center] at (0.25,4) (f3) {$\approx \bm{M A}_L$};
 	\end{tikzpicture} 
+\caption[]{}
 \end{figure}
 
 \begin{figure}[ht!]
