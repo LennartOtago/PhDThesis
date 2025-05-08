@@ -79,7 +79,7 @@ We can formulate a temperature function from \cite{atmosphere1976us}
 		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h - h_2), & \text{$h_{2} \leq h < h_{3}$}\\
 		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h_3 - h_2), & \text{$h_{3} \leq h < h_{4}$}\\
 		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h_3 - h_2) + a_3 (h -h_4), & \text{$h_{4} \leq h < h_{5}$}\\
-		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h_3 - h_2) + a_3 (h_5 - h_4) + a_4 (h -h_5), & \text{$h_{5} \leq h < 84.852\text{km}$}
+		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h_3 - h_2) + a_3 (h_4 - h_4) + a_4 (h -h_5), & \text{$h_{5} \leq h < 84.852\text{km}$}
 	\end{cases*} 
 \end{align}
 depending on 12 parameters with values provided by \cite{}, also see table \ref{}.
@@ -242,8 +242,29 @@ what heught is change of weights
 	\item appendix
 \end{itemize}
 
+PriorTempOverPostMeanSigm
 
 
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{PriorTempOverPostMeanSigm.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{PriorTempPostMeanSigm.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{PriorPressPostMeanSigm.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
 
 
 \subsection{Posterior distributions}
@@ -344,10 +365,25 @@ Then the non-linear forward model can be approximated so that
 
 \begin{figure}[ht!]
 	\centering
+	\includegraphics{f_and_g_phd.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
 	\includegraphics{ScatterplusHisto.png}
 	\caption[]{}
 	\label{fig:}
 \end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{ScatterplusHistoPlusTT.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+
 
 \subsubsection{sampling from conditional posterior Posterior}
 \begin{itemize}
@@ -403,10 +439,20 @@ Then the non-linear forward model can be approximated so that
 
 \begin{figure}[ht!]
 	\centering
-	%\includegraphics{Reg.png}
+	\includegraphics{SecRecResinclReg.png}
 	\caption[]{}
 	\label{fig:}
 \end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{LCurvePhD.png}
+	\caption{We take the ozone profile from \cite{}, relate pressure and height and discretise according to the source.
+		This will serve as our true Ozone profile.}
+	\label{fig:nter-label}
+\end{figure}
+
+
 \subsection{Posterior Pressure and Temperature}
 \begin{itemize}
 	\item make table with set up for TT and sampling t-walk
