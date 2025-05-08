@@ -280,8 +280,93 @@ conditioned on a ozone profile
 
 conditioned on a temperauter opver pressure profile
 \subsubsection{Ozone -- marginal posterior}
+\section{MTC posterior sampling}
+\label{sec:postsamp}
+In this Section we discuss sampling from the posterior distribution. But you don't need to.
+\subsection{Sampling from the marginal posterior distribution over hyper-parameters}
+%In this section we present two algorithm to sample from the marginal posterior distribution.
+Now, to sample from the marginal posterior of the hyper-parameters
+% and the posterior distribution of the parameters condition on the hyper-parameter $\pi(\bm{x}|\bm{y}, \lambda, \gamma )$, with $\lambda = \delta / \gamma$.
+\begin{align}
+	\pi(\lambda, \gamma | \bm{y})
+	\propto  \lambda^{n/2} \gamma^{m/2}   \exp{ \Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) \Bigr\} } \pi(\lambda, \gamma),
+	\label{eq:MargPostAppl}
+\end{align}
+with $\lambda = \delta / \gamma$,
+\begin{subequations}
+	\label{eq:fandg}
+	\begin{align}
+		&f ( \lambda) = \bm{y}^T \bm{y} - (\bm{A}^T \bm{y})^T (\bm{A}^T  \bm{A} + \lambda \bm{L})^{-1} (\bm{A}^T \bm{y})  \, ,  \\
+		&\text{and } g(\lambda) = \log \det (\bm{A}^T  \bm{A} + \lambda \bm{L}) \,.
+	\end{align}
+\end{subequations}
+we employ a so-called MWG (Metropolis within Gibbs) algorithm, summarised in the algorithmic Box $1$.
+One may implement a Metropolis random walk on the full conditional
+\begin{align}
+	\label{eq:lamCondPrior}
+	\pi(\lambda | \bm{y}, \gamma) &\propto \lambda^{n/2+\alpha_\delta -1} \exp{\Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_\delta \gamma \lambda \Bigr\}} 
+\end{align} 
+and do a Gibbs steps on
+\begin{align}
+	\gamma |  \bm{y}, \lambda &\sim \Gamma \bigg( \frac{m}{2} + \alpha_\delta + \alpha_\gamma, \frac{1}{2} f (\lambda ) + \beta_\gamma + \beta_\delta \lambda \bigg)\label{eq:gamCondPrior}
+\end{align} 
+to generate marginal posterior samples $(\lambda, \gamma)^{(1)}, \dots, (\lambda, \gamma)^{(N)} \sim  \pi(\lambda, \gamma| \bm{y})$.
+Note that, when changing variables from $\delta = \lambda \gamma$ to $\lambda$ the hyper-prior distribution changes to $\pi(\lambda) \propto \lambda^{\alpha_\delta-1} \gamma^{\alpha_\delta} \exp{(- \beta_\delta \lambda  \gamma)} $, due to $\text{d}\delta / \text{d} \lambda = \gamma$.
+We find the full conditionals by factorisation.
+
+
+
+As part of the Metropolis random walk, a new $\lambda^\prime$ given the previous $\lambda^{(k)}$, with $k = 1 , \dots, N$, is proposed according to the distribution $q(\lambda^\prime|\lambda^{(k)}) \sim \mathcal{N}(\lambda^{(k)}, w_\lambda)$.
+The proposed sample is rejected or accepted with the acceptance probability $\alpha(\lambda^\prime |\lambda^{(k)})$, see Equation \eqref{eq:alpha}.
+Here, calculating the difference $\Delta f = f(\lambda^\prime) - f(\lambda^{(k)})$ and $\Delta g = g(\lambda^\prime) - g(\lambda^{(k)})$ is crucial.
+Since the functions $f(\lambda)$ and $g(\lambda)$ are well-behaved over a large range of $\lambda$ and almost linear around the mode of the marginal posterior $\lambda_0$, a Taylor expansion around the mode is sufficient, see Figure \ref{fig:f_and_g}.
+Then, computing the acceptance ratio does not involve evaluating $f(\lambda)$ and $g(\lambda)$, but the difference $\Delta f = \sum f^{(r)}(\lambda_0) (\lambda^\prime - \lambda^{(k)})^r$ and $\Delta g = \sum g^{(r)}(\lambda_0) (\lambda^\prime - \lambda^{(k)})^{r}$.
+The derivatives are
+\begin{align}
+	f^{(r)}& (\lambda_0)= (-1)^{r+1} r! (\bm{A}^T \bm{y})^T (\bm{B}_0^{-1} \bm{L})^r \bm{B}_0^{-1} \bm{A}^T \bm{y} \label{eq:ftay}  \\
+	\text{and } &g^{(r)} ( \lambda_0) = (-1)^{r+1} \, \text{tr} \big( (\bm{B}_0^{-1}\bm{ L })^r \big)
+	\label{eq:gtay}
+\end{align} 
+with $\bm{B}_0 = \bm{A}^T  \bm{A} + \lambda_0 \bm{L}$.
+
+Finally, a Gibbs step provides a new $\gamma^{(k+1)} \sim \gamma | \bm{y}, \lambda^{(k+1)}$, see Equation \eqref{eq:GibbsStep}.
+
 
 \subsubsection{Ozone -- conditional posterior}
+
+Conditioned on the hyper-parameters $\bm{\theta} = ( \delta, \gamma)$ we utilise the so-called RTO (randomize then optimize) method \cite{bardsley2012mcmc,bardsley2015randomize, fox2016fast} to draw an independent sample of the conditional posterior distribution.
+By perturbation of the exponent of
+\begin{align}
+	\bm{x}| \bm{y} ,\delta, \gamma \sim \mathcal{N}\big(  (\bm{A}^T \bm{A} + \delta / \gamma \bm{L} )^{-1} \bm{A}^T \bm{y}, (\gamma \bm{A}^T \bm{A} + \delta \bm{L} )^{-1} \big) \, \label{eq:CondPost},
+\end{align}
+we obtain one independent sample $\bm{x} \sim \pi(\bm{x}|\bm{y}, \bm{\theta})$ for each solve of Equation \eqref{eq:RTO}, see algorithmic Box $2$.
+
+
+We use the same discretization of the atmosphere as given by the ozone profile taken from \url{https://disc.gsfc.nasa.gov/datasets/ML2O3_005/summary?keywords=mls%20o3}.
+We use ozone values between a height of $10$km up to $38$km, which results in $n=37$ layers.
+We set the number of measurements to $m= 105 $.
+(I can't think of any good reason why I chose that, it is a good number not too big not too small and gives consistent results for various datasets)\\
+
+When finding the mode we use the scipy.optimize.fmin function and limit the number of function evaluations to 25.
+We use Cholesky factorisation to evaluate $g(\lambda)$ and $f(\lambda)$ and to construct the coefficients of the Taylor series, where we have to calculate  $\bm{B}^{-1} \bm{L} $ and  $\bm{B}^{-1}  \bm{A}^T \bm{y}$ once at $\lambda_0$.\\
+
+
+We bin the samples into a normalised histogram and use the height of the bars as quadrature weights $\pi(\lambda_i| \bm{y})$, where the quadrature point $\lambda_i$ denotes the centre of each bin.
+To calculate the conditional posterior mean we use approximate quadrature
+\begin{align}
+	\mu_{\bm{x}|\bm{y}} = \int x_{\lambda} \pi(\lambda| \bm{y}) \text{d}\lambda \approx \sum x_{\lambda_i} \pi(\lambda_i| \bm{y}) \, ,
+\end{align}
+with $\sum \pi(\lambda_i| \bm{y}) = 1$, so that the integral can be interpreted as the weighted average.
+See Sec. 2 \url{https://www.cambridge.org/core/journals/acta-numerica/article/highdimensional-integration-the-quasimonte-carlo-way/03F126DDF465F915B22D5D709CD28946}.\\
+
+We bin the samples into $3$ bins and stop increasing the number of bins by one if the relative error between the previous and the current conditional posterior mean is less than $0.1\%$.
+This gives a total number of $3+4+5 = 12$ solves for $x_{\lambda}$.
+In addition, we calculate the covariance matrix $(\gamma \bm{B}_{\lambda})^{-1} $, where we use Cholesky factorisation to invert $\bm{B}$, solving the integral
+\begin{align}
+	\Sigma_{\bm{x}|\bm{y}} = \int \gamma^{-1}  \pi(\gamma | \bm{y} ) \, \text{d} \gamma \, \int  \bm{B}_{\lambda}^{-1} \, \pi(\lambda | \bm{y} )  \, \text{d} \lambda  \approx \sum {\gamma_i}^{-1}\pi(\gamma_i| \bm{y}) \sum \bm{B}_{\lambda_i}^{-1}\pi(\lambda_i| \bm{y})\, .
+\end{align}\\
+
+It takes us less than 0.1s to draw 10000 samples from the marginal posterior and to calculate the conditional posterior mean or to solve for 200 different $x_{\lambda}$ and to find the regularised solution at the point of maximum curvature using the kneedle algorithm.\\
 
 
 \section{Affine Map}
