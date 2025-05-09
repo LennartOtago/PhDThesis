@@ -56,7 +56,7 @@
     \put(0,0){\includegraphics[width=\unitlength,page=1]{LIMB.pdf}}%
     \put(0.79362506,0.12102016){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{n}$=76km\end{tabular}}}}%
     \put(0.69996367,0.07059122){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_i$\end{tabular}}}}%
-    \put(0.69237545,0.01769629){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_0=$3.2km\end{tabular}}}}%
+    \put(0.69237545,0.01769629){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_0=$7km\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{LIMB.pdf}}%
     \put(0.88470883,0.2037468){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{\text{obs}}=500$km\end{tabular}}}}%
     \put(0.6288998,0.12693188){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Gamma_j$\end{tabular}}}}%

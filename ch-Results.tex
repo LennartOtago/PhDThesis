@@ -21,9 +21,21 @@ we assume no signal above and below and that the we have a constant LTE atmosphe
 As in section \ref{sec:formodel} the atmosphere is discretised into $n = $ layers
 Where we take the same discretization as given by an ozone profile taken from NASA's (Microwave limb sounder) MLS \cite{}.
 
+\begin{itemize}
+	\item what we set
+	\item pointing accuracy number of data set in between atmosphere
+	\item atmospheric layers
+	\item where from ozone profile
+\end{itemize}
 
 
-\subsection{Ozone}
+\subsection{Ozone and pressure}
+\begin{itemize}
+	\item where from ozone profile
+	\item say what we get form nasa
+	\item assumption for height
+\end{itemize}
+
 \begin{figure}[ht!]
 	\centering
 	%\scalebox{1}{\input{TrueO3.pdf_tex}}
@@ -42,7 +54,11 @@ At altitude $h$ the gravitational constant
 	g = g_0 \Bigg( \frac{r_0}{r_0 + h} \Bigg) \, ,
 \end{align}
 with $r_0 \approx 6356 \, \text{km}$ (also known as the polar radius of the earth) and $g_0 \approx 9.81 \text{m}/\text{s}^2$ and \cite{}.
-\subsection{Pressure}
+\subsection{Pressure to height}
+\begin{itemize}
+	\item us stabdart atmospher
+	\item assumptions
+\end{itemize}
 We parametrize the pressure by fitting one exponential to the pressure values $p$ related to the height $h$ by Eq. \ref{}.
 \begin{figure}[ht!]
 	\centering
@@ -60,8 +76,11 @@ The pressure function,
 is depending on three different parameters, the gradient $a_{p,1}$ and the tuple $(p_0,h_{p,0})$.
 
 
-\subsection{Temperature}
-
+\subsection{Hieght to Temperature}
+\begin{itemize}
+	\item us standard atmosphere
+	\item assumptions
+\end{itemize}
 \begin{figure}[ht!]
 	\centering
 	%\scalebox{1}{\input{TrueTemp.pdf_tex}}
@@ -72,14 +91,14 @@ is depending on three different parameters, the gradient $a_{p,1}$ and the tuple
 We can formulate a temperature function from \cite{atmosphere1976us}
 \begin{align}
 	T(h) = \begin{cases*}
-		T_0 & \text{$h = 0$}\\
-		T_0 + a_0 h, & \text{$0 \leq h < h_{0}$}\\
-		T_0 + a_0 h_0, & \text{$h_{0} \leq  h < h_{1}$}\\
-		T_0 + a_0 h_0 + a_1 (h -h_1) , & \text{$h_{1} \leq h < h_{2}$}\\
-		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h - h_2), & \text{$h_{2} \leq h < h_{3}$}\\
-		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h_3 - h_2), & \text{$h_{3} \leq h < h_{4}$}\\
-		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h_3 - h_2) + a_3 (h -h_4), & \text{$h_{4} \leq h < h_{5}$}\\
-		T_0 + a_0 h_0 + a_1 (h_2 - h_1) + a_2 (h_3 - h_2) + a_3 (h_4 - h_4) + a_4 (h -h_5), & \text{$h_{5} \leq h < 84.852\text{km}$}
+		T_0, & \text{$h = 0$}\\
+		T_0 + a_0 h , & \text{$0 \leq h < h_{1}$}\\
+		T_0 + a_0 h_1, & \text{$h_{1} \leq  h < h_{2}$}\\
+		T_0 + a_0 h_1 + a_1 (h   - h_2),  & \text{$h_{2} \leq h < h_{3}$}\\
+		T_0 + a_0 h_1 + a_1 (h_3 - h_2) + a_2 (h   - h_3), & \text{$h_{3} \leq h < h_{4}$}\\
+		T_0 + a_0 h_1 + a_1 (h_3 - h_2) + a_2 (h_4 - h_3), & \text{$h_{4} \leq h < h_{5}$}\\
+		T_0 + a_0 h_1 + a_1 (h_3 - h_2) + a_2 (h_4 - h_3) + a_3 (h   - h_5), & \text{$h_{5} \leq h < h_{6}$}\\
+		T_0 + a_0 h_1 + a_1 (h_3 - h_2) + a_2 (h_4 - h_3) + a_3 (h_6 - h_5) + a_4 (h - h_6), & \text{$h_{6} \leq h \lesssim 85$}
 	\end{cases*} 
 \end{align}
 depending on 12 parameters with values provided by \cite{}, also see table \ref{}.
@@ -87,6 +106,10 @@ We set this as our true temperature profile and refer to \cite{} for temperature
 
 
 \subsection{Source}
+\begin{itemize}
+	\item RTE again?
+	\item assumptions
+\end{itemize}
 We calculate the source function $B(\nu, T)$ and the absorption constant $ k(\nu, T)$ as follows.
 
 For one species at one specific wave-number the weighted absorption constant becomes
@@ -117,11 +140,19 @@ Then we can calculate measurement with the RTE in Eq. \ref{eq:RTE} using the tra
 
 
 \section{Bayesian Model and prior analysis}
+\begin{itemize}
+	\item fill in what we descrube beofre 
+	\item describe parametres and hyper paraemrets set up model to make dag
+	\item then prior modelling
+\end{itemize}
 In this section we present the explicit Bayesian we will use to recover pressure temperature and ozone values.
 
 \subsection{DAG}
 Again we draw a DAG and specify prior disribtoin over those
 
+\begin{itemize}
+	\item correlation structure between ozone and temperature and pressure
+\end{itemize}
 \begin{figure}[thb!]
 	\centering
 	\begin{tikzpicture}
@@ -140,9 +171,9 @@ Again we draw a DAG and specify prior disribtoin over those
 		%\node[roundnode2] at (1,8) (b2)    {$b_2$};
 		\node[roundnode2] at (-2,8) (h1)    {$h_0$};
 		\node[roundnode2] at (-1,8) (p0)    {$p_0$};
-		\node[roundnode2] at (2.25,8) (ht)    {$\bm{h_T}$};
-		\node[roundnode2] at (3.25,8) (ct)    {$\bm{c_T}$};
-		\node[roundnode2] at (4.25,8) (at)    {$\bm{a_T}$};
+		\node[roundnode2] at (2.25,8) (ht)    {$\bm{h}$};
+		\node[roundnode2] at (3.25,8) (ct)    {$T_0$};
+		\node[roundnode2] at (4.25,8) (at)    {$\bm{a}$};
 		
 		%Lines
 		\draw[->, mydotted, very thick] (S.south east) -- (y.west);
@@ -150,26 +181,31 @@ Again we draw a DAG and specify prior disribtoin over those
 		\draw[->, very thick] (u.south) -- (y.north);
 		\draw[->, mydotted, very thick] (A.south) -- (u.north);
 		\draw[->, mydotted,  very thick] (x.south east) -- (A.west);
-		\draw[->, very thick] (p.south east) -- (pt.north west);
-		\draw[->, very thick] (t.south west) -- (pt.north east);
-		\draw[->,  mydotted, very thick] (pt.south west) -- (A.east);
-		\draw[->, very thick] (h1.south) -- (p.north west);
-		\draw[->, very thick] (p0.south) -- (p.north);
-		\draw[->, very thick] (b1.south) -- (p.north east); 
+		\draw[->, mydotted, very thick] (p.south east) -- (pt.north west);
+		\draw[->, mydotted, very thick] (t.south west) -- (pt.north east);
+		\draw[->, mydotted, very thick] (pt.south west) -- (A.east);
+		\draw[->, mydotted, very thick] (h1.south) -- (p.north west);
+		\draw[->, mydotted, very thick] (p0.south) -- (p.north);
+		\draw[->, mydotted, very thick] (b1.south) -- (p.north east); 
 		%\draw[->, very thick] (b2.south) -- (p.east); 
 		
 		\draw[->, very thick] (d.south) -- (Q.north west); 
 		
 		\draw[->, very thick] (Q.south east) -- (x.north west); 
-		\draw[->, very thick] (ht.south) -- (t.north west);
-		\draw[->, very thick] (ct.south) -- (t.north);
-		\draw[->, very thick] (at.south) -- (t.north east);
+		\draw[->, mydotted, very thick] (ht.south) -- (t.north west);
+		\draw[->, mydotted, very thick] (ct.south) -- (t.north);
+		\draw[->, mydotted, very thick] (at.south) -- (t.north east);
 		%\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
 	\end{tikzpicture} 
 \caption[]{Here $\bm{h_T}$, $\bm{c_T}$,$\bm{a_T}$ are the cuntino parameters}
 \end{figure}
 
 \subsection{Prior Modelling}
+\begin{itemize}
+	\item physical meaning by choosing priors
+	\item eventuel depednices
+	\item draw samples form priors should be as loose as possible
+\end{itemize}
 \begin{table}
 	\centering
 	\begin{tabular}{ |c||c|c|c|c|   }
@@ -190,18 +226,18 @@ Again we draw a DAG and specify prior disribtoin over those
 		$p_0$ &  $\mathcal{N}(6.5,0.1)$&6.17 &6.73&$\bm{p/T}$\\ \hline
 		$b$ &  $\mathcal{N}(0.15,0.0051)$& 0.138  &0.167&$\bm{p/T}$\\ \hline
 		%$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/T}$\\ \hline
-		$h_{T,0}$ &  $\mathcal{N}(11,0.5)$&9.6 &12.4&$\bm{p/T}$\\ \hline
-		$h_{T,1}$ &  $\mathcal{N}(20,3)$&11.6 &28.4&$\bm{p/T}$\\ \hline
-		$h_{T,2}$ &  $\mathcal{N}(32,1)$&29.2 &34.8&$\bm{p/T}$\\ \hline
-		$h_{T,3}$ &  $\mathcal{N}(47,2)$&41.4 &52.6&$\bm{p/T}$\\ \hline
-		$h_{T,4}$ &  $\mathcal{N}(51,2)$&45.4 &56.6&$\bm{p/T}$\\ \hline
-		$h_{T,5}$ &  $\mathcal{N}(71,2)$&65.4 &76.6&$\bm{p/T}$\\ \hline
-		$a_{T,1}$ &  $\mathcal{N}(-6.5,0.01)$&-6.528 &-6.472&$\bm{p/T}$\\ \hline
-		$a_{T,2}$ &  $\mathcal{N}(1,0.01)$&0.972 &1.028&$\bm{p/T}$\\ \hline
-		$a_{T,3}$ &  $\mathcal{N}(2.8,0.1)$&2.52 &3.078&$\bm{p/T}$\\ \hline
-		$a_{T,4}$ &  $\mathcal{N}(-2.8,0.01)$&-2.828 &-2.772&$\bm{p/T}$\\ \hline
-		$a_{T,5}$ & $\mathcal{N}(-2,0.01)$ &-2.028 &-1.972&$\bm{p/T}$\\ \hline
-		$t_{0}$ &  $\mathcal{N}(288,2)$& 282.54 &293.75&$\bm{p/T}$\\
+		$h_{1}$ &  $\mathcal{N}(11,0.5)$&9.6 &12.4&$\bm{p/T}$\\ \hline
+		$h_{2}$ &  $\mathcal{N}(20,3)$&11.6 &28.4&$\bm{p/T}$\\ \hline
+		$h_{3}$ &  $\mathcal{N}(32,1)$&29.2 &34.8&$\bm{p/T}$\\ \hline
+		$h_{4}$ &  $\mathcal{N}(47,2)$&41.4 &52.6&$\bm{p/T}$\\ \hline
+		$h_{5}$ &  $\mathcal{N}(51,2)$&45.4 &56.6&$\bm{p/T}$\\ \hline
+		$h_{6}$ &  $\mathcal{N}(71,2)$&65.4 &76.6&$\bm{p/T}$\\ \hline
+		$a_{0}$ &  $\mathcal{N}(-6.5,0.01)$&-6.528 &-6.472&$\bm{p/T}$\\ \hline
+		$a_{1}$ &  $\mathcal{N}(1,0.01)$&0.972 &1.028&$\bm{p/T}$\\ \hline
+		$a_{2}$ &  $\mathcal{N}(2.8,0.1)$&2.52 &3.078&$\bm{p/T}$\\ \hline
+		$a_{3}$ &  $\mathcal{N}(-2.8,0.01)$&-2.828 &-2.772&$\bm{p/T}$\\ \hline
+		$a_{4}$ & $\mathcal{N}(-2,0.01)$ &-2.028 &-1.972&$\bm{p/T}$\\ \hline
+		$T_{0}$ &  $\mathcal{N}(288,2)$& 282.54 &293.75&$\bm{p/T}$\\
 		\hline
 	\end{tabular}
 	\caption{Gaussian $\mathcal{N}(\mu,\sigma)$ and gamma distribution $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$
@@ -210,10 +246,6 @@ Again we draw a DAG and specify prior disribtoin over those
 	\label{tab:1}
 \end{table}
 
-\begin{itemize}
-	\item prior of ozone (picture), with samples drawn from gamma distr
-	\item prior of pressure and temperature
-\end{itemize}
 In practise we sperate OPzone and conditoin on tempreature and pressure  or vice versa. 
 \subsubsection{Ozone}
 graph lacoiacn 
@@ -244,25 +276,13 @@ what heught is change of weights
 
 \begin{itemize}
 	\item show that pressure is dominant
+	\item correlation structure
 	\item appendix
 \end{itemize}
 
 PriorTempOverPostMeanSigm
 
 
-\begin{figure}[ht!]
-	\centering
-	\input{TruePress.pdf_tex}
-	\caption[]{}
-	\label{fig:}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\input{TrueTemp.pdf_tex}
-	\caption[]{}
-	\label{fig:}
-\end{figure}
 
 \begin{figure}[ht!]
 	\centering
@@ -390,7 +410,10 @@ It takes us less than 0.1s to draw 10000 samples from the marginal posterior and
 
 \section{Affine Map}
 \begin{itemize}
+	\item introduce affine sapce and how we get affine map, to motivate samples from posterir space
 	\item explicit, why we need ozone profiles, because it is faster and temperature and pressure are more well defined within the atmosphere
+	\item generate affine space every samples is a feasable sample
+	\item generate data without noise to find affine map
 \end{itemize}
 We do MTC with linear forward map no updadeted
 In this specific case we find the affine map
@@ -431,8 +454,9 @@ Then the non-linear forward model can be approximated so that
 
 \subsection{First MTC}
 \begin{itemize}
-	\item make table with set up for TT and sampling 
+	\item make table with set up for TT and sampling , number of samples
 	\item normalize in evrey step
+	\item we use RTO to generate samples
 \end{itemize}
 \begin{figure}[thb!]
 	\centering
@@ -446,18 +470,23 @@ Then the non-linear forward model can be approximated so that
 	\node[roundnode2] at (-6.5,6.25) (s)    {$\gamma$};
 	\node[roundnode2] at (-5.5,8) (d)    {$\delta$};
 		
-		%Lines
-		\draw[->, mydotted, very thick] (S.south east) -- (y.west);
-		\draw[->, very thick] (s.south) -- (S.north west);
-		\draw[->, very thick] (u.south) -- (y.north);
-		\draw[->, mydotted, very thick] (A.south) -- (u.north);
-		\draw[->, mydotted,  very thick] (x.south east) -- (A.west);
-		
-		\draw[->, very thick] (d.south) -- (Q.north west); 
-		
-		\draw[->, very thick] (Q.south east) -- (x.north west); 
-		%\node[align=center] at (0,4) (f3) {$= \bm{A}$};
-		%\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
+	%Lines
+	\draw[->, mydotted, very thick] (S.south east) -- (y.west);
+	\draw[->, very thick] (s.south) -- (S.north west);
+	\draw[->, very thick] (u.south) -- (y.north);
+	\draw[->, mydotted, very thick] (A.south) -- (u.north);
+	\draw[->, mydotted,  very thick] (x.south east) -- (A.west);
+	
+	\draw[->, very thick] (d.south) -- (Q.north west); 
+	
+	\draw[->, very thick] (Q.south east) -- (x.north west); 
+	%\node[align=center] at (0,4) (f3) {$= \bm{A}$};
+	%\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
+	\node[align =center] at (-1.75,7) (T1) {marginal posterior \\ over hyper-parameters \\ $\pi(\gamma, \delta | \bm{y})$};
+	\node[align =center] at (-0.75,5) (T1) {conditional posterior \\ $\pi( \bm{x} |\gamma, \delta, \bm{y})$ };
+
+	
+	\node[fit=(S)(s)(Q)(d),draw,dotted,black, rounded corners] {};
 	\end{tikzpicture} 
 \caption[]{}
 \end{figure}
@@ -465,6 +494,7 @@ Then the non-linear forward model can be approximated so that
 \subsubsection{Marginal Posterior}
 \begin{itemize}
 	\item samples vs calc values
+	\item taylor expansion
 \end{itemize}
 
 \begin{figure}[ht!]
@@ -474,12 +504,12 @@ Then the non-linear forward model can be approximated so that
 	\label{fig:}
 \end{figure}
 
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{ScatterplusHisto.png}
-	\caption[]{}
-	\label{fig:}
-\end{figure}
+%\begin{figure}[ht!]
+%	\centering
+%	\includegraphics{ScatterplusHisto.png}
+%	\caption[]{}
+%	\label{fig:}
+%\end{figure}
 
 \begin{figure}[ht!]
 	\centering
@@ -491,7 +521,7 @@ Then the non-linear forward model can be approximated so that
 
 \subsubsection{sampling from conditional posterior Posterior}
 \begin{itemize}
-	\item draw samples using RTO, when variance is hard to calculate
+	\item draw samples using RTO no need to calc variance yet, when variance is hard to calculate, we use cholesky defactorization (maybe put in appendix)
 	\item or calc mean and variance using see other section
 \end{itemize}
 \begin{figure}[ht!]
@@ -502,7 +532,7 @@ Then the non-linear forward model can be approximated so that
 \end{figure}
 
 
-\subsection{Asses Affine Map}
+\subsection{Generate and Asses Affine Map}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SampMapAssesment.png}
@@ -515,17 +545,18 @@ Then the non-linear forward model can be approximated so that
 
 \begin{itemize}
 	\item updated forward map
-		\item do mtc again and then condition on pressure and temperature, samples
+	\item do mtc again but this time with weighted integration and then condition on pressure and temperature, samples
+	\item for sake of completeness regularised solution and say disadvantage, maybe include in table
 \end{itemize}
 
 
 \subsection{Ozone Retrieval}
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{secRecRes.png}
-	\caption[]{}
-	\label{fig:}
-\end{figure}
+%\begin{figure}[ht!]
+%	\centering
+%	\includegraphics{secRecRes.png}
+%	\caption[]{}
+%	\label{fig:}
+%\end{figure}
 
 \subsubsection{MTC --  sampling vs TT}
 \begin{figure}[ht!]
@@ -540,14 +571,6 @@ Then the non-linear forward model can be approximated so that
 	\item picture of L-Curve and samples 
 	\item include in reg paraemter in histograms
 \end{itemize}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{SecRecResinclReg.png}
-	\caption[]{}
-	\label{fig:}
-\end{figure}
-
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{LCurvePhD.png}
@@ -556,11 +579,19 @@ Then the non-linear forward model can be approximated so that
 	\label{fig:nter-label}
 \end{figure}
 
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{SecRecResinclReg.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+
+
+
 
 \subsection{Posterior Pressure and Temperature}
 \begin{itemize}
 	\item make table with set up for TT and sampling t-walk
-	\item talk to colin about Error
 \end{itemize}
 \begin{figure}[thb!]
 	\centering
@@ -577,27 +608,29 @@ Then the non-linear forward model can be approximated so that
 		%\node[roundnode2] at (1,8) (b2)    {$b_2$};
 		\node[roundnode2] at (-2,8) (h1)    {$h_0$};
 		\node[roundnode2] at (-1,8) (p0)    {$p_0$};
-		\node[roundnode2] at (2.25,8) (ht)    {$\bm{h_T}$};
-		\node[roundnode2] at (3.25,8) (ct)    {$\bm{c_T}$};
-		\node[roundnode2] at (4.25,8) (at)    {$\bm{a_T}$};
+		\node[roundnode2] at (2.25,8) (ht)    {$\bm{h}$};
+		\node[roundnode2] at (3.25,8) (ct)    {$T_0$};
+		\node[roundnode2] at (4.25,8) (at)    {$\bm{a}$};
 		
 		%Lines
 		\draw[->, very thick] (u.south) -- (y.north);
 		\draw[->, mydotted, very thick] (A.south) -- (u.north);
 		
-		\draw[->, very thick] (p.south east) -- (pt.north west);
-		\draw[->, very thick] (t.south west) -- (pt.north east);
-		\draw[->,  mydotted, very thick] (pt.south west) -- (A.east);
-		\draw[->, very thick] (h1.south) -- (p.north west);
-		\draw[->, very thick] (p0.south) -- (p.north);
-		\draw[->, very thick] (b1.south) -- (p.north east); 
+		\draw[->, mydotted, very thick] (p.south east) -- (pt.north west);
+		\draw[->, mydotted, very thick] (t.south west) -- (pt.north east);
+		\draw[->, mydotted, very thick] (pt.south west) -- (A.east);
+		\draw[->, mydotted, very thick] (h1.south) -- (p.north west);
+		\draw[->, mydotted, very thick] (p0.south) -- (p.north);
+		\draw[->, mydotted, very thick] (b1.south) -- (p.north east); 
 		%\draw[->, very thick] (b2.south) -- (p.east); 
 		
-		\draw[->, very thick] (ht.south) -- (t.north west);
-		\draw[->, very thick] (ct.south) -- (t.north);
-		\draw[->, very thick] (at.south) -- (t.north east);
+		\draw[->, mydotted, very thick] (ht.south) -- (t.north west);
+		\draw[->, mydotted, very thick] (ct.south) -- (t.north);
+		\draw[->, mydotted, very thick] (at.south) -- (t.north east);
 		
-		%\node[align=center] at (0.25,4) (f3) {$\approx \bm{M A}_L$};
+		\node[align =center] at (-5,8) (T1) {posterior \\ over hyper-parameters \\ $\pi(h_0, p_0, b, \bm{h}, T_0, \bm{a}| \bm{y})$};
+		
+		\node[fit=(h1)(at),draw,dotted,black, rounded corners] {};
 	\end{tikzpicture} 
 \caption[]{}
 \end{figure}
