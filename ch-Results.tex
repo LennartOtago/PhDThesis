@@ -36,13 +36,7 @@ Where we take the same discretization as given by an ozone profile taken from NA
 	\item assumption for height
 \end{itemize}
 
-\begin{figure}[ht!]
-	\centering
-	%\scalebox{1}{\input{TrueO3.pdf_tex}}
-	\caption{We take the ozone profile from \cite{}, relate pressure and height and discretise according to the source.
-		This will serve as our true Ozone profile.}
-	\label{fig:nter-label}
-\end{figure}
+
 From \cite{} we choose a relatively smooth ozone profile, where each ozone volume mixing ratio corresponds to a distinct pressure values.
 Up until $86$km we can relate pressure $p$ and geometric height $h$ through the hydrostatic equation
 \begin{align}
@@ -60,14 +54,7 @@ with $r_0 \approx 6356 \, \text{km}$ (also known as the polar radius of the eart
 	\item assumptions
 \end{itemize}
 We parametrize the pressure by fitting one exponential to the pressure values $p$ related to the height $h$ by Eq. \ref{}.
-\begin{figure}[ht!]
-	\centering
-	%\scalebox{1}{\input{TruePress.pdf_tex}}
-	\caption{In green the true pressure profile, where we fit two exponential to it.
-		Above $h_{p,0}$ the gradient of the epxonetinal is $a_{p,1}$ and below $a_{p,0}$.
-		We have a $p_0$ wehere those two expontentials meet}
-	\label{fig:nter-label}
-\end{figure}
+
 The pressure function,
 \begin{align}
 	p(h) =
@@ -222,9 +209,9 @@ Again we draw a DAG and specify prior disribtoin over those
 		%$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
 		%$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\ \hline
 		%$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\ \hline
-		$h_0$ &  $\mathcal{N}(34.3,0.5)$& 32.8&35.64&$\bm{p/T}$\\ \hline
-		$p_0$ &  $\mathcal{N}(6.5,0.1)$&6.17 &6.73&$\bm{p/T}$\\ \hline
-		$b$ &  $\mathcal{N}(0.15,0.0051)$& 0.138  &0.167&$\bm{p/T}$\\ \hline
+		$h_0$ &  $\mathcal{N}(6,0.5)$& 32.8&35.64&$\bm{p/T}$\\ \hline
+		$p_0$ &  $\mathcal{N}(460,0.1)$&6.17 &6.73&$\bm{p/T}$\\ \hline
+		$b$ &  $\mathcal{N}(0.17,0.0051)$& 0.138  &0.167&$\bm{p/T}$\\ \hline
 		%$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/T}$\\ \hline
 		$h_{1}$ &  $\mathcal{N}(11,0.5)$&9.6 &12.4&$\bm{p/T}$\\ \hline
 		$h_{2}$ &  $\mathcal{N}(20,3)$&11.6 &28.4&$\bm{p/T}$\\ \hline
@@ -269,7 +256,7 @@ what heught is change of weights
 	\centering
 	\includegraphics{OzonePrior.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:O3Prior}
 \end{figure}
 \subsubsection{pressure over temperature}
 
@@ -288,21 +275,21 @@ PriorTempOverPostMeanSigm
 	\centering
 	\includegraphics{PriorTempOverPostMeanSigm.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:PriorPressOverTemp}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PriorTempPostMeanSigm.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:PriorTemp}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PriorPressPostMeanSigm.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:PriorPress}
 \end{figure}
 
 
@@ -501,7 +488,7 @@ Then the non-linear forward model can be approximated so that
 	\centering
 	\includegraphics{f_and_g_phd.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:fandg}
 \end{figure}
 
 %\begin{figure}[ht!]
@@ -515,7 +502,7 @@ Then the non-linear forward model can be approximated so that
 	\centering
 	\includegraphics{ScatterplusHistoPlusTT.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:ScatterPlotTT}
 \end{figure}
 
 
@@ -528,7 +515,7 @@ Then the non-linear forward model can be approximated so that
 	\centering
 	\includegraphics{FirstTestRes.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:O3Samp}
 \end{figure}
 
 
@@ -537,7 +524,7 @@ Then the non-linear forward model can be approximated so that
 	\centering
 	\includegraphics{SampMapAssesment.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:MapAsses}
 \end{figure}
 
 
@@ -563,7 +550,7 @@ Then the non-linear forward model can be approximated so that
 	\centering
 	\includegraphics{secSIRTMargMargO3Res.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:MargPostHistTT}
 \end{figure}
 \subsubsection{Regularized Solution}
 \begin{itemize}
@@ -576,14 +563,14 @@ Then the non-linear forward model can be approximated so that
 	\includegraphics{LCurvePhD.png}
 	\caption{We take the ozone profile from \cite{}, relate pressure and height and discretise according to the source.
 		This will serve as our true Ozone profile.}
-	\label{fig:nter-label}
+	\label{fig:LCurve}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SecRecResinclReg.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:O3SolplsReg}
 \end{figure}
 
 
@@ -639,45 +626,45 @@ Then the non-linear forward model can be approximated so that
 	\centering
 	\includegraphics{PHdPTPost0.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:PostHistTT0}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost1.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:PostHistTT1}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost2.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:PostHistTT2}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost3.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:PostHistTT3}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost4.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:PostHistTT4}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{TempPostMeanSigm.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:TempPost}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PressPostMeanSigm.png}
 	\caption[]{}
-	\label{fig:}
+	\label{fig:PressPost}
 \end{figure}
 
 
