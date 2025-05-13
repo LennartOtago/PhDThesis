@@ -11,10 +11,10 @@ We follow the U.S. standard atmosphere, 1976 \cite{} to relate pressure and temp
 	\centering
 	\input{LIMB.pdf_tex}
 	\label{fig:LIMB}
-	\caption{Schematic of measurement and analysis geometry, not to scale.
-		The stationary satellite, at a constant height $h_\text{sat}$ above  Earth, takes $m$ measurements.
-		The red dashed lines show the line-of-sight from the satellite for each measurement, defining the line $\Gamma_j$ from the satellite with limb height $\ell_j$, $j=1,2,\dots,m$ (not shown).
-		Between $h_0 = 10$km and $h_{n} = 38$km, the stratosphere is discretised into $n$ layers as illustrated by the solid green lines.}
+	\caption[Schematic of measurement and analysis geometry.]{Schematic of measurement and analysis geometry, not to scale.
+		The stationary satellite, at a constant height $h_\text{sat}$ above Earth, takes $m = 36$ measurements along its line-of-sight defining by the line $\Gamma_j$.
+		Each measurement has a limb height $\ell_j$, $j=1,2,\dots,m$ defined as the closest distance of $\Gamma_j$ to the Earth surface, see Fig. \ref{fig:FirstLIMB}.
+		Between $h_{L,0} = 7$km and $h_{L,n} = 73.4$km, the stratosphere is discretised into $n =41$ layers as illustrated by the solid green lines.}
 \end{figure}
 We put the satellite at a constant observe height of $h_{obs} =$ and take $m = $ along the line of sight $\Gamma_j$ in between $h_0= $ and $h_n = $ as requested by Annika et. al. since the pointing accuracy is .
 we assume no signal above and below and that the we have a constant LTE atmosphere in each layer.
@@ -59,6 +59,7 @@ The pressure function,
 \begin{align}
 	p(h) =
 		\exp{ \{ -b \,  (h - h_{0} ) \} } \,  p_0 \, ,
+		\label{eq:pressFunc}
 \end{align}
 is depending on three different parameters, the gradient $a_{p,1}$ and the tuple $(p_0,h_{p,0})$.
 
@@ -68,25 +69,33 @@ is depending on three different parameters, the gradient $a_{p,1}$ and the tuple
 	\item us standard atmosphere
 	\item assumptions
 \end{itemize}
-\begin{figure}[ht!]
-	\centering
-	%\scalebox{1}{\input{TrueTemp.pdf_tex}}
-	\caption{True temperature profile, in the altitude of interest.
-		The gradients $a_0,a_1,a_2,a_3,a_4$ and the corresponding height $h_0,h_1,h_2,h_3,h_4,h_5$ as well as the temperature $T_0$ at $h = 0$ are taken from the us standard atmosphere and parametrize the temperature profile.}
-	\label{fig:nter-label}
-\end{figure}
+
 We can formulate a temperature function from \cite{atmosphere1976us}
 \begin{align}
 	T(h) = \begin{cases*}
 		T_0, & \text{$h = 0$}\\
-		T_0 + a_0 h , & \text{$0 \leq h < h_{1}$}\\
-		T_0 + a_0 h_1, & \text{$h_{1} \leq  h < h_{2}$}\\
-		T_0 + a_0 h_1 + a_1 (h   - h_2),  & \text{$h_{2} \leq h < h_{3}$}\\
-		T_0 + a_0 h_1 + a_1 (h_3 - h_2) + a_2 (h   - h_3), & \text{$h_{3} \leq h < h_{4}$}\\
-		T_0 + a_0 h_1 + a_1 (h_3 - h_2) + a_2 (h_4 - h_3), & \text{$h_{4} \leq h < h_{5}$}\\
-		T_0 + a_0 h_1 + a_1 (h_3 - h_2) + a_2 (h_4 - h_3) + a_3 (h   - h_5), & \text{$h_{5} \leq h < h_{6}$}\\
-		T_0 + a_0 h_1 + a_1 (h_3 - h_2) + a_2 (h_4 - h_3) + a_3 (h_6 - h_5) + a_4 (h - h_6), & \text{$h_{6} \leq h \lesssim 85$}
+		T_0 + a_0 h , & \text{$0 \leq h < h_{T,1}$}\\
+		T_0 + a_0 h_{T,1}, & \text{$h_{T,1} \leq  h < h_{T,2}$}\\
+		T_0 + a_0 h_{T,1} + a_1 (h   - h_2),  & \text{$h_{T,2} \leq h < h_{T,3}$}\\
+		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h   - h_3), & \text{$h_{T,3} \leq h < h_{T,4}$}\\
+		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h_{T,4} - h_{T,3}), & \text{$h_{T,4} \leq h < h_{T,5}$}\\
+		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h_{T,4} - h_{T,3}) + a_3 (h   - h_{T,5}), & \text{$h_{T,5} \leq h < h_{T,6}$}\\
+		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h_{T,4} - h_{T,3}) + a_3 (h_{T,6} - h_{T,5}) + a_4 (h - h_{T,6}), & \text{$h_{T,6} \leq h \lesssim 85$}
 	\end{cases*} 
+\label{eq:tempFunc}
+\end{align}
+\begin{align}
+	T(h) = \begin{cases*}
+		T_0, & \text{$h = 0$}\\
+		T_0 + a_0 h , & \text{$0 \leq h < h_{1}$}\\
+		T_0 + a_0 h_{1}, & \text{$h_{1} \leq  h < h_{2}$}\\
+		T_0 + a_0 h_{1} + a_1 (h   - h_2),  & \text{$h_{2} \leq h < h_{3}$}\\
+		T_0 + a_0 h_{1} + a_1 (h_{3} - h_{2}) + a_2 (h   - h_3), & \text{$h_{3} \leq h < h_{4}$}\\
+		T_0 + a_0 h_{1} + a_1 (h_{3} - h_{2}) + a_2 (h_{4} - h_{3}), & \text{$h_{4} \leq h < h_{5}$}\\
+		T_0 + a_0 h_{1} + a_1 (h_{3} - h_{2}) + a_2 (h_{4} - h_{3}) + a_3 (h   - h_{5}), & \text{$h_{5} \leq h < h_{6}$}\\
+		T_0 + a_0 h_{1} + a_1 (h_{3} - h_{2}) + a_2 (h_{4} - h_{3}) + a_3 (h_{6} - h_{T5}) + a_4 (h - h_{6}), & \text{$h_{6} \leq h \lesssim 85$}
+	\end{cases*} 
+	\label{eq:tempFunc}
 \end{align}
 depending on 12 parameters with values provided by \cite{}, also see table \ref{}.
 We set this as our true temperature profile and refer to \cite{} for temperature values above $79 \,\text{km}$.
@@ -146,25 +155,26 @@ Again we draw a DAG and specify prior disribtoin over those
 		\node[roundnode2] at (-4.5,6.5) (Q)     {$\bm{Q}$};
 		\node[roundnode2] at (-3,5) (x)     {$\bm{x}$};
 		\node[align=center] at (-1,4) (A)    {$\bm{A}(\bm{x},\bm{p},\bm{T})$};
-		\node[roundnode2] at (-1,2.5) (u)    {$\bm{u}$};
+		\node[roundnode2] at (-1,2.5) (u)    {$\bm{\Omega}$};
 		\node[rectnode] at (-1,1) (y)    {$\bm{y}$};
-		\node[roundnode2] at (-5.25,4.5) (S)    {$\bm{\Sigma}$};
-		\node[roundnode2] at (-6.5,6.25) (s)    {$\gamma$};
-		\node[roundnode2] at (-5.5,8) (d)    {$\delta$};
+		\node[roundnode2] at (-2.5,2.5) (e)    {$\bm{\eta}$};
+		\node[roundnode2] at (-6.25,6.5) (S)    {$\bm{\Sigma}$};
+		\node[roundnode2] at (-7.75,8) (s)    {$\gamma$};
+		\node[roundnode2] at (-6,8) (d)    {$\delta$};
 		\node[roundnode2] at (3,6.5) (t)     {$\bm{T}$};
 		\node[roundnode2] at (-1,6.5) (p)     {$\bm{p}$};
 		\node[roundnode2] at (1,5) (pt)     {$\bm{p}/\bm{T}$};
 		\node[roundnode2] at (0,8) (b1)    {$b$};
 		%\node[roundnode2] at (1,8) (b2)    {$b_2$};
-		\node[roundnode2] at (-2,8) (h1)    {$h_0$};
+		\node[roundnode2] at (-2,8) (h1)    {$h_{0}$};
 		\node[roundnode2] at (-1,8) (p0)    {$p_0$};
-		\node[roundnode2] at (2.25,8) (ht)    {$\bm{h}$};
+		\node[roundnode2] at (2.25,8) (ht)    {$\bm{h}_T$};
 		\node[roundnode2] at (3.25,8) (ct)    {$T_0$};
 		\node[roundnode2] at (4.25,8) (at)    {$\bm{a}$};
 		
 		%Lines
-		\draw[->, mydotted, very thick] (S.south east) -- (y.west);
-		\draw[->, very thick] (s.south) -- (S.north west);
+		\draw[->, very thick] (S.south east) -- (e.north west);
+		\draw[->, mydotted, very thick] (s.south east) -- (S.north west);
 		\draw[->, very thick] (u.south) -- (y.north);
 		\draw[->, mydotted, very thick] (A.south) -- (u.north);
 		\draw[->, mydotted,  very thick] (x.south east) -- (A.west);
@@ -175,8 +185,8 @@ Again we draw a DAG and specify prior disribtoin over those
 		\draw[->, mydotted, very thick] (p0.south) -- (p.north);
 		\draw[->, mydotted, very thick] (b1.south) -- (p.north east); 
 		%\draw[->, very thick] (b2.south) -- (p.east); 
-		
-		\draw[->, very thick] (d.south) -- (Q.north west); 
+		\draw[->, mydotted, very thick] (d.south east) -- (Q.north west); 
+		\draw[->, mydotted, very thick] (e.south east) -- (y.west); 
 		
 		\draw[->, very thick] (Q.south east) -- (x.north west); 
 		\draw[->, mydotted, very thick] (ht.south) -- (t.north west);
@@ -184,7 +194,9 @@ Again we draw a DAG and specify prior disribtoin over those
 		\draw[->, mydotted, very thick] (at.south) -- (t.north east);
 		%\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
 	\end{tikzpicture} 
-\caption[]{Here $\bm{h_T}$, $\bm{c_T}$,$\bm{a_T}$ are the cuntino parameters}
+\caption[Complete directed acyclic graph of the forward model.]{Complete directed acyclic graph of the forward model. The hyper-parameters at the top deterministically (dotted line) describe the parameters ($\bm{p}/\bm{T}$) or the noise covariance $\bm{\Sigma} = \gamma^{-1} \bm{I}$ of the random (solid line) noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I} ) $ and precision matrix $\bm{Q} = \delta \bm{L}$ of the distribution of $\bm{x}\sim \mathcal{N}(0,\delta \bm{L}) $, where $\bm{L}$ is a graph Laplacian as in Eq. \ref{eq:GLapl}. We can group the noise precision $\gamma$  and the smoothness parameter $\delta$ to define the marginal posterior over those hyper-parameters and then condition on them for the conditional posterior distribution,for further details see Fig. \ref{fig:DAGO3}. In this whole process where we condition on the pressure $\bm{p}$ and temperature $\bm{T}$, which we retrieve separately, see Fig. \ref{fig:DAGPT}. The hyper-parameters $h_0,p_0,b$ deterministically describe the pressure function in Eq. \ref{eq:pressFunc}, note that we only need three parameters here since $h_0< h_{L,0}$ and $\bm{h}= \{ h_1, h_2,h_3,h_4,h_5,h_6\}$, $\bm{a} = \{ a_0, a_1, a_2,a_3,a_4\}$ and $T_0$ determine the temperature function.
+The parameters $\bm{x}$ and $\bm{p}/ \bm{T}$ determine the space of all measurable noise free data $\bm{\Omega}$ through the forward model $\bm{A}(\bm{x},\bm{p},\bm{T})$ from which we randomly observe data set plus some random noise.}
+\label{fig:DAGComplete}
 \end{figure}
 
 \subsection{Prior Modelling}
@@ -204,7 +216,7 @@ Again we draw a DAG and specify prior disribtoin over those
 		\hhline{|=||=|=|=|=|}
 		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &$10^{-8}$ &$4 \cdot 10^{-7}$& $\bm{y}$\\ \hline
 		$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& $\bm{x}$\\ \hline
-		$\lambda$ &- & 150&3000& $\bm{x}$\\ \hline
+		$\lambda$ &- & 150&5000& $\bm{x}$\\ \hline
 		$\bm{x}$ &$\mathcal{N}(0,\delta \bm{L})$ & -&-& $\bm{x}$\\ \hhline{|=||=|=|=|=|}
 		%$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
 		%$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
@@ -231,7 +243,7 @@ Again we draw a DAG and specify prior disribtoin over those
 	\caption{Gaussian $\mathcal{N}(\mu,\sigma)$ and gamma distribution $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$
 		Bounds for t and p 2.8 times the variance around the mean
 		round pressure approx and  test if would work with previous gamma prior or fix gamma prior with set values}
-	\label{tab:1}
+	\label{tab:priors}
 \end{table}
 
 In practise we sperate OPzone and conditoin on tempreature and pressure  or vice versa. 
@@ -251,12 +263,13 @@ what heught is change of weights
 		& & & \ddots & \ddots & \ddots  \\ 
 		& & & &  -5 & 10 & -5 \\
 		& & & & & -5 & 10 
-	\end{bmatrix}  
+	\end{bmatrix} 
+\label{eq:GLapl} 
 \end{align}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{OzonePrior.png}
-	\caption[]{}
+	\caption[Samples from ozone prior distribution.]{We draw samples from ozone prior distribution $\bm{x} \sim \mathcal{N}(0,\delta \bm{L})$ after generating a sample from the hyper-prior distribution $\delta \sim \mathcal{T}(1,10^{-10})$. Note that since the spread/variance of prior samples is very large compared to the ozone volume mixing ratios, the ozone profile appears to be constant, which it is not, as seen e.g. in Fig. \ref{fig:O3Samp}.}
 	\label{fig:O3Prior}
 \end{figure}
 \subsubsection{pressure over temperature}
@@ -275,21 +288,21 @@ PriorTempOverPostMeanSigm
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PriorTempOverPostMeanSigm.png}
-	\caption[]{}
+	\caption[Prior Samples of $\bm{p}/\bm{T}$ according to the respective hyper-prior distribution.]{We draw samples from the hyper-prior distribution of $h_0, b, p_0, h_1, h_2,h_3,h_4,h_5,h_6, a_0, a_1, a_2,a_3,a_4$ and $T_0$ as defined in table \ref{tab:priors} and then calculate $\bm{p}/\bm{T}$ according to the functions in Eq. \ref{eq:pressFunc} and \ref{eq:tempFunc}.}
 	\label{fig:PriorPressOverTemp}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PriorTempPostMeanSigm.png}
-	\caption[]{}
+	\caption[Prior Samples of $\bm{T}$ according to the respective hyper-prior distribution.]{We draw samples from the hyper-prior distribution of $h_1, h_2,h_3,h_4,h_5,h_6, a_0, a_1, a_2,a_3,a_4$ and $T_0$ as defined in table \ref{tab:priors} and then calculate $\bm{T}$ according to the function in Eq. \ref{eq:tempFunc}.}
 	\label{fig:PriorTemp}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PriorPressPostMeanSigm.png}
-	\caption[]{}
+	\caption[Prior Samples of $\bm{p}$ according to the respective hyper-prior distribution.]{We draw samples from the hyper-prior distribution of $h_0, b$ and $p_0$ as defined in table \ref{tab:priors} and then calculate $\bm{p}$ according to the function in Eq. \ref{eq:pressFunc}.}
 	\label{fig:PriorPress}
 \end{figure}
 
@@ -396,7 +409,8 @@ In addition, we calculate the covariance matrix $(\gamma \bm{B}_{\lambda})^{-1} 
 It takes us less than 0.1s to draw 10000 samples from the marginal posterior and to calculate the conditional posterior mean or to solve for 200 different $x_{\lambda}$ and to find the regularised solution at the point of maximum curvature using the kneedle algorithm.\\
 
 
-\section{Affine Map}
+\section{Affine Map} 
+\label{sec:affineMap}
 \begin{itemize}
 	\item introduce affine sapce and how we get affine map, to motivate samples from posterir space
 	\item explicit, why we need ozone profiles, because it is faster and temperature and pressure are more well defined within the atmosphere
@@ -449,23 +463,25 @@ Then the non-linear forward model can be approximated so that
 \begin{figure}[thb!]
 	\centering
 	\begin{tikzpicture}
-	\node[roundnode2] at (-4.5,6.5) (Q)     {$\bm{Q}$};
+		\node[roundnode2] at (-4.5,6.5) (Q)     {$\bm{Q}$};
 	\node[roundnode2] at (-3,5) (x)     {$\bm{x}$};
-	\node[align=center] at (-1.55,4) (A)    {$\bm{A}_L$};
-	\node[roundnode2] at (-1.55,2.5) (u)    {$\bm{u}$};
-	\node[rectnode] at (-1.55,1) (y)    {$\bm{y}$};
-	\node[roundnode2] at (-5.25,4.5) (S)    {$\bm{\Sigma}$};
-	\node[roundnode2] at (-6.5,6.25) (s)    {$\gamma$};
-	\node[roundnode2] at (-5.5,8) (d)    {$\delta$};
+	\node[align=center] at (-1,4) (A)    {$\bm{A}_L$};
+\node[roundnode2] at (-1,2.5) (u)    {$\bm{\Omega}$};
+\node[rectnode] at (-1,1) (y)    {$\bm{y}$};
+\node[roundnode2] at (-2.5,2.5) (e)    {$\bm{\eta}$};
+\node[roundnode2] at (-6.25,6.5) (S)    {$\bm{\Sigma}$};
+\node[roundnode2] at (-7.75,8) (s)    {$\gamma$};
+\node[roundnode2] at (-6,8) (d)    {$\delta$};
 		
 	%Lines
-	\draw[->, mydotted, very thick] (S.south east) -- (y.west);
-	\draw[->, very thick] (s.south) -- (S.north west);
+	\draw[->, very thick] (S.south east) -- (e.north west);
+	\draw[->, mydotted, very thick] (s.south east) -- (S.north west);
+		\draw[->, mydotted, very thick] (e.south east) -- (y.west);
 	\draw[->, very thick] (u.south) -- (y.north);
 	\draw[->, mydotted, very thick] (A.south) -- (u.north);
 	\draw[->, mydotted,  very thick] (x.south east) -- (A.west);
 	
-	\draw[->, very thick] (d.south) -- (Q.north west); 
+	\draw[->, mydotted, very thick] (d.south east) -- (Q.north west); 
 	
 	\draw[->, very thick] (Q.south east) -- (x.north west); 
 	%\node[align=center] at (0,4) (f3) {$= \bm{A}$};
@@ -476,7 +492,9 @@ Then the non-linear forward model can be approximated so that
 	
 	\node[fit=(S)(s)(Q)(d),draw,dotted,black, rounded corners] {};
 	\end{tikzpicture} 
-\caption[]{}
+\caption[Directed acyclic graph for ozone retrieval and MTC scheme.]{Directed acyclic graph for ozone retrieval and MTC scheme as described in Fig. \ref{fig:DAGComplete}. The hyper-parameters $\delta$ and $\gamma$ determine the noise covariance $\bm{\Sigma}$ for the random noise vector $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1}\bm{I})$ and the prior precision matrix $\bm{Q} = \delta \bm{L}$ for the distribution over $\bm{x} \sim \mathcal{N}(0, \delta \bm{L})$, where $\bm{L}$ is the graph Laplacian, see Eq. \ref{eq:GLapl}. In the MTC scheme we evaluate the marginal posterior over the hyper-parameters $\pi(\gamma, \delta | \bm{y})$ as in Eq. \ref{eq:} first and then conditional posterior $\pi(\bm{x}|\gamma,\delta,\bm{y})$ as in Eq. \ref{eq:}. The parameter$\bm{x}$ determine the space of all measurable noise free data $\bm{\Omega}$ through the forward model $\bm{A}(\bm{x},\bm{p},\bm{T})$ from which we randomly observe a data set plus some random noise.
+Note that once we found an affine map we update the forward model to $\bm{M}\bm{A}_L$}
+	\label{fig:DAGO3}
 \end{figure}
 
 \subsubsection{Marginal Posterior}
@@ -488,7 +506,7 @@ Then the non-linear forward model can be approximated so that
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{f_and_g_phd.png}
-	\caption[]{}
+	\caption[Plot of the functions $f(\lambda)$ and $g(\lambda)$ for marginal posterior.]{Plot of the functions $f(\lambda)$ and $g(\lambda)$ for marginal posterior for a wide range of $\lambda = \delta / \gamma$. We plot the third Taylor series expansion in black around the mode of the marginal posterior (vertical line) for the sampling range of $\lambda$ within the MTC scheme.}
 	\label{fig:fandg}
 \end{figure}
 
@@ -502,7 +520,7 @@ Then the non-linear forward model can be approximated so that
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{ScatterplusHistoPlusTT.png}
-	\caption[]{}
+	\caption[Scatter plot of samples from marginal posterior, including weighting from TT approximation; additional trace plot of the marginal posterior samples.]{We scatter plot the samples of $\lambda = \delta / \gamma $ and $\gamma$ from the marginal posterior $\pi(\lambda , \gamma  | \bm{y})$ and colour code the samples using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. To show ergodicity we plot the trace of the samples of the Metropolis-within-Gibbs sampler below.}
 	\label{fig:ScatterPlotTT}
 \end{figure}
 
@@ -515,7 +533,7 @@ Then the non-linear forward model can be approximated so that
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{FirstTestRes.png}
-	\caption[]{}
+	\caption[Ozone samples of the conditional posterior.]{We draw samples from the conditional posterior distribution  $\pi(\bm{x}|\lambda,\gamma , \bm{y})$ after characterising the marginal posterior $\pi(\lambda,\gamma | \bm{y})$ through sampling or TT approximation using the linear forward map $\bm{A}_L$. We will use those samples to find the affine map $\bm{M}$, see section \ref{sec:affineMap}}
 	\label{fig:O3Samp}
 \end{figure}
 
@@ -524,7 +542,7 @@ Then the non-linear forward model can be approximated so that
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SampMapAssesment.png}
-	\caption[]{}
+	\caption[Assessment of affine map.]{We asses how good we can map the linear forward model onto the non-linear forward model using the previous calculated affine map. The gray stars represent noise free linear data, where as the red circles present noise free non-linear data. Then we map the linear noise free data onto the non-linear noise free data and give the relative error in between the mapped noise free data and the non-linear data. the  needs M  }
 	\label{fig:MapAsses}
 \end{figure}
 
@@ -550,7 +568,7 @@ Then the non-linear forward model can be approximated so that
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{secSIRTMargMargO3Res.png}
-	\caption[]{}
+	\caption[Marginal posterior histograms and TT approximation as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line. Note that we sample $\lambda$ and $\gamma$ using the Metropolis-within-Gibbs sampler and can calculate $\delta$ for every sample of the marginal posterior, we can not do this for the TT approximation.}
 	\label{fig:MargPostHistTT}
 \end{figure}
 \subsubsection{Regularized Solution}
@@ -562,15 +580,14 @@ Then the non-linear forward model can be approximated so that
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{LCurvePhD.png}
-	\caption{We take the ozone profile from \cite{}, relate pressure and height and discretise according to the source.
-		This will serve as our true Ozone profile.}
+	\caption[Plot of the L-curve to find the regularised solution.]{We calculate regularised solution as in Eq. \ref{eq:} and plot the data misfit norm $||\bm{Ax} -\bm{y} ||$ against the regularised semi norm $\sqrt{\bm{xLx}}$ to find the regularised solution at the point of maximum curvature of the so-called L-Curve. Additionally we calculate the the data misfit norm and the regularised norm for the ozone posterior and for samples of the conditional posterior distribution.}
 	\label{fig:LCurve}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SecRecResinclReg.png}
-	\caption[]{}
+	\caption[Ozone posterior mean and variance and the regularised solution compared to the ground truth.]{We plot the conditional posterior mean and variance in black and the regularised solution on top of the ground truth ozone profile in green. We use the updated forward map $\bm{M}\bm{A}_L$}
 	\label{fig:O3SolplsReg}
 \end{figure}
 
@@ -620,51 +637,52 @@ Then the non-linear forward model can be approximated so that
 		
 		\node[fit=(h1)(at),draw,dotted,black, rounded corners] {};
 	\end{tikzpicture} 
-\caption[]{}
+\caption[Directed acyclic Graph for pressure and temperature.]{Hyper-paremers poster posterior distribution in Eq. \ref{eq:} Note that here we use the updated forward model $\bm{M} \bm{A}_L$ }
+	\label{fig:DAGPT}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost0.png}
-	\caption[]{}
+	\caption[Histograms and TT approximation of posterior distribution as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line.}
 	\label{fig:PostHistTT0}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost1.png}
-	\caption[]{}
+	\caption[Histograms and TT approximation of posterior distribution as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line.}
 	\label{fig:PostHistTT1}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost2.png}
-	\caption[]{}
+	\caption[Histograms and TT approximation of posterior distribution as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line.}
 	\label{fig:PostHistTT2}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost3.png}
-	\caption[]{}
+	\caption[Histograms and TT approximation of posterior distribution as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line.}
 	\label{fig:PostHistTT3}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost4.png}
-	\caption[]{}
+	\caption[Histograms and TT approximation of posterior distribution as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line.}
 	\label{fig:PostHistTT4}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{TempPostMeanSigm.png}
-	\caption[]{}
+	\caption[Temperature posterior samples.]{We take samples from the posterior distribution, as plotted in Figures \ref{fig:PostHistTT0} to \ref{fig:PostHistTT3} and plot the corresponding temperature function, see Eq: \ref{eq:tempFunc}. }
 	\label{fig:TempPost}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PressPostMeanSigm.png}
-	\caption[]{}
+	\caption[Pressure posterior samples.]{We take samples from the posterior distribution, as plotted in Fig. \ref{fig:PostHistTT4} and plot the corresponding pressure function, see Eq: \ref{eq:pressFunc}.}
 	\label{fig:PressPost}
 \end{figure}
 
