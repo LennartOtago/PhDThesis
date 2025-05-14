@@ -1,10 +1,12 @@
 \chapter{Results}
+
 \label{ch:res}
 
 In this chapter we explain how we use the forward model to generate data and how we set up a Bayesian framework to then give distribution of solutions.
 Here we make it explicit and proivde all information to be able to replciate our results.
 In this work we simulate datawith an ozone profile from \cite{}.
 We follow the U.S. standard atmosphere, 1976 \cite{} to relate pressure and temperature and hieght and the HITRANonline \cite{} database to calculate the measured signal.\expandafter\string\the\font 
+We follow the mipas instrument description fro the froward model \cite{}.
 
 \section{Simulate Data}
 \begin{figure}[ht!]
@@ -16,74 +18,85 @@ We follow the U.S. standard atmosphere, 1976 \cite{} to relate pressure and temp
 		Each measurement has a limb height $\ell_j$, $j=1,2,\dots,m$ defined as the closest distance of $\Gamma_j$ to the Earth surface, see Fig. \ref{fig:FirstLIMB}.
 		Between $h_{L,0} = 7$km and $h_{L,n} = 73.4$km, the stratosphere is discretised into $n =41$ layers as illustrated by the solid green lines.}
 \end{figure}
-We put the satellite at a constant observe height of $h_{obs} =$ and take $m = $ along the line of sight $\Gamma_j$ in between $h_0= $ and $h_n = $ as requested by Annika et. al. since the pointing accuracy is .
-we assume no signal above and below and that the we have a constant LTE atmosphere in each layer.
-As in section \ref{sec:formodel} the atmosphere is discretised into $n = $ layers
-Where we take the same discretization as given by an ozone profile taken from NASA's (Microwave limb sounder) MLS \cite{}.
-
-\begin{itemize}
-	\item what we set
-	\item pointing accuracy number of data set in between atmosphere
-	\item atmospheric layers
-	\item where from ozone profile
-\end{itemize}
 
 
-\subsection{Ozone and pressure}
-\begin{itemize}
-	\item where from ozone profile
-	\item say what we get form nasa
-	\item assumption for height
-\end{itemize}
+We simulate some data by taking an ozone profile from the retrieval from the MLS limb sounder form \cite{}.
+When taking this ozone profile we get given ozone volume mixing ratios and pressure values.
+\cite{CubeSatInternal}
+\cite{MLSdata}
+\cite{vsimevckova2006einstein}
+\cite{christentwalkaccess}
+\cite{Fox_ISBA2008}
+\cite{mipas2000handbook}
+\cite{gordon2022hitran2020}
+\cite{atmosphere1976us}
 
 
-From \cite{} we choose a relatively smooth ozone profile, where each ozone volume mixing ratio corresponds to a distinct pressure values.
-Up until $86$km we can relate pressure $p$ and geometric height $h$ through the hydrostatic equation
+%We put the satellite at a constant observe height of $h_{obs} =$ and take $m = $ along the line of sight $\Gamma_j$ in between $h_0= $ and $h_n = $ as requested by Annika et. al. since the pointing accuracy is .
+%we assume no signal above and below and that the we have a constant LTE atmosphere in each layer.
+%As in section \ref{sec:formodel} the atmosphere is discretised into $n = $ layers
+%Where we take the same discretization as given by an ozone profile taken from NASA's (Microwave limb sounder) MLS \cite{}.
+%
+
+\subsubsection{Pressure to Height to Temperature}
+we relate pressure and height following the book \cite{}where we use the equation
 \begin{align}
 	\text{d} \ln p= \frac{\text{d}p}{p} = \frac{- g M}{R^* T} \text{d} h \, ,
 \end{align}
+
 with the universal gas consant $R^* \approx 8.314  \, \text{N m} / \text{mol} / \text{K}$. The moledus numebr ... is $M = M_0 \approx 28.97 \, \text{kg}/\text{mol}$ for altiudes below 79km \cite{}.
 At altitude $h$ the gravitational constant
+Up until $86$km we can relate pressure $p$ and geometric height $h$ through the hydrostatic equation
+
 \begin{align}
 	g = g_0 \Bigg( \frac{r_0}{r_0 + h} \Bigg) \, ,
 \end{align}
 with $r_0 \approx 6356 \, \text{km}$ (also known as the polar radius of the earth) and $g_0 \approx 9.81 \text{m}/\text{s}^2$ and \cite{}.
-\subsection{Pressure to height}
-\begin{itemize}
-	\item us stabdart atmospher
-	\item assumptions
-\end{itemize}
-We parametrize the pressure by fitting one exponential to the pressure values $p$ related to the height $h$ by Eq. \ref{}.
-
-The pressure function,
-\begin{align}
-	p(h) =
-		\exp{ \{ -b \,  (h - h_{0} ) \} } \,  p_0 \, ,
-		\label{eq:pressFunc}
-\end{align}
-is depending on three different parameters, the gradient $a_{p,1}$ and the tuple $(p_0,h_{p,0})$.
 
 
-\subsection{Hieght to Temperature}
-\begin{itemize}
-	\item us standard atmosphere
-	\item assumptions
-\end{itemize}
+%\begin{itemize}
+%	\item what we set
+%	\item pointing accuracy number of data set in between atmosphere
+%	\item atmospheric layers
+%	\item where from ozone profile
+%\end{itemize}
+%
+%
+%
+%\begin{itemize}
+%	\item where from ozone profile
+%	\item say what we get form nasa
+%	\item assumption for height
+%\end{itemize}
+
+
+%\subsection{Pressure to height}
+%\begin{itemize}
+%	\item us stabdart atmospher
+%	\item assumptions
+%\end{itemize}
+
+
+%\subsection{Hieght to Temperature}
+%\begin{itemize}
+%	\item us standard atmosphere
+%	\item assumptions
+%\end{itemize}
 
 We can formulate a temperature function from \cite{atmosphere1976us}
-\begin{align}
-	T(h) = \begin{cases*}
-		T_0, & \text{$h = 0$}\\
-		T_0 + a_0 h , & \text{$0 \leq h < h_{T,1}$}\\
-		T_0 + a_0 h_{T,1}, & \text{$h_{T,1} \leq  h < h_{T,2}$}\\
-		T_0 + a_0 h_{T,1} + a_1 (h   - h_2),  & \text{$h_{T,2} \leq h < h_{T,3}$}\\
-		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h   - h_3), & \text{$h_{T,3} \leq h < h_{T,4}$}\\
-		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h_{T,4} - h_{T,3}), & \text{$h_{T,4} \leq h < h_{T,5}$}\\
-		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h_{T,4} - h_{T,3}) + a_3 (h   - h_{T,5}), & \text{$h_{T,5} \leq h < h_{T,6}$}\\
-		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h_{T,4} - h_{T,3}) + a_3 (h_{T,6} - h_{T,5}) + a_4 (h - h_{T,6}), & \text{$h_{T,6} \leq h \lesssim 85$}
-	\end{cases*} 
-\label{eq:tempFunc}
-\end{align}
+%\begin{align}
+%	T(h) = \begin{cases*}
+%		T_0, & \text{$h = 0$}\\
+%		T_0 + a_0 h , & \text{$0 \leq h < h_{T,1}$}\\
+%		T_0 + a_0 h_{T,1}, & \text{$h_{T,1} \leq  h < h_{T,2}$}\\
+%		T_0 + a_0 h_{T,1} + a_1 (h   - h_2),  & \text{$h_{T,2} \leq h < h_{T,3}$}\\
+%		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h   - h_3), & \text{$h_{T,3} \leq h < h_{T,4}$}\\
+%		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h_{T,4} - h_{T,3}), & \text{$h_{T,4} \leq h < h_{T,5}$}\\
+%		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h_{T,4} - h_{T,3}) + a_3 (h   - h_{T,5}), & \text{$h_{T,5} \leq h < h_{T,6}$}\\
+%		T_0 + a_0 h_{T,1} + a_1 (h_{T,3} - h_{T,2}) + a_2 (h_{T,4} - h_{T,3}) + a_3 (h_{T,6} - h_{T,5}) + a_4 (h - h_{T,6}), & \text{$h_{T,6} \leq h \lesssim 85$}
+%	\end{cases*} 
+%\label{eq:tempFunc}
+%\end{align}
 \begin{align}
 	T(h) = \begin{cases*}
 		T_0, & \text{$h = 0$}\\
@@ -101,13 +114,13 @@ depending on 12 parameters with values provided by \cite{}, also see table \ref{
 We set this as our true temperature profile and refer to \cite{} for temperature values above $79 \,\text{km}$.
 
 
-\subsection{Source}
+\subsubsection{Source}
 \begin{itemize}
 	\item RTE again?
 	\item assumptions
 \end{itemize}
 We calculate the source function $B(\nu, T)$ and the absorption constant $ k(\nu, T)$ as follows.
-
+assumption local thermaodynamic equilibrium
 For one species at one specific wave-number the weighted absorption constant becomes
 \begin{align}
 	\overline{k(\nu, T, r)}    = \sum_{m=1}^{molec} k_m(\nu, T) x_m(r) =  k(\nu, T) x(r) \, ,
@@ -131,9 +144,15 @@ Under the assumption of local thermodynamic (LTE) equilibrium t source function 
 \end{align}
 with Planck's constant $h$, velocity of light $c$ and Boltzmann's constant $k_B$ \cite{}.
 
-Then we can calculate measurement with the RTE in Eq. \ref{eq:RTE} using the trapezoidal rule.
+Then we can calculate measurement with the RTE in Eq. \ref{eq:RTE} using the trapezoidal rule
+\begin{align}
+	\label{eq:RTE} 
+	y_j =   \int_{\Gamma_j}  B(\nu,T) k(\nu, T)   \frac{p(T)}{k_{\text{B}} T(r)}  x(r)  \tau(r) \text{d}r + \eta_j \, \\
+	\tau(r) = \exp{ \Bigl\{ - \int^{r}_{r_\text{obs}}  k(\nu, T)   \frac{p(T)}{k_B T(r^{\prime})}  x(r^{\prime}) \text{d}r^{\prime} \Bigr\} } \, ,\label{eq:absRTE} 
+\end{align}
 
-
+Note we assume infinte spectral resulution and no poisnting errors.
+atmopsheric model and now intrumetn model
 
 \section{Bayesian Model and prior analysis}
 \begin{itemize}
@@ -273,6 +292,15 @@ what heught is change of weights
 	\label{fig:O3Prior}
 \end{figure}
 \subsubsection{pressure over temperature}
+We parametrize the pressure by fitting one exponential to the pressure values $p$ related to the height $h$ by Eq. \ref{}.
+
+The pressure function,
+\begin{align}
+	p(h) =
+	\exp{ \{ -b \,  (h - h_{0} ) \} } \,  p_0 \, ,
+	\label{eq:pressFunc}
+\end{align}
+is depending on three different parameters, the gradient $a_{p,1}$ and the tuple $(p_0,h_{p,0})$.
 
 
 \begin{itemize}
@@ -382,7 +410,7 @@ By perturbation of the exponent of
 we obtain one independent sample $\bm{x} \sim \pi(\bm{x}|\bm{y}, \bm{\theta})$ for each solve of Equation \eqref{eq:RTO}, see algorithmic Box $2$.
 
 
-We use the same discretization of the atmosphere as given by the ozone profile taken from \url{https://disc.gsfc.nasa.gov/datasets/ML2O3_005/summary?keywords=mls%20o3}.
+We use the same discretization of the atmosphere as given by the ozone profile taken from \cite{MLSdata} \url{https://disc.gsfc.nasa.gov/datasets/ML2O3_005/summary?keywords=mls%20o3}.
 We use ozone values between a height of $10$km up to $38$km, which results in $n=37$ layers.
 We set the number of measurements to $m= 105 $.
 (I can't think of any good reason why I chose that, it is a good number not too big not too small and gives consistent results for various datasets)\\
@@ -397,7 +425,8 @@ To calculate the conditional posterior mean we use approximate quadrature
 	\mu_{\bm{x}|\bm{y}} = \int x_{\lambda} \pi(\lambda| \bm{y}) \text{d}\lambda \approx \sum x_{\lambda_i} \pi(\lambda_i| \bm{y}) \, ,
 \end{align}
 with $\sum \pi(\lambda_i| \bm{y}) = 1$, so that the integral can be interpreted as the weighted average.
-See Sec. 2 \url{https://www.cambridge.org/core/journals/acta-numerica/article/highdimensional-integration-the-quasimonte-carlo-way/03F126DDF465F915B22D5D709CD28946}.\\
+See Sec. 2.1
+\cite{Dick_Kuo_Sloan_2013} \url{https://www.cambridge.org/core/journals/acta-numerica/article/highdimensional-integration-the-quasimonte-carlo-way/03F126DDF465F915B22D5D709CD28946}.\\
 
 We bin the samples into $3$ bins and stop increasing the number of bins by one if the relative error between the previous and the current conditional posterior mean is less than $0.1\%$.
 This gives a total number of $3+4+5 = 12$ solves for $x_{\lambda}$.
@@ -463,15 +492,15 @@ Then the non-linear forward model can be approximated so that
 \begin{figure}[thb!]
 	\centering
 	\begin{tikzpicture}
-		\node[roundnode2] at (-4.5,6.5) (Q)     {$\bm{Q}$};
-	\node[roundnode2] at (-3,5) (x)     {$\bm{x}$};
+		\node[roundnode2] at (-4,6.5) (Q)     {$\bm{Q}$};
+	\node[roundnode2] at (-2.5,5) (x)     {$\bm{x}$};
 	\node[align=center] at (-1,4) (A)    {$\bm{A}_L$};
 \node[roundnode2] at (-1,2.5) (u)    {$\bm{\Omega}$};
 \node[rectnode] at (-1,1) (y)    {$\bm{y}$};
 \node[roundnode2] at (-2.5,2.5) (e)    {$\bm{\eta}$};
 \node[roundnode2] at (-6.25,6.5) (S)    {$\bm{\Sigma}$};
 \node[roundnode2] at (-7.75,8) (s)    {$\gamma$};
-\node[roundnode2] at (-6,8) (d)    {$\delta$};
+\node[roundnode2] at (-5.5,8) (d)    {$\delta$};
 		
 	%Lines
 	\draw[->, very thick] (S.south east) -- (e.north west);
@@ -486,14 +515,14 @@ Then the non-linear forward model can be approximated so that
 	\draw[->, very thick] (Q.south east) -- (x.north west); 
 	%\node[align=center] at (0,4) (f3) {$= \bm{A}$};
 	%\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
-	\node[align =center] at (-1.75,7) (T1) {marginal posterior \\ over hyper-parameters \\ $\pi(\gamma, \delta | \bm{y})$};
-	\node[align =center] at (-0.75,5) (T1) {conditional posterior \\ $\pi( \bm{x} |\gamma, \delta, \bm{y})$ };
+	\node[align =center] at (-1,7) (T1) {marginal posterior \\ over hyper-parameters \\ $\pi(\gamma, \delta | \bm{y})$};
+	\node[align =center] at (0,5) (T1) {conditional posterior \\ $\pi( \bm{x} |\gamma, \delta, \bm{y})$ };
 
 	
 	\node[fit=(S)(s)(Q)(d),draw,dotted,black, rounded corners] {};
 	\end{tikzpicture} 
 \caption[Directed acyclic graph for ozone retrieval and MTC scheme.]{Directed acyclic graph for ozone retrieval and MTC scheme as described in Fig. \ref{fig:DAGComplete}. The hyper-parameters $\delta$ and $\gamma$ determine the noise covariance $\bm{\Sigma}$ for the random noise vector $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1}\bm{I})$ and the prior precision matrix $\bm{Q} = \delta \bm{L}$ for the distribution over $\bm{x} \sim \mathcal{N}(0, \delta \bm{L})$, where $\bm{L}$ is the graph Laplacian, see Eq. \ref{eq:GLapl}. In the MTC scheme we evaluate the marginal posterior over the hyper-parameters $\pi(\gamma, \delta | \bm{y})$ as in Eq. \ref{eq:} first and then conditional posterior $\pi(\bm{x}|\gamma,\delta,\bm{y})$ as in Eq. \ref{eq:}. The parameter$\bm{x}$ determine the space of all measurable noise free data $\bm{\Omega}$ through the forward model $\bm{A}(\bm{x},\bm{p},\bm{T})$ from which we randomly observe a data set plus some random noise.
-Note that once we found an affine map we update the forward model to $\bm{M}\bm{A}_L$}
+Note that once we found an affine map we update the forward model to $\bm{M}\bm{A}_L$.}
 	\label{fig:DAGO3}
 \end{figure}
 
@@ -527,7 +556,7 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 
 \subsubsection{sampling from conditional posterior Posterior}
 \begin{itemize}
-	\item draw samples using RTO no need to calc variance yet, when variance is hard to calculate, we use cholesky defactorization (maybe put in appendix)
+	\item draw samples using RTO no need to calc variance yet, when variance is hard to calculate, we use Cholesky defactorization (maybe put in appendix)
 	\item or calc mean and variance using see other section
 \end{itemize}
 \begin{figure}[ht!]
@@ -542,7 +571,7 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SampMapAssesment.png}
-	\caption[Assessment of affine map.]{We asses how good we can map the linear forward model onto the non-linear forward model using the previous calculated affine map. The gray stars represent noise free linear data, where as the red circles present noise free non-linear data. Then we map the linear noise free data onto the non-linear noise free data and give the relative error in between the mapped noise free data and the non-linear data. the  needs M  }
+	\caption[Assessment of affine map.]{We asses how good we can map the linear forward model onto the non-linear forward model using the previous calculated affine map. The gray stars represent noise free linear data, where as the red circles present noise free non-linear data. Then we map the linear noise free data onto the non-linear noise free data and give the relative error in between the mapped noise free data and the non-linear data. the  needs M}
 	\label{fig:MapAsses}
 \end{figure}
 
@@ -568,7 +597,7 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{secSIRTMargMargO3Res.png}
-	\caption[Marginal posterior histograms and TT approximation as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line. Note that we sample $\lambda$ and $\gamma$ using the Metropolis-within-Gibbs sampler and can calculate $\delta$ for every sample of the marginal posterior, we can not do this for the TT approximation.}
+	\caption[Marginal posterior histograms and TT approximation as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line. Note that we sample $\lambda$ and $\gamma$ using the Metropolis-within-Gibbs sampler and can calculate $\delta$ for every sample of the marginal posterior, we can not do this for the TT approximation. The regularised parameter corresponding to the regularised solution is marked thought the red vertical line at $\lambda_{\text{reg}} =$.}
 	\label{fig:MargPostHistTT}
 \end{figure}
 \subsubsection{Regularized Solution}
@@ -580,7 +609,7 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{LCurvePhD.png}
-	\caption[Plot of the L-curve to find the regularised solution.]{We calculate regularised solution as in Eq. \ref{eq:} and plot the data misfit norm $||\bm{Ax} -\bm{y} ||$ against the regularised semi norm $\sqrt{\bm{xLx}}$ to find the regularised solution at the point of maximum curvature of the so-called L-Curve. Additionally we calculate the the data misfit norm and the regularised norm for the ozone posterior and for samples of the conditional posterior distribution.}
+	\caption[Plot of the L-curve to find the regularised solution.]{We calculate regularised solution as in Eq. \ref{eq:} and plot the regularised semi norm $\sqrt{\bm{x}^T\bm{Lx}}$ against the data misfit norm $||\bm{Ax} -\bm{y} ||$ to find the regularised solution at the point of maximum curvature of the so-called L-Curve. Additionally we calculate the data misfit norm and the regularised norm for the ozone posterior and for samples of the conditional posterior distribution.}
 	\label{fig:LCurve}
 \end{figure}
 
@@ -637,7 +666,8 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 		
 		\node[fit=(h1)(at),draw,dotted,black, rounded corners] {};
 	\end{tikzpicture} 
-\caption[Directed acyclic Graph for pressure and temperature.]{Hyper-paremers poster posterior distribution in Eq. \ref{eq:} Note that here we use the updated forward model $\bm{M} \bm{A}_L$ }
+\caption[Directed acyclic Graph for pressure and temperature.]{Conditioned on an ozone profile the posterior of the hyper-parameters describing pressure and temperature is given as in Eq. \ref{eq:}. Since pressure and temperature go into the forward model as $\bm{p}/\bm{T}$ they are highly correlated but the pressure is the dominant parameter, see Fig. 
+	\ref{fig:PriorPressOverTemp} and \ref{fig:SeaLevelHist}. Note that here we use the updated forward model $\bm{M} \bm{A}_L$ and conditioned on a $\gamma$ sample from the previously evaluated marginal posterior see Fig. \ref{fig:MargPostHistTT}. }
 	\label{fig:DAGPT}
 \end{figure}
 
@@ -686,5 +716,16 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 	\label{fig:PressPost}
 \end{figure}
 
+
+
+@misc{MLSdata,
+	title= {MLS/Aura Level 2 Ozone (O3) Mixing Ratio V005},
+	author = {Schwartz, M., Froidevaux, L., Livesey, N. and Read, W.},
+	year = {2020},
+	howpublished ={\url{https://disc.gsfc.nasa.gov/datasets/ML2O3_005/summary?keywords=mls%20o3}},
+	publisher = {Goddard Earth Sciences Data and Information Services Center (GES DISC)},
+	adress = {Greenbelt, MD, USA},
+	note = "[Online; accessed 25/04/24, 10.5067/Aura/MLS/DATA2516]"
+}
 
 
