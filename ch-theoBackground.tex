@@ -333,8 +333,7 @@ Convergence to the target distribution is guaranteed by construction of the algo
 \section{Numerical Approxiamtion Methods - Tensor Train}
 \label{sec:tensortrain}
 First, we provide a short overview of probability spaces and their associated measures, as a foundation for deriving marginal probability distribution, and then we give a brief introduction to the tensor train format.
-
-Say why we use TT instead of just approximatino the funciton on a nrmal grid
+The motivation to use the tensor train format is that we can approximate a d-dimensional grid with far fewer data points compared to the total number of grid points.
 
 Assume that the triple $(\Omega, \mathcal{F}, \mathbb{P})$ defines a probability space, where $\Omega$ denotes the complete sample space, $\mathcal{F}$ is a $\sigma$-algebra consisting of a collection of countable subsets $\{A_n\}_{n \in \mathbb{N}}$ with $A_n \subseteq \Omega$, and $\mathbb{P}$ is a probability measure defined on $\mathcal{F}$. The formal conditions for $\mathbb{P}$ to be a probability measure, and for $\mathcal{F}$ to be a $\sigma$-algebra over $\Omega$, are given in Appendix~\ref{ch:Mesure}.
 We denote
@@ -364,13 +363,14 @@ Cui et al.~\cite{cui2022deep} refer to $\uplambda(x)$ as a "product-form Lebesgu
 \end{align*}
 
 Using the tensor train (TT) format, we can efficiently approximate a $d$-dimensional function $\pi(x)$ and compute marginal probability distributions at low computational cost. To do so, we first define a $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$, with $n$ grid points in each dimension.
-In the tensor train format we can represent the function over this $d$-dimensional grid as a product train of rank-2 to rank-3 tensors, which we call TT-cores. More specifically each core $\pi_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ has ranks $r_{k-1}$ and $r_k$, for $k = 1, \dots, d$, connecting it with its neighbouring cores, as illustrated in Figure~\ref{fig:TTfig}.
+In the tensor train format we can represent the function over this $d$-dimensional grid as a product train of 2D matrices (rank-2 tensor) and 3D matrices (rank-3 tensors), which we call TT-cores, see Fig. \ref{fig:TTfig}. More specifically each core $\pi_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ has ranks $r_{k-1}$ and $r_k$, for $k = 1, \dots, d$, connecting it with its neighbouring cores, as illustrated in Figure~\ref{fig:TTfig}.
 For the first and last cores, the outer ranks are set to $r_0 = r_d = 1$.
 This enables us to write the value $\pi(x)$, for a fixed point $x = (x_1, \dots, x_d)$ on the grid, as a sequence of matrix multiplications 
 \begin{align*}
 \pi_1(x_1)  \pi_2(x_2)  \cdots \pi_d(x_d) = 	\pi(x)  \in \mathbb{R},
 \end{align*}
 where each core $\pi_k(x_k)$, becomes a matrix of size $r_{k-1} \times r_k$.
+Clearly this shows that we only need $dnr^2$ evaluation points instead of $n^d$ grid points to approximate the whole parameter space.
 \begin{figure}[ht!]
 	\centering
 \begin{subfigure}{\textwidth}
@@ -396,7 +396,8 @@ where each core $\pi_k(x_k)$, becomes a matrix of size $r_{k-1} \times r_k$.
 \end{subfigure}
 \caption[Visualisation of a tensor train]{Here, we visualise the tensor train cores as two- and three-dimensional matrices. 
 Each core has a length $n$, corresponding to the number of grid points in one dimension, and the cores are connected through ranks $r_k$. 
-More specifically, a core $\pi_k$ has dimensions $r_{k-1} \times n \times r_k$, with outer ranks $r_0 = r_d = 1$. 
+More specifically, a core $\pi_k$ has dimensions $r_{k-1} \times n \times r_k$, with outer ranks $r_0 = r_d = 1$.
+Using the TT-format enables us to represent a $d$-dimensional grid with only $dnr^2$ evaluation points instead of $n^d$ grid points.
 Figure~(a) is adapted from~\cite{fox2021grid}.}
 \label{fig:TTfig}
 \end{figure}
