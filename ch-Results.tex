@@ -9,15 +9,6 @@ We follow the U.S. standard atmosphere, 1976 \cite{} to relate pressure and temp
 We follow the mipas instrument description fro the froward model \cite{}.
 
 \section{Simulate Data}
-\begin{figure}[ht!]
-	\centering
-	\input{LIMB.pdf_tex}
-	\label{fig:LIMB}
-	\caption[Schematic of measurement and analysis geometry.]{Schematic of measurement and analysis geometry, not to scale.
-		The stationary satellite, at a constant height $h_\text{sat}$ above Earth, takes $m = 36$ measurements along its line-of-sight defining by the line $\Gamma_j$.
-		Each measurement has a limb height $\ell_j$, $j=1,2,\dots,m$ defined as the closest distance of $\Gamma_j$ to the Earth surface, see Fig. \ref{fig:FirstLIMB}.
-		Between $h_{L,0} = 7$km and $h_{L,n} = 73.4$km, the stratosphere is discretised into $n =41$ layers as illustrated by the solid green lines.}
-\end{figure}
 
 
 We simulate some data by taking an ozone profile from the retrieval from the MLS limb sounder form \cite{}.
@@ -114,45 +105,6 @@ depending on 12 parameters with values provided by \cite{}, also see table \ref{
 We set this as our true temperature profile and refer to \cite{} for temperature values above $79 \,\text{km}$.
 
 
-\subsubsection{Source}
-\begin{itemize}
-	\item RTE again?
-	\item assumptions
-\end{itemize}
-We calculate the source function $B(\nu, T)$ and the absorption constant $ k(\nu, T)$ as follows.
-assumption local thermaodynamic equilibrium
-For one species at one specific wave-number the weighted absorption constant becomes
-\begin{align}
-	\overline{k(\nu, T, r)}    = \sum_{m=1}^{molec} k_m(\nu, T) x_m(r) =  k(\nu, T) x(r) \, ,
-\end{align}
-with the volume mixing ratio of ozone $x(r)$ at location $r$. 
-The absorption constant
-\begin{align}
-	k(\nu, T) = L(\nu, T_{\text{ref}}) \frac{Q(T_{\text{ref}})}{Q(T)} \frac{ \exp{\{ - c_2 E^{\prime \prime} / T\}} }{\exp{\{ - c_2 E^{\prime \prime} / T_{\text{ref}} \}}} \frac{ 1- \exp{\{ - c_2 \nu  / T \}} }{1 - \exp{\{ - c_2 \nu / T_{\text{ref}} \}}}
-\end{align}
-is depend on the line intensity $L(\nu, T_{\text{ref}})$ at reference temperature $T_{\text{ref}} =296K $, the lower-state energy of the transition $ E^{\prime \prime} $, the second radiation constant $c2=1.4387769\text{cmK}$ all provided by \cite{}.
-Since we only consider one transition namely the lower-state one the partition function becomes
-\begin{align}
-	Q(T )= g^{\prime \prime} \exp{\{ - \frac{ c_2 E^{\prime \prime} }{T}\}} \, ,
-\end{align}
-with the the statistical weight $ g^{\prime \prime}$ (also called the degeneracy factor), see \ref{}.
-M. Šimečková, D. Jacquemart, L. S. Rothman, R. R. Gamache, and A. Goldman, "Einstein A-coefficients and statistical weights for molecular absorption transitions in the HITRAN database", J. Quant. Spectrosc. Radiat. Transfer 98, 130-155 (2006)
-
-Under the assumption of local thermodynamic (LTE) equilibrium t source function is given by the black body radiation
-\begin{align}
-	B(\nu,T)   = \frac{2 h c^2 \nu^3}{\exp{\{\frac{hc\nu}{k_B T}\}}-1}\, ,
-\end{align}
-with Planck's constant $h$, velocity of light $c$ and Boltzmann's constant $k_B$ \cite{}.
-
-Then we can calculate measurement with the RTE in Eq. \ref{eq:RTE} using the trapezoidal rule
-\begin{align}
-	\label{eq:RTE} 
-	y_j =   \int_{\Gamma_j}  B(\nu,T) k(\nu, T)   \frac{p(T)}{k_{\text{B}} T(r)}  x(r)  \tau(r) \text{d}r + \eta_j \, \\
-	\tau(r) = \exp{ \Bigl\{ - \int^{r}_{r_\text{obs}}  k(\nu, T)   \frac{p(T)}{k_B T(r^{\prime})}  x(r^{\prime}) \text{d}r^{\prime} \Bigr\} } \, ,\label{eq:absRTE} 
-\end{align}
-
-Note we assume infinte spectral resulution and no poisnting errors.
-atmopsheric model and now intrumetn model
 
 \section{Bayesian Model and prior analysis}
 \begin{itemize}
@@ -233,30 +185,30 @@ The parameters $\bm{x}$ and $\bm{p}/ \bm{T}$ determine the space of all measurab
 		model parameters& priors&\makecell{lower}& \makecell{upper\\
 		}&Context\\
 		\hhline{|=||=|=|=|=|}
-		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &$10^{-8}$ &$4 \cdot 10^{-7}$& $\bm{y}$\\ \hline
+		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &$5 \, 10^{-8}$ &$4.5 \, 10^{-7}$& $\bm{y}$\\ \hline
 		$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& $\bm{x}$\\ \hline
-		$\lambda$ &- & 150&5000& $\bm{x}$\\ \hline
+		$\lambda$ &- & 500&7000& $\bm{x}$\\ \hline
 		$\bm{x}$ &$\mathcal{N}(0,\delta \bm{L})$ & -&-& $\bm{x}$\\ \hhline{|=||=|=|=|=|}
 		%$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
 		%$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
 		%$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\ \hline
 		%$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\ \hline
-		$h_0$ &  $\mathcal{N}(6,0.6)$& 5.3&6.1&$\bm{p/T}$\\ \hline
-		$p_0$ &  $\mathcal{N}(460,4)$&443 &471&$\bm{p/T}$\\ \hline
-		$b$ &  $\mathcal{N}(0.167,5 \cdot 10^{-4})$& 0.166& 0.169 &$\bm{p/T}$\\ \hline
+		$h_0$ &  $\mathcal{N}(5.5,0.5)$& 4.76&5.74&$\bm{p/T}$\\ \hline
+		$p_0$ &  $\mathcal{N}(500,6)$&479 &519&$\bm{p/T}$\\ \hline
+		$b$ &  $\mathcal{N}(0.167,10^{-3})$& 0.164& 0.170 &$\bm{p/T}$\\ \hline
 		%$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/T}$\\ \hline
-		$h_{1}$ &  $\mathcal{N}(11,0.5)$&10.6 &11.3&$\bm{p/T}$\\ \hline
-		$h_{2}$ &  $\mathcal{N}(20,3)$&16.6 &22.7&$\bm{p/T}$\\ \hline
-		$h_{3}$ &  $\mathcal{N}(32,1)$&23.6 &43.3&$\bm{p/T}$\\ \hline
-		$h_{4}$ &  $\mathcal{N}(47,2)$&45.2 &48.9&$\bm{p/T}$\\ \hline
-		$h_{5}$ &  $\mathcal{N}(51,2)$&49.2 &52.9&$\bm{p/T}$\\ \hline
-		$h_{6}$ &  $\mathcal{N}(71,2)$&57.8 &84.1&$\bm{p/T}$\\ \hline
+		$h_{1}$ &  $\mathcal{N}(11,0.1)$&10.6 &11.3&$\bm{p/T}$\\ \hline
+		$h_{2}$ &  $\mathcal{N}(20.1,0.9)$&16.7 &22.8&$\bm{p/T}$\\ \hline
+		$h_{3}$ &  $\mathcal{N}(32.3,3)$&23.8&43.6&$\bm{p/T}$\\ \hline
+		$h_{4}$ &  $\mathcal{N}(47.4,0.5)$&45.5 &49.3&$\bm{p/T}$\\ \hline
+		$h_{5}$ &  $\mathcal{N}(51.4,0.5)$&49.5 &53.3&$\bm{p/T}$\\ \hline
+		$h_{6}$ &  $\mathcal{N}(71.8,3)$&60.6 &83.1&$\bm{p/T}$\\ \hline
 		$a_{0}$ &  $\mathcal{N}(-6.5,0.01)$&-6.54 &-6.46&$\bm{p/T}$\\ \hline
 		$a_{1}$ &  $\mathcal{N}(1,0.01)$&0.96 &1.04&$\bm{p/T}$\\ \hline
 		$a_{2}$ &  $\mathcal{N}(2.8,0.1)$&2.43 &3.18&$\bm{p/T}$\\ \hline
-		$a_{3}$ &  $\mathcal{N}(-2.8,0.01)$&-3.18 &-2.43&$\bm{p/T}$\\ \hline
+		$a_{3}$ &  $\mathcal{N}(-2.8,0.1)$&-3.18 &-2.43&$\bm{p/T}$\\ \hline
 		$a_{4}$ & $\mathcal{N}(-2,0.01)$ &-2.04 &-1.96&$\bm{p/T}$\\ \hline
-		$T_{0}$ &  $\mathcal{N}(288.15,2)$& 282 &295&$\bm{p/T}$\\
+		$T_{0}$ &  $\mathcal{N}(288.15,2)$& 281.8 &294.5&$\bm{p/T}$\\
 		\hline
 	\end{tabular}
 	\caption{Gaussian $\mathcal{N}(\mu,\sigma)$ and gamma distribution $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$

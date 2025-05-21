@@ -9,49 +9,8 @@ In Section~\ref{sec:sampling}, we introduce Markov Chain Monte Carlo (MCMC) meth
 Finally, in Section~\ref{sec:tensortrain}, instead of sampling, we can approximate the posterior distribution using the tensor train (TT) format.
 
 
-\section{Forward Model}
-\label{sec:formodel}
-The forward model is based on a satellite measuring thermal radiation along its line of sight by pointing through the atmosphere, known as limb sounding, as shown in Figure~\ref{fig:FirstLIMB}.
-One measurement $y_j$, of a stationary satellite is the path integral through the atmosphere along the line of sight.
-For each measurement $j=1,2,\ldots,m$ of a data set, we can define a tangent height $h_{\ell_j}$ as the shortest distance along the line of sight to the earth.
 
-\begin{figure}[ht!]
-	\centering
-	\scalebox{0.9}{\input{FirstLIMB.pdf_tex}}
-	\caption[General schematics of measurement setup]{This figure illustrates a limb-sounding measurement setup, specifically how the line of sight of a satellite at altitude $h_{\text{obs}}$ is partitioned according to a discretised atmospheric model. The atmosphere is divided into $n$ layers, allowing the line of sight $\Gamma_j$ to be discretised into segments $\Delta r_i$ for $i = \ell_j, \dots, n$.
-	Here, $\ell_j \in \mathbb{N}$ denotes the index corresponding to the tangent height $h_{\ell_j}$ relative to the Earth's radius $R_E$. This setup forms the basis for the numerical solution of the integral in Eq.~\ref{eq:RTE}, known as the radiative transfer equation.}
-	\label{fig:FirstLIMB}
-\end{figure}
 
-The $j^\text{th}$ measurement, is modelled by the radiative transfer equation (RTE)~\cite{mipas2000handbook}
-\begin{align}
-	\label{eq:RTE} 
-	y_j =   \int_{\Gamma_j}  B(\nu,T) k(\nu, T)   \frac{p(T)}{k_{\text{B}} T(r)}  x(r)  \tau(r) \text{d}r + \eta_j \, \\
-	\tau(r) = \exp{ \Bigl\{ - \int^{r}_{r_\text{obs}}  k(\nu, T)   \frac{p(T)}{k_B T(r^{\prime})}  x(r^{\prime}) \text{d}r^{\prime} \Bigr\} } \, ,\label{eq:absRTE} 
-\end{align}
-where the path from the satellite along the line-of-sight of the $j^\text{th}$ pointing direction is $\Gamma_j$ and the ozone concentration at distance $r$ from the radiometer is $x(r)$ plus some noise $\eta_j$.
-Within the atmosphere the number density $p(T) / (k_{\text{B}} T(r))$ of molecules is dependent on the pressure $p(T)$, the temperature $T(r)$, and the Boltzmann constant $k_{\text{B}}$.
-The factor $\tau(r)\leq 1$ accounts for re-absorption of the radiation along the line-of-sight, which makes the RTE non linear.
-The absorption constant $k(\nu, T)$ for a single gas molecule at a specific wavenumber $\nu$ is calculated according to the HITRAN database \cite{gordon2022hitran2020} and acts as a source function when multiplied with the black body radiation $B(\nu,T)$, given by Planck`s law~\cite{rybicki2000rte}.
-For fundamentals on the Radiative transfer equation we recommend \cite[Chapter 1]{rybicki2000rte}.
- 
-To enable matrix-vector multiplication, we discretise the atmosphere in $n$ layers, where the $i^\text{th}$ layer is defined by two spheres of radii $h_{i-1} < h_{i}$, for $i = 1, \dots, n$, with $h_0$ and $h_{n} $.
-Then we can discretise the ozone, pressure and temperature profiles as a function of height, where in between the heights $h_{i-1}$ and $h_{i}$, each of the ozone concentration $x_{i}$, the pressure $p_{i}$, the temperature $T_{i}$, as well as the thermal radiation is assumed to be constant.
-Above $h_{n}$ and below $h_0$, the ozone concentration is set to zero, so no signal can be obtained.
-Depending on the parameter of interest, which is either the ozone volume mixing ratio $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$ or the fraction of pressure and temperature $\bm{p/T}= \{p_1/T_1,p_2/T_2,\ldots,p_n/T_n\} \in \mathbb{R}^{n} $, we can rewrite the integral in Eq.~\eqref{eq:RTE} as e.g. as a vector multiplication $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} $ or $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{p}/ \bm{T} $ , where the non-linear absorption $\tau(r)$ is included in $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T})$.
-Here, the row vector $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{n}$  defines a Kernel for each measurement so that the data vector
-\begin{align}
-	\bm{y} = \bm{A}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} + \bm{\eta}= \bm{A}(\bm{x},  \bm{p},\bm{T}) \,
-	\frac{ \bm{p}}{\bm{T}} + \bm{\eta} \, .
-\end{align}
-can be written as a matrix-vector multiplication, with the matrix $\bm{A}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{m \times n}$ and the noise vector $\bm{\eta} \in \mathbb{R}^{m}$.
-Note, for simplicity, we do not explicitly specify whether $\bm{A}(\bm{x}, \bm{p}, \bm{T})$ is constructed under the assumption that $\bm{x}$ or $\bm{p}/\bm{T}$ is the parameter of interest..
-
-Since the measurement process includes absorption $\tau(r)$, which reduces measurements only slightly, we classify the inverse problem as weakly non-linear. 
-Hence, we can approximate the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T})$ with a map $\bm{M}$ and the linear forward model $\bm{A}_L$, so that $\bm{A}(\bm{x},  \bm{p},\bm{T}) \approx \bm{M} \bm{A}_L $.
-Here, $\bm{A}_{L,j} $ of matrix $\bm{A}_L \in \mathbb{R}^{m \times n}$ is defined by the linear forward model, where absorption is neglected, e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}. 
-Then each entry in the row vector $\bm{A}_{L,j} $ is either defined by $ B(\nu,T) S(\nu, T)   \frac{\bm{p}(T)}{k_{\text{B}} \bm{T}(r)}  \text{d}r$ or $B(\nu,T) S(\nu, T)   \frac{\bm{x}}{k_{\text{B}}}  \text{d}r$, as in Eq.~\eqref{eq:RTE}, depending on which parameter we focus on.
-This poses a linear inverse problem with the forward map defined by the matrix $\bm{A} = \bm{M} \bm{A}_L$, where $\bm{M}$ is, more specifically, an affine map.
 
 
 \section{Affine Map}
@@ -114,7 +73,7 @@ Then given some observed data, we like to characterise the posterior distributio
 	
 	\node[align=center] at (2.8,3.5) (tht) {$\sim \pi_{\bm{\theta}}(\cdot) $ hyper-parameters};
 	\node[align=center] at (2.4,1.5) (xt) {$\sim \pi_{\bm{x}}(\cdot|\bm{\theta}) $ parameters};
-	\node[align=center] at (2.25,0) (At) {$\Omega = \{\bm{Ax}\}$ "noise free data"};
+	\node[align=center] at (2.5,0) (At) {$\Omega = \{\bm{Ax}\}$ "noise free data"};
 	\node[align=center] at (3,-1.5) (ut) {space of all measurables};
 	\node[align=center] at (2,-3.5) (yt) {$\sim \pi_{\bm{y}}(\cdot|\bm{\theta},\bm{x})$ data};
 	\node[align=center] at (-3,0) (nt) {noise};
@@ -374,7 +333,8 @@ Clearly this shows that we only need $dnr^2$ evaluation points instead of $n^d$ 
 \begin{figure}[ht!]
 	\centering
 \begin{subfigure}{\textwidth}
-	\input{TTSchem.pdf_tex}
+	\input{TTSchem.pdf_tex}Hinenrk-96
+	
 	\caption{}
 \end{subfigure}
 	\centering
