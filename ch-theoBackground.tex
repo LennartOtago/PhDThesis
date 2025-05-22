@@ -229,7 +229,7 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 \begin{algorithm}[!ht]
 	\caption{Metropolis within Gibbs}
 	\begin{algorithmic}[1]
-		\STATE Initialize and suppose two dimensional vector \( \bm{\theta}^{(0)}  =( \theta_1^{(0)} , \theta_2^{(0)}  ) \)
+		\STATE Initialise and suppose two dimensional vector \( \bm{\theta}^{(0)}  =( \theta_1^{(0)} , \theta_2^{(0)}  ) \)
 		\FOR{ \( k = 1, \dots, N^{\prime} \)}
 		\STATE Propose \( \theta_1 \sim q(\cdot   | \theta_1 ^{(t-1)}) = q(\theta_1 ^{(t-1)} |\cdot  ) \)
 		\STATE Compute
@@ -333,8 +333,7 @@ Clearly this shows that we only need $dnr^2$ evaluation points instead of $n^d$ 
 \begin{figure}[ht!]
 	\centering
 \begin{subfigure}{\textwidth}
-	\input{TTSchem.pdf_tex}Hinenrk-96
-	
+	\input{TTSchem.pdf_tex}
 	\caption{}
 \end{subfigure}
 	\centering

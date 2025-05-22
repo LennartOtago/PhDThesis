@@ -1,5 +1,4 @@
 \chapter{Results}
-
 \label{ch:res}
 
 In this chapter we explain how we use the forward model to generate data and how we set up a Bayesian framework to then give distribution of solutions.
@@ -9,7 +8,9 @@ We follow the U.S. standard atmosphere, 1976 \cite{} to relate pressure and temp
 We follow the mipas instrument description fro the froward model \cite{}.
 
 \section{Simulate Data}
+hydrostatic equilibrium eaution holds
 
+and since the pressur is so low we don ont obatin mor infoatmion higher up
 
 We simulate some data by taking an ozone profile from the retrieval from the MLS limb sounder form \cite{}.
 When taking this ozone profile we get given ozone volume mixing ratios and pressure values.
@@ -32,7 +33,7 @@ When taking this ozone profile we get given ozone volume mixing ratios and press
 \subsubsection{Pressure to Height to Temperature}
 we relate pressure and height following the book \cite{}where we use the equation
 \begin{align}
-	\text{d} \ln p= \frac{\text{d}p}{p} = \frac{- g M}{R^* T} \text{d} h \, ,
+	\frac{\text{d}p}{p} = \frac{- g M}{R^* T} \text{d} h \, ,
 \end{align}
 
 with the universal gas consant $R^* \approx 8.314  \, \text{N m} / \text{mol} / \text{K}$. The moledus numebr ... is $M = M_0 \approx 28.97 \, \text{kg}/\text{mol}$ for altiudes below 79km \cite{}.
@@ -195,7 +196,7 @@ The parameters $\bm{x}$ and $\bm{p}/ \bm{T}$ determine the space of all measurab
 		%$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\ \hline
 		$h_0$ &  $\mathcal{N}(5.5,0.5)$& 4.76&5.74&$\bm{p/T}$\\ \hline
 		$p_0$ &  $\mathcal{N}(500,6)$&479 &519&$\bm{p/T}$\\ \hline
-		$b$ &  $\mathcal{N}(0.167,10^{-3})$& 0.164& 0.170 &$\bm{p/T}$\\ \hline
+		$b$ &  $\mathcal{N}(0.167,7\,10^{-4})$& 0.165& 0.170 &$\bm{p/T}$\\ \hline
 		%$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/T}$\\ \hline
 		$h_{1}$ &  $\mathcal{N}(11,0.1)$&10.6 &11.3&$\bm{p/T}$\\ \hline
 		$h_{2}$ &  $\mathcal{N}(20.1,0.9)$&16.7 &22.8&$\bm{p/T}$\\ \hline
@@ -287,7 +288,7 @@ PriorTempOverPostMeanSigm
 \end{figure}
 
 
-\subsection{Posterior distributions}
+\section{Posterior Ozone distributions with Linear model}
 \begin{itemize}
 	\item explain where we use MTC and that T/p is spereate
 	\item marginal posterior, noise and covarince and perciosn matrix
@@ -295,15 +296,16 @@ PriorTempOverPostMeanSigm
 	\item taylor expansion
 	\item maybe make  metroplis explixit
 \end{itemize}
+\subsection{MTC - Ozone }
+
 conditioned on a ozone profile
-\subsubsection{pressure over temperature}
+%\subsubsection{pressure over temperature}
 
 conditioned on a temperauter opver pressure profile
-\subsubsection{Ozone -- marginal posterior}
-\section{MTC posterior sampling}
+
 \label{sec:postsamp}
 In this Section we discuss sampling from the posterior distribution. But you don't need to.
-\subsection{Sampling from the marginal posterior distribution over hyper-parameters}
+\subsubsection{Sampling from the marginal posterior distribution over hyper-parameters}
 %In this section we present two algorithm to sample from the marginal posterior distribution.
 Now, to sample from the marginal posterior of the hyper-parameters
 % and the posterior distribution of the parameters condition on the hyper-parameter $\pi(\bm{x}|\bm{y}, \lambda, \gamma )$, with $\lambda = \delta / \gamma$.
@@ -390,7 +392,7 @@ In addition, we calculate the covariance matrix $(\gamma \bm{B}_{\lambda})^{-1} 
 It takes us less than 0.1s to draw 10000 samples from the marginal posterior and to calculate the conditional posterior mean or to solve for 200 different $x_{\lambda}$ and to find the regularised solution at the point of maximum curvature using the kneedle algorithm.\\
 
 
-\section{Affine Map} 
+\section{Generate and Asses Affine Map} 
 \label{sec:affineMap}
 \begin{itemize}
 	\item introduce affine sapce and how we get affine map, to motivate samples from posterir space
@@ -435,7 +437,24 @@ Then the non-linear forward model can be approximated so that
 	\bm{A}_{NL}(\bm{x}) \approx \bm{M A}_L \bm{x}\, .
 \end{align}
 
-\subsection{First MTC}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{SampMapAssesment.png}
+	\caption[Assessment of affine map.]{We asses how good we can map the linear forward model onto the non-linear forward model using the previous calculated affine map. The gray stars represent noise free linear data, where as the red circles present noise free non-linear data. Then we map the linear noise free data onto the non-linear noise free data and give the relative error in between the mapped noise free data and the non-linear data. the  needs M}
+	\label{fig:MapAsses}
+\end{figure}
+
+
+\subsection{Updated Forward map}
+
+\begin{itemize}
+	\item updated forward map
+	\item do mtc again but this time with weighted integration and then condition on pressure and temperature, samples
+	\item for sake of completeness regularised solution and say disadvantage, maybe include in table
+\end{itemize}
+
+\section{Posterior Ozone with approximated Forward map}
+\subsection{Second MTC -  Ozoen with Approximated Forward map}
 \begin{itemize}
 	\item make table with set up for TT and sampling , number of samples
 	\item normalize in evrey step
@@ -519,31 +538,7 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 \end{figure}
 
 
-\subsection{Generate and Asses Affine Map}
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{SampMapAssesment.png}
-	\caption[Assessment of affine map.]{We asses how good we can map the linear forward model onto the non-linear forward model using the previous calculated affine map. The gray stars represent noise free linear data, where as the red circles present noise free non-linear data. Then we map the linear noise free data onto the non-linear noise free data and give the relative error in between the mapped noise free data and the non-linear data. the  needs M}
-	\label{fig:MapAsses}
-\end{figure}
 
-
-\section{Updated Forward map}
-
-\begin{itemize}
-	\item updated forward map
-	\item do mtc again but this time with weighted integration and then condition on pressure and temperature, samples
-	\item for sake of completeness regularised solution and say disadvantage, maybe include in table
-\end{itemize}
-
-
-\subsection{Ozone Retrieval}
-%\begin{figure}[ht!]
-%	\centering
-%	\includegraphics{secRecRes.png}
-%	\caption[]{}
-%	\label{fig:}
-%\end{figure}
 
 \subsubsection{MTC --  sampling vs TT}
 \begin{figure}[ht!]
@@ -552,7 +547,7 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 	\caption[Marginal posterior histograms and TT approximation as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line. Note that we sample $\lambda$ and $\gamma$ using the Metropolis-within-Gibbs sampler and can calculate $\delta$ for every sample of the marginal posterior, we can not do this for the TT approximation. The regularised parameter corresponding to the regularised solution is marked thought the red vertical line at $\lambda_{\text{reg}} =$.}
 	\label{fig:MargPostHistTT}
 \end{figure}
-\subsubsection{Regularized Solution}
+\subsection{Regularized Solution}
 \begin{itemize}
 	\item similar to MTC model
 	\item picture of L-Curve and samples 
@@ -567,7 +562,8 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics{SecRecResinclReg.png}
+	\includegraphics{SecRecResinclRegandSampl.png}
+	%\includegraphics{SecRecResinclReg.png}
 	\caption[Ozone posterior mean and variance and the regularised solution compared to the ground truth.]{We plot the conditional posterior mean and variance in black and the regularised solution on top of the ground truth ozone profile in green. We use the updated forward map $\bm{M}\bm{A}_L$}
 	\label{fig:O3SolplsReg}
 \end{figure}
@@ -575,7 +571,7 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 
 
 
-\subsection{Posterior Pressure and Temperature}
+\section{Posterior Pressure and Temperature}
 \begin{itemize}
 	\item make table with set up for TT and sampling t-walk
 \end{itemize}
@@ -670,14 +666,14 @@ Note that once we found an affine map we update the forward model to $\bm{M}\bm{
 
 
 
-@misc{MLSdata,
-	title= {MLS/Aura Level 2 Ozone (O3) Mixing Ratio V005},
-	author = {Schwartz, M., Froidevaux, L., Livesey, N. and Read, W.},
-	year = {2020},
-	howpublished ={\url{https://disc.gsfc.nasa.gov/datasets/ML2O3_005/summary?keywords=mls%20o3}},
-	publisher = {Goddard Earth Sciences Data and Information Services Center (GES DISC)},
-	adress = {Greenbelt, MD, USA},
-	note = "[Online; accessed 25/04/24, 10.5067/Aura/MLS/DATA2516]"
-}
+%@misc{MLSdata,
+%	title= {MLS/Aura Level 2 Ozone (O3) Mixing Ratio V005},
+%	author = {Schwartz, M., Froidevaux, L., Livesey, N. and Read, W.},
+%	year = {2020},
+%	howpublished ={\url{https://disc.gsfc.nasa.gov/datasets/ML2O3_005/summary?keywords=mls%20o3}},
+%	publisher = {Goddard Earth Sciences Data and Information Services Center (GES DISC)},
+%	adress = {Greenbelt, MD, USA},
+%	note = "[Online; accessed 25/04/24, 10.5067/Aura/MLS/DATA2516]"
+%}
 
 
