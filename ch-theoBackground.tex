@@ -136,7 +136,7 @@ Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \bm{\Sigma}(\bm{\theta}))
 	\end{align}
 	\label{eq:BayMode}
 \end{subequations}
-with a normally distributed likelihood $\pi(\bm{y} |  \bm{x}, \bm{\theta})$ and prior distributions $\pi(\bm{x} |  \bm{\theta})$ and $\pi(\bm{\theta})$, the noise covariance matrix $\bm{\Sigma}(\bm{\theta})$, the prior precision matrix $\bm{Q}(\bm{\theta})$ and the prior mean $\bm{\mu}$.
+with a normally distributed likelihood $\pi(\bm{y} |  \bm{x}, \bm{\theta})$ \textcolor{red}{Why? other likelihoods?} and prior distributions $\pi(\bm{x} |  \bm{\theta})$ and $\pi(\bm{\theta})$, the noise covariance matrix $\bm{\Sigma}(\bm{\theta})$, the prior precision matrix $\bm{Q}(\bm{\theta})$ and the prior mean $\bm{\mu}$.
 This model enables efficient factorisation of the posterior distribution and application of the MTC method.
 
 
@@ -244,6 +244,7 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 		\ENDFOR
 		\STATE Output: $ \bm{\theta}^{(0)}, \dots,  \bm{\theta}^{(k)} , \dots,   \bm{\theta}^{(N)} \sim \pi(\bm{\theta}| \bm{y}) $
 	\end{algorithmic}
+	\label{alg:MwG}
 \end{algorithm}
 
 
@@ -291,6 +292,7 @@ Convergence to the target distribution is guaranteed by construction of the algo
 
 \section{Numerical Approxiamtion Methods - Tensor Train}
 \label{sec:tensortrain}
+\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
 First, we provide a short overview of probability spaces and their associated measures, as a foundation for deriving marginal probability distribution, and then we give a brief introduction to the tensor train format.
 The motivation to use the tensor train format is that we can approximate a d-dimensional grid with far fewer data points compared to the total number of grid points.
 
