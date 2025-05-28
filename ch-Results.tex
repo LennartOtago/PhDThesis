@@ -7,7 +7,7 @@ In this work we simulate datawith an ozone profile from \cite{}.
 We follow the U.S. standard atmosphere, 1976 \cite{} to relate pressure and temperature and hieght and the HITRANonline \cite{} database to calculate the measured signal.\expandafter\string\the\font 
 We follow the mipas instrument description fro the froward model \cite{}.
 
-All programming is done in python
+All programming and analysis is done in python on a MacBook Pro from 2019 with 2.4 Ghz quadcore intel core i5 processor.
 
 \section{Simulate Data}
 Ground truth
@@ -425,7 +425,7 @@ In comparisons the to run the MwG takes $\approx 0.7s$ for $N = 20000$ effective
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{ScatterplusHistoPlusTT.png}
-	\caption[Scatter plot of samples from marginal posterior, including weighting from TT approximation; additional trace plot of the marginal posterior samples.]{We scatter plot the samples of $\lambda = \delta / \gamma $ and $\gamma$ from the marginal posterior $\pi(\lambda , \gamma  | \bm{y})$ and colour code the samples using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. To show ergodicity we plot the trace of the samples of the Metropolis-within-Gibbs sampler below.}
+	\caption[Scatter plot of samples from marginal posterior, including weighting from TT approximation; additional trace plot of the marginal posterior samples.]{We scatter plot the samples of $\lambda = \delta / \gamma $ and $\gamma$ from the marginal posterior $\pi(\lambda , \gamma  | \bm{y})$ and colour code the samples using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. The mode of $(\lambda_0 , \gamma_0)$ of $\pi(\lambda , \gamma  | \bm{y})$ provided by \texttt{scipy.optimize.fmin} is marked with the cross. To show ergodicity we plot the trace of the samples of the Metropolis-within-Gibbs sampler below.}
 	\label{fig:ScatterPlotTT}
 \end{figure}
 
@@ -452,6 +452,7 @@ Then we solve
 using Cholesky back and forward substitution, for $\bm{x}$ and obtain one independent sample of $\pi(\bm{x}|\bm{y}, \bm{\theta})$.
 See Fig. \ref{fig:O3Samp}, where we plot $m = $ samples of the conditional posterior.
 
+The histogram in is binned as we intergate over it to 7 bins
 
 \subsubsection{Weighted Mean}
 Alternatively, we can calculated the mean
@@ -750,6 +751,12 @@ We download the t-walk from \cite{christentwalkaccess} and let it take $1000000$
 The resulting histogram are plotted in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}, additionally we plot the trace of the samples in Fig. \ref{fig:TraceTwalk}
 
 \clearpage
+
+Resukts of TT and t-walk overlap say the same
+for temperatuer we do not gain any more information than priors
+Priors are posterior
+For pressure the  gain more information
+
 Then we can either fit normal distribution to the marginals or draw samples from the output of the t-walk to calculate temperature and pressure profiles according to their respective functions, see Eq. \ref{eq:tempFunc} and \ref{eq:pressFunc}.
 \begin{figure}[ht!]
 	\centering
