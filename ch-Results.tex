@@ -1,4 +1,4 @@
-\chapter{Results}
+\chapter{Results and Conclusions}
 \label{ch:res}
 
 In this chapter we explain how we use the forward model to generate data and how we set up a Bayesian framework to then give distribution of solutions.
@@ -746,14 +746,14 @@ We terminate the \texttt{rect\_cross.cross} algorithm from the \texttt{ttpy} pyt
 Then we calculate the marginals as in section \ref{sec:tensortrain} with a constant $= 1e-15$ and plot the results in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4} as an orange line.
 
 On the same grid we run the t-walk, with the constant set to zero as the t-walk evaluates the function $- \ln{\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) }$ we do not run into numerical issues.
-We download the twalk from \cite{christentwalkaccess} and let it take $1000000$ steps plus a burn-in period of $1000$, which takes around $7$ mins on the same laptop.
+We download the t-walk from \cite{christentwalkaccess} and let it take $1000000$ steps plus a burn-in period of $1000$, which takes around $7$ mins on the same laptop.
 The resulting histogram are plotted in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}, additionally we plot the trace of the samples in Fig. \ref{fig:TraceTwalk}
 
 \clearpage
 Then we can either fit normal distribution to the marginals or draw samples from the output of the t-walk to calculate temperature and pressure profiles according to their respective functions, see Eq. \ref{eq:tempFunc} and \ref{eq:pressFunc}.
 \begin{figure}[ht!]
 	\centering
-	\includegraphics{TempPostMeanSigm.png}
+	\includegraphics{TempPostMeanSigm.png} 
 	\caption[Temperature posterior samples.]{We take samples from the posterior distribution, as plotted in Figures \ref{fig:PostHistTT0} to \ref{fig:PostHistTT3} and plot the corresponding temperature function, see Eq: \ref{eq:tempFunc}. }
 	\label{fig:TempPost}
 \end{figure}
