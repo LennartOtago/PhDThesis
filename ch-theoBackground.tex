@@ -182,7 +182,7 @@ For a fixed $\lambda$, the regularised solution
 \begin{align}
 	\bm{x}_{\lambda} = \underset{\bm{x}}{\mathrm{arg\,min}} \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2 + \lambda \left\lVert \bm{T} \bm{x} \right\rVert^2
 \end{align}
-is obtained by taking the derivative with respect to $\bm{x}$ of the objective function:
+is obtained by taking the derivative with respect to $\bm{x}$ of the objective function \textcolor{red}{normal equations}:
 \begin{align}
 	& & \nabla_{\bm{x}} \left\{ (\bm{y} - \bm{A} \bm{x})^T (\bm{y} - \bm{A} \bm{x}) + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
 	&\iff & \nabla_{\bm{x}} \left\{ \bm{y}^T \bm{y} + \bm{x}^T \bm{A}^T \bm{A} \bm{x} - 2 \bm{y}^T \bm{A} \bm{x} + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
@@ -190,7 +190,7 @@ is obtained by taking the derivative with respect to $\bm{x}$ of the objective f
 \end{align}
 Solving this equation yields the regularised solution
 \begin{align}
-	\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L})^{-1} \bm{A}^T \bm{y} \, ,
+	\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L})^{-1} \bm{A}^T \bm{y} \, , \label{eq:regSol}
 \end{align}
 where we define $\bm{L} := \bm{T}^T \bm{T}$, which typically represents a discrete approximation of a derivative operator~\cite{tan2016LecNot}.
 
@@ -209,6 +209,7 @@ In other words, if the chain can reach any state from any other state (irreducib
 In practice, one can inspect the trace $\pi(\bm{x}^{(k)}, \bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence and mixing properties of the chain to evaluate ergodicity.
 The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details.
 
+\textcolor{red}{explain trace}
 
 \subsection{Metropolis- within Gibbs sampling}
 As introduced in Section~\ref{subsec:MTC}, when using the MTC method we sample separately from $\pi(\bm{\theta} |  \bm{y})$ and $\pi(\bm{x} |  \bm{\theta}, \bm{y})$. To sample from $\pi(\bm{\theta} |  \bm{y})$, we use a Metropolis-within-Gibbs sampler as described in~\cite{fox2016fast}.
