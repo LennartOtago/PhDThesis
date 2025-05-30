@@ -51,7 +51,7 @@ with values
 	\hline
 \end{tabular}
 as in \cite{atmosphere1976us}, we plot the ground truth temperature in Fig. \ref{fig:PriorTemp}.
-
+\textcolor{red}{isothermal layers we are able to change the thickenss but we accept that they are is thermeonal we do not model 0.}
 Then we can compute a data vector $\bm{y}$, with $m = 42$ measurements according to the radiative transfer equation \ref{eq:RTE}, determined by the satellite pointing accuracy of $150$arcsec as requested in \cite{CubeSatInternal}, within an atmosphere $h_{L,0}=7$km and $h_{L,n} = 83.3$km with $n = 45$ layers.
 The height values $h_{L,i}$ for each layer $i = 0,\dots, n$ are defined by the given ozone profile and its pressure values.
 We target thermal radiation at a wave number $\nu = 7.86\text{cm}^{-1}$, equal to a frequency of roughly $235$GHz, where we assume that ozone is the only emitter and calculate the absorption constant $k(\nu,T)$ according to the \textit{HITRAN} database \cite{gordon2022hitran2020} for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
@@ -80,6 +80,8 @@ The hyper-parameter related to the ozone is $\delta$, describing the smoothness 
 
 Since we can describe pressure $\bm{p}$ and temperature $\bm{T}$ through the functions in Eq. \ref{eq:tempFunc} and \ref{eq:pressFunc} we include their function parameters as hyper-parameters in Fig. \ref{fig:DAGComplete}.
 Then we can already see the correlation between pressure and temperature since it goes like $\bm{p}/ \bm{T}$ into the forward model.
+
+\textcolor{red}{say that we treat ozone and pressure and temperature separately}
 \begin{figure}[thb!]
 	\centering
 	\begin{tikzpicture}
@@ -130,6 +132,21 @@ The parameters $\bm{x}$ and $\bm{p}/ \bm{T}$ determine the space of all measurab
 \label{fig:DAGComplete}
 \end{figure}
 
+
+\begin{align}
+	\begin{split}
+		\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert^2 \\ &+ \ln{\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T}) + c \Bigr\}  }
+	\end{split} \, ,
+\end{align}
+
+
+Ideally we like to determine the joint posterior
+\begin{align}
+	\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T},\delta, \gamma, \bm{x}| \bm{y}) 
+\end{align}
+but this is computaional not feasible
+
+with normally distributed likelihood function.
 \subsection{Prior Modelling}
 To complete the Bayesian framework we have define prior distribution for the hyper-parameters and parameters.
 Ideally we define the prior distributions as uninformative as possible within functional dependencies and valid physical properties.
@@ -178,53 +195,40 @@ We summarise all prior distributions in Tab. \ref{tab:priors} and plot the prior
 \end{table}
 
 \subsubsection{Ozone}
-The priors for the Ozone profiles are gamma distributions
-graph lacoiacn 
-wigthing in between
-similiar to a ciuop;led osscialtors
-what heught is change of weights
-we choose gamma distribution for easier sampling later on 
+The priors for $\gamma \sim \mathcal{T}(1,10^{-10}) $ and $\delta \sim \mathcal{T}(1,10^{-10})$ are gamma distribution, with parameters chosen so that the distributions are relatively uninformative, see black line in Fig. \ref{fig:MargPostHistTT}.
+another reason to choose a gamma distribution is that then the marginal posterior for $\pi(\gamma|\delta,\bm{y})$ is gamma distribution as well and easy to sample from, conjugate prior.
+
+The hyper-parameter delta is defining a prior distribution for ozone $\bm{x} \sim \mathcal{N}(0,\delta \bm{L})$, with 
 \begin{align}
-	\bm{Q}= \delta \bm{L} =
+	\delta \bm{L} =
 	\delta
 	\begin{bmatrix}
 		2 & -1 & & &  \\
 		-1 & 2 & -1 & &   \\
 		& \ddots & \ddots & \ddots &\\ 
-		&   & -1 & 6 & -5 \\
-		& & & \ddots & \ddots & \ddots  \\ 
-		& & & &  -5 & 10 & -5 \\
-		& & & & & -5 & 10 
+		& & -1 & 2 & -1  \\
+		& & & -1 & 2 
 	\end{bmatrix} 
 \label{eq:GLapl} 
 \end{align}
+which is graph Laplacian with Dirichlet boundary conditions \cite{wang2015trend}.
+We plot the prior distribution of ozone in Fig. \ref{fig:O3Prior} and see that it is quite uninformative, due to the scale we can  not really see the true Ozone profile and refer to Fig. \ref{fig:O3Samp} or Fig. \ref{fig:O3SolplsReg} for better look at the true ozone profile.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{OzonePrior.png}
 	\caption[Samples from ozone prior distribution.]{We draw samples from ozone prior distribution $\bm{x} \sim \mathcal{N}(0,\delta \bm{L})$ after generating a sample from the hyper-prior distribution $\delta \sim \mathcal{T}(1,10^{-10})$. Note that since the spread/variance of prior samples is very large compared to the ozone volume mixing ratios, the ozone profile appears to be constant, which it is not, as seen e.g. in Fig. \ref{fig:O3Samp}.}
 	\label{fig:O3Prior}
 \end{figure}
-\subsubsection{pressure over temperature}
-We parametrize the pressure by fitting one exponential to the pressure values $p$ related to the height $h$ by Eq. \ref{}.
-We have to be carefull when we choose priors for the tmeprature and pressure
 
-Height priors for temperature don ot overlap also grid for TT is chosen that way
+\subsubsection{Pressure over temperature}
+Next we define the normal hyper-priors for the temperature and pressure hyper-parameters as in table \ref{tab:priors}, which lead to temperature and pressure prior samples see Fig. \ref{fig:PriorTemp} and \ref{fig:PriorPress}.
+When plotting the prior samples as $\bm{p} / \bm{T}$ in Fig. \ref{fig:PriorPressOverTemp}, since that is how they go into the forward model, we can already see that pressure structure is dominating.
+More specifically in Fig. \ref{fig:SeaLevelHist} that for example the temperature at the lowest atmospheric layer $h_{L,0}$ does not influences the values for $p_{L,O}/T_{L,0}$.
+We choose the priors for the height values so that they are very unlike to ovelap, see Fig. \ref{fig:HeightPriors}.
+Additionally we will chose the TT boundaries so that height values cant overlap, the table \ref{tab:priors} and results later \ref{fig:PostHistTT0} and \ref{fig:PostHistTT1}.
 
-Then pressure prior can not overlap the lowest atmospheric layer as then we would need a second gradient for the exponential
-
-we are also limited by numerical issues of TT
-and essentially we can choose uniform priors but then the t-walk would run forever limit parameter space
-In case of uniformative data the priors can help us limit the parameter space.
-
-We also show in the appendix that the temperature does not influence the pressure , even though they are correlated
-\begin{itemize}
-	\item show that pressure is dominant
-	\item correlation structure
-	\item appendix
-\end{itemize}
-
-PriorTempOverPostMeanSigm
-
+Since we can fit an exponential to the pressure above a height of $h_{L,0}$ we do not allow the prior for $h_0$ to go above that value, see Fig. \ref{fig:HeightPressPriors} and also choose the grid of the TT so that this does not happen.
+We choose normal prior distribution for $b$ and $p$, where we restrict ourselves slightly for the TT approximation.
 
 
 \begin{figure}[ht!]
@@ -250,11 +254,7 @@ PriorTempOverPostMeanSigm
 
 \clearpage
 
-Ideally we like to determine the joint posterior
-\begin{align}
-	\pi()
-\end{align}
-but this is computaional not feasible
+
 \section{Posterior distributions with Linear model for Ozone -- MTC}
 \label{sec:firstMTC}
 In this section we calculate the posterior marginal and then conditional (MTC) posterior distribution for ozone conditioned on the ground truth temperature and pressure profiles using the linear forward model $\bm{A}_L$.
