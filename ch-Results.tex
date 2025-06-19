@@ -403,6 +403,9 @@ For numerical reasons,to avoid underflow, we have to add a constant $c = 460$, s
 We calculate the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as in section \ref{}, with a constant $\gamma = 1e-5 $, and plot the TT approximation as a colour code on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
 
 
+The TT alforith with has nkber of funciton evaluaation set with constant rank r 
+$( (D-2) r \times n\times r + 2  \times n \times r)2 \times n_{sweep}$
+
 On a MacBook Pro from 2019 with 2.4 Ghz quadcore intel core i5 processor it takes $\lessapprox  0.1$s to find the Tensors to approximate the marginal posterior.
 In comparisons the to run the MwG takes $\approx 0.7s$ for $N = 20000$ effective samples.
 \begin{figure}[ht!]
