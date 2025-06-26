@@ -325,7 +325,8 @@ To calculate function values more efficiently we approximate the function $f(\la
 The derivatives for the Taylor series are
 \begin{align}
 	f^{(r)}& (\lambda_0)= (-1)^{r+1} r! (\bm{A}_L^T \bm{y})^T (\bm{B}_0^{-1} \bm{L})^r \bm{B}_0^{-1} \bm{A}_L^T \bm{y} \label{eq:ftay}  \\
-	\text{and } &g^{(r)} ( \lambda_0) = (-1)^{r+1} \, \text{tr} \big( (\bm{B}_0^{-1}\bm{ L })^r \big)
+	\text{\textcolor{red}{include log(g) is linear}} &  g = g_0 \log{}
+	%\text{and } &g^{(r)} ( \lambda_0) = (-1)^{r+1} \, \text{tr} \big( (\bm{B}_0^{-1}\bm{ L })^r \big)
 	\label{eq:gtay}
 \end{align} 
 with $\bm{B}_0 = \bm{A}_L^T  \bm{A}_L + \lambda_0 \bm{L}$.
@@ -338,7 +339,7 @@ Additionally, we calculate $\bm{B}_0^{-1} \bm{L} $ and  $\bm{B}_0^{-1}  \bm{A}_L
 	\label{fig:fandg}
 \end{figure}
 
-\textcolor{red}{Error Analysis?}
+
 
 To characterise the marginal posterior function we employ a Metropolis within Gibbs (MWG) algorithm on $\pi(\lambda, \gamma | \bm{y})$.
 In doing so, one may implement a Metropolis random walk on the full conditional
@@ -405,15 +406,30 @@ We calculate the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as i
 
 The TT alforith with has nkber of funciton evaluaation set with constant rank r 
 $( (D-2) r \times n\times r + 2  \times n \times r)2 \times n_{sweep}$
+400 for TT marg
+we set assume an absolute approximation error of $1$ so that we set $\gamma^{\prime} = 1 / \uplambda(\mathcal{X}) $
 
 On a MacBook Pro from 2019 with 2.4 Ghz quadcore intel core i5 processor it takes $\lessapprox  0.1$s to find the Tensors to approximate the marginal posterior.
 In comparisons the to run the MwG takes $\approx 0.7s$ for $N = 20000$ effective samples.
+\textcolor{red}{integrated autocorrelation time, roughly efficient independent samples}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{ScatterplusHistoPlusTT.png}
 	\caption[Scatter plot of samples from marginal posterior, including weighting from TT approximation; additional trace plot of the marginal posterior samples.]{We scatter plot the samples of $\lambda = \delta / \gamma $ and $\gamma$ from the marginal posterior $\pi(\lambda , \gamma  | \bm{y})$ and colour code the samples using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. The mode of $(\lambda_0 , \gamma_0)$ of $\pi(\lambda , \gamma  | \bm{y})$ provided by \texttt{scipy.optimize.fmin} is marked with the cross. To show ergodicity we plot the trace of the samples of the Metropolis-within-Gibbs sampler below.}
 	\label{fig:ScatterPlotTT}
 \end{figure}
+
+\textcolor{red}{Error Analysis?}
+\subsubsection{Error due to approximation of f and g}
+Error due to approximatino (taylor f and linear g)
+Propagation error in $\ln{\pi(\lambda,\gamma|\bm{y})}$
+propagation error in $\pi(\lambda,\gamma|\bm{y})$
+3rd order taylor gives least error
+error lays in the tails of distribution and we do not see a difference in tails
+or ozone profiles
+
+Can reduce error approximating at the mode currently we could approximate at the man e.g. the mean since it is a skewed distribution
+
 
 \subsection{Ozone samples from the conditional posterior}
 \label{subsec:firstCond}
@@ -466,7 +482,7 @@ We plot the mean and variance in Figure \ref{fig:O3Samp}.
 	\caption[Ozone samples of the conditional posterior.]{We draw samples from the conditional posterior distribution  $\pi(\bm{x}|\lambda,\gamma , \bm{y})$ after characterising the marginal posterior $\pi(\lambda,\gamma | \bm{y})$ through sampling or TT approximation using the linear forward map $\bm{A}_L$. Note that we reject samples with unphysical negative values and effectively treat the conditional posterior as a truncated multivariate normal distribution. We will use those samples to find the affine map $\bm{M}$, see section \ref{sec:affineMap}}
 	\label{fig:O3Samp}
 \end{figure}
-
+\textcolor{red}{Error analysis and figure and argue TT gridsize}
 \section{Approximate non-linear forward model with affine Map} 
 \label{sec:affineMap}
 Using an affine map to map in between the linear and non-linear forward map we can approximate the non-linear map and treat the inverse problem as a linear inverse problem.
@@ -737,13 +753,14 @@ Then we calculate the marginals as in section \ref{sec:tensortrain} with a const
 On the same grid we run the t-walk, with the constant set to zero as the t-walk evaluates the function $- \ln{\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) }$ we do not run into numerical issues.
 We download the t-walk from \cite{christentwalkaccess} and let it take $1000000$ steps plus a burn-in period of $1000$, which takes around $7$ mins on the same laptop.
 The resulting histogram are plotted in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}, additionally we plot the trace of the samples in Fig. \ref{fig:TraceTwalk}
-
+\textcolor{red}{integrated autocorrelation time, roughly efficient independent samples}
 \clearpage
 
 Resukts of TT and t-walk overlap say the same
 for temperatuer we do not gain any more information than priors
 Priors are posterior
 For pressure the  gain more information
+\textcolor{red}{grid size refer to figure}
 
 Then we can either fit normal distribution to the marginals or draw samples from the output of the t-walk to calculate temperature and pressure profiles according to their respective functions, see Eq. \ref{eq:tempFunc} and \ref{eq:pressFunc}.
 \begin{figure}[ht!]

@@ -209,6 +209,7 @@ In other words, if the chain can reach any state from any other state (irreducib
 In practice, one can inspect the trace $\pi(\bm{x}^{(k)}, \bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence and mixing properties of the chain to evaluate ergodicity.
 The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details.
 
+\subsubsection{Integrated Autocorrelation time}
 \textcolor{red}{explain trace}
 
 \subsection{Metropolis- within Gibbs sampling}
@@ -321,7 +322,7 @@ where we integrate over all dimensions except the $k$-th.
 Here, we introduce a weight function $\uplambda(x)$~\cite{davis2007methods}, which can be useful for quadrature rules??. 
 Cui et al.~\cite{cui2022deep} refer to $\uplambda(x)$ as a "product-form Lebesgue-measurable weighting function" and define it as
 \begin{align*}
-	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \mathrm{d}x_i.
+	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \mathrm{d}x_i. \label{eq:lebesgueWeight}
 \end{align*}
 
 Using the tensor train (TT) format, we can efficiently approximate a $d$-dimensional function $\pi(x)$ and compute marginal probability distributions at low computational cost. To do so, we first define a $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$, with $n$ grid points in each dimension.
@@ -394,7 +395,7 @@ The approximated density is written as:
 \begin{align}
 	\pi(x) \approx \gamma' + g^2(x),
 \end{align}
-where $\gamma'$ is a small positive constant added to ensure positivity and is chosen such that
+where $\gamma'$ is a positive constant added according to the absolute error and the Lebesgue weighting, see Eq. \ref{eq:lebesgueWeight}, to ensure positivity such that
 \begin{align}
 	\gamma' \leq \frac{1}{\uplambda(\mathcal{X})} \lVert g - \sqrt{\pi} \rVert_2^2.
 \end{align}
@@ -402,7 +403,7 @@ This leads to the normalised target function
 \begin{align}
 	f_X(x) = \frac{1}{z} \uplambda(x) \pi(x)  = \frac{1}{z} \left( \uplambda(x) \gamma'  + \uplambda(x) g^2(x) \right),
 \end{align}
-where $z$ is the normalisation constant.
+where $z$ is the normalisation constant, which calculate numerically within the process of finding the marginals
 Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{X_k}(x_k)$ can be expressed as
 \begin{align}
 	\begin{split}
