@@ -109,7 +109,26 @@ Furthermore, the central limit theorem states that the samples mean $ \bm{\mu}^{
 \begin{align}
 	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
 \end{align}
-and if $\sigma^2 < \infty$ the Monte Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bounded.
+and if $\sigma^2 < \infty$ the Monte-Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bounded.
+
+
+\subsubsection{On the Monte-Carlo Error and Integrated Autocorrelation time}
+We need to define a correlation function why?
+\begin{align}
+	C(t) \equiv \langle x_s x_{s+t} - \mu \rangle
+\end{align}
+
+where $C(0) = \text{var}(x)$
+The auto covariance function or auto correlation function is given as 
+
+The integrated autocorrelation time (IACT)
+\begin{align}
+	\tau_{\text{int}} = 1 + 2\sum_{k=1}^\infty \rho_k  ,
+\end{align}
+as defined in \cite{Sokal1997} provides a good estimate on how efficient a sampler is, where $\rho_k $ is the normalised autocorrelation at lag k.
+More specifically, the IACT gives an estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
+We calculate the IACT using the pyhton implementation of \cite{wolff2004monte} and double the output provided.
+
 
 Generating a representative sample set from the posterior distribution presents a significant challenge. This is also due to the strong correlations that often exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlatation}.
 If $\bm{x}$ can not be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, i.e., $\bm{x}(\bm{\theta})$, it is beneficial to factorise the posterior distribution as
@@ -209,8 +228,7 @@ In other words, if the chain can reach any state from any other state (irreducib
 In practice, one can inspect the trace $\pi(\bm{x}^{(k)}, \bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence and mixing properties of the chain to evaluate ergodicity.
 The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details.
 
-\subsubsection{Integrated Autocorrelation time}
-\textcolor{red}{explain trace}
+
 
 \subsection{Metropolis- within Gibbs sampling}
 As introduced in Section~\ref{subsec:MTC}, when using the MTC method we sample separately from $\pi(\bm{\theta} |  \bm{y})$ and $\pi(\bm{x} |  \bm{\theta}, \bm{y})$. To sample from $\pi(\bm{\theta} |  \bm{y})$, we use a Metropolis-within-Gibbs sampler as described in~\cite{fox2016fast}.

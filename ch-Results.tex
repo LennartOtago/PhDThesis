@@ -155,42 +155,41 @@ We summarise all prior distributions in Tab. \ref{tab:priors} and plot the prior
 
 \begin{table}
 	\centering
-	\begin{tabular}{ |c||c|c|c|c|   }
+	\begin{tabular}{ |c||c|c|c|c|c|   }
 		\hline
-		& &\multicolumn{2}{|c|}{TT bounds}&\\
+		& &\multicolumn{2}{|c|}{TT bounds}& &\\
 		\hline
 		model parameters& priors&\makecell{lower}& \makecell{upper\\
-		}&Context\\
-		\hhline{|=||=|=|=|=|}
-		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &$5 \, 10^{-8}$ &$4.5 \, 10^{-7}$& $\bm{y}$\\ \hline
-		$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& $\bm{x}$\\ \hline
-		$\lambda$ &- & 500&7000& $\bm{x}$\\ \hline
-		$\bm{x}$ &$\mathcal{N}(0,\delta \bm{L})$ & -&-& $\bm{x}$\\ \hhline{|=||=|=|=|=|}
+		}&$\tau_{\text{int}}$&Context\\
+		\hhline{|=||=|=|=|=|=|}
+		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &$5 \, 10^{-8}$ &$4.5 \, 10^{-7}$& &$\bm{y}$\\ \hline
+		$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& & $\bm{x}$\\ \hline
+		$\lambda$ &- & 500&7000& &$\bm{x}$\\ \hline
+		$\bm{x}$ &$\mathcal{N}(0,\delta \bm{L})$ & -&-&& $\bm{x}$\\ \hhline{|=||=|=|=|=|=|}
 		%$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
 		%$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
 		%$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\ \hline
 		%$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\ \hline
-		$h_0$ &  $\mathcal{N}(5.5,0.5)$& 4.76&5.74&$\bm{p/T}$\\ \hline
-		$p_0$ &  $\mathcal{N}(500,6)$&479 &519&$\bm{p/T}$\\ \hline
-		$b$ &  $\mathcal{N}(0.167,7\,10^{-4})$& 0.165& 0.170 &$\bm{p/T}$\\ \hline
+		$h_0$ &  $\mathcal{N}(5.5,0.5)$& 4.76&5.74&&$\bm{p/T}$\\ \hline
+		$p_0$ &  $\mathcal{N}(500,6)$&479 &519&&$\bm{p/T}$\\ \hline
+		$b$ &  $\mathcal{N}(0.167,7\,10^{-4})$& 0.165& 0.170 &&$\bm{p/T}$\\ \hline
 		%$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/T}$\\ \hline
-		$h_{1}$ &  $\mathcal{N}(11,0.1)$&10.6 &11.3&$\bm{p/T}$\\ \hline
-		$h_{2}$ &  $\mathcal{N}(20.1,0.9)$&16.7 &22.8&$\bm{p/T}$\\ \hline
-		$h_{3}$ &  $\mathcal{N}(32.3,3)$&23.8&43.6&$\bm{p/T}$\\ \hline
-		$h_{4}$ &  $\mathcal{N}(47.4,0.5)$&45.5 &49.3&$\bm{p/T}$\\ \hline
-		$h_{5}$ &  $\mathcal{N}(51.4,0.5)$&49.5 &53.3&$\bm{p/T}$\\ \hline
-		$h_{6}$ &  $\mathcal{N}(71.8,3)$&60.6 &83.1&$\bm{p/T}$\\ \hline
-		$a_{0}$ &  $\mathcal{N}(-6.5,0.01)$&-6.54 &-6.46&$\bm{p/T}$\\ \hline
-		$a_{1}$ &  $\mathcal{N}(1,0.01)$&0.96 &1.04&$\bm{p/T}$\\ \hline
-		$a_{2}$ &  $\mathcal{N}(2.8,0.1)$&2.43 &3.18&$\bm{p/T}$\\ \hline
-		$a_{3}$ &  $\mathcal{N}(-2.8,0.1)$&-3.18 &-2.43&$\bm{p/T}$\\ \hline
-		$a_{4}$ & $\mathcal{N}(-2,0.01)$ &-2.04 &-1.96&$\bm{p/T}$\\ \hline
-		$T_{0}$ &  $\mathcal{N}(288.15,2)$& 281.8 &294.5&$\bm{p/T}$\\
+		$h_{1}$ &  $\mathcal{N}(11,0.1)$&10.6 &11.3&&$\bm{p/T}$\\ \hline
+		$h_{2}$ &  $\mathcal{N}(20.1,0.9)$&16.7 &22.8&&$\bm{p/T}$\\ \hline
+		$h_{3}$ &  $\mathcal{N}(32.3,3)$&23.8&43.6&&$\bm{p/T}$\\ \hline
+		$h_{4}$ &  $\mathcal{N}(47.4,0.5)$&45.5 &49.3&&$\bm{p/T}$\\ \hline
+		$h_{5}$ &  $\mathcal{N}(51.4,0.5)$&49.5 &53.3&&$\bm{p/T}$\\ \hline
+		$h_{6}$ &  $\mathcal{N}(71.8,3)$&60.6 &83.1&&$\bm{p/T}$\\ \hline
+		$a_{0}$ &  $\mathcal{N}(-6.5,0.01)$&-6.54 &-6.46&&$\bm{p/T}$\\ \hline
+		$a_{1}$ &  $\mathcal{N}(1,0.01)$&0.96 &1.04&&$\bm{p/T}$\\ \hline
+		$a_{2}$ &  $\mathcal{N}(2.8,0.1)$&2.43 &3.18&&$\bm{p/T}$\\ \hline
+		$a_{3}$ &  $\mathcal{N}(-2.8,0.1)$&-3.18 &-2.43&&$\bm{p/T}$\\ \hline
+		$a_{4}$ & $\mathcal{N}(-2,0.01)$ &-2.04 &-1.96&&$\bm{p/T}$\\ \hline
+		$T_{0}$ &  $\mathcal{N}(288.15,2)$& 281.8 &294.5&&$\bm{p/T}$\\
 		\hline
 	\end{tabular}
-	\caption{Gaussian $\mathcal{N}(\mu,\sigma)$ and gamma distribution $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$
-		Bounds for t and p 2.8 times the variance around the mean
-		round pressure approx and  test if would work with previous gamma prior or fix gamma prior with set values}
+	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. Gaussian $\mathcal{N}(\mu,\sigma)$ and gamma distribution $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$
+		Bounds for tt test if would work with previous gamma prior or fix gamma prior with set values}
 	\label{tab:priors}
 \end{table}
 
@@ -325,7 +324,7 @@ To calculate function values more efficiently we approximate the function $f(\la
 The derivatives for the Taylor series are
 \begin{align}
 	f^{(r)}& (\lambda_0)= (-1)^{r+1} r! (\bm{A}_L^T \bm{y})^T (\bm{B}_0^{-1} \bm{L})^r \bm{B}_0^{-1} \bm{A}_L^T \bm{y} \label{eq:ftay}  \\
-	\text{\textcolor{red}{include log(g) is linear}} &  g = g_0 \log{}
+	\text{and } & \log{ g(\lambda)} = (\log{\lambda} - \log{\lambda_{0}})  \frac{ \log{g(\lambda_{\text{max}})} - \log{g(\lambda_{0})} }{\log{\lambda_{\text{max}}} - \log{\lambda_{0}} } + \log{ g(\lambda_{0})} 
 	%\text{and } &g^{(r)} ( \lambda_0) = (-1)^{r+1} \, \text{tr} \big( (\bm{B}_0^{-1}\bm{ L })^r \big)
 	\label{eq:gtay}
 \end{align} 
@@ -364,7 +363,9 @@ To accept or reject a new sample $\lambda$ we draw a random uniform number in be
 	= \frac{n}{2} (\log\{\lambda\} - \log\{\lambda^{(t-1)}\} ) + \frac{1}{2} \Delta g + \frac{\gamma^{(t-1)}}{2} \Delta f  + \beta_\delta \gamma^{(t-1)} \Delta \lambda  \, ,
 \end{align}
 which we calculate in the log space.
-Here $\Delta f = f(\lambda^\prime) - f(\lambda^{(k)}) = \sum f^{(r)} (\lambda_0)\Delta \lambda^\prime - \Delta \lambda^{(k)} $ and $\Delta g = g(\lambda^\prime) - g(\lambda^{(k)})= \sum g^{(r)} (\lambda_0)\Delta \lambda^\prime - \Delta \lambda^{(k)} $, where $\Delta \lambda^\prime = \lambda^\prime - \lambda_0 $ and $\Delta \lambda^{(k)} =  \lambda^{(k)} - \lambda_0$.
+Here $\Delta f = f(\lambda^\prime) - f(\lambda^{(k)}) = \sum f^{(r)} (\lambda_0)\Delta \lambda^\prime - \Delta \lambda^{(k)} $, where $\Delta \lambda^\prime = \lambda^\prime - \lambda_0 $ and $\Delta \lambda^{(k)} =  \lambda^{(k)} - \lambda_0$, and $\Delta g = \exp{\log{g(\lambda^{\prime})}} - \exp{\log{g(\lambda^{(k)})}}$.
+
+%$\Delta g = g(\lambda^\prime) - g(\lambda^{(k)})= \sum g^{(r)} (\lambda_0)\Delta \lambda^\prime - \Delta \lambda^{(k)} $
 
 
 Lastly, a Gibbs step provides a new $\gamma^{(k+1)} \sim \gamma | \lambda^{(k+1)}, \bm{y}$, see Equation \eqref{eq:GibbsStep}.
@@ -419,17 +420,6 @@ In comparisons the to run the MwG takes $\approx 0.7s$ for $N = 20000$ effective
 	\label{fig:ScatterPlotTT}
 \end{figure}
 
-\textcolor{red}{Error Analysis?}
-\subsubsection{Error due to approximation of f and g}
-Error due to approximatino (taylor f and linear g)
-Propagation error in $\ln{\pi(\lambda,\gamma|\bm{y})}$
-propagation error in $\pi(\lambda,\gamma|\bm{y})$
-3rd order taylor gives least error
-error lays in the tails of distribution and we do not see a difference in tails
-or ozone profiles
-
-Can reduce error approximating at the mode currently we could approximate at the man e.g. the mean since it is a skewed distribution
-
 
 \subsection{Ozone samples from the conditional posterior}
 \label{subsec:firstCond}
@@ -445,7 +435,7 @@ Note that we reject samples from the conditional posterior with negative ozone v
 \subsubsection{Randomize then optimize -- RTO}
 For the RTO method we start by drawing an independent hyper-parameter sample $ ( \delta, \gamma) \sim \pi(\delta, \gamma | \bm{y})$ from the samples of the MwG.
 Then we generate two independent Gaussian random variables $\bm{v}_1 \sim \mathcal{N}(\bm{0},\gamma  \bm{A}^T_L \bm{A}_L)$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \delta \bm{L})$.
-Here  can use Cholesky factorisation of $\bm{L}$ and the multiplication rule for normal distributions so that $\bm{v}_1 \sim \sqrt{\delta} \bm{L}_C \mathcal{N}(0,\bm{I})$ and $\bm{v}_2 \sim \sqrt{\gamma} \bm{A}_L^T \mathcal{N}(0,\bm{I})$.
+Here  can use Cholesky factorisation of $\bm{L} =\bm{L}_C\bm{L}^T_C $ and the multiplication rule for normal distributions so that $\bm{v}_1 \sim \sqrt{\gamma} \bm{A}_L^T \mathcal{N}(0,\bm{I})$ and $\bm{v}_2 \sim \sqrt{\delta} \bm{L}_C \mathcal{N}(0,\bm{I})$.
 Then we solve
 \begin{align}
 	\label{eq:FirstRTO}
@@ -482,7 +472,8 @@ We plot the mean and variance in Figure \ref{fig:O3Samp}.
 	\caption[Ozone samples of the conditional posterior.]{We draw samples from the conditional posterior distribution  $\pi(\bm{x}|\lambda,\gamma , \bm{y})$ after characterising the marginal posterior $\pi(\lambda,\gamma | \bm{y})$ through sampling or TT approximation using the linear forward map $\bm{A}_L$. Note that we reject samples with unphysical negative values and effectively treat the conditional posterior as a truncated multivariate normal distribution. We will use those samples to find the affine map $\bm{M}$, see section \ref{sec:affineMap}}
 	\label{fig:O3Samp}
 \end{figure}
-\textcolor{red}{Error analysis and figure and argue TT gridsize}
+
+
 \section{Approximate non-linear forward model with affine Map} 
 \label{sec:affineMap}
 Using an affine map to map in between the linear and non-linear forward map we can approximate the non-linear map and treat the inverse problem as a linear inverse problem.
@@ -777,6 +768,26 @@ Then we can either fit normal distribution to the marginals or draw samples from
 	\label{fig:PressPost}
 \end{figure}
 
+\section{Error analysis}
+In this section we try to estimate errors due to the approximations of functions within the here shown methodology.
+
+\subsubsection{Error due to approximation of f and g}
+When approximating the functions $f(\lambda)$ and $g(\lambda)$ we find that the 3rd order Taylor series of $f(\lambda)$ and a linear approximation of $g(\lambda)$ in log-space gives the smallest error.
+The maximum absolute error of $f(\lambda)$ is bound by $E_f = \underset{\lambda}{\text{arg max}\,} f^{(4)}(\lambda_0)/ 4! \, (\lambda - \lambda_{0} )^4$, the fourth order Taylor series and corresponds to an relative error of $\approx 20\%$.
+Since the maximum absolute error of the approximation $\underset{\lambda}{\text{arg max}\,}|\tilde{g}(\lambda) - g(\lambda) | \approx 1$ and corresponding to relative error of $0.3\%$. 
+We neglect the error in g and the maximum relative propagation error $\underset{\lambda, \gamma}{\text{arg max}\,} 0.5 \gamma  E_f / \log{\pi{(\lambda ,\gamma | \bm{y})}} $ is bound by $5\%$.
+
+When approximating the marginal posterior the maximum relative propagation error $\underset{\lambda , \gamma}{\text{arg max}\,}|\tilde{\pi}(\lambda,\gamma|\bm{y}) - \pi(\lambda,\gamma|\bm{y}) |/ |\pi(\lambda,\gamma|\bm{y})|$ is approximately $100\%$ at $\gamma_{\text{max}}$ and $\lambda_{\text{max}}$, which are the maximum sampled values and lay far away from regions with high probability.
+We consider negligible because the absolute error in this low probability region is $< 10^{-24} \approx 0$.
 
 
+Note that one can reduce the maximum errors when approximation $f(\lambda)$ at the mean of $\pi(\lambda,\gamma|\bm{y})$ as $\pi(\lambda | \bm{y})$ can be approximated with a skewed distribution, but we don't see noticeable differences in the conditional posterior $\pi(\bm{x}|\lambda,\gamma,\bm{y})$ when doing so and consider these errors as tolerable.
 
+\subsubsection{ErrorOn the number of sample bins and grid size for the tensor-train approximation}
+We bin the samples in 25 bins as the realtive error is less than $0.1\%$ which we consider good enough. See Fig.
+
+this is also the gridsize we choose for the TT
+Of course one coud fo much more precise but it is not worth tit time wise
+\textcolor{red}{Error analysis and figure and argue TT gridsize}
+
+%\subsubsection{Error due to Affine approximation of non-linear forward map}
