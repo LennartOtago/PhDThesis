@@ -5,7 +5,7 @@ In this chapter, we provide a brief introduction to the methods used in this the
 We begin by introducing the forward model in Section~\ref{sec:formodel}, which we use to simulate the data. Since the forward model is weakly non-linear, we employ an affine transformation, see Section~\ref{sec:affine}, to project the linear model onto the non-linear one, allowing us to treat the problem as a linear inverse problem.
 This enables the application of Bayesian inference in Section~\ref{sec:bayes}, where we formulate a hierarchical linear-Gaussian model to define and structure the posterior distribution.
 For comparison, we briefly present the Tikhonov regularization approach, see Section~\ref{sec:regularise}.
-In Section~\ref{sec:sampling}, we introduce Markov Chain Monte Carlo (MCMC) methods to sample from the posterior distribution.
+In Section~\ref{sec:sampling}, we introduce Markov Chain Monte Carlo (MCMC) methods to sample from the posterior distribution
 Finally, in Section~\ref{sec:tensortrain}, instead of sampling, we can approximate the posterior distribution using the tensor train (TT) format.
 
 
@@ -105,7 +105,7 @@ Therefore the unbiased \cite{roberts2004general} sample based Monte Carlo estima
 \end{align}
 for large enough $N$ (law of large numbers \cite[Chapter 17]{tweedie2009measprob}) is often used.
 Here, the samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
-Furthermore, the central limit theorem states that the samples mean $ \bm{\mu}^{(i)}_{samp} $, of independent samples sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converge in distribution to a normal distribution so that
+Furthermore, the central limit theorem states that the samples mean $ \bm{\mu}^{(i)}_{\text{samp}} $, of independent samples sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converge in distribution to a normal distribution so that
 \begin{align}
 	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
 \end{align}
@@ -113,6 +113,13 @@ and if $\sigma^2 < \infty$ the Monte-Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -
 
 
 \subsubsection{On the Monte-Carlo Error and Integrated Autocorrelation time}
+The error is for one markov chain $\mathcal{M}_i$
+\begin{align}
+	\sigma^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}}) - \bm{\mu}^{(i)} \Bigg)^2
+\end{align}
+\begin{align}
+	\sigma^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})]) = \frac{1}{N^2} \sum_{k=1}^{N} \rho_{k,s}
+\end{align}
 We need to define a correlation function why?
 \begin{align}
 	C(t) \equiv \langle x_s x_{s+t} - \mu \rangle
