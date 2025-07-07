@@ -105,39 +105,39 @@ Therefore the unbiased \cite{roberts2004general} sample based Monte Carlo estima
 \end{align}
 for large enough $N$ (law of large numbers \cite[Chapter 17]{tweedie2009measprob}) is often used.
 Here, the samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
+
+
 Furthermore, the central limit theorem states that the samples mean $ \bm{\mu}^{(i)}_{\text{samp}} $, of independent samples sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converge in distribution to a normal distribution so that
 \begin{align}
 	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
 \end{align}
 and if $\sigma^2 < \infty$ the Monte-Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bounded.
 
-
 \subsubsection{On the Monte-Carlo Error and Integrated Autocorrelation time}
-The error is for one markov chain $\mathcal{M}_i$
+Since we draw samples after each pther they are correalted adn we have to asses this coorelation in order to determine this effec on th e error or how efficnet sdampes chains are.
+The error of an Monte-Carlo estimate based on one Markov-Chain $\mathcal{M}_i$ is:
 \begin{align}
-	\sigma^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}}) - \bm{\mu}^{(i)} \Bigg)^2
+	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
 \end{align}
+We can expand this summation so that
 \begin{align}
-	\sigma^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})]) = \frac{1}{N^2} \sum_{k=1}^{N} \rho_{k,s}
+	(\sigma^{(i)})^2	= \frac{1}{N^2} \sum_{k,s=1}^{N} C(k-s)
 \end{align}
-We need to define a correlation function why?
+with the auto correlation coefficient $C(k-s) =  \big( h(\bm{x}^{(k)}_{\bm{\theta}}) - \bm{\mu}^{(i)} \big) \big(h(\bm{x}^{(s)}_{\bm{\theta}}) - \bm{\mu}^{(i)} \big)$ and define the sample auto correlation function
 \begin{align}
-	C(t) \equiv \langle x_s x_{s+t} - \mu \rangle
+	\frac{1}{N} \sum_{k,s=1}^{N}	C(k-s) \approx \sum_{t = - \infty }^{\infty} \rho(t)
 \end{align}
-
-where $C(0) = \text{var}(x)$
-The auto covariance function or auto correlation function is given as 
-
-The integrated autocorrelation time (IACT)
+with the normalised auto correlation coefficient $\rho(k-s) =  C(k-s)/ C(0)$ at lag k, where $C(0) = \text{var}(h(\bm{x}_{\bm{\theta}}) )$ for $k = s$.
+Then the an estimate for the monte carlo error is:
 \begin{align}
-	\tau_{\text{int}} = 1 + 2\sum_{k=1}^\infty \rho_k  ,
+	(\sigma^{(i)})^2 = \frac{\text{var}(h(\bm{x}_{\bm{\theta}}) )}{N^2} \sum_{k,s=1}^{N} \rho(k-s)  \approx  \frac{\text{var}(h(\bm{x}_{\bm{\theta}}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{	2\tau_{\text{int}} } = \text{var}(h(\bm{x}_{\bm{\theta}})) \frac{ 2 \tau_{\text{int}} }{N} \, ,
 \end{align}
-as defined in \cite{Sokal1997} provides a good estimate on how efficient a sampler is, where $\rho_k $ is the normalised autocorrelation at lag k.
-More specifically, the IACT gives an estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
-We calculate the IACT using the pyhton implementation of \cite{wolff2004monte} and double the output provided.
+where we define the integrated autocorrelation time (IACT) $\tau_{\text{int}}$ as in \cite{Sokal1997} and \cite{}, which provides a good estimate on how many steps the sampling algorithm needs to take to produce one independent sample.
+More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of on how efficient a sampler is.
+We calculate the IACT using the pyhton implementation of \cite{wolff2004monte}.
 
 
-Generating a representative sample set from the posterior distribution presents a significant challenge. This is also due to the strong correlations that often exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlatation}.
+Generating a representative sample sets quickly from the posterior distribution, often presents a significant challenge. This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlatation}.
 If $\bm{x}$ can not be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, i.e., $\bm{x}(\bm{\theta})$, it is beneficial to factorise the posterior distribution as
 \begin{align}
 	\pi(\bm{x}, \bm{\theta} |  \bm{y}) = \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \pi(\bm{\theta} |   \bm{y}),
@@ -234,8 +234,6 @@ The ergodicity theorem in~\cite{tan2016LecNot} states that, if a Markov chain $\
 In other words, if the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and is reversible (detailed balance condition~\cite{tan2016LecNot}), then it will converge to the desired target distribution $\pi(\bm{x}, \bm{\theta} |  \bm{y})$.
 In practice, one can inspect the trace $\pi(\bm{x}^{(k)}, \bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence and mixing properties of the chain to evaluate ergodicity.
 The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details.
-
-
 
 \subsection{Metropolis- within Gibbs sampling}
 As introduced in Section~\ref{subsec:MTC}, when using the MTC method we sample separately from $\pi(\bm{\theta} |  \bm{y})$ and $\pi(\bm{x} |  \bm{\theta}, \bm{y})$. To sample from $\pi(\bm{\theta} |  \bm{y})$, we use a Metropolis-within-Gibbs sampler as described in~\cite{fox2016fast}.
