@@ -1,112 +1,102 @@
 \the\columnwidth
 \chapter{Theoretical and Technical Background}
 \label{ch:background}
-In this chapter, we provide a brief introduction to the methods used in this thesis. We keep it as general as possible, as more specific details will be presented in the results Chapter~\ref{ch:res}.
-We begin by introducing the forward model in Section~\ref{sec:formodel}, which we use to simulate the data. Since the forward model is weakly non-linear, we employ an affine transformation, see Section~\ref{sec:affine}, to project the linear model onto the non-linear one, allowing us to treat the problem as a linear inverse problem.
-This enables the application of Bayesian inference in Section~\ref{sec:bayes}, where we formulate a hierarchical linear-Gaussian model to define and structure the posterior distribution.
-For comparison, we briefly present the Tikhonov regularization approach, see Section~\ref{sec:regularise}.
-In Section~\ref{sec:sampling}, we introduce Markov Chain Monte Carlo (MCMC) methods to sample from the posterior distribution
-Finally, in Section~\ref{sec:tensortrain}, instead of sampling, we can approximate the posterior distribution using the tensor train (TT) format.
+In this chapter, we provide a brief introductions and derivations to the methods used in this thesis as well as references for more details, non interested readers may skip this chapter and move on to the next one. We keep it as general as possible, as the expressions tailored towards specifically the forward map will be presented in the results Chapter~\ref{ch:res} but without derivations.
+We begin by introducing a general hierarchical Bayesian approach to a linear inverse problem.
+Then we provide some background information on affine maps and the Tikhonov regularisation method.
+Next, we provide a small introduction into Sampling methods, more specifically the essentials of Markov-Chain monte Carlo methods.
+Lastly, we explain how we approximate functions using a Tensor-Train (TT) approach, which enables us to calculate marginal from the posterior distribution cheaply.
 
 
 
 
 
 
-\section{Affine Map}
-\label{sec:affine}
-An affine map is any linear map between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin, see~\cite[Def. 2.3.1]{berger2009geometry}.
-In other words, an affine map does not need to map to the origin of the associated vector space or is a linear map on vector spaces including a translation, or in the words of my supervisor, C. F., an affine map is a Taylor series of first order.
-For more information on affine spaces and maps, we refer to the books \cite{berger2009geometry, katsumi1994affine}
-\begin{figure}[ht!]
-	\centering
-	\begin{tikzpicture}
-		\node[rectnode] at (2,-4) (NL)    {$W$};
-		\node[rectnode] at (-2,-4) (L)    {$V$};
-		\draw[<-, very thick] (NL.west) -- (L.east); 
-		\node[align=center] at (-5.5,-4) (f3) {linear forward model};
-		\node[align=center] at (5.5,-4) (f4) {non-linear forward model};
-		\node[align=center] at (0,-5) (f5) {$\bm{A}(\bm{x},  \bm{p},\bm{T}) \bm{x}  \approx \bm{M A}_L  \bm{x} = \bm{A x} $ };
-		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
-	\end{tikzpicture}
-	\caption[Schematics of the affine map]{This Figure shows the schematic representation of the affine map $\bm{M}$, which approximates the non-linear forward model from the linear forward model. Here, $V$ contains values produced by the linear forward model, and $W$ contains the corresponding values from the non-linear forward model. Both $V$ and $W$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $V$ onto their counterparts in the non-linear forward model space $W$.
-	}
-\end{figure}
-
-Consequently, we introduce an affine map $ \bm{M}:\bm{A}_L \bm{x} \rightarrow \bm{A}(\bm{x},  \bm{p},\bm{T}) \bm{x}$, which maps the linear forward model $\bm{A}_L \bm{x}$ onto the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T}) \bm{x}$.
-Then the non-linear forward model matrix is approximated by $\bm{A}(\bm{x},  \bm{p},\bm{T}) \approx \bm{M} \bm{A}_L$.
-In practise we generate two affine subspaces spaces $V = \big\{ \bm{A}(\bm{x}^{(1)}, \bm{p,T}), \dots ,\bm{A}(\bm{x}^{(m)}, \bm{p,T})\big\} $ and $W = \big\{ \bm{A}_L\bm{x}^{(1)}, \dots ,\bm{A}_L\bm{x}^{(m)}\big\}$ over the same field, with fixed $\bm{p,T}$ and find the mapping in between those.
-Here, the parameter $\bm{x}$ is distributed as $\big\{  \bm{x}^{(1)} , \dots, \bm{x}^{(m)} \big\} \sim \pi(\bm{x}|\bm{\theta},\bm{y})$, where the posterior distribution $\pi(\bm{x}|\bm{\theta},\bm{y})$ is conditioned on the hyper-parameters $\bm{\theta}$ and defined according to a Bayesian hierarchical model.
 
 
 \section{Bayesian Inference}
 \label{sec:bayes}
-In this section, we introduce the basics of Bayesian inference for an unknown parameter $\bm{x}$ given observed data
+\begin{figure}[ht!]
+	\centering
+	\begin{tikzpicture}
+		\node[roundnode2] at (0,3.5) (th)    {$\bm{\theta}$};
+		\node[roundnode2] at (0,1.5) (x)    {$\bm{x}$};
+		\node[roundnode2] at (0,-1.5) (u)    {$\Omega$};
+		\node[rectnode] at (0,-3.5) (y)    {$\bm{y}$};
+		
+		\draw[->, very thick] (th.south) -- (x.north); 
+		\draw[->, very thick, mydotted] (x.south) -- (u.north); 
+		\draw[->, very thick] (u.south) -- (y.north); 
+		\draw[->, very thick] (th) edge[bend right=60] (y);  
+		
+		\node[align=center] at (2.8,3.5) (tht) {$\sim \pi_{\bm{\theta}}(\cdot) $ hyper-parameters};
+		\node[align=center] at (2.4,1.5) (xt) {$\sim \pi_{\bm{x}}(\cdot|\bm{\theta}) $ parameters};
+		\node[align=center] at (2.5,0) (At) {$\Omega = \{\bm{Ax}\}$ "noise free data"};
+		\node[align=center] at (3,-1.5) (ut) {space of all measurables};
+		\node[align=center] at (2,-3.5) (yt) {$\sim \pi_{\bm{y}}(\cdot|\bm{\theta},\bm{x})$ data};
+		\node[align=center] at (-3,0) (nt) {noise};
+	\end{tikzpicture}
+	\caption[Bayesian Inference DAG]{The directed acyclic graph (DAG) for a linear inverse problem visualises statistical dependencies as solid line arrows and deterministic dependencies as dotted arrows.
+		The parameters $\bm{x}$ have some statistical dependency of those hyper-parameters $\bm{\theta}$, which are distributed as $\pi(\bm{\theta})$. Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is mapped onto the space of all measurables $\bm{u}=\bm{Ax}$ deterministically through the linear forward model $\bm{A}$.
+		From the space of all measurables we observe some data $\bm{y} = \bm{Ax} + \bm{\eta}$, statistically,  so that $\bm{y}\sim \pi_{\bm{y}}(\cdot|\bm{\theta},\bm{x})$ , with naturally some random noise $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$.
+		Since any observational process naturally involves random noise, we include this in the DAG and classify the noise variance as a hyper-parameter within $\bm{\theta}$ \cite{fox2016fast}.  
+		Other hyper-parameters, to which we assign a hyper-prior distribution $\pi(\bm{\theta})$, may influence the parameters $\bm{x}$ either statistically (indicated by solid arrows), as in Figure~\ref{fig:FirstDAG}, or deterministically (indicated by dashed arrows) if functional dependent on each other.
+		Here we can incorporate prior knowledge of $\bm{\theta}$ and the parameter $\bm{x}$ by defining $\pi(\bm{\theta})$ and the prior distribution $\pi(\bm{x}|\bm{\theta})$ according to their physical properties or functional dependences.
+		This is one of the great strength of Bayesian modelling compared to e.g. regularisation, see section \ref{sec:regularise}.
+		Then the parameter $\bm{x}$ is mapped deterministically through the forward model onto the space of all measurables $\Omega$. From this space, we statistically observe the actual data $\bm{y}$, which includes random (statistical) noise as mentioned above.
+		The distribution of the data conditioned on the  hyper-parameters $\bm{\theta}$ and the parameters $\bm{x}$ is called the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$, which includes information about the measurement process through the forward model.
+		Then given some observed data, we like to characterise the posterior distribution $\pi(\bm{\theta}, \bm{x}|\bm{y})$ of the underlying parameters and hyper-parameters by reversing the arrows in Figure~\ref{fig:FirstDAG}. }
+	\label{fig:FirstDAG}
+\end{figure}
+
+Assume we observe some data
 \begin{align}
 	\bm{y} = \bm{A} \bm{x} + \bm{\eta},
 	\label{eq:LinDat}
 \end{align}
-based on a linear forward model $\bm{A}$ and some additive noise $\bm{\eta}$.
-A more sophisticated Bayesian framework specifically applied to the previously introduced forward model and some simulated data will be developed in Section~\ref{sec:applBay}.
+based on a linear forward model $\bm{A}$, a unknown parameter $\bm{x}$ and some additive random noise $\bm{\eta}$.
+Naturally due to the noise we have some uncertainty which we include in the modelling process through the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$ as well as other relevant information about the measurement process.
+We read $\pi(\bm{y}|\bm{\theta},\bm{x})$ as the distribution over $\bm{y}$ conditioned on $\bm{x}$ and the hyper-parameter $\bm{\theta}$.
+Here $\bm{\theta}$ may account for multiple variables and is e.g. describing the distribution of the noise vector $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$ as well as the prior distribution $\pi(\bm{x}|\bm{\theta})$, which accounts for physical properties or functional dependences of $\bm{x}$.
+Consequently we define a hyper-prior distribution $\pi(\bm{\theta})$, where $\pi(\bm{x}, \bm{\theta}) = \pi(\bm{x}|\bm{\theta}) \pi(\bm{\theta}) $.
+Choosing these prior distribution is a delicate topic as it shall not affect the posterior distribution 
+ \begin{align}
+ 	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, ,
+ \end{align}
+which according to Bayes theorem gives us a distribution of $\bm{x}$ and $\bm{\theta}$ given (conditioned) on some data.
+We can visualise theses hierarchically ordered correlation structure between parameters as well as how distributions progress through a measurement process, using a directed acyclic graph (DAG), see Figure~\ref{fig:FirstDAG}.
 
-
-We can visualise the correlation structure between parameters as well as how distributions progress in a measurement process, using a hierarchically ordered directed acyclic graph (DAG), see Figure~\ref{fig:FirstDAG}.
-Since any observational process naturally involves random noise, we include this in the DAG and classify the noise variance as a hyper-parameter within $\bm{\theta}$ \cite{fox2016fast}.  
-Other hyper-parameters, to which we assign a hyper-prior distribution $\pi(\bm{\theta})$, may influence the parameters $\bm{x}$ either statistically (indicated by solid arrows), as in Figure~\ref{fig:FirstDAG}, or deterministically (indicated by dashed arrows) if functional dependent on each other.
-Here we can incorporate prior knowledge of $\bm{\theta}$ and the parameter $\bm{x}$ by defining $\pi(\bm{\theta})$ and the prior distribution $\pi(\bm{x}|\bm{\theta})$ according to their physical properties or functional dependences.
-This is one of the great strength of Bayesian modelling compared to e.g. regularisation, see section \ref{sec:regularise}.
-Then the parameter $\bm{x}$ is mapped deterministically through the forward model onto the space of all measurables $\Omega$. From this space, we statistically observe the actual data $\bm{y}$, which includes random (statistical) noise as mentioned above.
-The distribution of the data conditioned on the  hyper-parameters $\bm{\theta}$ and the parameters $\bm{x}$ is called the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$, which includes information about the measurement process through the forward model.
-Then given some observed data, we like to characterise the posterior distribution $\pi(\bm{\theta}, \bm{x}|\bm{y})$ of the underlying parameters and hyper-parameters by reversing the arrows in Figure~\ref{fig:FirstDAG}. 
-\begin{figure}[ht!]
-	\centering
-	\begin{tikzpicture}
-	\node[roundnode2] at (0,3.5) (th)    {$\bm{\theta}$};
-	\node[roundnode2] at (0,1.5) (x)    {$\bm{x}$};
-	\node[roundnode2] at (0,-1.5) (u)    {$\Omega$};
-	\node[rectnode] at (0,-3.5) (y)    {$\bm{y}$};
-	
-	\draw[->, very thick] (th.south) -- (x.north); 
-	\draw[->, very thick, mydotted] (x.south) -- (u.north); 
-	\draw[->, very thick] (u.south) -- (y.north); 
-	\draw[->, very thick] (th) edge[bend right=60] (y);  
-	
-	\node[align=center] at (2.8,3.5) (tht) {$\sim \pi_{\bm{\theta}}(\cdot) $ hyper-parameters};
-	\node[align=center] at (2.4,1.5) (xt) {$\sim \pi_{\bm{x}}(\cdot|\bm{\theta}) $ parameters};
-	\node[align=center] at (2.5,0) (At) {$\Omega = \{\bm{Ax}\}$ "noise free data"};
-	\node[align=center] at (3,-1.5) (ut) {space of all measurables};
-	\node[align=center] at (2,-3.5) (yt) {$\sim \pi_{\bm{y}}(\cdot|\bm{\theta},\bm{x})$ data};
-	\node[align=center] at (-3,0) (nt) {noise};
-\end{tikzpicture}
-	\caption[Bayesian Inference DAG]{The directed acyclic graph (DAG) for a linear inverse problem visualises statistical dependencies as solid line arrows and deterministic dependencies as dotted arrows.
-	The parameters $\bm{x}$ have some statistical dependency of those hyper-parameters $\bm{\theta}$, which are distributed as $\pi(\bm{\theta})$. Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is mapped onto the space of all measurables $\bm{u}=\bm{Ax}$ deterministically through the linear forward model $\bm{A}$.
-	From the space of all measurables we observe some data $\bm{y} = \bm{Ax} + \bm{\eta}$, statistically,  so that $\bm{y}\sim \pi_{\bm{y}}(\cdot|\bm{\theta},\bm{x})$ , with naturally some random noise $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$.}
-	\label{fig:FirstDAG}
-\end{figure}
-
-The posterior distribution, our function of interest, is defined by Bayes' theorem
-\begin{align}
-	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \, ,
-\end{align}
-with the prior distribution $\pi(\bm{x}, \bm{\theta}) = \pi(\bm{x}| \bm{\theta}) \pi(\bm{\theta}) $ and the normalising constant $\pi(\bm{y})$.
-If the normalising constant is finite and non-zero we approximate the posterior distribution
-\begin{align}
-	\pi(\bm{x},\bm{\theta}|\bm{y}) \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, .
-\end{align}
-The expectation of any a function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}$ may depend on $\bm{\theta}$, is described as 
+Obviously we are interested in the posterior distribution as the expectation of any a function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}$ may depend on $\bm{\theta}$, is described as 
 \begin{align}
 	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] =  \underbrace{\int \int   h(\bm{x}_{\bm{\theta}}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}}_{\bm{\mu}_{\text{int}}}   \label{eq:expPos} \, ,
 \end{align}
 which may be a high dimensional integral and computationally not feasible to solve.
-Therefore the unbiased \cite{roberts2004general} sample based Monte Carlo estimate
+Therefore the unbiased sample based Monte Carlo estimate \cite{roberts2004general}
 \begin{align}
 	\label{eq:sampMean}
 	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] \approx \underbrace{ \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}})  }_{\bm{\mu}_{\text{samp}}} \, ,
 \end{align}
 for large enough $N$ (law of large numbers \cite[Chapter 17]{tweedie2009measprob}) is often used.
 Here, the samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
-
-
+Generating a representative sample sets quickly from the posterior distribution, often presents a significant challenge. This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlatation}.
+If $\bm{x}$ can not be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, i.e., $\bm{x}(\bm{\theta})$, it is beneficial to factorise the posterior distribution as
+\begin{align}
+	\pi(\bm{x}, \bm{\theta} |  \bm{y}) = \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \pi(\bm{\theta} |   \bm{y}),
+\end{align}
+into the conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the latent field $\bm{x}$ and the marginal posterior 
+\begin{align}
+	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) }
+\end{align}
+over the hyper-parameters $\bm{\theta}$.
+This approach, known as the marginal and then conditional (MTC) method, is particularly advantageous when $\bm{x}$ is high-dimensional (e.g., $\bm{x} \in \mathbb{R}^n$ with $n \geq 45$), while $\bm{\theta}$ is low-dimensional (e.g., two-dimensional).
+Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovariance}, Eq.~\eqref{eq:expPos} becomes
+\begin{align}
+	\mathbb{E}_{\bm{x} |  \bm{y}} [h(\bm{x})] 
+	= \mathbb{E}_{\bm{\theta} |  \bm{y}} \left[ \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} [h(\bm{x}_{\bm{\theta}})] \right] 
+	= \int \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right] \, \pi(\bm{\theta} |  \bm{y}) \, \mathrm{d}\bm{\theta},
+	\label{eq:MargExpPos}
+\end{align}
+where, in the case of a linear-Gaussian Bayesian hierarchical model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right]$ are well defined see Result chapter.
 Furthermore, the central limit theorem states that the samples mean $ \bm{\mu}^{(i)}_{\text{samp}} $, of independent samples sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converge in distribution to a normal distribution so that
 \begin{align}
 	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
@@ -136,94 +126,6 @@ Then the an estimate for the Monte-Carlo error is:
 where we define the integrated autocorrelation time (IACT) $\tau_{\text{int}}$ as in \cite{Sokal1997} and \cite{}, which provides a good estimate on how many steps the sampling algorithm needs to take to produce one independent sample.
 More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of on how efficient a sampler is.
 We calculate the IACT using the pyhton implementation of \cite{wolff2004monte}.
-
-
-Generating a representative sample sets quickly from the posterior distribution, often presents a significant challenge. This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlatation}.
-If $\bm{x}$ can not be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, i.e., $\bm{x}(\bm{\theta})$, it is beneficial to factorise the posterior distribution as
-\begin{align}
-	\pi(\bm{x}, \bm{\theta} |  \bm{y}) = \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \pi(\bm{\theta} |   \bm{y}),
-\end{align}
-into the conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the latent field $\bm{x}$ and the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ over the hyper-parameters $\bm{\theta}$.
-This approach, known as the marginal and then conditional (MTC) method, is particularly advantageous when $\bm{x}$ is high-dimensional (e.g., $\bm{x} \in \mathbb{R}^n$ with $n = 45$), while $\bm{\theta}$ is low-dimensional (e.g., two-dimensional) and one can deterministically work out the marginal distribution.
-Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovariance}, Eq.~\eqref{eq:expPos} becomes
-\begin{align}
-	\mathbb{E}_{\bm{x} |  \bm{y}} [h(\bm{x})] 
-	= \mathbb{E}_{\bm{\theta} |  \bm{y}} \left[ \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} [h(\bm{x}_{\bm{\theta}})] \right] 
-	= \int \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right] \, \pi(\bm{\theta} |  \bm{y}) \, \mathrm{d}\bm{\theta},
-	\label{eq:MargExpPos}
-\end{align}
-where, in the case of a linear-Gaussian Bayesian hierarchical model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right]$ are well defined.
-
-Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \bm{\Sigma}(\bm{\theta}))$, we define a linear-Gaussian Bayesian hierarchical model~\cite{fox2016fast}
-\begin{subequations}
-	\begin{align}
-		\bm{y} |  \bm{x}, \bm{\theta} &\sim \mathcal{N}(\bm{A} \bm{x}, \bm{\Sigma}(\bm{\theta})) \label{eq:likelihood} \\
-		\bm{x} |  \bm{\theta} &\sim \mathcal{N}(\bm{\mu}, \bm{Q}^{-1}(\bm{\theta})) \label{eq:xPrior} \\
-		\bm{\theta} &\sim \pi(\bm{\theta}) \label{eq:gammaPrior},
-	\end{align}
-	\label{eq:BayMode}
-\end{subequations}
-with a normally distributed likelihood $\pi(\bm{y} |  \bm{x}, \bm{\theta})$ \textcolor{red}{Why? other likelihoods?} and prior distributions $\pi(\bm{x} |  \bm{\theta})$ and $\pi(\bm{\theta})$, the noise covariance matrix $\bm{\Sigma}(\bm{\theta})$, the prior precision matrix $\bm{Q}(\bm{\theta})$ and the prior mean $\bm{\mu}$.
-This model enables efficient factorisation of the posterior distribution and application of the MTC method.
-
-
-
-\subsection{Marginal and conditional posterior distribution}
-\label{subsec:MTC}
-For the linear-Gaussian Bayesian hierarchical model specified in Eq.~\ref{eq:BayMode}, the marginal posterior distribution over the hyper-parameters is given by
-\begin{align}
-	\pi(\bm{\theta} |  \bm{y}) &= \int \pi(\bm{x}, \bm{\theta} | \bm{y}) \, \mathrm{d} \bm{x} \\ 
-	\label{eq:condHyper}
-	&\propto \sqrt{ \frac{ \det( \bm{\Sigma}^{-1} ) \,  \det( \bm{Q} ) }{\det( \bm{Q} + \bm{A}^T \bm{\Sigma}^{-1} \bm{A} ) } } \times \exp \left[ - \frac{1}{2}(\bm{y} - \bm{A} \bm{\mu})^T \bm{Q}_{\bm{\theta |  y}} (\bm{y} - \bm{A} \bm{\mu}) \right] \pi(\bm{\theta}) \, ,
-\end{align}
-with
-\begin{align}
-	\bm{Q}_{\bm{\theta |  y}} = \bm{\Sigma}^{-1} - \bm{\Sigma}^{-1} \bm{A} \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} \bm{A}^T \bm{\Sigma}^{-1} \, ,
-\end{align}
-see~\cite[Lemma 2]{fox2016fast}. 
-Conditioned on the hyper-parameters $\bm{\theta}$, we can draw samples from the normal conditional posterior distribution
-\begin{align}
-	\bm{x} |  \bm{\theta}, \bm{y} \sim \mathcal{N} \Big(
-	\underbrace{\bm{\mu} + \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} \bm{A}^T \bm{\Sigma}^{-1} (\bm{y} - \bm{A} \bm{\mu})}_{\bm{\mu}_{\bm{x} |  \bm{\theta}, \bm{y}}},
-	\underbrace{ \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} }_{\bm{\Sigma}_{\bm{x} |  \bm{y}, \bm{\theta}}}
-	\Big) \, ,
-\end{align}
-using the Randomise-then-Optimise (RTO) method (see Section~\ref{subsec:RTO}), or compute weighted expectations, as in Eq.~\ref{eq:MargExpPos}, of the conditional mean and covariance matrix, where the weights are given by $\pi(\bm{\theta} | \bm{y})$. 
-Note that both the noise covariance $\bm{\Sigma} = \bm{\Sigma}(\bm{\theta})$ and the prior precision matrix $\bm{Q} = \bm{Q}(\bm{\theta})$ depend on the hyper-parameters $\bm{\theta}$.
-
-\section{Regularisation}
-\label{sec:regularise}
-Another method for obtaining a solution to the linear inverse problem in Eq.~\ref{eq:LinDat} is regularisation. In this approach, we seek a solution $\bm{x}_{\lambda}$ that minimises both the data misfit norm and a regularisation semi-norm, as described in~\cite{fox2016fast}. Here we focus on a regularisation semi-norm for the case of Tikhonov regularisation~\cite{kaipio2005statinv, tan2016LecNot}, which is closest to a linear-Gaussian hierarchical Bayesian model, as introduced in Eq.~\ref{eq:BayMode}.
-
-Given a parameter vector $\bm{x}$, a linear forward model matrix $\bm{A}$, and data $\bm{y}$, the data misfit norm
-\begin{align}
-	\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert
-\end{align}
-quantifies how well the noise-free data  $\bm{A}\bm{x}$ matches the observed data.
-The regularisation semi-norm
-\begin{align}
-	\lambda \left\lVert \bm{T} \bm{x} \right\rVert
-\end{align}
-penalises the solution according to the regularisation operator $\bm{T}$ and the regularisation parameter $\lambda > 0$.
-For a fixed $\lambda$, the regularised solution
-\begin{align}
-	\bm{x}_{\lambda} = \underset{\bm{x}}{\mathrm{arg\,min}} \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2 + \lambda \left\lVert \bm{T} \bm{x} \right\rVert^2
-\end{align}
-is obtained by taking the derivative with respect to $\bm{x}$ of the objective function:
-\begin{align}
-	& & \nabla_{\bm{x}} \left\{ (\bm{y} - \bm{A} \bm{x})^T (\bm{y} - \bm{A} \bm{x}) + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
-	&\iff & \nabla_{\bm{x}} \left\{ \bm{y}^T \bm{y} + \bm{x}^T \bm{A}^T \bm{A} \bm{x} - 2 \bm{y}^T \bm{A} \bm{x} + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
-	&\iff & 2 \bm{A}^T \bm{A} \bm{x} - 2 \bm{A}^T \bm{y} + 2 \lambda \bm{T}^T \bm{T} \bm{x} &= 0,
-\end{align}
-or equivalently the "regularised normal equations" $\bm{A}^T \bm{y} = \bm{A}^T \bm{A} \bm{x} + \lambda \bm{T}^T \bm{T} \bm{x}$ \cite{Hansen2001LCurve}.
-Solving this equation yields the regularised solution
-\begin{align}
-	\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L})^{-1} \bm{A}^T \bm{y} \, , \label{eq:regSol}
-\end{align}
-where we define $\bm{L} := \bm{T}^T \bm{T}$, which typically represents a discrete matrix approximation of a differential operator choice~\cite{tan2016LecNot}.
-
-In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation norm. The optimal value of $\lambda$ is often chosen as the point of maximum curvature on the so-called L-curve~\cite{hansen1993use}, which we plot in Section~\ref{sec:applBay}.
-
 
 
 \section{Sampling Methods}
@@ -275,42 +177,42 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 \end{algorithm}
 
 
-\subsection{Draw a sample from a multivariate normal distribution}
-\label{subsec:RTO}
-As part of the MTC scheme, we only draw samples from the conditional distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$. For linear-Gaussian Bayesian hierarchical models, samples from the multivariate normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ can be efficiently generated using the Randomise-then-Optimise (RTO) method~\cite{bardsley2012mcmc}.
-
-The full conditional distribution can be rewritten as
-\begin{align}
-	\pi(\bm{x} |  \bm{y}, \bm{\theta}) &\propto \pi(\bm{y} |  \bm{x}, \bm{\theta}) \, \pi(\bm{x} |  \bm{\theta}) \\
-	&= \exp \left( -\left\lVert \hat{\bm{A}} \bm{x} - \hat{\bm{y}} \right\rVert^2 \right),
-\end{align}
-where
-\begin{align}
-	\label{eq:minimizer}
-	\hat{\bm{A}} = 
-	\begin{bmatrix}
-		\bm{\Sigma}^{-1/2}(\bm{\theta}) \bm{A} \\
-		\bm{Q}^{1/2}(\bm{\theta})
-	\end{bmatrix}, \quad 
-	\hat{\bm{y}} = 
-	\begin{bmatrix}
-		\bm{\Sigma}^{-1/2}(\bm{\theta}) \bm{y} \\
-		\bm{Q}^{1/2}(\bm{\theta}) \bm{\mu}
-	\end{bmatrix} \quad \text{\cite{bardsley2014randomize}}.
-\end{align}
-A sample $\bm{x}_i $ can be computed by minimising the following equation with respect to $\hat{\bm{x}}$ :
-\begin{align}
-	\bm{x}_i = \arg \min_{\hat{\bm{x}}} \lVert \hat{\bm{A}} \hat{\bm{x}} - ( \hat{\bm{y}} + \bm{b} ) \rVert^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
-\end{align}
-where we add a randomised perturbation $\bm{b}$.
-Similar to Section~\ref{sec:regularise}, this expression can be rewritten as
-\begin{align}
-	\label{eq:RTO}
-	\left( \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A} + \bm{Q}(\bm{\theta}) \right) \bm{x}_i = \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{y} + \bm{Q}(\bm{\theta}) \bm{\mu} + \bm{v}_1 + \bm{v}_2,
-\end{align}
-where the term $-\hat{\bm{A}}^T \bm{b}$ is decomposed as $\bm{v}_1 + \bm{v}_2$, with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}(\bm{\theta}))$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
-
-If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic, and the conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y})$ is also ergodic~\cite{acosta2014markov}.
+%\subsection{Draw a sample from a multivariate normal distribution}
+%\label{subsec:RTO}
+%As part of the MTC scheme, we only draw samples from the conditional distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$. For linear-Gaussian Bayesian hierarchical models, samples from the multivariate normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ can be efficiently generated using the Randomise-then-Optimise (RTO) method~\cite{bardsley2012mcmc}.
+%
+%The full conditional distribution can be rewritten as
+%\begin{align}
+%	\pi(\bm{x} |  \bm{y}, \bm{\theta}) &\propto \pi(\bm{y} |  \bm{x}, \bm{\theta}) \, \pi(\bm{x} |  \bm{\theta}) \\
+%	&= \exp \left( -\left\lVert \hat{\bm{A}} \bm{x} - \hat{\bm{y}} \right\rVert^2 \right),
+%\end{align}
+%where
+%\begin{align}
+%	\label{eq:minimizer}
+%	\hat{\bm{A}} = 
+%	\begin{bmatrix}
+%		\bm{\Sigma}^{-1/2}(\bm{\theta}) \bm{A} \\
+%		\bm{Q}^{1/2}(\bm{\theta})
+%	\end{bmatrix}, \quad 
+%	\hat{\bm{y}} = 
+%	\begin{bmatrix}
+%		\bm{\Sigma}^{-1/2}(\bm{\theta}) \bm{y} \\
+%		\bm{Q}^{1/2}(\bm{\theta}) \bm{\mu}
+%	\end{bmatrix} \quad \text{\cite{bardsley2014randomize}}.
+%\end{align}
+%A sample $\bm{x}_i $ can be computed by minimising the following equation with respect to $\hat{\bm{x}}$ :
+%\begin{align}
+%	\bm{x}_i = \arg \min_{\hat{\bm{x}}} \lVert \hat{\bm{A}} \hat{\bm{x}} - ( \hat{\bm{y}} + \bm{b} ) \rVert^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
+%\end{align}
+%where we add a randomised perturbation $\bm{b}$.
+%Similar to Section~\ref{sec:regularise}, this expression can be rewritten as
+%\begin{align}
+%	\label{eq:RTO}
+%	\left( \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A} + \bm{Q}(\bm{\theta}) \right) \bm{x}_i = \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{y} + \bm{Q}(\bm{\theta}) \bm{\mu} + \bm{v}_1 + \bm{v}_2,
+%\end{align}
+%where the term $-\hat{\bm{A}}^T \bm{b}$ is decomposed as $\bm{v}_1 + \bm{v}_2$, with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}(\bm{\theta}))$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
+%
+%If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic, and the conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y})$ is also ergodic~\cite{acosta2014markov}.
 
 \subsection{t-walk sampler as black box}
 If the parameters $\bm{x}$ are functionally dependent on the hyper-parameters $\bm{\theta}$, i.e., $\bm{x} = \bm{x}(\bm{\theta})$, we can sample directly from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the t-walk algorithm by Christen and Fox~\cite{christen2010general}. 
@@ -531,4 +433,108 @@ Note that we calculate the normalisation numerically within the process of findi
 %\section{posterior pressure and temperature}
 %\subsection{sampling vs TT}
 %
+
+
+\section{Affine Map}
+\label{sec:affine}
+The problem we deal with is weaklt non linear so we approxiate the non linear forward map with an affine map.
+And we use a deterministic method to calulute the affine map, obvoisulye one can also determine this map using other e.g. machine learing methods.
+
+
+
+An affine map is any linear map between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin, see~\cite[Def. 2.3.1]{berger2009geometry}.
+In other words, an affine map does not need to map to the origin of the associated vector space or is a linear map on vector spaces including a translation, or in the words of my supervisor, C. F., an affine map is a Taylor series of first order.
+For more information on affine spaces and maps, we refer to the books \cite{berger2009geometry, katsumi1994affine}
+\begin{figure}[ht!]
+	\centering
+	\begin{tikzpicture}
+		\node[rectnode] at (2,-4) (NL)    {$W$};
+		\node[rectnode] at (-2,-4) (L)    {$V$};
+		\draw[<-, very thick] (NL.west) -- (L.east); 
+		\node[align=center] at (-5.5,-4) (f3) {linear forward model};
+		\node[align=center] at (5.5,-4) (f4) {non-linear forward model};
+		\node[align=center] at (0,-5) (f5) {$\bm{A}(\bm{x}) \bm{x}  \approx \bm{M A}_L  \bm{x} = \bm{A x} $ };
+		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
+	\end{tikzpicture}
+	\caption[Schematics of the affine map]{This Figure shows the schematic representation of the affine map $\bm{M}$, which approximates the non-linear forward model from the linear forward model. Here, $V$ contains values produced by the linear forward model, and $W$ contains the corresponding values from the non-linear forward model. Both $V$ and $W$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $V$ onto their counterparts in the non-linear forward model space $W$.
+	}
+\end{figure}
+
+Consequently, we introduce an affine map $ \bm{M}:\bm{A}_L \bm{x} \rightarrow \bm{A}_{NL}\bm{x}$, which maps the linear forward model $\bm{A}_L \bm{x}$ onto the non-linear forward model $ \bm{A}_{NL} \bm{x} = \bm{A}(\bm{x})\bm{x} $.
+Then the non-linear forward model matrix is approximated by $\bm{A}_{NL} \approx \bm{M} \bm{A}_L$.
+In practise we generate two affine subspaces spaces $V = \big\{ \bm{A}_{NL}\bm{x}^{(1)}, \dots ,\bm{A}_{NL}\bm{x}^{(m)}, \big\} $ and $W = \big\{ \bm{A}_L\bm{x}^{(1)}, \dots ,\bm{A}_L\bm{x}^{(m)}\big\}$ over the same field, and find the mapping in between those.
+Here, the parameter $\bm{x}$ is distributed as $\big\{  \bm{x}^{(1)} , \dots, \bm{x}^{(m)} \big\} \sim \pi(\bm{x}|\bm{\theta},\bm{y})$, where the posterior distribution $\pi(\bm{x}|\bm{\theta},\bm{y})$ is conditioned on the hyper-parameters $\bm{\theta}$ and defined according to a Bayesian hierarchical model.
+\textcolor{red}{weakly non linear}
+
+With the samples $\{\bm{x}^{(1)} ,\dots, \bm{x}^{(m)}\}\sim \pi(\bm{x}|\bm{\theta}, \bm{y}) $ from the conditional posterior we generate two affine subspaces
+\begin{align}
+	\bm{V} = \begin{bmatrix}
+		\vert&   &  \vert & & \vert \\
+		\bm{A}_{NL}\bm{x}^{(1)} &  \cdots& \bm{A}_{NL}\bm{x}^{(j)} &  \cdots & \bm{A}_{NL} \bm{x}^{(m)}  \\
+		\vert&   &  \vert & & \vert 
+	\end{bmatrix} = 
+	\begin{bmatrix}
+		\rule[.5ex]{1em}{0.4pt} & v_1 &	\rule[.25ex]{1em}{0.4pt}\\
+		&\vdots  & \\
+		\rule[.5ex]{1em}{0.4pt} &v_j &	\rule[.25ex]{1em}{0.4pt}\\
+		&\vdots  & \\
+		\rule[.5ex]{1em}{0.4pt}& v_m&	\rule[.25ex]{1em}{0.4pt}
+	\end{bmatrix} \, ,
+\end{align} 
+using the non-linear forward model, and 
+\begin{align}
+	\bm{W} = \begin{bmatrix}
+		\vert&   &  \vert & & \vert \\
+		\bm{A}_{L} \bm{x}^{(1)} &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
+		\vert&   &  \vert & & \vert 
+	\end{bmatrix}
+\end{align}
+based on the linear forward model, which are matrices in $\mathbb{R}^{m \times m}$.
+To find the affine map \begin{align}
+	\bm{M} = \begin{bmatrix}
+		\text{---} & r_0 &   \text{---}  \\
+		&  \vdots  & \\
+		\text{---}& r_j &  \text{---} \\
+		&  \vdots  & \\
+		\text{---} & r_m &   \text{---}
+	\end{bmatrix} \, \in \mathbb{R}^{m \times m} ,
+\end{align}
+\begin{align}
+	v_j = r_j \bm{W}
+\end{align}
+where $r_j$ is the j-th row of $\bm{M}$.
+
+\section{Regularisation}
+\label{sec:regularise}
+\textcolor{red}{nosie uncertanty}
+Another method for obtaining a solution to the linear inverse problem in Eq.~\ref{eq:LinDat} is regularisation. In this approach, we seek a solution $\bm{x}_{\lambda}$ that minimises both the data misfit norm and a regularisation semi-norm, as described in~\cite{fox2016fast}. Here we focus on a regularisation semi-norm for the case of Tikhonov regularisation~\cite{kaipio2005statinv, tan2016LecNot}, which is closest to a linear-Gaussian hierarchical Bayesian model, as introduced in Eq.~\ref{eq:BayMode}.
+
+Given a parameter vector $\bm{x}$, a linear forward model matrix $\bm{A}$, and data $\bm{y}$, the data misfit norm
+\begin{align}
+	\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert
+\end{align}
+quantifies how well the noise-free data  $\bm{A}\bm{x}$ matches the observed data.
+The regularisation semi-norm
+\begin{align}
+	\lambda \left\lVert \bm{T} \bm{x} \right\rVert
+\end{align}
+penalises the solution according to the regularisation operator $\bm{T}$ and the regularisation parameter $\lambda > 0$.
+For a fixed $\lambda$, the regularised solution
+\begin{align}
+	\bm{x}_{\lambda} = \underset{\bm{x}}{\mathrm{arg\,min}} \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2 + \lambda \left\lVert \bm{T} \bm{x} \right\rVert^2
+\end{align}
+is obtained by taking the derivative with respect to $\bm{x}$ of the objective function:
+\begin{align}
+	& & \nabla_{\bm{x}} \left\{ (\bm{y} - \bm{A} \bm{x})^T (\bm{y} - \bm{A} \bm{x}) + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
+	&\iff & \nabla_{\bm{x}} \left\{ \bm{y}^T \bm{y} + \bm{x}^T \bm{A}^T \bm{A} \bm{x} - 2 \bm{y}^T \bm{A} \bm{x} + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
+	&\iff & 2 \bm{A}^T \bm{A} \bm{x} - 2 \bm{A}^T \bm{y} + 2 \lambda \bm{T}^T \bm{T} \bm{x} &= 0,
+\end{align}
+or equivalently the "regularised normal equations" $\bm{A}^T \bm{y} = \bm{A}^T \bm{A} \bm{x} + \lambda \bm{T}^T \bm{T} \bm{x}$ \cite{Hansen2001LCurve}.
+Solving this equation yields the regularised solution
+\begin{align}
+	\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L})^{-1} \bm{A}^T \bm{y} \, , \label{eq:regSol}
+\end{align}
+where we define $\bm{L} := \bm{T}^T \bm{T}$, which typically represents a discrete matrix approximation of a differential operator choice~\cite{tan2016LecNot}.
+
+In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation norm. The optimal value of $\lambda$ is often chosen as the point of maximum curvature on the so-called L-curve~\cite{hansen1993use}, which we plot in Section~\ref{sec:applBay}.
 

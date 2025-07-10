@@ -105,27 +105,50 @@ Then we can already see the correlation between pressure and temperature since i
 		\node[roundnode2] at (3.25,8) (ct)    {$T_0$};
 		\node[roundnode2] at (4.25,8) (at)    {$\bm{a}$};
 		
+		\node[roundnode2] at (0.25,10) (b1hyp)    {$\bm{\theta}_{b}$};
+		\node[roundnode2] at (-2.5,10) (h1hyp)    {$\bm{\theta}_{h_{0}}$};
+		\node[roundnode2] at (-1,10) (p0hyp)    {$\bm{\theta}_{p_{0}}$};
+		\node[roundnode2] at (2,10) (hthyp)    {$\bm{\theta}_{\bm{h}}$};
+		\node[roundnode2] at (3.25,10) (cthyp)    {$\bm{\theta}_{T_{0}}$};
+		\node[roundnode2] at (4.5,10) (athyp)    {$\bm{\theta}_{\bm{a}}$};
+		
+		\node[roundnode2] at (-7.75,10) (shyp)    {$\bm{\theta}_{\gamma}$};
+		\node[roundnode2] at (-6,10) (dhyp)    {$\bm{\theta}_{\delta}$};
+		
 		%Lines
-		\draw[->, very thick] (S.south east) -- (e.north west);
-		\draw[->, mydotted, very thick] (s.south east) -- (S.north west);
-		\draw[->, very thick] (u.south) -- (y.north);
-		\draw[->, mydotted, very thick] (A.south) -- (u.north);
-		\draw[->, mydotted,  very thick] (x.south east) -- (A.west);
-		\draw[->, mydotted, very thick] (p.south east) -- (pt.north west);
-		\draw[->, mydotted, very thick] (t.south west) -- (pt.north east);
-		\draw[->, mydotted, very thick] (pt.south west) -- (A.east);
-		\draw[->, mydotted, very thick] (h1.south) -- (p.north west);
-		\draw[->, mydotted, very thick] (p0.south) -- (p.north);
-		\draw[->, mydotted, very thick] (b1.south) -- (p.north east); 
+
+		
+		\draw[->, very thick] (S) -- (e);
+		\draw[->, mydotted, very thick] (s) -- (S);
+		\draw[->, very thick] (u) -- (y);
+		\draw[->, mydotted, very thick] (A) -- (u);
+		\draw[->, mydotted,  very thick] (x) -- (A.west);
+		\draw[->, mydotted, very thick] (p) -- (pt);
+		\draw[->, mydotted, very thick] (t) -- (pt);
+		\draw[->, mydotted, very thick] (pt) -- (A.east);
+		\draw[->, mydotted, very thick] (h1) -- (p);
+		\draw[->, mydotted, very thick] (p0) -- (p);
+		\draw[->, mydotted, very thick] (b1) -- (p); 
 		%\draw[->, very thick] (b2.south) -- (p.east); 
-		\draw[->, mydotted, very thick] (d.south east) -- (Q.north west); 
-		\draw[->, mydotted, very thick] (e.south east) -- (y.west); 
+		\draw[->, mydotted, very thick] (d) -- (Q); 
+		\draw[->, mydotted, very thick] (e) -- (y); 
 		
 		\draw[->, very thick] (Q.south east) -- (x.north west); 
 		\draw[->, mydotted, very thick] (ht.south) -- (t.north west);
 		\draw[->, mydotted, very thick] (ct.south) -- (t.north);
 		\draw[->, mydotted, very thick] (at.south) -- (t.north east);
-		%\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
+		
+		
+		\draw[->, very thick] (b1hyp) -- (b1);
+		\draw[->, very thick] (h1hyp) -- (h1);
+		\draw[->, very thick] (p0hyp) -- (p0);
+		\draw[->, very thick] (hthyp) -- (ht);
+		\draw[->, very thick] (cthyp) -- (ct);
+		\draw[->, very thick] (athyp) -- (at);
+		\draw[->, very thick] (shyp) -- (s);
+		\draw[->, very thick] (dhyp) -- (d);
+		
+		
 	\end{tikzpicture} 
 \caption[Complete directed acyclic graph of the forward model.]{Complete directed acyclic graph of the forward model. The hyper-parameters at the top deterministically (dotted line) describe the parameters ($\bm{p}/\bm{T}$) or the noise covariance $\bm{\Sigma} = \gamma^{-1} \bm{I}$ of the random (solid line) noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I} ) $ and precision matrix $\bm{Q} = \delta \bm{L}$ of the distribution of $\bm{x}\sim \mathcal{N}(0,\delta \bm{L}) $, where $\bm{L}$ is a graph Laplacian as in Eq. \ref{eq:GLapl}. We can group the noise precision $\gamma$  and the smoothness parameter $\delta$ to define the marginal posterior over those hyper-parameters and then condition on them for the conditional posterior distribution,for further details see Fig. \ref{fig:DAGO3}. In this whole process where we condition on the pressure $\bm{p}$ and temperature $\bm{T}$, which we retrieve separately, see Fig. \ref{fig:DAGPT}. The hyper-parameters $h_0,p_0,b$ deterministically describe the pressure function in Eq. \ref{eq:pressFunc}, note that we only need three parameters here since $h_0< h_{L,0}$ and $\bm{h}= \{ h_1, h_2,h_3,h_4,h_5,h_6\}$, $\bm{a} = \{ a_0, a_1, a_2,a_3,a_4\}$ and $T_0$ determine the temperature function.
 The parameters $\bm{x}$ and $\bm{p}/ \bm{T}$ determine the space of all measurable noise free data $\bm{\Omega}$ through the forward model $\bm{A}(\bm{x},\bm{p},\bm{T})$ from which we randomly observe data set plus some random noise.}
@@ -252,6 +275,44 @@ We choose normal prior distribution for $b$ and $p$, where we restrict ourselves
 \end{figure}
 
 \clearpage
+
+
+Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \bm{\Sigma}(\bm{\theta}))$, we define a linear-Gaussian Bayesian hierarchical model~\cite{fox2016fast}
+\begin{subequations}
+	\begin{align}
+		\bm{y} |  \bm{x}, \bm{\theta} &\sim \mathcal{N}(\bm{A} \bm{x}, \bm{\Sigma}(\bm{\theta})) \label{eq:likelihood} \\
+		\bm{x} |  \bm{\theta} &\sim \mathcal{N}(\bm{\mu}, \bm{Q}^{-1}(\bm{\theta})) \label{eq:xPrior} \\
+		\bm{\theta} &\sim \pi(\bm{\theta}) \label{eq:gammaPrior},
+	\end{align}
+	\label{eq:BayMode}
+\end{subequations}
+with a normally distributed likelihood $\pi(\bm{y} |  \bm{x}, \bm{\theta})$ \textcolor{red}{Why? other likelihoods?} and prior distributions $\pi(\bm{x} |  \bm{\theta})$ and $\pi(\bm{\theta})$, the noise covariance matrix $\bm{\Sigma}(\bm{\theta})$, the prior precision matrix $\bm{Q}(\bm{\theta})$ and the prior mean $\bm{\mu}$.
+This model enables efficient factorisation of the posterior distribution and application of the MTC method.
+
+
+
+\subsection{Marginal and conditional posterior distribution}
+\label{subsec:MTC}
+For the linear-Gaussian Bayesian hierarchical model specified in Eq.~\ref{eq:BayMode}, the marginal posterior distribution over the hyper-parameters is given by
+\begin{align}
+	\pi(\bm{\theta} |  \bm{y}) &= \int \pi(\bm{x}, \bm{\theta} | \bm{y}) \, \mathrm{d} \bm{x} \\ 
+	\label{eq:condHyper}
+	&\propto \sqrt{ \frac{ \det( \bm{\Sigma}^{-1} ) \,  \det( \bm{Q} ) }{\det( \bm{Q} + \bm{A}^T \bm{\Sigma}^{-1} \bm{A} ) } } \times \exp \left[ - \frac{1}{2}(\bm{y} - \bm{A} \bm{\mu})^T \bm{Q}_{\bm{\theta |  y}} (\bm{y} - \bm{A} \bm{\mu}) \right] \pi(\bm{\theta}) \, ,
+\end{align}
+with
+\begin{align}
+	\bm{Q}_{\bm{\theta |  y}} = \bm{\Sigma}^{-1} - \bm{\Sigma}^{-1} \bm{A} \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} \bm{A}^T \bm{\Sigma}^{-1} \, ,
+\end{align}
+see~\cite[Lemma 2]{fox2016fast}. 
+Conditioned on the hyper-parameters $\bm{\theta}$, we can draw samples from the normal conditional posterior distribution
+\begin{align}
+	\bm{x} |  \bm{\theta}, \bm{y} \sim \mathcal{N} \Big(
+	\underbrace{\bm{\mu} + \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} \bm{A}^T \bm{\Sigma}^{-1} (\bm{y} - \bm{A} \bm{\mu})}_{\bm{\mu}_{\bm{x} |  \bm{\theta}, \bm{y}}},
+	\underbrace{ \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} }_{\bm{\Sigma}_{\bm{x} |  \bm{y}, \bm{\theta}}}
+	\Big) \, ,
+\end{align}
+using the Randomise-then-Optimise (RTO) method (see Section~\ref{subsec:RTO}), or compute weighted expectations, as in Eq.~\ref{eq:MargExpPos}, of the conditional mean and covariance matrix, where the weights are given by $\pi(\bm{\theta} | \bm{y})$. 
+Note that both the noise covariance $\bm{\Sigma} = \bm{\Sigma}(\bm{\theta})$ and the prior precision matrix $\bm{Q} = \bm{Q}(\bm{\theta})$ depend on the hyper-parameters $\bm{\theta}$.
 
 
 \section{Posterior distributions with Linear model for Ozone -- MTC}
@@ -503,45 +564,9 @@ In doing so we use the just calculated posterior distribution to generate ozone 
 \caption[Strategy to find affine map.]{The strategy to find the affine map consist of evaluating the marginal posterior for ozone using the linear forward model. Then we draw ozone samples from the conditional posterior and calculate noise free data based on the linear and non-linear forward model. Next we find a mapping in between those two space so that we can approximate the non-linear forward model using an affine map and the linear forward model.}
 \end{figure}
 
-With the samples $\{\bm{x}^{(1)} ,\dots, \bm{x}^{(m)}\}\sim \pi(\bm{x}|, \gamma, \lambda, \bm{y}) $ from the conditional posterior we generate two affine subspaces
-\begin{align}
-	\bm{V} = \begin{bmatrix}
-		\vert&   &  \vert & & \vert \\
-		\bm{A}_{NL} (\bm{x}^{(1)} ) &  \cdots& \bm{A}_{NL} (\bm{x}^{(j)} )&  \cdots & \bm{A}_{NL} (\bm{x}^{(m)})  \\
-		\vert&   &  \vert & & \vert 
-	\end{bmatrix} = 
-	\begin{bmatrix}
-		\rule[.5ex]{1em}{0.4pt} & v_1 &	\rule[.25ex]{1em}{0.4pt}\\
-		&\vdots  & \\
-		\rule[.5ex]{1em}{0.4pt} &v_j &	\rule[.25ex]{1em}{0.4pt}\\
-		&\vdots  & \\
-		\rule[.5ex]{1em}{0.4pt}& v_m&	\rule[.25ex]{1em}{0.4pt}
-	\end{bmatrix} \, ,
-\end{align} 
-using the non-linear forward model, and 
-\begin{align}
-	\bm{W} = \begin{bmatrix}
-		\vert&   &  \vert & & \vert \\
-		\bm{A}_{L} \bm{x}^{(1)} &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
-		\vert&   &  \vert & & \vert 
-	\end{bmatrix}
-\end{align}
-based on the linear forward model, which are matrices in $\mathbb{R}^{m \times m}$.
-To find the affine map \begin{align}
-	\bm{M} = \begin{bmatrix}
-		\text{---} & r_0 &   \text{---}  \\
-		&  \vdots  & \\
-		\text{---}& r_j &  \text{---} \\
-		&  \vdots  & \\
-		\text{---} & r_m &   \text{---}
-	\end{bmatrix} \, \in \mathbb{R}^{m \times m} ,
-\end{align} we use the \texttt{numpy.linalg.solve} python function to solve
-\begin{align}
-	v_j = r_j \bm{W}
-\end{align}
-where $r_j$ is the j-th row of $\bm{M}$.
 
 
+we use the \texttt{numpy.linalg.solve} python function to solve
 Finally, we approximate the non-linear forward model
 \begin{align}
 	\bm{A}_{NL} \approx \bm{M A}_L = \bm{A} \, ,
