@@ -99,7 +99,7 @@ Furthermore, the central limit theorem states that the samples mean $ \bm{\mu}^{
 and if $\sigma^2 < \infty$ the Monte-Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bounded.
 
 \subsubsection{On the Monte-Carlo Error and Integrated Autocorrelation time}
-To asses the errorn$\sigma^2$ we ignoring systematic error due to initializaiton bias but we have to take into account that samples porduces by any system or algorithm are correlated.
+To asses the error $\sigma^2$ we ignoring systematic error due to initialisation bias (burin in period) but we have to take into account that samples porduces by any system or algorithm are correlated.
 In general the error of a Monte-Carlo based estimate from a sample set $\mathcal{M}_i$ is:
 \begin{align}
 	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
@@ -134,7 +134,7 @@ In practice, one can inspect the trace $\pi(\bm{x}^{(k)}, \bm{\theta}^{(k)} |  \
 The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details.
 Nevertheless, we will give a brief overview of the smapling algorithm used.
 
-\subsection{Sampling from Marginal and then conditional posterior}
+\subsection{Sampling from the marginal posterior}
 As in Eq. \ref{eq:MTC}, when using the MTC method we sample from $\pi(\bm{\theta} |  \bm{y})$ first and then determine the full conditional $\pi(\bm{x} |  \bm{y})$ as in Eq. \ref{eq:fullCond}. To sample from $\pi(\bm{\theta} |  \bm{y})$, we use a Metropolis-within-Gibbs (MWG) sampler as described in~\cite{fox2016fast}.
 We apply the MWG sample for the two-dimensional case only, with $\bm{\theta} = (\theta_1, \theta_2)$, where we perform a Metropolis step in the $\theta_1$ direction and a Gibbs step in the $\theta_2$ direction.
 Ergodicity for this approach is proven in~\cite{roberts2006harris}.
@@ -212,14 +212,15 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 
 \subsection{t-walk sampler as black box}
 If the parameters $\bm{x}$ are functionally dependent on the hyper-parameters $\bm{\theta}$, i.e., $\bm{x} = \bm{x}(\bm{\theta})$, we can sample directly from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the t-walk algorithm by Christen and Fox~\cite{christen2010general}. 
-The t-walk is employed as a black-box sampler, requiring only the specification of the number of samples, burn-in period, support region, and the sampling distribution. 
+The t-walk is employed as a black-box sampler, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
 Convergence to the target distribution is guaranteed by construction of the algorithm.
 
 \section{Numerical Approxiamtion Methods - Tensor Train}
 \label{sec:tensortrain}
-\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
-First, we provide a short overview of probability spaces and their associated measures, as a foundation for deriving marginal probability distribution, and then we give a brief introduction to the tensor train format.
-The motivation to use the tensor train format is that we can approximate a d-dimensional grid with far fewer data points compared to the total number of grid points.
+%\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
+Instead of sampling from a target distribution $\pi(\bm{x})$ we can approximate that distribution on a d-dimensional grid with far fewer function evaluation compared to sampling methods using a tensor train (TT) approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, with  $\bm{x}\in \mathbb{R}^d$.
+First, we provide a short overview of probability spaces and their associate measures, as a foundation for calculating marginal probability distribution from the tensor train format.
+Note, that we follow the notation of Cui et al. \cite{cui2022deep} to introduce this methodology.
 
 Assume that the triple $(\Omega, \mathcal{F}, \mathbb{P})$ defines a probability space, where $\Omega$ denotes the complete sample space, $\mathcal{F}$ is a $\sigma$-algebra consisting of a collection of countable subsets $\{A_n\}_{n \in \mathbb{N}}$ with $A_n \subseteq \Omega$, and $\mathbb{P}$ is a probability measure defined on $\mathcal{F}$. The formal conditions for $\mathbb{P}$ to be a probability measure, and for $\mathcal{F}$ to be a $\sigma$-algebra over $\Omega$, are given in Appendix~\ref{ch:Mesure}.
 We denote
@@ -229,34 +230,45 @@ We denote
 as the probability of an event $A \in \mathcal{F}$.
 By applying the Radon-Nikodym theorem~\cite{kopp2004measintprob}, we can change variables
 \begin{align}
-	\mathbb{P}(A) = \int_A \frac{\mathrm{d} \mathbb{P}}{\mathrm{d}x} \, \mathrm{d}x = \int_A \pi(x) \, \mathrm{d}x,
+	\mathbb{P}(A) = \int_A \frac{\mathrm{d} \mathbb{P}}{\mathrm{d}\bm{x}} \, \mathrm{d}\bm{x} = \int_A \pi(\bm{x}) \, \mathrm{d}\bm{x},
 \end{align}
-where $\mathrm{d}x$ is a reference measure on the same probability space, commonly referred to as the Lebesgue measure. 
-The Radon-Nikodym derivative $\frac{\mathrm{d} \mathbb{P}}{\mathrm{d}x}$ of $\mathbb{P}$ with respect to $x$, and is often interpreted as the probability density function (PDF) $\pi(x)$. Thus, we say that $\mathbb{P}$ has a density $\pi(x)$ with respect to $x$~\cite[Chapter 10]{simonnet1996measprob}.
+where $\mathrm{d}\bm{x}$ is a reference measure on the same probability space, commonly referred to as the Lebesgue measure. 
+The Radon-Nikodym derivative $\frac{\mathrm{d} \mathbb{P}}{\mathrm{d}\bm{x}}$ of $\mathbb{P}$ with respect to $\bm{x}$ is often interpreted as the probability density function (PDF) $\pi(\bm{x})$. Thus, we say that $\mathbb{P}$ has a density $\pi(\bm{x})$ with respect to $\bm{x}$~\cite[Chapter 10]{simonnet1996measprob}.
 
 Now, let $X: \Omega \longrightarrow \mathbb{R}^d$ be a $d$-dimensional random variable mapping from the probability space $(\Omega, \mathcal{F}, \mathbb{P})$ to the measurable space $(\mathbb{R}^d, \mathcal{X})$, where $\mathcal{X}$ is a collection of subsets in $\mathbb{R}^d$.
-Then the associated PDF $\pi(x)$, is a joint density of $X$, induced by the probability measure on $\Omega$~\cite{VesaInvLect, kopp2004measintprob}.
-As by Cui et al.~\cite{cui2022deep}, we can define the parameter space as the Cartesian product $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$ and $x = ( x_1,\dots ,x_k,\dots,x_d )$.
+Then the associated PDF $\pi(\bm{x})$, is a joint density of $X$, induced by the probability measure on $\Omega$~\cite{VesaInvLect, kopp2004measintprob}.
+As in~\cite{cui2022deep}, we can define the parameter space as the Cartesian product $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$ and $\bm{x} = ( x_1,\dots ,x_k,\dots,x_d )$.
 The marginal density function for the $k$-th component is then given by
 \begin{align}
-	f_{X_k}(x_k) = \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_d} \uplambda(x) \, \pi(x) \, \mathrm{d}x_1 \cdots \mathrm{d}x_{k-1} \, \mathrm{d}x_{k+1} \cdots \mathrm{d}x_d,
+	f_{X_k}(x_k) = \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_d} \uplambda(\bm{x}) \, \pi(\bm{x}) \, \mathrm{d}x_1 \cdots \mathrm{d}x_{k-1} \, \mathrm{d}x_{k+1} \cdots \mathrm{d}x_d, \label{eq:margInt}
 \end{align}
 where we integrate over all dimensions except the $k$-th.
-Here, we introduce a weight function $\uplambda(x)$, which can be useful for quadrature rules~\cite{davis2007methods}, to which 
-Cui et al.~\cite{cui2022deep} refer to as a "product-form Lebesgue-measurable weighting function" and define it as
+Here, we introduce a weight function $\uplambda(x)$, which can be useful for quadrature rules~\cite{davis2007methods}, to which~\cite{cui2022deep} refer to as a "product-form Lebesgue-measurable weighting function" and define it as
 \begin{align*}
 	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \mathrm{d}x_i. \label{eq:lebesgueWeight}
 \end{align*}
 
-Using the tensor train (TT) format, we can efficiently approximate a $d$-dimensional function $\pi(x)$ and compute marginal probability distributions at low computational cost. To do so, we first define a $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$, with $n$ grid points in each dimension.
-In the tensor train format we can represent the function over this $d$-dimensional grid as a product train of 2D matrices (rank-2 tensor) and 3D matrices (rank-3 tensors), which we call TT-cores, see Fig. \ref{fig:TTfig}. More specifically each core $\pi_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ has ranks $r_{k-1}$ and $r_k$, for $k = 1, \dots, d$, connecting it with its neighbouring cores, as illustrated in Figure~\ref{fig:TTfig}.
-For the first and last cores, the outer ranks are set to $r_0 = r_d = 1$.
-This enables us to approximate the value $\pi(x)$, for a fixed point $x = (x_1, \dots, x_d)$ on the grid, as a sequence of matrix multiplications 
+In the tensor train (TT) format the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost as $\pi(\bm{x})$ is approximated by
 \begin{align*}
-\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d) = \tilde{\pi}(x) \approx	\pi(x)  \in \mathbb{R},
+\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d)  \in \mathbb{R},
 \end{align*}
-where each core $\tilde{\pi}_k(x_k)$, becomes a matrix of size $r_{k-1} \times r_k$.
-Clearly this shows that we only need $dnr^2$ evaluation points instead of $n^d$ grid points to approximate the whole parameter space.
+which is a sequence of matrix multiplications, with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$ for a fixed grid point $\bm{x} = (x_1, \dots, x_d)$ on a $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$ bounded by the outer ranks $r_0 = r_d = 1$.
+We call $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ a TT-core with ranks $r_{k-1}$ and $r_k$, representing each dimension on $n$ grid points.
+This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d  \in \mathbb{R}^{d}$ using $2nr + (d-2)nr^2$ evaluation points, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluation.
+Consequently, the marginal target distribution
+\begin{align}
+	\begin{split}
+		f_{X_k}(x_k) = \frac{1}{z} \Big|\, 
+		&\left( \int_{\mathbb{R}} \uplambda_1(x_1) \tilde{\pi}_1(x_1) \, \mathrm{d}x_1 \right) \cdots 
+		\left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \tilde{\pi}_{k-1}(x_{k-1}) \, \mathrm{d}x_{k-1} \right) \\
+		&\quad \uplambda_k(x_k) \tilde{\pi}_k(x_k) \\
+		& \left( \int_{\mathbb{R}} \uplambda_{k+1}(x_{k+1}) \tilde{\pi}_{k+1}(x_{k+1}) \, \mathrm{d}x_{k+1} \right) \cdots 
+		\left( \int_{\mathbb{R}} \uplambda_d(x_d) \tilde{\pi}_d(x_d) \, \mathrm{d}x_d \right)
+		\Big| 
+	\end{split}
+\end{align}
+is computed by integrating over all TT cores except $\pi_k$, as in~\cite{dolgov2020approximation}, including a normalisation constant $z$~\cite{cui2022deep}.
+
 \begin{figure}[ht!]
 	\centering
 \begin{subfigure}{\textwidth}
@@ -287,28 +299,15 @@ Using the TT-format enables us to represent a $d$-dimensional grid with only $dn
 Figure~(a) is adapted from~\cite{fox2021grid}.}
 \label{fig:TTfig}
 \end{figure}
-Consequently, with a tensor train approximation, the marginal target function
-\begin{align}
-	\begin{split}
-		f_{X_k}(x_k) = \frac{1}{z} \Big|\, 
-		&\left( \int_{\mathbb{R}} \uplambda_1(x_1) \tilde{\pi}_1(x_1) \, \mathrm{d}x_1 \right) \cdots 
-		\left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \tilde{\pi}_{k-1}(x_{k-1}) \, \mathrm{d}x_{k-1} \right) \\
-		&\quad \uplambda_k(x_k) \tilde{\pi}_k(x_k) \\
-		& \left( \int_{\mathbb{R}} \uplambda_{k+1}(x_{k+1}) \tilde{\pi}_{k+1}(x_{k+1}) \, \mathrm{d}x_{k+1} \right) \cdots 
-		\left( \int_{\mathbb{R}} \uplambda_d(x_d) \tilde{\pi}_d(x_d) \, \mathrm{d}x_d \right)
-		\Big| 
-	\end{split}
-\end{align}
-is computed by integrating over all TT cores except $\pi_k$, as in~\cite{dolgov2020approximation}, including a normalisation constant $z$~\cite{cui2022deep}.
-\\
 
 
 %%%%%% Squared and Basis Function %%%%%
-In practice, tensor train approximations may suffer from numerical instability, particularly because it is not advantageous to approximate the target function $\pi(x)$ in for example, the logarithmic space. 
-To address this, we follow the notation and procedure of Cui et al.~\cite{cui2022deep} and instead approximate the square root of the probability density
+In practice, tensor train approximations may suffer from numerical instability, in particularly because it is not advantageous to approximate the target function $\pi(\bm{x})$ in e.g. the logarithmic space. 
+Hence, Cui et al.~\cite{cui2022deep} approximate the square root of the probability density
 \begin{align}
-	\sqrt{\pi(x)} \approx \sqrt{\tilde{\pi}} = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d).
+	\sqrt{\pi(\bm{x})} \approx \sqrt{\tilde{\pi}} = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\, ,
 \end{align}
+which insures positivity.
 Here, each TT-core is given by
 \begin{equation}
 	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, \dots, d,
@@ -316,11 +315,11 @@ Here, each TT-core is given by
 where $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the $k$-th coefficient tensor and $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ are the basis functions corresponding to the $k$-th coordinate.
 The approximated density is written as:
 \begin{align}
-	\pi(x) \approx \gamma' + (\sqrt{\tilde{\pi}})^2(x),
+	\pi(\bm{x}) \approx \gamma' + (\sqrt{\tilde{\pi}})^2(\bm{x}),
 \end{align}
-where $\gamma'$ is a positive constant added according to the absolute error and the Lebesgue weighting, see Eq. \ref{eq:lebesgueWeight}, to ensure positivity such that
+where $\gamma'$ is a positive constant added according to the absolute error and the Lebesgue weighting, see Eq. \ref{eq:lebesgueWeight}, such that
 \begin{align}
-	\gamma' \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \sqrt{\tilde{\pi}} - \sqrt{\pi} \rVert_2^2.
+	0 \leq \gamma' \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \sqrt{\tilde{\pi}} - \sqrt{\pi} \rVert_2^2.
 \end{align}
 This leads to the normalised target function
 \begin{align}
@@ -338,19 +337,23 @@ Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{
 		\left( \int_{\mathbb{R}} \uplambda_d(x_d) \bm{G}_d^2(x_d)  \, \mathrm{d}x_d \right) \Bigg).
 	\end{split}
 \end{align}
-To compute these marginals efficiently, one can use a procedure similar to left and right orthogonalisation of TT-cores~\cite{oseledets2011tensor}. For this, we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ as
-\begin{equation}
-	\bm{M}_k[i, j] = \int_{\mathcal{X}_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \uplambda(x_k) \, \mathrm{d}x_k, \quad i, j = 1, \dots, n_k,
-\end{equation}
-where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ denotes the set of basis functions for the $k$-th coordinate.
+
 
 
 
 \subsection{Marginal Functions}
-We compute the marginal functions using two procedures, referred to as backward marginalisation~\cite{cui2022deep} and forward marginalisation. The backward marginalisation provides us with the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{B}_{\text{pre}, n}$. These matrices enable the efficient evaluation of marginal functions, similar to~\cite{cui2022deep}.
+To compute these marginals efficiently, one can use a procedure similar to left and right orthogonalisation of TT-cores~\cite{oseledets2011tensor}.
+Cui et al. \cite{cui2022deep} referred to this backward marginalisation, see Prop. \ref{prob:ForMarg}, to which I add the forward marginalisation, see Prob. \ref{prob:backMarg}. 
+The backward marginalisation provides us with the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{B}_{\text{pre}, k}$. 
+These matrices enable the efficient evaluation of marginal functions since they integrate over the coordinates either left or right of the $k$-th dimension, as in \cite{cui2022deep}.
+For this, we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ as
+\begin{equation}
+	\bm{M}_k[i, j] = \int_{\mathcal{X}_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \uplambda(x_k) \, \mathrm{d}x_k, \quad i, j = 1, \dots, n_k,
+\end{equation}
+where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ denotes the set of basis functions for the $k$-th coordinate.
 The proposition used to compute $\bm{B}_k$, stated in Proposition~\ref{prob:backMarg}, is adapted directly from~\cite{cui2022deep}.
 
-\begin{prop}[Backward Marginalisation]
+\begin{prop}[Backward Marginalisation as in~\cite{cui2022deep}]
 	\label{prob:backMarg}
 	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k-1} \in \mathbb{R}^{r_{k-2} \times n_{k-1} \times r_{k-1}}$, which we need for defining the marginal function $f_{X_k}(x_k)$:
 	\begin{enumerate}
@@ -433,9 +436,9 @@ Note that we calculate the normalisation numerically within the process of findi
 
 \section{Affine Map}
 \label{sec:affine}
-The problem we deal with is weaklt non linear so we approxiate the non linear forward map with an affine map.
-And we use a deterministic method to calulute the affine map, obvoisulye one can also determine this map using other e.g. machine learing methods.
-
+The forward map, which we introduce in Ch. \ref{ch:formodel}, poses a weakly non-linear forward problem, which could tackle by treating the problem as a linear problem and then iteratively updating the non-linear part after each parameter sample.
+Instead we chose to approximate the non-linear model using an affine map $ \bm{M}:\bm{A}_L \bm{x} \rightarrow \bm{A}_{NL}\bm{x}$, which approximates the non-linear model using the linear model.
+Here we give a brief introduction into affine maps and present our approach to calculate the affine map deterministically, alternatively one can also determine this map using other e.g. machine learning methods \cite{}.
 
 
 An affine map is any linear map between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin, see~\cite[Def. 2.3.1]{berger2009geometry}.
@@ -444,50 +447,46 @@ For more information on affine spaces and maps, we refer to the books \cite{berg
 \begin{figure}[ht!]
 	\centering
 	\begin{tikzpicture}
-		\node[rectnode] at (2,-4) (NL)    {$W$};
-		\node[rectnode] at (-2,-4) (L)    {$V$};
+		\node[rectnode] at (2,-4) (NL)    {$\bm{V}$};
+		\node[rectnode] at (-2,-4) (L)    {$\bm{W}$};
 		\draw[<-, very thick] (NL.west) -- (L.east); 
 		\node[align=center] at (-5.5,-4) (f3) {linear forward model};
 		\node[align=center] at (5.5,-4) (f4) {non-linear forward model};
-		\node[align=center] at (0,-5) (f5) {$\bm{A}(\bm{x}) \bm{x}  \approx \bm{M A}_L  \bm{x} = \bm{A x} $ };
+		\node[align=center] at (0,-5) (f5) {$\bm{A}_{NL} \bm{x}  \approx \bm{M A}_L  \bm{x} = \bm{A x} $ };
 		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
 	\end{tikzpicture}
 	\caption[Schematics of the affine map]{This Figure shows the schematic representation of the affine map $\bm{M}$, which approximates the non-linear forward model from the linear forward model. Here, $V$ contains values produced by the linear forward model, and $W$ contains the corresponding values from the non-linear forward model. Both $V$ and $W$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $V$ onto their counterparts in the non-linear forward model space $W$.
 	}
 \end{figure}
 
-Consequently, we introduce an affine map $ \bm{M}:\bm{A}_L \bm{x} \rightarrow \bm{A}_{NL}\bm{x}$, which maps the linear forward model $\bm{A}_L \bm{x}$ onto the non-linear forward model $ \bm{A}_{NL} \bm{x} = \bm{A}(\bm{x})\bm{x} $.
-Then the non-linear forward model matrix is approximated by $\bm{A}_{NL} \approx \bm{M} \bm{A}_L$.
-In practise we generate two affine subspaces spaces $V = \big\{ \bm{A}_{NL}\bm{x}^{(1)}, \dots ,\bm{A}_{NL}\bm{x}^{(m)}, \big\} $ and $W = \big\{ \bm{A}_L\bm{x}^{(1)}, \dots ,\bm{A}_L\bm{x}^{(m)}\big\}$ over the same field, and find the mapping in between those.
-Here, the parameter $\bm{x}$ is distributed as $\big\{  \bm{x}^{(1)} , \dots, \bm{x}^{(m)} \big\} \sim \pi(\bm{x}|\bm{\theta},\bm{y})$, where the posterior distribution $\pi(\bm{x}|\bm{\theta},\bm{y})$ is conditioned on the hyper-parameters $\bm{\theta}$ and defined according to a Bayesian hierarchical model.
-\textcolor{red}{weakly non linear}
 
-With the samples $\{\bm{x}^{(1)} ,\dots, \bm{x}^{(m)}\}\sim \pi(\bm{x}|\bm{\theta}, \bm{y}) $ from the conditional posterior we generate two affine subspaces
-\begin{align}
-	\bm{V} = \begin{bmatrix}
-		\vert&   &  \vert & & \vert \\
-		\bm{A}_{NL}\bm{x}^{(1)} &  \cdots& \bm{A}_{NL}\bm{x}^{(j)} &  \cdots & \bm{A}_{NL} \bm{x}^{(m)}  \\
-		\vert&   &  \vert & & \vert 
-	\end{bmatrix} = 
-	\begin{bmatrix}
-		\rule[.5ex]{1em}{0.4pt} & v_1 &	\rule[.25ex]{1em}{0.4pt}\\
-		&\vdots  & \\
-		\rule[.5ex]{1em}{0.4pt} &v_j &	\rule[.25ex]{1em}{0.4pt}\\
-		&\vdots  & \\
-		\rule[.5ex]{1em}{0.4pt}& v_m&	\rule[.25ex]{1em}{0.4pt}
-	\end{bmatrix} \, ,
-\end{align} 
-using the non-linear forward model, and 
-\begin{align}
+Consequently, to map in between the linear and non-linear forward map we generate two affine subspaces $V$ and $W$ over the same field.
+Assume we have noise free data vector $A_{NL}\bm{x} \in \mathbb{R}^m$, then the subspace associated with the linear forward model is \begin{align}
 	\bm{W} = \begin{bmatrix}
 		\vert&   &  \vert & & \vert \\
 		\bm{A}_{L} \bm{x}^{(1)} &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
 		\vert&   &  \vert & & \vert 
-	\end{bmatrix}
+	\end{bmatrix}\in \mathbb{R}^{m \times m}
+\end{align} and with the non-linear forward model is 
+\begin{align}
+\bm{V} = \begin{bmatrix}
+	\vert&   &  \vert & & \vert \\
+	\bm{A}_{NL}\bm{x}^{(1)} &  \cdots& \bm{A}_{NL}\bm{x}^{(j)} &  \cdots & \bm{A}_{NL} \bm{x}^{(m)}  \\
+	\vert&   &  \vert & & \vert 
+\end{bmatrix} = 
+\begin{bmatrix}
+	\rule[.5ex]{1em}{0.4pt} & v_1 &	\rule[.25ex]{1em}{0.4pt}\\
+	&\vdots  & \\
+	\rule[.5ex]{1em}{0.4pt} &v_j &	\rule[.25ex]{1em}{0.4pt}\\
+	&\vdots  & \\
+	\rule[.5ex]{1em}{0.4pt}& v_m&	\rule[.25ex]{1em}{0.4pt}
+\end{bmatrix} \in \mathbb{R}^{m \times m} \, ,
 \end{align}
-based on the linear forward model, which are matrices in $\mathbb{R}^{m \times m}$.
-To find the affine map \begin{align}
-	\bm{M} = \begin{bmatrix}
+Here $\big\{  \bm{x}^{(1)} , \dots, \bm{x}^{(m)} \big\}$ are $m$ different parameters.
+
+Then we find the affine map 
+\begin{align}
+	\bm{V}\bm{W}^{-1} = \bm{M} = \begin{bmatrix}
 		\text{---} & r_0 &   \text{---}  \\
 		&  \vdots  & \\
 		\text{---}& r_j &  \text{---} \\
@@ -495,26 +494,21 @@ To find the affine map \begin{align}
 		\text{---} & r_m &   \text{---}
 	\end{bmatrix} \, \in \mathbb{R}^{m \times m} ,
 \end{align}
-\begin{align}
-	v_j = r_j \bm{W}
-\end{align}
-where $r_j$ is the j-th row of $\bm{M}$.
+row wise by solving $v_j = r_j \bm{W}$, so that $ \bm{A} = \bm{M} \bm{A}_{NL} \approx \bm{A}_{NL} $.
+Alternately one could also compute $\bm{M}$ using the inverse $\bm{W}^{-1}$.
 
 \section{Regularisation}
 \label{sec:regularise}
-\textcolor{red}{nosie uncertanty}
-Another method for obtaining a solution to the linear inverse problem in Eq.~\ref{eq:LinDat} is regularisation. In this approach, we seek a solution $\bm{x}_{\lambda}$ that minimises both the data misfit norm and a regularisation semi-norm, as described in~\cite{fox2016fast}. Here we focus on a regularisation semi-norm for the case of Tikhonov regularisation~\cite{kaipio2005statinv, tan2016LecNot}, which is closest to a linear-Gaussian hierarchical Bayesian model, as introduced in Eq.~\ref{eq:BayMode}.
+As mentioned in the introduction the currently most used method to analyse any data in atmospheric physics is regularisation.
+Since we want to show that our methods is at computationally comparable if not faster and provides more information than regularisation we choose a regularise closet to our linear-Gaussian Bayesian framework, see section \ref{sec:BayModel}.
 
-Given a parameter vector $\bm{x}$, a linear forward model matrix $\bm{A}$, and data $\bm{y}$, the data misfit norm
+The Tikhonov approach in provides one solution $\bm{x}_{\lambda}$ that minimises both the data misfit norm
 \begin{align}
 	\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert
-\end{align}
-quantifies how well the noise-free data  $\bm{A}\bm{x}$ matches the observed data.
-The regularisation semi-norm
+\end{align} and a regularisation semi-norm
 \begin{align}
 	\lambda \left\lVert \bm{T} \bm{x} \right\rVert
-\end{align}
-penalises the solution according to the regularisation operator $\bm{T}$ and the regularisation parameter $\lambda > 0$.
+\end{align}, as described in~\cite{fox2016fast}, with a linear forward model matrix $\bm{A}$, the data $\bm{y}$ and a regularisation operator $\bm{T}$ and the regularisation parameter $\lambda > 0$ which penalise $\bm{x}$ accordingly.
 For a fixed $\lambda$, the regularised solution
 \begin{align}
 	\bm{x}_{\lambda} = \underset{\bm{x}}{\mathrm{arg\,min}} \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2 + \lambda \left\lVert \bm{T} \bm{x} \right\rVert^2
@@ -532,5 +526,6 @@ Solving this equation yields the regularised solution
 \end{align}
 where we define $\bm{L} := \bm{T}^T \bm{T}$, which typically represents a discrete matrix approximation of a differential operator choice~\cite{tan2016LecNot}.
 
-In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation norm. The optimal value of $\lambda$ is often chosen as the point of maximum curvature on the so-called L-curve~\cite{hansen1993use}, which we plot in Section~\ref{sec:applBay}.
+In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation norm. The optimal value of $\lambda$ is often chosen as the point of maximum curvature on the so-called L-curve~\cite{hansen1993use}, which we plot in Fig.~\ref{fig:LCurve}.
+Additionaly one can thnk about it .... in \cite{fox2016fast}
 
