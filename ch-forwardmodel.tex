@@ -1,11 +1,6 @@
 \chapter{Forward Model}
 \label{ch:formodel}
-In this chapter we present the forward model we apply all our methodology on. We follow the MIPAS handbook \cite{mipas2000handbook} and simulate data according to a atmosphere in local thermodynamic and and assume a measurement instrument with infinite spectral resolution and no pointing errors.
-
-
-The forward model is based on a satellite measuring thermal radiation of gas molecules along its line of sight by pointing through the atmosphere to the edge(limb) of the atmosphere, known as limb sounding, as shown in Figure~\ref{fig:LIMB}.
-One measurement $y_j$, of a stationary satellite is given by the path integral through the atmosphere along the line of sight.
-For each measurement $j=1,2,\ldots,m$ of a data set, we can define a tangent height $h_{\ell_j}$ as the shortest distance along the line of sight to the earth.
+In this chapter we present the forward model to which we apply all our methodology on. We follow the MIPAS handbook \cite{mipas2000handbook} and simulate data according to a cloud-free atmosphere in local thermodynamic equilibrium and assume a measurement instrument with infinite spectral resolution and no pointing errors.
 \begin{figure}[ht!]
 	\centering
 	\input{LIMB.pdf_tex}
@@ -13,16 +8,18 @@ For each measurement $j=1,2,\ldots,m$ of a data set, we can define a tangent hei
 		The stationary satellite, at a constant height $h_\text{sat}$ above Earth, takes $m = 41$ measurements along its line-of-sight defining by the line $\Gamma_j$.
 		Each measurement has a limb height $\ell_j$, $j=1,2,\dots,m$ defined as the closest distance of $\Gamma_j$ to the Earth surface.
 		Between $h_{L,0} = 7$km and $h_{L,n} = 83.3$km, the stratosphere is discretised into $n =44$ layers as illustrated by the solid green lines.}
-		\label{fig:LIMB}
+	\label{fig:LIMB}
 \end{figure}
 
-Targeting the thermal radiation at one wave number $\nu$ of one specific molecule, the $j^\text{th}$ measurement, is modelled by the radiative transfer equation (RTE)~\cite{mipas2000handbook}
+
+A satellite at a constant height $h_{\text{sat}}$ points through the atmosphere (limb-sounding) and measures thermal radiation of gas molecules along its line of sight, see  Figure~\ref{fig:LIMB}.
+One measurement of the thermal radiation if we target one specific molecule, in our case ozone denoted by the ozone volume mixing ratio $x(r)$ at distance $r$ from the satellite, of at the wave number $\nu$ is given by the path integral
 \begin{align}
 	\label{eq:RTE} 
 	y_j =   \int_{\Gamma_j}  B(\nu,T) k(\nu, T)   \frac{p(T)}{k_{\text{B}} T(r)}  x(r)  \tau(r) \text{d}r + \eta_j \, \\
 	\tau(r) = \exp{ \Bigl\{ - \int^{r}_{r_\text{obs}}  k(\nu, T)   \frac{p(T)}{k_B T(r^{\prime})}  x(r^{\prime}) \text{d}r^{\prime} \Bigr\} } \, ,\label{eq:absRTE} 
 \end{align}
-where the path from the satellite along the line-of-sight of the $j^\text{th}$ pointing direction is $\Gamma_j$ and the ozone concentration at distance $r$ from the radiometer is $x(r)$ plus some noise $\eta_j$.
+which is the radiative transfer equation (RTE)~\cite{mipas2000handbook} where we define a tangent height $h_{\ell_j}$ and a pointing direction is $\Gamma_j$ for each $j=1,2,\ldots,m$ measurement of the data vector $\bm{y} \in \mathbb{R}^m$ including some noise $\eta_j$.
 Within the atmosphere the number density $p(T) / (k_{\text{B}} T(r))$ of molecules is dependent on the pressure $p(T)$, the temperature $T(r)$, and the Boltzmann constant $k_{\text{B}}$.
 The factor $\tau(r)\leq 1$ accounts for re-absorption of the radiation along the line-of-sight, which makes the RTE non linear.
 The absorption constant
@@ -42,37 +39,28 @@ Under the assumption of local thermodynamic equilibrium (LTE) the black body rad
 with Planck's constant $h$ and velocity of light $c$ \cite{}.
 For fundamentals on the Radiative transfer equation we recommend \cite[Chapter 1]{rybicki2000rte}.
 
-%The absorption constant $k(\nu, T)$ for a single gas molecule at a specific wave number $\nu$ is calculated according to the HITRAN database \cite{gordon2022hitran2020} and acts as a source function when multiplied with the black body radiation $B(\nu,T)$, given by Planck`s law~\cite{rybicki2000rte}.
-%We calculate the source function $B(\nu, T)$ and the absorption constant $ k(\nu, T)$ as follows.
-%assumption local thermaodynamic equilibrium
-%For one species at one specific wave-number the weighted absorption constant becomes
-%\begin{align}
-%	\overline{k(\nu, T, r)}    = \sum_{m=1}^{molec} k_m(\nu, T) x_m(r) =  k(\nu, T) x(r) \, ,
-%\end{align}
-%with the volume mixing ratio of ozone $x(r)$ at location $r$. 
-
-
-To enable matrix-vector multiplication, we discretise the atmosphere in $n$ layers, where the $i^\text{th}$ layer is defined by two spheres of radii $h_{L,i-1} < h_{L,i}$, for $i = 1, \dots, n$, with $h_0$ and $h_{L,n} $.
+To enable matrix-vector multiplication, we discretise the atmosphere in $n$ layers, where the $i^\text{th}$ layer is defined by two spheres of radii $h_{L,i-1} < h_{L,i}$, for $i = 1, \dots, n$, with $h_{L,0}$ and $h_{L,n} $.
 Then we can discretise the ozone, pressure and temperature profiles as a function of height, where in between the heights $h_{L,i-1}$ and $h_{L,i}$, each of the ozone concentration $x_{i}$, the pressure $p_{i}$, the temperature $T_{i}$, as well as the thermal radiation is assumed to be constant.
-Above $h_{L, n} = $ and below $h_{L,0} = $, the ozone concentration is set to zero, so no signal can be obtained.
-Depending on the parameter of interest, which is either the ozone volume mixing ratio $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$ or the fraction of pressure and temperature $\bm{p/T}= \{p_1/T_1,p_2/T_2,\ldots,p_n/T_n\} \in \mathbb{R}^{n} $, we solve the integral in Eq.~\eqref{eq:RTE} using the trapezoidal rule so that we can rewrite the integral to a vector multiplication $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} $ or $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{p}/ \bm{T} $, where the non-linear absorption $\tau(r)$ is included in $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T})$.
-Here, the row vector $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{n}$  defines a Kernel for each measurement so that the data vector
+Above $h_{L, n}$ and below $h_{L,0} $, the ozone concentration is set to zero, so no signal can be obtained.
+Depending on the parameter of interest, which is either the ozone volume mixing ratio $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$ or the fraction of pressure and temperature $\bm{p/T}= \{p_1/T_1,p_2/T_2,\ldots,p_n/T_n\} \in \mathbb{R}^{n} $
+we rewrite the integral in Eq.~\eqref{eq:RTE} for one noise free measurement using the trapezoidal rule as a vector-vector multiplication $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} $ or $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{p}/ \bm{T} $, where the non-linear absorption $\tau(r)$ is included in $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{n}$ which is the $j$-th row of the matrix $\bm{A}(\bm{x},  \bm{p},\bm{T})$.
+Then given a noise vector $\bm{\eta} \in \mathbb{R}^{m}$ the data vector
 \begin{align}
-	\bm{y} = \bm{A}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} + \bm{\eta}= \bm{A}(\bm{x},  \bm{p},\bm{T}) \,
-	\frac{ \bm{p}}{\bm{T}} + \bm{\eta} \, .
+	\bm{y} = \bm{A}_{NL} \, \bm{x} + \bm{\eta}= \bm{A}_{NL} \,
+	\frac{ \bm{p}}{\bm{T}} + \bm{\eta} \, 
 \end{align}
-can be written as a matrix-vector multiplication, with the matrix $\bm{A}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{m \times n}$ and the noise vector $\bm{\eta} \in \mathbb{R}^{m}$.
-Note, for simplicity, we do not explicitly specify whether $\bm{A}(\bm{x}, \bm{p}, \bm{T})$ is constructed conditioned on $\bm{x}$ or $\bm{p}/\bm{T}$ and we ignore temperature dependencies of the pressure, absorption constant or the black body radiation.
+is based on a matrix-vector multiplication, where we define $\bm{A}(\bm{x},  \bm{p},\bm{T}) \equiv \bm{A}_{NL} \in \mathbb{R}^{m \times n}$ for simplicity so that $\bm{A}_{NL}\bm{x}$ or $\bm{A}_{NL}\bm{p}/\bm{T}$ implies the construction of $\bm{A}_{NL}$.
+If we neglect the absorption, e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}, this problem becomes a linear problem with the forward model given by $\bm{A}_{L}\bm{x}$ or $\bm{A}_{L}\bm{p}/\bm{T}$. 
+Further, we classify the inverse problem as weakly non-linear, see e.g. Fig. \ref{fig:MapAsses}, as neglecting the absorption changes the measurement only slightly.
 
-Since the measurement process includes absorption $\tau(r)$, which reduces measurements only slightly, we classify the inverse problem as weakly non-linear. 
-Hence, we can approximate the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T})$ with a map $\bm{M}$ and the linear forward model $\bm{A}_L$, so that $\bm{A}(\bm{x},  \bm{p},\bm{T}) \approx \bm{M} \bm{A}_L $.
-Here, $\bm{A}_{L,j} $ of matrix $\bm{A}_L \in \mathbb{R}^{m \times n}$ is defined by the linear forward model, where absorption is neglected, e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}. 
-Then each entry in the row vector $\bm{A}_{L,j} $ is either defined by $ B(\nu) k(\nu)   \frac{\bm{p}}{k_{\text{B}} \bm{T}}  \text{d}r$ or $B(\nu) k(\nu)   \frac{\bm{x}}{k_{\text{B}}}  \text{d}r$, as in Eq.~\eqref{eq:RTE}.
-This poses a linear inverse problem with the forward map defined by the matrix $\bm{A} = \bm{M} \bm{A}_L$, where $\bm{M}$ is, more specifically, an affine map.
+%Hence, we can approximate the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T})$ with a map $\bm{M}$ and the linear forward model $\bm{A}_L$, so that $\bm{A}(\bm{x},  \bm{p},\bm{T}) \approx \bm{M} \bm{A}_L $.
+%Here, $\bm{A}_{L,j} $ of matrix $\bm{A}_L \in \mathbb{R}^{m \times n}$ is defined by the linear forward model, where absorption is neglected, e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}. 
+%Then each entry in the row vector $\bm{A}_{L,j} $ is either defined by $ B(\nu) k(\nu)   \frac{\bm{p}}{k_{\text{B}} \bm{T}}  \text{d}r$ or $B(\nu) k(\nu)   \frac{\bm{x}}{k_{\text{B}}}  \text{d}r$, as in Eq.~\eqref{eq:RTE}.
+%This poses a linear inverse problem with the forward map defined by the matrix $\bm{A} = \bm{M} \bm{A}_L$, where $\bm{M}$ is, more specifically, an affine map.
 
 
-\textcolor{red}{$h_{L,0}$ does not influences the values for $p_{L,O}/T_{L,0}$}
-\textcolor{red}{dont include bend of the line integral}
+%\textcolor{red}{$h_{L,0}$ does not influences the values for $p_{L,O}/T_{L,0}$}
+%\textcolor{red}{dont include bend of the line integral}
 
 %\begin{figure}[ht!]
 %	\centering
@@ -81,3 +69,12 @@ This poses a linear inverse problem with the forward map defined by the matrix $
 %		Here, $\ell_j \in \mathbb{N}$ denotes the index corresponding to the tangent height $h_{\ell_j}$ relative to the Earth's radius $R_E$. This setup forms the basis for the numerical solution of the integral in Eq.~\ref{eq:RTE}, known as the radiative transfer equation.}
 %	\label{fig:FirstLIMB}
 %\end{figure}
+
+%The absorption constant $k(\nu, T)$ for a single gas molecule at a specific wave number $\nu$ is calculated according to the HITRAN database \cite{gordon2022hitran2020} and acts as a source function when multiplied with the black body radiation $B(\nu,T)$, given by Planck`s law~\cite{rybicki2000rte}.
+%We calculate the source function $B(\nu, T)$ and the absorption constant $ k(\nu, T)$ as follows.
+%assumption local thermaodynamic equilibrium
+%For one species at one specific wave-number the weighted absorption constant becomes
+%\begin{align}
+%	\overline{k(\nu, T, r)}    = \sum_{m=1}^{molec} k_m(\nu, T) x_m(r) =  k(\nu, T) x(r) \, ,
+%\end{align}
+%with the volume mixing ratio of ozone $x(r)$ at location $r$. 
