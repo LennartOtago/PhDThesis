@@ -493,7 +493,7 @@ We calculate the integrated autocorrelation time (IACT) with the python implemna
 \subsection{Tensor-train approximation of the marginal posterior distribution for ozone}
 \label{sec:firstMargTT}
 Alternatively we can approximate the marginal posterior with a tensor-train (TT) of the square root of marginal posterior on a predefined grid.
-We define a grid similar to the sampling region of the MWG sampler with 25 grid points in each dimension and use the \texttt{rect\_cross.cross} algorithm from the \texttt{ttpy} python package, based on the rect cross algorithm in \cite{}, to caclulate the cores of each dimesnion in less than $0.1$s.
+We define a grid similar to the sampling region of the MWG sampler with 25 grid points in each dimension and use the \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} python package, based on the rect cross algorithm in \cite{}, to caclulate the cores of each dimesnion in less than $0.1$s.
 We set the number of ranks to a constant value $r = 4$ and optimse over those rankes with one sweep.
 To avoid underflow we have to add a 'normalisation' constant $c = 460$ so that $\pi(\lambda | \gamma ,\bm{y}) = \exp\{ \log{\pi(\lambda | \gamma, \bm{y})} + c\}$.
 Then we calculate the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as described in section \ref{}, assuming an absolute error of $1$ the constant $\xi = 1/ \uplambda(\mathcal{X}) $. 
@@ -619,17 +619,43 @@ We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the 
 	\label{fig:O3SolplsReg}
 \end{figure}
 \clearpage
+
 \section{Posterior distribution for pressure/temperature with approximated non-linear model}
-
-\begin{align}
-	\begin{split}
-		\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert^2 \\ &+ \ln{\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T}) + c \Bigr\}  }
-	\end{split} \, ,
-\end{align}
-
-
 \label{sec:postPT}
 
+The aim now is to characterise the posterior
+\begin{align}
+	\begin{split}
+		\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert^2 \\ &+ \ln{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T}) \Bigr\}  }
+	\end{split} \, ,
+	\label{eq:postPT}
+\end{align}
+we condition on the ozone sample in Fig. \ref{fig:O3SolplsReg}, a $\gamma$ sample from the marginal posterior and use the approximated forward model $\bm{A} = \bm{M}\bm{A}_L$.
+To validate the approximation we sample from the posterior using the t-walk \cite{christen2010general} implementaion in python \cite{christentwalkaccess}.
+
+
+Again we define a grid with 25 grid points in each dimesnion, which also act as the sampling space.
+Since we appproximate a 16 dimensional function we have to carefully choose a grid as we do not want to approximate regions with low probabilty and like to keep the number of grid points low as this increses computaion time.
+We find the grid, see Tab. \ref{tab:priors}, iteratively by running the t-walk and then computing marginal distriubtions.
+Note that we bound the sampling space of the t-walk by TT-grid.
+We run the  \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} python package \cite{} with constan rank $r = 16$, equal to dimesinon of the posterior.
+Next, we introduce a constant $c$ in the posterior, which acts as a normalisation constant and is needed when approximating the sqaure root of the posterior for pressure and temperature with a tensor-train (TT) to avoid underflow.
+Then the posterior becomes:
+\begin{align}
+	\begin{split}
+		\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert^2 \\ &+ \ln{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T}) + c \Bigr\}  }
+	\end{split} \, .
+	\label{eq:TTpostPT}
+\end{align}
+To find the constant $c$ we evaluate the logarithmic of posterior on 5000 random points and calcualte the maximum $c_{\text{max}} < 0$ of those 5000 points.
+Then we set the constant to a value which pushes the posterior close to the upper numerical limit of our machine, which is approximately $e ^{700}$.
+Since we approximate the sqare root, we conseravatively set the constant to $c = -c_{\text{diff}} + 325$.
+It takes roughly $2$min for 15 sweep by the \texttt{cross} the to find the optimal tensors.
+Then we can compute the marginal as in Sec. \ref{sec:tensortrain}, where we set $\xi = 1 / \uplambda{\mathcal{X}}$.
+
+For comparison we run the t-walk on the posterior as defined in Eq. \ref{eq:postPT} for $5 \times 10^6$ steps plus a burn-in period of $10000$, which takes around $7$ mins on the same laptop.
+We plot the resulting histograms in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}, additionally we plot the trace of the samples in Fig. \ref{fig:TraceTwalk}.
+The integrated autocorrelaton times (IACT) for the hyper-parameters range from $0$ to $1000$ and are summarized in Tab. \ref{tab:priors}
 %\begin{figure}[thb!]
 %	\centering
 %	\begin{tikzpicture}
@@ -673,22 +699,6 @@ We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the 
 %		\ref{fig:PriorPressOverTemp} and \ref{fig:SeaLevelHist}. Note that here we use the updated forward model $\bm{M} \bm{A}_L$ and conditioned on a $\gamma$ sample from the previously evaluated marginal posterior see Fig. \ref{fig:MargPostHistTT}. }
 %	\label{fig:DAGPT}
 %\end{figure}
-
-\begin{align}
-	\begin{split}
-		\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert^2 \\ &+ \ln{\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T}) + c \Bigr\}  }
-	\end{split} \, ,
-\end{align}
-
-To find the posterior pressure and temperature we condition on a $\gamma$ sample, by fitting a normal distribution to either the samples or the TT approximation of $\pi(\gamma|\bm{y})$ plotted as a red line in Fig. \ref{fig:MargPostHistTT}, and the ozone sample plotted in \ref{fig:O3SolplsReg}, which is also used to find the affine map.
-Consequently we use the updated forward map $\bm{A}= \bm{M}\bm{A}_L$ and the posterior is given by 
-\begin{align}
-	\begin{split}
-	\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert^2 \\ &+ \ln{\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T}) + c \Bigr\}  }
-	\end{split} \, ,
-\end{align}
-where $c$ is a constant needed for the TT approximation to avoid underflow.
-
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost0.png}
@@ -719,24 +729,9 @@ where $c$ is a constant needed for the TT approximation to avoid underflow.
 	\caption[Histograms and TT approximation of posterior distribution as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line.}
 	\label{fig:PostHistTT4}
 \end{figure}
-We define a grid for each of the hyper-parameters, see Tab. \ref{tab:priors}, and set the grid points to $40$ and optimise over a set number of ranks equal to the dimension of 15.
-To define the constant c we evaluate $\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert^2 + \ln{\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T})}$ at $100$ randomly chosen grid points and set $c$ to the negative half of the maximum value of those.
-We terminate the \texttt{rect\_cross.cross} algorithm from the \texttt{ttpy} python package if the relative error provided by the algorithm is smaller than $0.1$ or after 10 sweeps, which takes roughly $1-2$ mins on a MacBook Pro from 2019 with 2.4 Ghz quadcore intel core i5 processor.
-Then we calculate the marginals as in section \ref{sec:tensortrain} with a constant $= 1e-15$ and plot the results in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4} as an orange line.
-
-On the same grid we run the t-walk, with the constant set to zero as the t-walk evaluates the function $- \ln{\pi(h_1,p_0,b_1,b_2,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) }$ we do not run into numerical issues.
-We download the t-walk from \cite{christentwalkaccess} and let it take $1000000$ steps plus a burn-in period of $1000$, which takes around $7$ mins on the same laptop.
-The resulting histogram are plotted in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}, additionally we plot the trace of the samples in Fig. \ref{fig:TraceTwalk}
-\textcolor{red}{integrated autocorrelation time, roughly efficient independent samples}
 \clearpage
-
-Resukts of TT and t-walk overlap say the same
-for temperatuer we do not gain any more information than priors
-Priors are posterior
-For pressure the  gain more information
-\textcolor{red}{grid size refer to figure}
-
-Then we can either fit normal distribution to the marginals or draw samples from the output of the t-walk to calculate temperature and pressure profiles according to their respective functions, see Eq. \ref{eq:tempFunc} and \ref{eq:pressFunc}.
+To obtain temperature and pressure profiles we can either take samples from the output of the t-walk or by generating random values between 0 and 1 and comparing it to the  cumulative distribution functions.
+We plot the posterior temperatire und pressure profiles in Fig. \ref{fig:TempPost} and Fig. \ref{fig:PressPost}.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{TempPostMeanSigm.png} 
@@ -751,16 +746,19 @@ Then we can either fit normal distribution to the marginals or draw samples from
 	\label{fig:PressPost}
 \end{figure}
 \clearpage
+
+
 \section{Error analysis}
-In this section we try to estimate errors due to the approximations of functions within the here shown methodology.
+In this section we try to estimate errors due to the function approximations of $f(\lambda)$ and $g(\lambda)$ and how these errors propagate to the marginal posterior.
+Additionally we discuss errors of the TT-approximation as well as Monte-Carlo errors when binning up the samples.
 
 \subsubsection{Error due to approximation of f and g}
 \label{sec:fgErros}
 When approximating the functions $f(\lambda)$ and $g(\lambda)$ we find that the 3rd order Taylor series of $f(\lambda)$ and a linear approximation of $g(\lambda)$ in log-space gives the smallest error.
-The Taylor series truncation error of $f(\lambda)$ is bounded by the fourth order Taylor series $E_f = \underset{\lambda}{\text{arg max}\,} f^{(4)}(\lambda_0)/ 4! \, (\lambda - \lambda_{0} )^4$ and corresponds to an relative error of approximately $20\%$.
+The Taylor series truncation error of $f(\lambda)$ is bounded by the fourth order Taylor series $E_f = \underset{\lambda}{\text{arg max}\,} f^{(4)}(\lambda_0)/ 4! \, (\lambda - \lambda_{0} )^4$ and corresponds to an relative error bounded by $20\%$.
 Since the maximum absolute error of the approximation $\underset{\lambda}{\text{arg max}\,}|\tilde{g}(\lambda) - g(\lambda) | \approx 1$ corresponds to an relative error of approximately $0.3\%$ and is small compared to $E_f \approx 1e8$ we ignore the approximation error of $g(\lambda)$.
 Then the maximum relative propagation error $\underset{\lambda, \gamma}{\text{arg max}\,} 0.5 \gamma  E_f / \log{\pi{(\lambda ,\gamma | \bm{y})}} $ is bound by approximately $5\%$.
-
+\subsubsection{Tensor-train approximation error for the marginal posterior}
 When approximating the marginal posterior the maximum relative propagation error $\underset{\lambda , \gamma}{\text{arg max}\,}|\tilde{\pi}(\lambda,\gamma|\bm{y}) - \pi(\lambda,\gamma|\bm{y}) |/ |\pi(\lambda,\gamma|\bm{y})|$ is approximately $100\%$ at $\gamma_{\text{max}}$ and $\lambda_{\text{max}}$, which are the maximum values of the $\lambda$ and $\gamma$ samples and lay in regions with very low probability.
 We consider this error negligible because the absolute error at $\gamma_{\text{max}}$ and $\lambda_{\text{max}}$ is smaller than $10^{-24} \approx 0$.
 
