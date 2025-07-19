@@ -315,21 +315,21 @@ Here, each TT-core is given by
 where $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the $k$-th coefficient tensor and $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ are the basis functions corresponding to the $k$-th coordinate.
 The approximated density is written as:
 \begin{align}
-	\pi(\bm{x}) \approx \gamma' + (\sqrt{\tilde{\pi}})^2(\bm{x}),
+	\pi(\bm{x}) \approx \xi + (\sqrt{\tilde{\pi}})^2(\bm{x}),
 \end{align}
-where $\gamma'$ is a positive constant added according to the absolute error and the Lebesgue weighting, see Eq. \ref{eq:lebesgueWeight}, such that
+where $\xi$ is a positive constant added according to the absolute error and the Lebesgue weighting, see Eq. \ref{eq:lebesgueWeight}, such that
 \begin{align}
-	0 \leq \gamma' \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \sqrt{\tilde{\pi}} - \sqrt{\pi} \rVert_2^2.
+	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \sqrt{\tilde{\pi}} - \sqrt{\pi} \rVert_2^2.
 \end{align}
 This leads to the normalised target function
 \begin{align}
-	f_X(x)  \approx \frac{1}{z} \left( \uplambda(x) \gamma'  + \uplambda(x) \tilde{\pi}(x) \right),
+	f_X(x)  \approx \frac{1}{z} \left( \uplambda(x) \xi  + \uplambda(x) \tilde{\pi}(x) \right),
 \end{align}
 where $z$ is the normalisation constant.
 Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{X_k}(x_k)$ can be expressed as
 \begin{align}
 	\begin{split}
-		f_{X_k}(x_k)  \approx \frac{1}{z} \Bigg(&\gamma' \prod_{i=1}^{k-1} \uplambda_i(\mathcal{X}_i) \prod_{i=k+1}^{d} \uplambda_i(\mathcal{X}_i) \\
+		f_{X_k}(x_k)  \approx \frac{1}{z} \Bigg(&\xi \prod_{i=1}^{k-1} \uplambda_i(\mathcal{X}_i) \prod_{i=k+1}^{d} \uplambda_i(\mathcal{X}_i) \\
 		&+ \left( \int_{\mathbb{R}} \uplambda_1(x_1) \bm{G}_1^2(x_1)  \, \mathrm{d}x_1 \right) \cdots 
 		\left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \bm{G}_{k-1}^2(x_{k-1}) \, \mathrm{d}x_{k-1} \right) \\
 		& \uplambda_k(x_k) \bm{G}_k^2(x_k)  \\
@@ -392,7 +392,7 @@ The proposition used to compute $\bm{B}_k$, stated in Proposition~\ref{prob:back
 \end{prop}
 After computing the coefficient tensors $\bm{B}_{\text{pre}, k+1}$ as in Prop.~\ref{prob:ForMarg} and $\bm{B}_{k+1}$ from Prop.~\ref{prob:backMarg}, the marginal PDF of $k$-th dimension can be expressed as
 \begin{equation}
-	f_{X_k}(x_k)  \approx \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \uplambda_k(x_k),
+	f_{X_k}(x_k)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \uplambda_k(x_k),
 \end{equation}
 where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ and $\bm{R}_{\text{pre},k-1}\in \mathbb{R}^{r_{k-1} \times r_{k-1}}$ and $\bm{B}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$
 \begin{equation}
@@ -401,12 +401,12 @@ where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ and $\bm{R}_{\text
 
 For the first dimension, $f_{X_1}(x_1)$ can be expressed as
 \begin{equation}
-	f_{X_1}(x_1)  \approx \frac{1}{z} \left(\gamma^{\prime} \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1),
+	f_{X_1}(x_1)  \approx \frac{1}{z} \left(\xi \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1),
 \end{equation}
 where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$,
 and similarly in the last dimension
 \begin{equation}
-	f_{X_d}(x_d)  \approx \frac{1}{z} \left(\gamma^{\prime} \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{n-1}=1}^{r_{d-1}} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_d[l_{n-1},i] \right)^2 \right) \uplambda_d(x_d),
+	f_{X_d}(x_d)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{n-1}=1}^{r_{d-1}} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_d[l_{n-1},i] \right)^2 \right) \uplambda_d(x_d),
 \end{equation}
 where $\bm{D}_d[l_{n-1},i] = \bm{B}_{\text{pre},d}[l_{n-1}, i, \alpha_{n+1}]$ and $\alpha_{d+1} = 1$.
 Note that we calculate the normalisation numerically within the process of finding the marginals so that $\sum f_{X_k}(x_k) = 1$.
@@ -494,7 +494,7 @@ Then we find the affine map
 		\text{---} & r_m &   \text{---}
 	\end{bmatrix} \, \in \mathbb{R}^{m \times m} ,
 \end{align}
-row wise by solving $v_j = r_j \bm{W}$, so that $ \bm{A} = \bm{M} \bm{A}_{NL} \approx \bm{A}_{NL} $.
+row wise by solving $v_j = r_j \bm{W}$ for $ r_j $, so that $ \bm{A} = \bm{M} \bm{A}_{NL} \approx \bm{A}_{NL} $.
 Alternately one could also compute $\bm{M}$ using the inverse $\bm{W}^{-1}$.
 
 \section{Regularisation}
