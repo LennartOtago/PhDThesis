@@ -284,8 +284,8 @@ In this thesis we compute the mean
 \begin{align}
 	\Sigma_{\bm{x}|\bm{y}} = \int \gamma^{-1}  \pi(\gamma | \bm{y} ) \, \text{d} \gamma \, \int  \bm{B}_{\lambda}^{-1} \, \pi(\lambda | \bm{y} )  \, \text{d} \lambda  \approx \sum {\gamma_i}^{-1}\pi(\gamma_i| \bm{y}) \sum \bm{B}_{\lambda_i}^{-1}\pi(\lambda_i| \bm{y})\, \label{eq:CovInt}
 \end{align}
-as weighted expectations, by quadrature \cite[Sec. 2.1]{Dick_Kuo_Sloan_2013}
-If that is too costly the randomise-then-optimise (RTO) \cite{bardsley2015randomize, fox2016fast} may be a feasible alternative to compute samples from Eq. \ref{eq:CondPost}.
+as weighted expectations, by quadrature \cite[Sec. 2.1]{Dick_Kuo_Sloan_2013}, with $\sum \pi(\lambda_i| \bm{y}) = \sum \pi(\gamma_i| \bm{y}) = 1$.
+If that is too costly the randomise-then-optimise (RTO) \cite{bardsley2015randomize, fox2016fast} may be a feasible alternative to sample from Eq. \ref{eq:CondPost}.
 
 \begin{figure}[ht!]
 	\centering
@@ -406,9 +406,9 @@ which is, conditioned on the noise hyper-parameter $\gamma$, the ozone profile $
 \label{sec:affineMap}
 With the posterior distributions formulated we now want to find an affine map $\bm{M}$ to approximate the non-linear forward model, we summarized the strategy for doing so in Fig. \ref{fig:affinStrat}.
 We focus on the posteroir distribution of ozone profiles, by conditioning on pressure and temperature, as this is a quick process when using the MTC method.
-We approximate and sample from the marginal posterior$ \pi(\gamma , \delta|\bm{y})$ and then charcterise the conditional posterior distribution $\pi(\bm{x}|\bm{y})$ based on the linear forward model $\bm{A}_L$ which neglects absorption, see Eq. \ref{eq:RTE}.
-Then, we can generate two affine subspaces $\bm{W} = \{\bm{A}_L\bm{x}^1, \dots, \bm{A}_L\bm{x}^m \}$ and $\bm{V} = \{\bm{A}_{NL}\bm{x}^1, \dots, \bm{A}_{NL}\bm{x}^m \}$, with $\bm{x}^{j} \sim \pi{\bm{x}|\bm{y}}$ for $j = 1, \dots,m$.
-Finally we use the \texttt{numpy.linalg.solve} python function to solve $ \bm{M}\bm{W} = \bm{V}$, see Sec. \ref{sec:affine} for more details.
+We approximate and sample from the marginal posterior $ \pi(\gamma , \delta|\bm{y})$ and then charcterise the full conditional posterior distribution $\pi(\bm{x}|\bm{y})$ based on the linear forward model $\bm{A}_L$ which neglects absorption, see Eq. \ref{eq:RTE}.
+Given samples $\bm{x} \sim \pi(\bm{x}|\bm{y})$ from the full conditional posterior distribution we can generate two affine subspaces based on the linear and non-linear model and find the mapping in between those.
+
 \begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}
@@ -491,7 +491,8 @@ We calculate the integrated autocorrelation time (IACT) with the python implemna
 %\end{algorithm}
 
 \subsection{Tensor-train approximation of the marginal posterior distribution for ozone}
-Alternatively we can approximate marginal posterior with a tensor-train (TT) of the square root of marginal posterior on a predefined grid.
+\label{sec:firstMargTT}
+Alternatively we can approximate the marginal posterior with a tensor-train (TT) of the square root of marginal posterior on a predefined grid.
 We define a grid similar to the sampling region of the MWG sampler with 25 grid points in each dimension and use the \texttt{rect\_cross.cross} algorithm from the \texttt{ttpy} python package, based on the rect cross algorithm in \cite{}, to caclulate the cores of each dimesnion in less than $0.1$s.
 We set the number of ranks to a constant value $r = 4$ and optimse over those rankes with one sweep.
 To avoid underflow we have to add a 'normalisation' constant $c = 460$ so that $\pi(\lambda | \gamma ,\bm{y}) = \exp\{ \log{\pi(\lambda | \gamma, \bm{y})} + c\}$.
@@ -507,13 +508,18 @@ We plot the TT approximation as a colour map on top of the obtained samples in t
 
 \subsection{Calculate mean and variance of the conditional posterior for ozone}
 \label{subsec:firstCond}
-We get function values for the marginal posterior either by binning the samples in Fig. \ref{fig:ScatterPlotTT} into a normalised histogram and use the height of the bars as quadrature weights, e.g. $\pi(\lambda_i| \bm{y})$, where $\lambda_i$ is at the centre of each bin, or from the TT approximation of $\sqrt{ \pi(\gamma, \delta | \bm{y}) }$, see also Fig. \ref{fig:MargPostHistTT}.
+Based on the marginal posteror distribution $\pi(\gamma, \delta | \bm{y})$ we calclulate the weighted mean and covariance of the conditional posterior $\pi(\bm{x} | \gamma, \delta, \bm{y})$ by quadrature as in Eq. \ref{eq:MeanInt} and Eq. \ref{eq:CovInt}.
 
+By binning the samples from the MWG algorithm, see Fig. \ref{fig:ScatterPlotTT}, into a normalised histogram with 25 bins we obtain function values for the marginal posterior.
+With the height of the bars as quadrature weights, e.g. $\pi(\lambda_i| \bm{y})$, where $\lambda_i$ is at the centre of each bin we caculate the full conditional mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and covariance matrix $\bm{\Sigma}_{\bm{x}|\bm{y}}$ as weighted expecations.
 
-The integral can be interpreted as the weighted average, with $\sum \pi(\lambda_i| \bm{y}) = 1$ for normalised marginal functions.
-To calculate calculate the covariance matrix $(\gamma \bm{B}_{\lambda})^{-1} $, we use Cholesky forward and backward substitution to invert $\bm{B}_{\lambda}$, solve the integral in Eq. \ref{eq:CovInt} $5$ times.
-We plot the mean and variance in Figure \ref{fig:O3Samp}.
-Note that we reject samples from the conditional posterior with negative ozone values since that is unphysical.
+Alternatively we use the marginal distrinbutiuons $\pi(\delta | \bm{y})$ and $\pi(\gamma | \bm{y})$ from the TT approximation of $\sqrt{\pi(\delta, \gamma | \bm{y})}$ to caculate 
+weighted expecations of $\bm{\mu}_{\bm{x}|\bm{y}}$ and $\bm{\Sigma}_{\bm{x}|\bm{y}}$.
+
+In practise, we have to invert $\bm{B}_{\lambda} $ and caclulate $\bm{x}_{\lambda}$, see Eq. \ref{eq:CondPost} 25 times (TT grid size and number of bins).
+A feasablie method is the Cholesky forward and backward substitution.
+It takles his takes roughly $1$s to compute the mean and variance, which we plot in Fig. \ref{fig:O3Samp} including samples.
+Note that we reject unphysical samples from the conditional posterior with negative ozone values.
 
 \begin{figure}[ht!]
 	\centering
@@ -536,13 +542,19 @@ Note that we reject samples from the conditional posterior with negative ozone v
 %
 %The histogram in is binned as we intergate over it to 7 bins
 \subsection{Asses approximated forward map}
-Finally, we are able approximate the non-linear forward model
+Given $m$ samples $\bm{x}^{j} \sim \pi{\bm{x}|\bm{y}}$ for $j = 1, \dots,m$ from the full conditional, as plotted in\ref{fig:O3Samp}, we finally are able approximate the non-linear forward model
 \begin{align}
 	\bm{A}_{NL} \approx \bm{M A}_L = \bm{A} \, ,
 \end{align}
 with the affine map $\bm{M}$ and the linear forward model $\bm{A}_L$.
-In Fig. \ref{fig:MapAsses} we asses the affine map using one of the samples $\bm{x} \sim \pi(\bm{x}|, \gamma, \lambda, \bm{y}) $ from the conditional posterior and calculate the relative error $|| \bm{M}\bm{A}_L \bm{x} - \bm{A}_{NL} \bm{x} || / || \bm{M}\bm{A}_L \bm{x} ||$ in percent between the mapped noise free data and the noise free data based on the non-linear forward.
-As displayed in Fig. \ref{fig:MapAsses} we can approximate the non-linear forward model well within the relative difference between the noisy data and noise free non-linear data which is approximately $ 1.7 \%$ and from here on will use the approximated forward map.
+In doing so, we can generate two affine subspaces $\bm{W} = \{\bm{A}_L\bm{x}^1, \dots, \bm{A}_L\bm{x}^m \}$ and $\bm{V} = \{\bm{A}_{NL}\bm{x}^1, \dots, \bm{A}_{NL}\bm{x}^m \}$.
+Finally we use the \texttt{numpy.linalg.solve} python function to solve $ \bm{M}\bm{W} = \bm{V}$ for each row of $ \bm{M}$ , see Sec. \ref{sec:affine} for more details.
+
+
+
+We asses the affine map using one of the samples $\bm{x} \sim \pi(\bm{x}|, \gamma, \lambda, \bm{y}) $ from the conditional posterior and calculate the relative error\textcolor{red}{ $|| \bm{M}\bm{W} - \bm{V}  || / || \bm{M}\bm{W} ||$ } between the mapped noise free data and the noise free data of non-linear forward model.
+We display the approximatin for one $\bm{x}$ sample in Fig. \ref{fig:MapAsses} we can approximate the non-linear forward model well within the relative difference between the noisy data and noise free non-linear data, which is approximately $ 1.7 \%$.
+Consquently, from here on will use the approximated forward map.
 \begin{figure}[ht!]
 	\centering
 	%\includegraphics{SampMapAssesment.png}
@@ -551,25 +563,25 @@ As displayed in Fig. \ref{fig:MapAsses} we can approximate the non-linear forwar
 	\label{fig:MapAsses}
 \end{figure}
 
+%$|| \bm{M}\bm{A}_L \bm{x} - \bm{A}_{NL} \bm{x} || / || \bm{M}\bm{A}_L \bm{x} ||$
 
 \section{Solution by regularisation}
-\label{subsec:reg}
-Additionally, we calculate a solution by Tikhonov regularisation as this is most similar to our chosen linear-Gaussian Bayesian framework.
+\label{sec:reg}
+Since we like to compare the MTC method to regularisation methods, we calculate a solution by Tikhonov regularisation as this is most similar to our chosen linear-Gaussian Bayesian framework.
 The Tikhonov regularised solution is defined as~\cite{hansen2010discrete} 
 \begin{align}
 	\bm{x}_{\lambda} =\underset{ \bm{x}}{\arg \min}\,  \lVert \bm{A}\bm{x} - \bm{y} \rVert_2^2 + \lambda \bm{x}^T \bm{L} \bm{x} \, ,
 	\label{eq:XLam}
 \end{align}
 with the regularisation parameter $\lambda = \delta / \gamma$.
-This maximises the full conditional distribution for $\bm{x}$, so is not, as often erroneously stated, the maximum a posteriori (MAP) estimate which includes at the hyper-parameters.
-The regularised solution is typically calculated by solving the normal equations, see Eq. \ref{eq:regSol},
+The regularised solution is typically calculated by solving the normal equations, see Sec. \ref{sec:regularise},
 \begin{align}
 	\bm{x}_{\lambda} = (\bm{A}^T\bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y} \label{eq:xLam} \, .
 \end{align}
-In doing so we find the best regularisation parameter using the L-curve method~\cite{hansen1993use}.
-Within this method we compute $\bm{x}_\lambda$, see Equation \eqref{eq:xLam}, for 200 different $\lambda$ values in between $1$ to $10^7$ and plot the solution semi norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{x} \rVert$, see Figure \ref{fig:LCurve}. 
+To find the best regularisated solution we use the L-curve method~\cite{hansen1993use}.
+Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $1$ to $10^7$ and plot the solution semi norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{x} \rVert$, see Figure \ref{fig:LCurve}. 
 The best regularised solution corresponding to the corner of the L-curve is located at the point of maximum curvature, see triangle in Fig. \ref{fig:LCurve}, which we find with the kneedle algorithm~\cite{satopaa2011kneedle} using the python function \texttt{kneed.KneeLocator}.
-This takes roughly seconds on a MacBook Pro from 2019 with 2.4 Ghz quadcore intel core i5 processor.
+This takes roughly $2$ seconds on a MacBook Pro from 2019 with 2.4 Ghz quadcore intel core i5 processor.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{LCurvePhD.png}
@@ -577,29 +589,17 @@ This takes roughly seconds on a MacBook Pro from 2019 with 2.4 Ghz quadcore inte
 	\label{fig:LCurve}
 \end{figure}
 
-\textcolor{red}{Sol Reg vs Mean, vs samples, see L-Curve}
-
-
 
 \section{Characterise the posterior distribution of ozone with approximated non-linear model}
-
 From here on we use the approximation
 \begin{align}
 	 \bm{A} =  \bm{M A}_L \, 
 \end{align}
-of the non-linear forward map to be able to treat the problem as a linear inverse problem.
-We use the exact same setup as in Sec. \ref{sec:firstMTC} but with the updated forward map $\bm{A}$.
+of the non-linear forward map and use the exact same setup as in Sec. \ref{sec:firstMarg} and \ref{subsec:firstCond} but with the approximated forward map.
 
-\subsection{Hyper-parameters samples from and tt approximation of the marginal posterior distribution}
-With the updated forward map the marginal posterior distribution becomes
-\begin{align}
-	\pi(\lambda, \gamma | \bm{y})
-	\propto  \lambda^{n/2} \gamma^{m/2}   \exp{ \Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) \Bigr\} } \pi(\lambda, \gamma),
-	\label{eq:UpdMargPostAppl}
-\end{align}
-
-
-We run the MWG algorithm and plot the samples in Fig. \ref{fig:MargPostHistTT} as well as the marginal approximations provided by the TT decomposition.
+\subsection{Hyper-parameters samples from and TT approximation of the marginal posterior distribution}
+The marginal posterior is defined as in Eq. \ref{eq:marg} but with $ \bm{A} =  \bm{M A}_L$.
+We run the MWG algorithm for $N = 20000$ plus $N_{\text{burn-in}} = 100$ and plot the samples in Fig. \ref{fig:MargPostHistTT} as well as the marginal approximations provided by the TT decomposition, where we use the same setup as in Sec. \ref{sec:firstMargTT}.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{secSIRTMargMargO3Res.png}
@@ -607,16 +607,10 @@ We run the MWG algorithm and plot the samples in Fig. \ref{fig:MargPostHistTT} a
 	\label{fig:MargPostHistTT}
 \end{figure}
 
-
-
 \subsection{Conditional posterior variance and mean compared to regularised solution}
-Next, we generate samples from the updated conditional posterior
-\begin{align}
-	\bm{x}| \delta, \gamma, \bm{y}  \sim \mathcal{N}\big( \underbrace{ (\bm{A}^T \bm{A} + \delta / \gamma \bm{L} )^{-1} \bm{A}^T \bm{y}}_{\bm{x}_{\lambda}}, ( \underbrace{ \gamma \bm{A}^T \bm{A} + \delta \bm{L} }_{\gamma \bm{B}_{\lambda}}  )^{-1} \big) \, \label{eq:UpdCondPost}
-\end{align}
-as described in Section \ref{subsec:firstCond}.
-
-We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the regularised solution as well as one sample from the posterior.
+Next, we charcterise the conditional posterior $\pi(\bm{x}|\gamma, \delta, \bm{y})$ as in Eq. \ref{eq:CondPost}. 
+Agian we calculate the full conditional mean \ref{eq:MeanInt} and full conditinal covarince matrix \ref{eq:CovInt} as weighted expextaion over a 25 point grid provided by either the marginal TT approxiamtions or the histogram of samples.
+We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the regularised solution and one sample from the posterior.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SecRecResinclRegandSampl.png}
@@ -624,9 +618,6 @@ We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the 
 	\caption[Ozone posterior mean and variance and the regularised solution compared to the ground truth.]{We plot the conditional posterior mean and variance in black and the regularised solution on top of the ground truth ozone profile in green. We use the updated forward map $\bm{M}\bm{A}_L$}
 	\label{fig:O3SolplsReg}
 \end{figure}
-
-\textcolor{red}{Data uninformative in higher altitude and say again reg sol. vs mean and one samples is good solution }
-
 \clearpage
 \section{Posterior distribution for pressure/temperature with approximated non-linear model}
 
