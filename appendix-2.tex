@@ -77,7 +77,7 @@
 
 
 \chapter{Correlation Structure}
-\label{ap:Correlatation}
+\label{ap:Correlation}
 In the book Gaussian Markov Random Fields~\cite{rue2005gaussian}, Rue and Held demonstrate that a strong correlation between the hyper-parameter $\mu$ and the latent field $\bm{x}$ can significantly slow down convergence when using samplers, in particularly Gibbs samplers. 
 They consider the hierarchical model
 
@@ -111,7 +111,7 @@ Since here $\mu$ is one dimensional, effectively only marginal density of $\mu$ 
 \end{align}
 With a simple MCMC algorithm targeting  $ \mu$ one can explore the sample space efficiently and only draw a corresponding sample for $\bm{x}$ from its full conditional once, for instance, the proposal $\mu^{\star}$ has been accepted.
 
-\chapter{Mesure theroy}
+\chapter{Mesure theory}
 \label{ch:Mesure}
 Recall the probability space $(\Omega, \mathcal{F}, \mathbb{P})$, where $\Omega$ denotes the sample space, and $\mathcal{F}$ is a collection of countable subsets $\{ A_n \}_{n \in \mathbb{N}}$ of $\Omega$. Each $A_n \subseteq \Omega$ is called an event, and a map $\mathbb{P} : \mathcal{F} \rightarrow \mathbb{R}$ is referred to as a measure.
 In the following, we describe the conditions required for $\mathcal{F}$ to be a $\sigma$-algebra, and for $\mathbb{P}$ to qualify as a probability measure.

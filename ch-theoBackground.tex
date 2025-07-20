@@ -1,18 +1,11 @@
 \the\columnwidth
 \chapter{Theoretical and Technical Background}
 \label{ch:background}
-In this chapter, we provide a brief introductions and derivations to the methods used in this thesis as well as references for more details, non interested readers may skip this chapter and move on to the next one. We keep it as general as possible, as the expressions tailored towards specifically the forward map will be presented in the results Chapter~\ref{ch:res} but without derivations.
+In this chapter, we provide brief introductions and derivations to the methods used in this thesis, as well as references for more details. We keep it as general as possible, as the expressions specifically tailored towards the forward map will be presented in the results Chapter~\ref{ch:res}, but without derivations.
 We begin by introducing a general hierarchical Bayesian approach to a linear inverse problem.
-Then we provide some background information on affine maps and the Tikhonov regularisation method.
-Next, we provide a small introduction into Sampling methods, more specifically the essentials of Markov-Chain monte Carlo methods.
-Lastly, we explain how we approximate functions using a Tensor-Train (TT) approach, which enables us to calculate marginal from the posterior distribution cheaply.
-
-
-
-
-
-
-
+Next, we provide a small introduction to sampling methods, more specifically, the essentials of Markov-Chain Monte Carlo (MCMC) methods.
+Lastly, we explain how we approximate functions using a Tensor-Train (TT) approach, which enables us to calculate marginals from the posterior distribution cheaply.
+Lastly, we provide some background information on affine maps and the Tikhonov regularisation method.
 
 \section{Bayesian Inference}
 \label{sec:bayes}
@@ -50,30 +43,31 @@ Assume we observe some data
 	\label{eq:LinDat}
 \end{align}
 based on a linear forward model $\bm{A}$, a unknown parameter $\bm{x}$ and some additive random noise $\bm{\eta}$.
-Naturally due to the noise we have some uncertainty which we include in the modelling process through the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$ as well as other relevant information about the measurement process.
+Naturally, due to the noise, we have some uncertainty which we include in the modelling process through the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$ as well as other relevant information about the measurement process.
 We read $\pi(\bm{y}|\bm{\theta},\bm{x})$ as the distribution over $\bm{y}$ conditioned on $\bm{x}$ and the hyper-parameter $\bm{\theta}$.
 Here $\bm{\theta}$ may account for multiple variables and is e.g. describing the distribution of the noise vector $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$ as well as the prior distribution $\pi(\bm{x}|\bm{\theta})$, which accounts for physical properties or functional dependences of $\bm{x}$.
 Consequently we define a hyper-prior distribution $\pi(\bm{\theta})$, where $\pi(\bm{x}, \bm{\theta}) = \pi(\bm{x}|\bm{\theta}) \pi(\bm{\theta}) $.
-Choosing these prior distribution is a delicate topic as it shall not affect the posterior distribution 
- \begin{align}
- 	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, ,
- \end{align}
+Choosing these prior distributions is a delicate topic, as it shall not affect the posterior distribution 
+\begin{align}
+	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, ,
+\end{align}
 which according to Bayes theorem gives us a distribution of $\bm{x}$ and $\bm{\theta}$ given (conditioned) on some data.
-We can visualise theses hierarchically ordered correlation structure between parameters as well as how distributions progress through a measurement process, using a directed acyclic graph (DAG), see Figure~\ref{fig:FirstDAG}.
+We can visualise this hierarchically ordered correlation structure between parameters as well as how distributions progress through a measurement process, using a directed acyclic graph (DAG), see Figure~\ref{fig:FirstDAG}.
 
-Obviously we are interested in the posterior distribution as the expectation of any a function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}$ may depend on $\bm{\theta}$, is described as 
+The expectation of any function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}$ may depend on $\bm{\theta}$, is described as 
 \begin{align}
 	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] =  \underbrace{\int \int   h(\bm{x}_{\bm{\theta}}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}}_{\bm{\mu}_{\text{int}}}   \label{eq:expPos} \, ,
 \end{align}
-which may be a high dimensional integral and computationally not feasible to solve.
-Therefore the unbiased sample based Monte Carlo estimate \cite{roberts2004general}
+where $\pi(\bm{x}, \bm{\theta} | \bm{y} )$ is the posterior distribution.
+This may be a high-dimensional integral and computationally not feasible to solve.
+Therefore the unbiased sample-based Monte Carlo estimate \cite{roberts2004general}
 \begin{align}
 	\label{eq:sampMean}
 	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] \approx \underbrace{ \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}})  }_{\bm{\mu}_{\text{samp}}} \, ,
 \end{align}
 for large enough $N$ (law of large numbers \cite[Chapter 17]{tweedie2009measprob}) is often used.
 Here, the samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
-Generating a representative sample sets quickly from the posterior distribution, often presents a significant challenge. This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlatation}.
+Generating a representative sample set quickly from the posterior distribution often presents a significant challenge. This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
 If $\bm{x}$ can not be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, i.e., $\bm{x}(\bm{\theta})$, it is beneficial to factorise the posterior distribution as
 \begin{align}
 	\pi(\bm{x}, \bm{\theta} |  \bm{y}) = \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \pi(\bm{\theta} |   \bm{y}), \label{eq:MTC}
@@ -99,12 +93,12 @@ Furthermore, the central limit theorem states that the samples mean $ \bm{\mu}^{
 and if $\sigma^2 < \infty$ the Monte-Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bounded.
 
 \subsubsection{On the Monte-Carlo Error and Integrated Autocorrelation time}
-To asses the error $\sigma^2$ we ignoring systematic error due to initialisation bias (burin in period) but we have to take into account that samples porduces by any system or algorithm are correlated.
-In general the error of a Monte-Carlo based estimate from a sample set $\mathcal{M}_i$ is:
+To assess the error $\sigma^2$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
+In general, the error of a Monte-Carlo-based estimate from a sample set $\mathcal{M}_i$ is:
 \begin{align}
 	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
 \end{align}
-Expanding this summation we see that
+Expanding this summation, we see that
 \begin{align}
 	(\sigma^{(i)})^2	= \frac{1}{N^2} \sum_{k,s=1}^{N} C(k-s)
 \end{align}
@@ -113,13 +107,13 @@ with the auto correlation coefficient $C(k-s) =  \big( h(\bm{x}^{(k)}_{\bm{\thet
 	\frac{C(0)}{N} \sum_{k,s=1}^{N} \frac{C(k-s)}{C(0)} \approx \text{var}(h(\bm{x}_{\bm{\theta}}) ) \sum_{t = - \infty }^{\infty} \rho(t)
 \end{align}
 with the normalised auto correlation coefficient $\rho(k-s) =  C(k-s)/ C(0)$ at lag $k-s$, where $C(0) = \text{var}(h(\bm{x}_{\bm{\theta}}) )$ for $k = s$.
-Then the an estimate for the Monte-Carlo error is:
+Then the estimate for the Monte-Carlo error is:
 \begin{align}
 	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}_{\bm{\theta}}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{	2\tau_{\text{int}} } = \text{var}(h(\bm{x}_{\bm{\theta}})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
 \end{align}
 where we define the integrated autocorrelation time (IACT) $\tau_{\text{int}}$ as in \cite{Sokal1997} and \cite{}, which provides a good estimate on how many steps the sampling algorithm needs to take to produce one independent sample.
-More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of on how efficient a sampler is.
-%We calculate the IACT using the pyhton implementation of \cite{wolff2004monte}.
+More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
+We calculate the IACT using the Python implementation of \cite{wolff2004monte}, which also provides errors on the IACT, which helps us to assess convergence of the chain.
 
 
 \section{Sampling Methods}
@@ -129,10 +123,11 @@ Here, $\mathcal{M}$ denotes a Markov chain, where each new sample $(\bm{x}, \bm{
 Markov chain Monte Carlo (MCMC) methods generate such a chain $\mathcal{M}$ using random (Monte Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |  (\bm{x}, \bm{\theta})^{(k-1)})$ according to a proposal distribution conditioned on the previous sample (Markov), where ergodicity of the chain $\mathcal{M}$ is a sufficient criterion for using sample-based estimates~\cite{tan2016LecNot, roberts2004general}.
 
 The ergodicity theorem in~\cite{tan2016LecNot} states that, if a Markov chain $\mathcal{M}$ is aperiodic, irreducible, and reversible, then it converges to a unique stationary equilibrium distribution.
-In other words, if the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and is reversible (detailed balance condition~\cite{tan2016LecNot}), then it will converge to the desired target distribution  with $ \mathcal{M} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y})$.
+In other words, if the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and is reversible (detailed balance condition~\cite{tan2016LecNot}).
+Then the chain converges to the desired target distribution  with $ \mathcal{M} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y})$.
 In practice, one can inspect the trace $\pi(\bm{x}^{(k)}, \bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence and mixing properties of the chain to evaluate ergodicity.
 The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details.
-Nevertheless, we will give a brief overview of the smapling algorithm used.
+Nevertheless, we will give a brief overview of the sampling algorithm used.
 
 \subsection{Sampling from the marginal posterior}
 As in Eq. \ref{eq:MTC}, when using the MTC method we sample from $\pi(\bm{\theta} |  \bm{y})$ first and then determine the full conditional $\pi(\bm{x} |  \bm{y})$ as in Eq. \ref{eq:fullCond}. To sample from $\pi(\bm{\theta} |  \bm{y})$, we use a Metropolis-within-Gibbs (MWG) sampler as described in~\cite{fox2016fast}.
@@ -219,8 +214,8 @@ Convergence to the target distribution is guaranteed by construction of the algo
 \label{sec:tensortrain}
 %\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
 Instead of sampling from a target distribution $\pi(\bm{x})$ we can approximate that distribution on a d-dimensional grid with far fewer function evaluation compared to sampling methods using a tensor train (TT) approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, with  $\bm{x}\in \mathbb{R}^d$.
-First, we provide a short overview of probability spaces and their associate measures, as a foundation for calculating marginal probability distribution from the tensor train format.
-Note, that we follow the notation of Cui et al. \cite{cui2022deep} to introduce this methodology.
+First, we provide a short overview of probability spaces and their associated measures, as a foundation for calculating marginal probability distributions from the tensor train format.
+Note that we follow the notation of Cui et al. \cite{cui2022deep} to introduce this methodology.
 
 Assume that the triple $(\Omega, \mathcal{F}, \mathbb{P})$ defines a probability space, where $\Omega$ denotes the complete sample space, $\mathcal{F}$ is a $\sigma$-algebra consisting of a collection of countable subsets $\{A_n\}_{n \in \mathbb{N}}$ with $A_n \subseteq \Omega$, and $\mathbb{P}$ is a probability measure defined on $\mathcal{F}$. The formal conditions for $\mathbb{P}$ to be a probability measure, and for $\mathcal{F}$ to be a $\sigma$-algebra over $\Omega$, are given in Appendix~\ref{ch:Mesure}.
 We denote
@@ -248,9 +243,9 @@ Here, we introduce a weight function $\uplambda(x)$, which can be useful for qua
 	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \mathrm{d}x_i. \label{eq:lebesgueWeight}
 \end{align*}
 
-In the tensor train (TT) format the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost as $\pi(\bm{x})$ is approximated by
+In the tensor train (TT) format, the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost as $\pi(\bm{x})$ is approximated by
 \begin{align*}
-\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d)  \in \mathbb{R},
+	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d)  \in \mathbb{R},
 \end{align*}
 which is a sequence of matrix multiplications, with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$ for a fixed grid point $\bm{x} = (x_1, \dots, x_d)$ on a $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$ bounded by the outer ranks $r_0 = r_d = 1$.
 We call $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ a TT-core with ranks $r_{k-1}$ and $r_k$, representing each dimension on $n$ grid points.
@@ -302,12 +297,12 @@ Figure~(a) is adapted from~\cite{fox2021grid}.}
 
 
 %%%%%% Squared and Basis Function %%%%%
-In practice, tensor train approximations may suffer from numerical instability, in particularly because it is not advantageous to approximate the target function $\pi(\bm{x})$ in e.g. the logarithmic space. 
+In practice, tensor train approximations may suffer from numerical instability, in particular because it is not advantageous to approximate the target function $\pi(\bm{x})$ in e.g. the logarithmic space. 
 Hence, Cui et al.~\cite{cui2022deep} approximate the square root of the probability density
 \begin{align}
 	\sqrt{\pi(\bm{x})} \approx \sqrt{\tilde{\pi}} = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\, ,
 \end{align}
-which insures positivity.
+which ensures positivity.
 Here, each TT-core is given by
 \begin{equation}
 	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, \dots, d,
@@ -343,8 +338,8 @@ Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{
 
 \subsection{Marginal Functions}
 To compute these marginals efficiently, one can use a procedure similar to left and right orthogonalisation of TT-cores~\cite{oseledets2011tensor}.
-Cui et al. \cite{cui2022deep} referred to this backward marginalisation, see Prop. \ref{prob:ForMarg}, to which I add the forward marginalisation, see Prob. \ref{prob:backMarg}. 
-The backward marginalisation provides us with the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{B}_{\text{pre}, k}$. 
+Cui et al. \cite{cui2022deep} referred to this backwards marginalisation, see Prop. \ref{prob:ForMarg}, to which I add the forward marginalisation, see Prob. \ref{prob:backMarg}. 
+The backwards marginalisation provides us with the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{B}_{\text{pre}, k}$. 
 These matrices enable the efficient evaluation of marginal functions since they integrate over the coordinates either left or right of the $k$-th dimension, as in \cite{cui2022deep}.
 For this, we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ as
 \begin{equation}
@@ -353,7 +348,7 @@ For this, we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ a
 where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ denotes the set of basis functions for the $k$-th coordinate.
 The proposition used to compute $\bm{B}_k$, stated in Proposition~\ref{prob:backMarg}, is adapted directly from~\cite{cui2022deep}.
 
-\begin{prop}[Backward Marginalisation as in~\cite{cui2022deep}]
+\begin{prop}[Backwards Marginalisation as in~\cite{cui2022deep}]
 	\label{prob:backMarg}
 	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k-1} \in \mathbb{R}^{r_{k-2} \times n_{k-1} \times r_{k-1}}$, which we need for defining the marginal function $f_{X_k}(x_k)$:
 	\begin{enumerate}
@@ -436,13 +431,14 @@ Note that we calculate the normalisation numerically within the process of findi
 
 \section{Affine Map}
 \label{sec:affine}
-The forward map, which we introduce in Ch. \ref{ch:formodel}, poses a weakly non-linear forward problem, which could tackle by treating the problem as a linear problem and then iteratively updating the non-linear part after each parameter sample.
-Instead we chose to approximate the non-linear model using an affine map $ \bm{M}:\bm{A}_L \bm{x} \rightarrow \bm{A}_{NL}\bm{x}$, which approximates the non-linear model using the linear model.
-Here we give a brief introduction into affine maps and present our approach to calculate the affine map deterministically, alternatively one can also determine this map using other e.g. machine learning methods \cite{}.
+The forward map, which we introduce in Ch. \ref{ch:formodel}, poses a weakly non-linear forward problem, which we could tackle by treating the problem as a linear problem and then iteratively updating the non-linear part after each parameter sample.
+Instead, we approximate the non-linear model using an affine map $ \bm{M}:\bm{A}_L \bm{x} \rightarrow \bm{A}_{NL}\bm{x}$, which approximates the non-linear model using the linear model.
+Here we give a brief introduction to affine maps and present our approach to calculating the affine map deterministically. 
+Alternatively, one can also determine this map using other methods, e.g. machine learning methods \cite{}.
 
 
 An affine map is any linear map between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin, see~\cite[Def. 2.3.1]{berger2009geometry}.
-In other words, an affine map does not need to map to the origin of the associated vector space or is a linear map on vector spaces including a translation, or in the words of my supervisor, C. F., an affine map is a Taylor series of first order.
+In other words, an affine map does not need to map to the origin of the associated vector space or be a linear map on vector spaces, including a translation, or, in the words of my supervisor, C. F., an affine map is a Taylor series of first order.
 For more information on affine spaces and maps, we refer to the books \cite{berger2009geometry, katsumi1994affine}
 \begin{figure}[ht!]
 	\centering
@@ -460,7 +456,7 @@ For more information on affine spaces and maps, we refer to the books \cite{berg
 \end{figure}
 
 
-Consequently, to map in between the linear and non-linear forward map we generate two affine subspaces $V$ and $W$ over the same field.
+Consequently, to map between the linear and non-linear forward map, we generate two affine subspaces $V$ and $W$ over the same field.
 Assume we have noise free data vector $A_{NL}\bm{x} \in \mathbb{R}^m$, then the subspace associated with the linear forward model is \begin{align}
 	\bm{W} = \begin{bmatrix}
 		\vert&   &  \vert & & \vert \\
@@ -469,18 +465,18 @@ Assume we have noise free data vector $A_{NL}\bm{x} \in \mathbb{R}^m$, then the 
 	\end{bmatrix}\in \mathbb{R}^{m \times m}
 \end{align} and with the non-linear forward model is 
 \begin{align}
-\bm{V} = \begin{bmatrix}
-	\vert&   &  \vert & & \vert \\
-	\bm{A}_{NL}\bm{x}^{(1)} &  \cdots& \bm{A}_{NL}\bm{x}^{(j)} &  \cdots & \bm{A}_{NL} \bm{x}^{(m)}  \\
-	\vert&   &  \vert & & \vert 
-\end{bmatrix} = 
-\begin{bmatrix}
-	\rule[.5ex]{1em}{0.4pt} & v_1 &	\rule[.25ex]{1em}{0.4pt}\\
-	&\vdots  & \\
-	\rule[.5ex]{1em}{0.4pt} &v_j &	\rule[.25ex]{1em}{0.4pt}\\
-	&\vdots  & \\
-	\rule[.5ex]{1em}{0.4pt}& v_m&	\rule[.25ex]{1em}{0.4pt}
-\end{bmatrix} \in \mathbb{R}^{m \times m} \, ,
+	\bm{V} = \begin{bmatrix}
+		\vert&   &  \vert & & \vert \\
+		\bm{A}_{NL}\bm{x}^{(1)} &  \cdots& \bm{A}_{NL}\bm{x}^{(j)} &  \cdots & \bm{A}_{NL} \bm{x}^{(m)}  \\
+		\vert&   &  \vert & & \vert 
+	\end{bmatrix} = 
+	\begin{bmatrix}
+		\rule[.5ex]{1em}{0.4pt} & v_1 &	\rule[.25ex]{1em}{0.4pt}\\
+		&\vdots  & \\
+		\rule[.5ex]{1em}{0.4pt} &v_j &	\rule[.25ex]{1em}{0.4pt}\\
+		&\vdots  & \\
+		\rule[.5ex]{1em}{0.4pt}& v_m&	\rule[.25ex]{1em}{0.4pt}
+	\end{bmatrix} \in \mathbb{R}^{m \times m} \, ,
 \end{align}
 Here $\big\{  \bm{x}^{(1)} , \dots, \bm{x}^{(m)} \big\}$ are $m$ different parameters.
 
@@ -499,8 +495,8 @@ Alternately one could also compute $\bm{M}$ using the inverse $\bm{W}^{-1}$.
 
 \section{Regularisation}
 \label{sec:regularise}
-As mentioned in the introduction the currently most used method to analyse any data in atmospheric physics is regularisation.
-Since we want to show that our methods is at computationally comparable if not faster and provides more information than regularisation we choose a regularise closet to our linear-Gaussian Bayesian framework, see section \ref{sec:BayModel}.
+As mentioned in the introduction, the currently most used method to analyse any data in atmospheric physics is regularisation.
+Since we want to show that our methods are computationally comparable if not faster, and provide more information than regularisation, we choose a regulariser closest to our linear-Gaussian Bayesian framework, see section \ref{sec:BayModel}.
 
 The Tikhonov approach in provides one solution $\bm{x}_{\lambda}$ that minimises both the data misfit norm
 \begin{align}
@@ -527,5 +523,5 @@ Solving this equation yields the regularised solution
 where we define $\bm{L} := \bm{T}^T \bm{T}$, which typically represents a discrete matrix approximation of a differential operator choice~\cite{tan2016LecNot}.
 
 In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation norm. The optimal value of $\lambda$ is often chosen as the point of maximum curvature on the so-called L-curve~\cite{hansen1993use}, which we plot in Fig.~\ref{fig:LCurve}.
-Additionaly one can thnk about it .... in \cite{fox2016fast}
+Additionally one can think about it .... in \cite{fox2016fast}
 
