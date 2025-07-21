@@ -113,7 +113,7 @@ Then the estimate for the Monte-Carlo error is:
 \end{align}
 where we define the integrated autocorrelation time (IACT) $\tau_{\text{int}}$ as in \cite{Sokal1997} and \cite{}, which provides a good estimate on how many steps the sampling algorithm needs to take to produce one independent sample.
 More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
-We calculate the IACT using the Python implementation of \cite{wolff2004monte}, which also provides errors on the IACT, which helps us to assess convergence of the chain.
+We calculate the IACT using the Python implementation of \cite{WOLFF2004143}, accesed \cite{wolff2004monte}, which also provides errors on the IACT, which helps us to assess convergence of the chain.
 
 
 \section{Sampling Methods}
@@ -524,4 +524,5 @@ where we define $\bm{L} := \bm{T}^T \bm{T}$, which typically represents a discre
 
 In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation norm. The optimal value of $\lambda$ is often chosen as the point of maximum curvature on the so-called L-curve~\cite{hansen1993use}, which we plot in Fig.~\ref{fig:LCurve}.
 Additionally one can think about it .... in \cite{fox2016fast}
+\cite[Fig. 2.13]{SANTOSH202265}
 

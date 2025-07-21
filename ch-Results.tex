@@ -177,33 +177,35 @@ Next, we need to specify the prior distribution, which we summarise in Tab. \ref
 		model parameters& priors&\makecell{lower}& \makecell{upper\\
 		}&$\tau_{\text{int}}$&Context\\
 		\hhline{|=||=|=|=|=|=|}
-		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &$5 \, 10^{-8}$ &$4.5 \, 10^{-7}$& &$\bm{y}$\\ \hline
-		$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& & $\bm{x}$\\ \hline
-		$\lambda$ &- & 500&7000& &$\bm{x}$\\ \hline
+		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &$5 \, 10^{-8}$ &$4.5 \, 10^{-7}$& $1.5 \pm 0.1$ &$\bm{y}$\\ \hline
+		$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& $1.5 \pm 0.1$ & $\bm{x}$\\ \hline
+		$\lambda$ &- & 500&$10^4$& $3.5 \pm 0.3$ &$\bm{x}$\\ \hline
 		$\bm{x}$ &$\mathcal{N}(0,\delta \bm{L})$ & -&-&& $\bm{x}$\\ \hhline{|=||=|=|=|=|=|}
 		%$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
 		%$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
 		%$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\ \hline
 		%$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\ \hline
-		$h_0$ &  $\mathcal{N}(5.5,0.5)$& 4.76&5.74&&$\bm{p/T}$\\ \hline
-		$p_0$ &  $\mathcal{N}(500,6)$&479 &519&&$\bm{p/T}$\\ \hline
-		$b$ &  $\mathcal{N}(0.167,7\,10^{-4})$& 0.165& 0.170 &&$\bm{p/T}$\\ \hline
+		%$h_0$ &  $\mathcal{N}(5.5,0.5)$& 4.76&5.74&&$\bm{p/T}$\\ \hline
 		%$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/T}$\\ \hline
-		$h_{1}$ &  $\mathcal{N}(11,0.1)$&10.6 &11.3&&$\bm{p/T}$\\ \hline
-		$h_{2}$ &  $\mathcal{N}(20.1,0.9)$&16.7 &22.8&&$\bm{p/T}$\\ \hline
-		$h_{3}$ &  $\mathcal{N}(32.3,3)$&23.8&43.6&&$\bm{p/T}$\\ \hline
-		$h_{4}$ &  $\mathcal{N}(47.4,0.5)$&45.5 &49.3&&$\bm{p/T}$\\ \hline
-		$h_{5}$ &  $\mathcal{N}(51.4,0.5)$&49.5 &53.3&&$\bm{p/T}$\\ \hline
-		$h_{6}$ &  $\mathcal{N}(71.8,3)$&60.6 &83.1&&$\bm{p/T}$\\ \hline
-		$a_{0}$ &  $\mathcal{N}(-6.5,0.01)$&-6.54 &-6.46&&$\bm{p/T}$\\ \hline
-		$a_{1}$ &  $\mathcal{N}(1,0.01)$&0.96 &1.04&&$\bm{p/T}$\\ \hline
-		$a_{2}$ &  $\mathcal{N}(2.8,0.1)$&2.43 &3.18&&$\bm{p/T}$\\ \hline
-		$a_{3}$ &  $\mathcal{N}(-2.8,0.1)$&-3.18 &-2.43&&$\bm{p/T}$\\ \hline
-		$a_{4}$ & $\mathcal{N}(-2,0.01)$ &-2.04 &-1.96&&$\bm{p/T}$\\ \hline
-		$T_{0}$ &  $\mathcal{N}(288.15,2)$& 281.8 &294.5&&$\bm{p/T}$\\
+		$h_{1}$ &  $\mathcal{N}(11,0.5)$&9.5 &12.5&$1820 \pm 49$ &$\bm{p/T}$\\ \hline
+		$h_{2}$ &  $\mathcal{N}(20.1,1.6)$&17.7 &22.3&$454 \pm 7$&$\bm{p/T}$\\ \hline
+		$h_{3}$ &  $\mathcal{N}(32.3,2.5)$&25.2&39.8&$394 \pm 5$&$\bm{p/T}$\\ \hline
+		$h_{4}$ &  $\mathcal{N}(47.4,5)$&45.9 &48.9&$324 \pm 4$&$\bm{p/T}$\\ \hline
+		$h_{5}$ &  $\mathcal{N}(51.4,5)$&49.9 &52.9&$319 \pm 4$&$\bm{p/T}$\\ \hline
+		$h_{6}$ &  $\mathcal{N}(71.8,3)$&62.5 &80.8&$347 \pm 5$&$\bm{p/T}$\\ \hline
+		$a_{0}$ &  $\mathcal{N}(-6.5,0.01)$&-6.53 &-6.47&$330 \pm 4$&$\bm{p/T}$\\ \hline
+		$a_{1}$ &  $\mathcal{N}(0,0.1)$&-0.3 &0.3&$508 \pm 8$&$\bm{p/T}$\\ \hline
+		$a_{2}$ &  $\mathcal{N}(1,0.01)$&0.97 &1.03&$341 \pm 5$&$\bm{p/T}$\\ \hline
+		$a_{3}$ &  $\mathcal{N}(2.8,0.1)$&2.5 &3.1&$316 \pm 4$&$\bm{p/T}$\\ \hline
+		$a_{4}$ &  $\mathcal{N}(0,0.1)$&-0.3 &0.3&$335 \pm 4$&$\bm{p/T}$\\ \hline
+		$a_{5}$ &  $\mathcal{N}(-2.8,0.1)$&-3.1 &-2.5&$335 \pm 4$&$\bm{p/T}$\\ \hline
+		$a_{6}$ & $\mathcal{N}(-2,0.01)$ &-2.03 &-1.97&$320 \pm 4$&$\bm{p/T}$\\ \hline
+		$T_{0}$ &  $\mathcal{N}(288.15,4.5)$& 275 &302&$2446 \pm 76$&$\bm{p/T}$\\ \hline
+		$b$ &  $\mathcal{N}(0.167,5\,10^{-4})$& 0.165& 0.171 &$2813 \pm 92$&$\bm{p/T}$\\ \hline
+		$p_0$ &  $\mathcal{N}(1243,5)$&1229 &1259&$550 \pm 9$&$\bm{p/T}$\\ 
 		\hline
 	\end{tabular}
-	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution.}
+	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in \cite{UwerrM} from posterior samples based on the approximated forward map.}
 	\label{tab:priors}
 \end{table}
 
@@ -397,7 +399,7 @@ Additionally, we define the sampling space and the grid for the TT approximation
 We remark that we can already observe in Fig. \ref{fig:PriorPressOverTemp} that $\bm{p}/\bm{T}$ inherits the structure of the pressure function.
 
 \subsubsection{posterior distribution}
-Then we can define the posterior distrubtion
+Then we can define the posterior distribution
 \begin{align}
 		\pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert^2 \Bigr\} \pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T})\, ,
 \end{align}
@@ -409,7 +411,7 @@ which is, conditioned on the noise hyper-parameter $\gamma$, the ozone profile $
 \label{sec:affineMap}
 With the posterior distributions formulated, we can now approximate the non-linear forward model with an affine map $\bm{M}$; we see Fig. \ref{fig:affinStrat} for the summarised strategy.
 We focus on the posterior distribution of ozone profiles by conditioning on pressure and temperature, as this is a quick process when using the MTC method.
-We approximate and sample from the marginal posterior $ \pi(\gamma , \delta|\bm{y})$ and then charcterise the full conditional posterior distribution $\pi(\bm{x}|\bm{y})$ based on the linear forward model $\bm{A}_L$, neglecting absorption, see Eq. \ref{eq:RTE}.
+We approximate and sample from the marginal posterior $ \pi(\gamma , \delta|\bm{y})$ and then characterise the full conditional posterior distribution $\pi(\bm{x}|\bm{y})$ based on the linear forward model $\bm{A}_L$, neglecting absorption, see Eq. \ref{eq:RTE}.
 Given samples $\bm{x} \sim \pi(\bm{x}|\bm{y})$ from the full conditional posterior distribution, we can generate two affine subspaces based on the linear and non-linear model and find the mapping between those.
 
 \begin{figure}[htb!]
@@ -496,9 +498,9 @@ We calculate the integrated autocorrelation time (IACT) with the Python implemen
 \subsection{Tensor-train approximation of the marginal posterior distribution for ozone}
 \label{sec:firstMargTT}
 Alternatively, we can approximate the marginal posterior with a tensor-train (TT) of the square root of the marginal posterior on a predefined grid.
-We define a grid similar to the sampling region of the MWG sampler with 25 grid points in each dimension and use the \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} Python package, based on the rect cross algorithm in \cite{}, to calculate the cores of each dimension in less than $0.1$s.
-We set the number of ranks to a constant value $r = 4$ and optimise over those ranks with one sweep.
-To avoid underflow, we have to add a 'normalisation' constant $c = 460$ so that $\pi(\lambda | \gamma ,\bm{y}) = \exp\{ \log{\pi(\lambda | \gamma, \bm{y})} + c\}$.
+We define a grid similar to the sampling region of the MWG sampler with 25 grid points in each dimension and use the \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} Python package, based on the rect cross algorithm in \cite{}.
+We set the number of ranks to a constant value $r = 4$ and optimise over those ranks with one sweep to calculate the cores in less than $0.5$s.
+To avoid underflow, we have to add a 'normalisation' constant $c = 460$ so that we approximate $\pi(\lambda | \gamma ,\bm{y}) = \exp\{ \log{\pi(\lambda | \gamma, \bm{y})} + c\}$.
 Then we calculate the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as described in section \ref{}, assuming an absolute error of $1$ the constant $\xi = 1/ \uplambda(\mathcal{X}) $. 
 We plot the TT approximation as a colour map on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
 \begin{figure}[ht!]
@@ -511,16 +513,16 @@ We plot the TT approximation as a colour map on top of the obtained samples in t
 
 \subsection{Calculate mean and variance of the full conditional posterior for ozone}
 \label{subsec:firstCond}
-Based on the marginal posteror distribution $\pi(\gamma, \delta | \bm{y})$ we calclulate the weighted mean and covariance of the conditional posterior $\pi(\bm{x} | \gamma, \delta, \bm{y})$ by quadrature as in Eq. \ref{eq:MeanInt} and Eq. \ref{eq:CovInt}.
+Based on the marginal posteror distribution $\pi(\gamma, \delta | \bm{y})$ we calculate the weighted mean and covariance of the conditional posterior $\pi(\bm{x} | \gamma, \delta, \bm{y})$ by quadrature as in Eq. \ref{eq:MeanInt} and Eq. \ref{eq:CovInt}.
 
 By binning the output samples from the MWG, see Fig. \ref{fig:ScatterPlotTT}, into a normalised histogram with 25 bins, we obtain function values for the marginal posterior.
-With the height of the histogram bars as quadrature weights, e.g. $\pi(\lambda_i| \bm{y})$, where $\lambda_i$ is the centre of each bin we caculate the full conditional mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and covariance matrix $\bm{\Sigma}_{\bm{x}|\bm{y}}$ as weighted expecations.
+With the height of the histogram bars as quadrature weights, e.g. $\pi(\lambda_i| \bm{y})$, where $\lambda_i$ is the centre of each bin we calculate the full conditional mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and covariance matrix $\bm{\Sigma}_{\bm{x}|\bm{y}}$ as weighted expectations.
 
-Alternatively we use the marginal distrinbutiuons $\pi(\delta | \bm{y})$ and $\pi(\gamma | \bm{y})$ from the TT approximation of $\sqrt{\pi(\delta, \gamma | \bm{y})}$ to caculate 
-weighted expecations of $\bm{\mu}_{\bm{x}|\bm{y}}$ and $\bm{\Sigma}_{\bm{x}|\bm{y}}$.
+Alternatively we use the marginal distributions $\pi(\delta | \bm{y})$ and $\pi(\gamma | \bm{y})$ from the TT approximation of $\sqrt{\pi(\delta, \gamma | \bm{y})}$ to calculate 
+weighted expectations of $\bm{\mu}_{\bm{x}|\bm{y}}$ and $\bm{\Sigma}_{\bm{x}|\bm{y}}$.
 
 In practice, we have to invert $\bm{B}_{\lambda} $ and calculate $\bm{x}_{\lambda}$, see Eq. \ref{eq:CondPost} 25 times (TT grid size and number of bins).
-A feasible method is the Cholesky forward and backwards substitution, which takes roughly $1$s to compute the mean and variance.
+A feasible method is the Cholesky forward and backwards substitution \cite{}, which takes roughly $1$s to compute the mean and variance.
 Note that we reject unphysical samples from the conditional posterior with negative ozone values and plot those in Fig. \ref{fig:O3Samp}, including variance and mean.
 
 \begin{figure}[ht!]
@@ -652,8 +654,8 @@ Then the posterior becomes:
 To find the constant $c$, we evaluate the logarithm of the posterior on 5000 random points and calculate the maximum $c_{\text{max}} < 0$ of those 5000 points.
 Then we set the constant to a value which pushes the posterior close to the upper numerical limit of our machine, which is approximately $e ^{700}$.
 Since we approximate the square root, we conservatively set the constant to $c = -c_{\text{diff}} + 325$.
-It takes roughly $2$min for 15 sweeps by the \texttt{cross} to find the optimal tensors.
-Then we can compute the marginal as in Sec. \ref{sec:tensortrain}, where we set $\xi = 1 / \uplambda{\mathcal{X}}$.
+It takes roughly $3$ to $4$min for 15 sweeps by the \texttt{cross} to find the optimal tensors.
+Then we can compute the marginal as in Sec. \ref{sec:tensortrain}, where we set $\xi = 1 / \uplambda (\mathcal{X})$.
 
 For comparison, we run the t-walk on the posterior as defined in Eq. \ref{eq:postPT} for $5 \times 10^6$ steps plus a burn-in period of $10000$, which takes around $7$ mins on the same laptop.
 We plot the resulting histograms in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}; additionally, we plot the trace of the samples in Fig. \ref{fig:TraceTwalk}.
