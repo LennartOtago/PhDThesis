@@ -1,23 +1,25 @@
 \chapter{Introduction}
 \section{Motivation}
-\begin{itemize}
-	\item ozone coverage
-	\item regularisation approach in atmospheric physics citation
-	\item hierarchical modelling
-\end{itemize}
-\section{What is going on?, 3 facts, What is new in this thesis?}
-\begin{itemize}
-	\item physical based hierarchical Bayesian model, sampling to TT approx
-	\item RTE as an example
-	\item non-linear to linear affine approximation
-\end{itemize}
 
-\section{Thesis Outline}
-%\section{What has been published?}
+Since the only current ozone limb sounder the MLS on the Aura satellite is drifting away from its orbit will be phased out within 2026, a group around Harald Schwefel proposed to fill that gap with a much smaller platform to measure ozone compatible with a cube-sat  https://science.nasa.gov/science-research/earth-science/aura-at-20-years/.
+The idea is to target a very narrow frequency band and convert the thermal radiation from the Terahertz region to the optical domain.
+We simulate some data from a limb sounder by solving the radiative transfer equation (RTE) for one specific frequency but leave out any measurement device related details, as they are not available yet.
+This inverse problem is currently approached by methods based on optimisation/regularisation \cite{}, instead we employ a hierarchically ordered Bayesian framework to recover ozone values.
 
-Note the following:
-In this case the best fit to data is not the best fit to parameters.
- In under-
-graduate statistics courses you would learn the more general notion that: “Conditioning
-on estimates gives poor predictive densities”.
-\cite{tan2016LecNot}
+
+\section{Research Gap and Contribution}
+As, already mentioned the commonly used methods in Atmospheric physics to retrieve ozone from some data are based on regularisation methods, which can lead to unphysical results e.g. negative ozone values \cite{MLSdata}.
+Regularisation methods have the disadvantage that they provide one solution only, which may be biased, and rather arbitrary errors, as "best fit to data is not the best fit to parameters" \cite{tan2016LecNot}.
+Hence, we propose a Bayesian framework, to provide a posterior distribution of unbiased ozone profiles, which naturally includes errors.
+We compare a regularisation method to a hierarchialy ordered linear-Gaussian Bayesian model, where we separate the posterior distribution over the hyper-parameters, describing noise of the data and smoothnes of the ozone profile, and the posterior distribution over the ozone profile.
+Fox and Norton call this the marginal and then conditional (MTC) method \cite{} and we are the first to apply it to a physical based problem and hence the first to tackle the RTE with a hierarchichally order Bayesian model.
+Since the RTE is weakly non-linear we do approximate the RTE with an affine map, which is another novelty.
+Then, instead of sampling from the posterior distributions we are the first to approximate posterior distributions using a tensor-train (TT).
+Additionally, we are the first to provide pressure, temperature and ozone profile given one set of measurements.
+
+\section{Thesis Structure}
+In Ch. \ref{ch:background}, we give a brief overview of the methods used and provide references for more details.
+Then, in Ch. \ref{ch:formodel}, we provide the forward model based on the RTE and some functional dependencies.
+Using that, in Ch. \ref{ch:res} we use that forward model and simulate some data according to a ground truth.
+Then to characterise the posterior distributions, we set up a Bayesian framework, where we discuss some prior modelling.
+Finally, we use the in Ch. \ref{ch:background} introduced methods to aprroximate the non-linear forward model and provide distribution of ozone, pressure and temperature profiles.

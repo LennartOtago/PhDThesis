@@ -469,7 +469,7 @@ Similarly we approximate $\Delta g \approx \exp{\log{\tilde{g}(\lambda^{\prime})
 Lastly, a Gibbs step provides a new $\gamma^{(k+1)} \sim \gamma | \lambda^{(k+1)}, \bm{y}$, see Equation \eqref{eq:GibbsStep}.
 See Algorithmic Box \ref{alg:margPost} for a summary of the general version.
 
-We initialise the MWG at the mode $( \lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take for $N = 20000$ plus $N_{\text{burn-in}} = 100$ steps in less than one second.
+We initialise the MWG at the mode $( \lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take for $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps in less than $0.3$s.
 The standard deviation of the normal proposal distribution is set to $\sigma_{\lambda} = 0.8 \lambda_0$ so that the acceptance rate is $\approx 0.5$ as suggested in \cite{}.
 The samples are plotted in Fig. \ref{fig:ScatterPlotTT} as a 2D scatter plot, as well as the trace of the MwG to show ergodicity.
 We calculate the integrated autocorrelation time (IACT) with the Python implementation of \cite{}, which gives us $\tau_{\text{int}, \gamma} = $ and $\tau_{\text{int}, \delta} = $.
@@ -501,7 +501,7 @@ Alternatively, we can approximate the marginal posterior with a tensor-train (TT
 We define a grid similar to the sampling region of the MWG sampler with 25 grid points in each dimension and use the \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} Python package, based on the rect cross algorithm in \cite{}.
 We set the number of ranks to a constant value $r = 4$ and optimise over those ranks with one sweep to calculate the cores in less than $0.5$s.
 To avoid underflow, we have to add a 'normalisation' constant $c = 460$ so that we approximate $\pi(\lambda | \gamma ,\bm{y}) = \exp\{ \log{\pi(\lambda | \gamma, \bm{y})} + c\}$.
-Then we calculate the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as described in section \ref{}, assuming an absolute error of $1$ the constant $\xi = 1/ \uplambda(\mathcal{X}) $. 
+Then we calculate the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as described in section \ref{}, assuming an absolute error of $1$ the constant $\xi = 1/ \uplambda(\mathcal{X}) $, with a diagonal mass matrix $\bm{M}_k=  \text{diag}(\uplambda(X_k))$
 We plot the TT approximation as a colour map on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
 \begin{figure}[ht!]
 	\centering
@@ -525,6 +525,7 @@ In practice, we have to invert $\bm{B}_{\lambda} $ and calculate $\bm{x}_{\lambd
 A feasible method is the Cholesky forward and backwards substitution \cite{}, which takes roughly $1$s to compute the mean and variance.
 Note that we reject unphysical samples from the conditional posterior with negative ozone values and plot those in Fig. \ref{fig:O3Samp}, including variance and mean.
 
+Computation time is less than $0.2$s.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{FirstTestRes.png}
@@ -584,7 +585,8 @@ The regularised solution is typically calculated by solving the normal equations
 \end{align}
 To find the best regularised solution, we use the L-curve method~\cite{hansen1993use}.
 Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $1$ to $10^7$ and plot the solution semi norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{x} \rVert$, see Figure \ref{fig:LCurve}. 
-The best regularised solution corresponding to the corner of the L-curve is located at the point of maximum curvature, see triangle in Fig. \ref{fig:LCurve}, which we find with the kneedle algorithm~\cite{satopaa2011kneedle} using the python function \texttt{kneed.KneeLocator} in roughly $2$ seconds.
+The best regularised solution corresponding to the corner of the L-curve is located at the point of maximum curvature, see triangle in Fig. \ref{fig:LCurve}, which we find with the kneedle algorithm~\cite{satopaa2011kneedle} using the python function \texttt{kneed.KneeLocator} in less $0.1$s.
+
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{LCurvePhD.png}
@@ -612,7 +614,7 @@ We run the MWG algorithm for $N = 20000$ plus $N_{\text{burn-in}} = 100$ and plo
 \end{figure}
 
 \subsection{Full conditional posterior variance and mean}
-Next, we charcterise the conditional posterior $\pi(\bm{x}|\gamma, \delta, \bm{y})$ as in Eq. \ref{eq:CondPost}. 
+Next, we characterise the conditional posterior $\pi(\bm{x}|\gamma, \delta, \bm{y})$ as in Eq. \ref{eq:CondPost}. 
 Again, we calculate the full conditional mean \ref{eq:MeanInt} and full conditional covariance matrix \ref{eq:CovInt} as weighted expectation over a 25-point grid provided by either the marginal TT approximations or the histogram of samples.
 We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the regularised solution and one sample from the posterior.
 \begin{figure}[ht!]
@@ -636,7 +638,9 @@ The aim now is to characterise the posterior
 \end{align}
 conditioned on the ozone sample in Fig. \ref{fig:O3SolplsReg} and a $\gamma$ sample from the marginal posterior, and using the approximated forward model $\bm{A} = \bm{M}\bm{A}_L$.
 We will approximate this posterior with a TT and validate this approximation with samples from the posterior using the \texttt{t-walk} \cite{christen2010general} implementation in Python \cite{christentwalkaccess}.
-
+“Conditioning
+on estimates gives poor predictive densities”.
+\cite{tan2016LecNot}
 
 Again, we define a grid with 25 grid points in each dimension, which also acts as the sampling space.
 Since we approximate a 16-dimensional function, we have to carefully choose a grid, as we do not want to approximate regions with low probability, and we like to keep the number of grid points low, as this increases computation time.
