@@ -1,10 +1,10 @@
 \chapter{Introduction}
 \section{Motivation}
 
-Since the only current ozone limb sounder the MLS on the Aura satellite is drifting away from its orbit will be phased out within 2026, a group around Harald Schwefel proposed to fill that gap with a much smaller platform to measure ozone compatible with a cube-sat  https://science.nasa.gov/science-research/earth-science/aura-at-20-years/.
-The idea is to target a very narrow frequency band and convert the thermal radiation from the Terahertz region to the optical domain.
+Since the only current ozone limb sounder the MLS on the Aura satellite is drifting away from its orbit will be phased out within 2026, a group around Harald Schwefel proposed to fill that gap with to measure ozone on a much smaller platform such as a cube-sat  https://science.nasa.gov/science-research/earth-science/aura-at-20-years/. \cite{ustin2024current}
+The idea is to target a very narrow frequency band and convert the thermal radiation of ozone from the Terahertz region to the optical domain, so that big cooling devices are not needed.
 We simulate some data from a limb sounder by solving the radiative transfer equation (RTE) for one specific frequency but leave out any measurement device related details, as they are not available yet.
-This inverse problem is currently approached by methods based on optimisation/regularisation \cite{}, instead we employ a hierarchically ordered Bayesian framework to recover ozone values.
+This inverse problem is currently approached in the atmospheric physics community by methods based on optimisation/regularisation from 1970 (which is a very long time ago) \cite{}, instead we employ a hierarchically ordered Bayesian framework to recover ozone values.
 
 
 \section{Research Gap and Contribution}
@@ -14,7 +14,7 @@ Hence, we propose a Bayesian framework, to provide a posterior distribution of u
 We compare a regularisation method to a hierarchialy ordered linear-Gaussian Bayesian model, where we separate the posterior distribution over the hyper-parameters, describing noise of the data and smoothnes of the ozone profile, and the posterior distribution over the ozone profile.
 Fox and Norton call this the marginal and then conditional (MTC) method \cite{} and we are the first to apply it to a physical based problem and hence the first to tackle the RTE with a hierarchichally order Bayesian model.
 Since the RTE is weakly non-linear we do approximate the RTE with an affine map, which is another novelty.
-Then, instead of sampling from the posterior distributions we are the first to approximate posterior distributions using a tensor-train (TT).
+Then, instead of sampling from the posterior distributions we are the first to calculate marginal posterior distributions using a tensor-train (TT).
 Additionally, we are the first to provide pressure, temperature and ozone profile given one set of measurements.
 
 \section{Thesis Structure}
