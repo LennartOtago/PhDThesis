@@ -336,7 +336,7 @@ Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{
 
 
 
-\subsection{Marginal Functions}
+\subsection{Marginal Functions for quadrature}
 To compute these marginals efficiently, one can use a procedure similar to left and right orthogonalisation of TT-cores~\cite{oseledets2011tensor}.
 Cui et al. \cite{cui2022deep} referred to this backwards marginalisation, see Prop. \ref{prob:ForMarg}, to which I add the forward marginalisation, see Prob. \ref{prob:backMarg}. 
 The backwards marginalisation provides us with the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{B}_{\text{pre}, k}$. 
@@ -406,6 +406,7 @@ and similarly in the last dimension
 where $\bm{D}_d[l_{n-1},i] = \bm{B}_{\text{pre},d}[l_{n-1}, i, \alpha_{n+1}]$ and $\alpha_{d+1} = 1$.
 Note that we calculate the normalisation numerically within the process of finding the marginals so that $\sum f_{X_k}(x_k) = 1$.
 
+\subsection{Sampling from the TT approximation -- Inverse Rosenblatt Transform}
 %\chapter{Results}
 %\label{ch:res}
 %
