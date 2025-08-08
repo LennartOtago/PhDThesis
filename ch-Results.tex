@@ -473,6 +473,8 @@ We initialise the MWG at the mode $( \lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda
 The standard deviation of the normal proposal distribution is set to $\sigma_{\lambda} = 0.8 \lambda_0$ so that the acceptance rate is $\approx 0.5$ as suggested in \cite{}.
 The samples are plotted in Fig. \ref{fig:ScatterPlotTT} as a 2D scatter plot, as well as the trace of the MwG to show ergodicity.
 We calculate the integrated autocorrelation time (IACT) with the Python implementation of \cite{}, which gives us $\tau_{\text{int}, \gamma} = $ and $\tau_{\text{int}, \delta} = $.
+
+
 %\begin{algorithm}[!ht]
 %	\caption{Metropolis within Gibbs for $\pi(\lambda, \gamma | \bm{y})$}
 %	\begin{algorithmic}[1]
@@ -510,6 +512,12 @@ We plot the TT approximation as a colour map on top of the obtained samples in t
 	\label{fig:ScatterPlotTT}
 \end{figure}
 
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{ScatterplusHistoPlusTT.png}
+	\caption[]{}
+	\label{fig:UwerrMargFirst}
+\end{figure}
 
 \subsection{Calculate mean and variance of the full conditional posterior for ozone}
 \label{subsec:firstCond}
