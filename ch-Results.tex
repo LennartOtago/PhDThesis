@@ -761,9 +761,18 @@ We plot the posterior temperature and pressure profiles in Fig. \ref{fig:TempPos
 	\caption[Pressure posterior samples.]{We take samples from the posterior distribution, as plotted in Fig. \ref{fig:PostHistTT4} and plot the corresponding pressure function, see Eq: \ref{eq:pressFunc}.}
 	\label{fig:PressPost}
 \end{figure}
-\clearpage
-
-
+%\clearpage
+	%\begin{leftfullpage}
+\cleardoublepage
+\begin{figure}[h]% will be the left-side figure
+		\includegraphics[width=\linewidth,height = \textheight]{PressPostMeanSigm.png}
+		\caption{mffjnjf}
+\end{figure}
+\begin{figure}% will be the right-side figure
+		\includegraphics[width=\linewidth,height = \textheight]{PressPostMeanSigm.png}
+		\caption*{fhgffg}
+\end{figure}
+\cleardoublepage
 \section{Error analysis}
 In this section, we estimate errors due to the function approximations of $f(\lambda)$ and $g(\lambda)$ and how these errors propagate to the marginal posterior.
 Additionally, we approximate errors of the TT-approximation as well as Monte-Carlo errors when binning up the samples.

@@ -523,6 +523,29 @@ Solving this equation yields the regularised solution
 \end{align}
 where we define $\bm{L} := \bm{T}^T \bm{T}$, which typically represents a discrete matrix approximation of a differential operator choice~\cite{tan2016LecNot}.
 
+With $\bm{T}$ may represent the first order discrete  derivative then the $\bm{L}$ is the second order discrete derivative.
+
+To show how the regularisation parameter effects the solution one can do a singular value decomposition of $A$
+and the generalised singular value decomposition of $A, T$ as in \cite{hansen1989GSVD}.
+Then $\bm{A} = \bm{U} \bm{\Lambda}_A \bm{M}^{-1}$ and $\bm{L} = \bm{V} [\bm{\Lambda}_L,0] \bm{M}^{-1} $
+Where the general singular values $\bm{\Lambda}_A = \text{diag}(\sigma_{A,1},\dots,\sigma_{A,1},1,\dots,1)$ and $\bm{\Lambda}_L = \text{diag}(\sigma_{L,1},\dots,\sigma_{L,1},1,\dots,1)$
+
+Then one can show that the solution is %$\x_{\lambda} = \bm{M} \bm{F} \bm{U}^T \bm{y} $
+with filter factors
+\begin{align}
+	f_i = \frac{(\sigma_{A,i}/\sigma_{L,i})^2 }{(\sigma_{A,i}/\sigma_{L,i})^2 + \lambda^2} \approx
+	\begin{cases}
+		\frac{(\sigma_{A,i}/\sigma_{L,i})^2}{ \lambda^2},  & \sigma_{A,i}/\sigma_{L,i} \gg \lambda\\
+				1 ,  & \sigma_{A,i}/\sigma_{L,i} \ll \lambda 
+	\end{cases}
+\, \, \text{for}\, i= 1,\dots,p
+\end{align}
+Then small singular values depend on prior information only
+for large $(\sigma_{A,i}/\sigma_{L,i})^2$ singular values the solution is unaffected
+for small $(\sigma_{A,i}/\sigma_{L,i})^2$ singular values the solution is affected by the regularisation parameter
+
+
+
 In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation norm. The optimal value of $\lambda$ is often chosen as the point of maximum curvature on the so-called L-curve~\cite{hansen1993use}, which we plot in Fig.~\ref{fig:LCurve}.
 Additionally one can think about it .... in \cite{fox2016fast}
 \cite[Fig. 2.13]{SANTOSH202265}
