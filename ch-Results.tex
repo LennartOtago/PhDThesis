@@ -63,6 +63,17 @@ Then we can compute a data vector $\bm{y}$, with $m = 42$ measurements according
 The height values $h_{L,i}$ for each layer $i = 0,\dots, n$ are defined by the ozone profile from \cite{MLSdata} and its pressure values.
 We target thermal radiation at a wave number $\nu = 7.86\text{cm}^{-1}$, equal to a frequency of roughly $235$GHz, where we assume that ozone is the only emitter at that frequency, see \cite{}, and calculate the absorption constant $k(\nu,T)$ as in Eq. \ref{eq:absRTE}, following the \textit{HITRAN} database \cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
 Lastly we add normally distributed $\bm{\nu} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ noise so that we have a voltage Signal-to-Noise (SNR) of $60$, similar to THz module on the MLS aura satellite \cite{pickett2006snr}.
+\begin{align}
+	\text{SNR} = \frac{max(y)}{std noise} = \frac{max(y)}{std noise}
+\end{align}
+Note that we multiply the data with $10^{11}$ to avoid numerical issues within the inversion process.
+Can also see that when we plot the data
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{DataPlot.png}
+	\caption[Logarithmic plot of data points at different tangent height.]{Logarithmic plot of data points at different tangent height. Note that negative values are not appearing and we see that at a caertein heitgh noise is dominating.}
+	\label{fig:}
+\end{figure}.
 Now, given the data, we want to invert the process and determine a posterior distribution over the ozone $\bm{x}$, pressure $\bm{p}$ and temperature $\bm{T}$.
 
 \section{Set up the Bayesian framework}
