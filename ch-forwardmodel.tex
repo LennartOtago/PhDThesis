@@ -53,32 +53,62 @@ is based on a matrix-vector multiplication, where we define $\bm{A}(\bm{x},  \bm
 If we neglect the absorption, e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}, this problem becomes a linear problem with the forward model given by $\bm{A}_{L}\bm{x}$ or $\bm{A}_{L}\bm{p}/\bm{T}$. 
 Further, we classify the inverse problem as weakly non-linear, see e.g. Fig. \ref{fig:MapAsses}, as neglecting the absorption changes the measurement only slightly.
 
+\section{Singular value decompostion of linear forward model matrix}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{MeasTangHeight.png}
+	\caption[Tangent heights for different sequence of measurements.]{We plot the tangent heights for different cases of measurements.}
+	\label{fig:TangHCases}
+\end{figure}
+
+Similar to a rpcial compontent ananlyis or ... we can find the singular value decompositon of $\bm{A}_L$ for ozone
+\begin{align}
+	\bm{A}_L = \bm{U} \bm{Sigma} \bm{V}
+\end{align}
+to anlayes where the forward model is sensitive and where not
+we find the data space the image image space
+linked by the isngular valiues nprojection
+
+we dop that show that it donest matter how we emasure we wont get more information otu if the forward map.. it is deteminet by the measuremetn technique.
+
+we can also adjust the number of measurement and find a suitable measurement set up
+
+
+and show the limits of the meaduremts given a signal to noise ratio
+
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SingValA.png}
-	\caption[]{}
-	\label{fig:}
+	\caption[Singular values of linear forward model matrix for different sequences of measurements.]{We plot the singular values of linear forward model matrix for different sequences of measurements.
+	The corresponding tangent heights of the different cases are plotted in Fig. \ref{fig:TangHCases}.}
+	\label{fig:SingA}
 \end{figure}
 
 
-
+Not sensible in hght altidues
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SingVecA.png}
-	\caption[]{}
+	\caption[Left singular vectors of forward model matrix for one sequence of measurements.]{We plot the first 20 left singular vectors of forward model matrix for case 5 sequence of measurements, see Fig. \ref{fig:SingA}. We include an approximate for the disiered Signal to noise ratio if $s_1 \approx max(\bm{y}) $ the signal.}
+	\label{fig:SingVecA}
+\end{figure}
+
+Can also see that when we plot the data
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{SingVecA.png}
+	\caption[Singular vectors of forward model matrix for one sequence of measurements.]{We plot the first 20 singular vectors of forward model matrix for case 5 sequence of measurements, see Fig. \ref{fig:SingA}. To display the image space..}
 	\label{fig:}
 \end{figure}
 
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics{MeasTangHeight.png}
-	\caption[]{}
+	%\includegraphics{DataPlot.png}
+	\caption[Logarithmic plot of data points at different tangent height.]{Logarithmic plot of data points at different tangent height. Note that negative values are not appearing and we see that at a caertein heitgh noise is dominating.}
 	\label{fig:}
 \end{figure}
-
-
 
 %Hence, we can approximate the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T})$ with a map $\bm{M}$ and the linear forward model $\bm{A}_L$, so that $\bm{A}(\bm{x},  \bm{p},\bm{T}) \approx \bm{M} \bm{A}_L $.
 %Here, $\bm{A}_{L,j} $ of matrix $\bm{A}_L \in \mathbb{R}^{m \times n}$ is defined by the linear forward model, where absorption is neglected, e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}. 
