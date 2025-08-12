@@ -53,6 +53,33 @@ is based on a matrix-vector multiplication, where we define $\bm{A}(\bm{x},  \bm
 If we neglect the absorption, e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}, this problem becomes a linear problem with the forward model given by $\bm{A}_{L}\bm{x}$ or $\bm{A}_{L}\bm{p}/\bm{T}$. 
 Further, we classify the inverse problem as weakly non-linear, see e.g. Fig. \ref{fig:MapAsses}, as neglecting the absorption changes the measurement only slightly.
 
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{SingValA.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+
+
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{SingVecA.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{MeasTangHeight.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+
+
+
 %Hence, we can approximate the non-linear forward model $\bm{A}(\bm{x},  \bm{p},\bm{T})$ with a map $\bm{M}$ and the linear forward model $\bm{A}_L$, so that $\bm{A}(\bm{x},  \bm{p},\bm{T}) \approx \bm{M} \bm{A}_L $.
 %Here, $\bm{A}_{L,j} $ of matrix $\bm{A}_L \in \mathbb{R}^{m \times n}$ is defined by the linear forward model, where absorption is neglected, e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}. 
 %Then each entry in the row vector $\bm{A}_{L,j} $ is either defined by $ B(\nu) k(\nu)   \frac{\bm{p}}{k_{\text{B}} \bm{T}}  \text{d}r$ or $B(\nu) k(\nu)   \frac{\bm{x}}{k_{\text{B}}}  \text{d}r$, as in Eq.~\eqref{eq:RTE}.

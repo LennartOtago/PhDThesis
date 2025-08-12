@@ -475,6 +475,19 @@ The samples are plotted in Fig. \ref{fig:ScatterPlotTT} as a 2D scatter plot, as
 We calculate the integrated autocorrelation time (IACT) with the Python implementation of \cite{}, which gives us $\tau_{\text{int}, \gamma} = $ and $\tau_{\text{int}, \delta} = $.
 
 
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{UwerrTauIntFirstO3lam.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{UwerrTauIntFirstO3gam.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+
 %\begin{algorithm}[!ht]
 %	\caption{Metropolis within Gibbs for $\pi(\lambda, \gamma | \bm{y})$}
 %	\begin{algorithmic}[1]
@@ -518,6 +531,8 @@ We plot the TT approximation as a colour map on top of the obtained samples in t
 	\caption[]{}
 	\label{fig:UwerrMargFirst}
 \end{figure}
+
+
 
 \subsection{Calculate mean and variance of the full conditional posterior for ozone}
 \label{subsec:firstCond}
@@ -632,6 +647,14 @@ We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the 
 	\caption[Ozone posterior mean and variance and the regularised solution compared to the ground truth.]{We plot the conditional posterior mean and variance in black and the regularised solution on top of the ground truth ozone profile in green. We use the updated forward map $\bm{M}\bm{A}_L$}
 	\label{fig:O3SolplsReg}
 \end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{CovSing.png}
+	\caption[]{}
+	\label{fig:}
+\end{figure}
+
 \clearpage
 
 \section{Posterior distribution for pressure and temperature with approximated forward model}
