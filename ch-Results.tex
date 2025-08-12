@@ -177,7 +177,7 @@ Next, we need to specify the prior distribution, which we summarise in Tab. \ref
 		model parameters& priors&\makecell{lower}& \makecell{upper\\
 		}&$\tau_{\text{int}}$&Context\\
 		\hhline{|=||=|=|=|=|=|}
-		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &$5 \, 10^{-8}$ &$4.5 \, 10^{-7}$& $1.5 \pm 0.1$ &$\bm{y}$\\ \hline
+		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &$5 \, 10^{-8}$ &$4.5 \, 10^{-7}$&  $ 9\pm 0.1$ &$\bm{y}$\\ \hline
 		$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& $1.5 \pm 0.1$ & $\bm{x}$\\ \hline
 		$\lambda$ &- & 500&$10^4$& $3.5 \pm 0.3$ &$\bm{x}$\\ \hline
 		$\bm{x}$ &$\mathcal{N}(0,\delta \bm{L})$ & -&-&& $\bm{x}$\\ \hhline{|=||=|=|=|=|=|}
@@ -761,15 +761,13 @@ We plot the posterior temperature and pressure profiles in Fig. \ref{fig:TempPos
 	\caption[Pressure posterior samples.]{We take samples from the posterior distribution, as plotted in Fig. \ref{fig:PostHistTT4} and plot the corresponding pressure function, see Eq: \ref{eq:pressFunc}.}
 	\label{fig:PressPost}
 \end{figure}
-%\clearpage
-	%\begin{leftfullpage}
-\cleardoublepage
+
 \begin{figure}[h]% will be the left-side figure
-		\includegraphics[width=\linewidth,height = \textheight]{PressPostMeanSigm.png}
-		\caption{mffjnjf}
+		\includegraphics[]{CorrPlot.png}
+		\caption[Correlation plot of samples from TT-approximation]{mffjnjf}
 \end{figure}
 \begin{figure}% will be the right-side figure
-		\includegraphics[width=\linewidth,height = \textheight]{PressPostMeanSigm.png}
+		\includegraphics[]{2ndCorrPlot.png}
 		\caption*{fhgffg}
 \end{figure}
 \cleardoublepage

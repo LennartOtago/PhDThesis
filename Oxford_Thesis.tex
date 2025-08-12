@@ -79,6 +79,7 @@
 \correctionstrue
 
 
+
 %%%%% BIBLIOGRAPHY SETUP
 % Note that your bibliography will require some tweaking depending on your department, preferred format, etc.
 % The options included below are just very basic "sciencey" and "humanitiesey" options to get started.
@@ -255,11 +256,14 @@
 %	\setcounter{equation}{0}
 %	\include{#2}
 %}
+\usepackage{numprint}
+\usepackage{siunitx}
 
 
 %%%%% THE ACTUAL DOCUMENT STARTS HERE
 \begin{document}
-
+\npdecimalsign{.}
+\nprounddigits{2}
 
 %%%%% CHOOSE YOUR LINE SPACING HERE
 % This is the official option.  Use it for your submission copy and library copy:
@@ -299,7 +303,7 @@
 \begin{romanpages}
 
 % Title page is created here
-% \maketitle
+\maketitle
 
 %%%%% DEDICATION -- If you'd like one, un-comment the following.
 %\begin{dedication}
@@ -309,14 +313,14 @@
 %\end{dedication}
 
 %%%%% ACKNOWLEDGEMENTS -- Nothing to do here except comment out if you don't want it.
-%\begin{acknowledgements}
-% 	\input{acknowledgements}
-%\end{acknowledgements}
+\begin{acknowledgements}
+ 	\input{acknowledgements}
+\end{acknowledgements}
 
 %%%%% ABSTRACT -- Nothing to do here except comment out if you don't want it.
-%\begin{abstract}
-%	\input{abstract}
-%%\end{abstract}
+\begin{abstract}
+	\input{abstract}
+\end{abstract}
 
 %%%%% MINI TABLES
 % This lays the groundwork for per-chapter, mini tables of contents.  Comment the following line
@@ -327,7 +331,7 @@
 %\dominilot  % include a mini list of tables
 
 % This aligns the bottom of the text of each page.  It generally makes things look better.
-% \flushbottom
+\flushbottom
 
 % This is where the whole-document ToC appears:
 \tableofcontents
@@ -353,9 +357,9 @@
 %%%%% CHAPTERS
 % Add or remove any chapters you'd like here, by file name (excluding '.tex'):
 \flushbottom
-\the\columnwidth\\
-\the\textheight\\
-\the\paperheight\\
+%\the\columnwidth\\
+%\the\textheight\\
+%\the\paperheight\\
 \include{ch1-intro}
 \include{ch-theoBackground}
 \include{ch-forwardmodel}
