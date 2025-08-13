@@ -337,7 +337,7 @@ Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{
 
 
 \subsection{Marginal Functions for quadrature}
-To compute these marginals efficiently, one can use a procedure similar to left and right orthogonalisation of TT-cores~\cite{oseledets2011tensor}.
+Marginal function are handy when approximation integrals and to compute these marginals efficiently, one can use a procedure similar to left and right orthogonalisation of TT-cores~\cite{oseledets2011tensor}.
 Cui et al. \cite{cui2022deep} referred to this backwards marginalisation, see Prop. \ref{prob:ForMarg}, to which I add the forward marginalisation, see Prob. \ref{prob:backMarg}. 
 The backwards marginalisation provides us with the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{B}_{\text{pre}, k}$. 
 These matrices enable the efficient evaluation of marginal functions since they integrate over the coordinates either left or right of the $k$-th dimension, as in \cite{cui2022deep}.
@@ -375,7 +375,7 @@ The proposition used to compute $\bm{B}_k$, stated in Proposition~\ref{prob:back
 		\begin{equation}
 			\bm{C}_{\text{pre},k}[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{L}_k[i, \tau] \bm{B}_{\text{pre},k}[\alpha_{k-1}, i, l_k] .
 		\end{equation}
-		\item Unfold $\bm{C}_{pre,k}$ along the first coordinate and compute the thin QR decomposition, so that $\bm{C}_{\text{pre},k}^{(R)} \in \mathbb{R}^{(r_{k-1} n_k ) \times r_k}$:
+		\item Unfold $\bm{C}_{\text{pre},k}$ along the first coordinate and compute the thin QR decomposition, so that $\bm{C}_{\text{pre},k}^{(R)} \in \mathbb{R}^{(r_{k-1} n_k ) \times r_k}$:
 		\begin{equation}
 			\bm{Q}_{pre,k}\bm{R}_{\text{pre},k} = {(\bm{C}_{\text{pre},k}^{(R)})}.
 		\end{equation}
@@ -397,6 +397,7 @@ where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ and $\bm{R}_{\text
 For the first dimension, $f_{X_1}(x_1)$ can be expressed as
 \begin{equation}
 	f_{X_1}(x_1)  \approx \frac{1}{z} \left(\xi \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1),
+	\label{eq:firstMarg}
 \end{equation}
 where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$,
 and similarly in the last dimension
@@ -406,28 +407,58 @@ and similarly in the last dimension
 where $\bm{D}_d[l_{n-1},i] = \bm{B}_{\text{pre},d}[l_{n-1}, i, \alpha_{n+1}]$ and $\alpha_{d+1} = 1$.
 Note that we calculate the normalisation numerically within the process of finding the marginals so that $\sum f_{X_k}(x_k) = 1$.
 
-\subsection{Sampling from the TT approximation -- Inverse Rosenblatt Transform}
-%\chapter{Results}
-%\label{ch:res}
-%
-%\section{Simulate data}
-%
-%
-%\section{Develop a hierarchical Bayesian model}
-%\label{sec:applBay}
-%
-%\subsection{prior modelling}
-%
-%\section{affine map with posterior ozone}
-%\subsection{sampling vs TT}
-%
-%\section{posterior ozone vs regularisation}
-%\label{sec:applReg}
-%\subsection{sampling vs TT}
-%
-%\section{posterior pressure and temperature}
-%\subsection{sampling vs TT}
-%
+\subsection{Sampling from the TT approximation -- Squared Inverse Rosenblatt Transform}
+If instead of evaluating integrals we draw samples from the approximated function via the inverse Rosenblatt transform (IRT), as in \cite{dolgov2020approximation}, to preserve the correlation structure.
+Since we approximate the square root of the target function Cui et. al. \cite{cui2022deep} call that the squared inverse Rosenblatt transform (SIRT).
+
+In doing so we start by calculating the Backward marginals as in Prob \ref{prob:backMarg} and draw $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is d-dimensional for $s = 1, \dots, N$.
+Then we calculate the first marginal $f_{X_1}(x_1)$ as in Eq. \ref{eq:firstMarg} and normalise with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$.
+Next we compute the cumulative distribution function (CDF)
+\begin{align}
+	F_{X_k}(x_k) \approx \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\tilde{x}_k|x_{k-1},\dots,x_1) d \tilde{x}_k
+	\label{eq:CurrCDF}
+\end{align}
+for the first dimension $k = 1$ and then project the seed  on the parameter space $x^{(s)}_k = F_{X_k}^{-1}(u^{(s)}_k)$.
+Once that is done we use a piecewise polynomial interpolation
+\begin{align}
+	\bm{G}_k(x^{(s)}_k) \approx   \frac{x^{(s)}_k - x^{(i)}_k }{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i+1)}_k) + \frac{ x^{(i+1)}_k - x^{(s)}_k}{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i)}_k)
+	\label{eq:LinPol}
+\end{align}
+for $x^{(i)}_k \leq x^{(s)}_k \leq x^{(i+1)}_k$ in between two grid points $i$ and $i+1$ as in \cite{dolgov2020approximation}.
+Through $\bm{G}_k(x^{(s)}_k)\in \mathbb{R}^{1 \times r_{k-1}}$ we condition on the previous samples, which denotes the product of all approximated tensors of the previous $k-1$ samples to preserve the correlation structure.
+Then we marginalise over the dimensions $k+1 , \dots, d$ via $\bm{B}_k$ so that the next "conditional marginal" is given as:
+\begin{align}\begin{split} 
+		f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1) \approx \frac{1}{z}
+		\Bigg( 
+		\xi \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \\
+		\sum_{l_{k} = 1}^{r_{k}} \Bigg( \sum_{i = 1}^{n}  \phi^{(i)}_k(x^{(s)}_k) \Bigg( \sum_{\alpha_{k-1} = 1}^{r_{k-1}} \bm{G}^{(\alpha_{k-1})}_{<k}(x^{(s)}_{<k}) \bm{B}_k[\alpha_{k-1},i,l_k] \Bigg) \Bigg)^2 \Bigg) \uplambda_k(x_k)
+	\end{split} 
+	\label{eq:CurrMarg} \, .
+\end{align}
+We repeat the procedure for each $u^{(s)}_k \in \bm{u}^{(s)}$ to gain samples $\bm{x}^{(s)} \sim f_{X}(x)$, see algorithmic box \ref{alg:SIRT} for a summarised version.
+
+
+
+Note that with Cartesian basis $ \sum \phi^{(i)}_k(x_k) \Bigg( \sum \bm{G}^{(\alpha_{k-1})}_{<k}(x_{<k}) \bm{B}_k[\alpha_{k-1},i,l_k] \Bigg) \Bigg)^2 
+$  and $\bm{G}_{<k}(x^{(s)}_{<k}) = \bm{G}_{1}(x^{(s)}_{1}) \cdots \bm{G}_{k-1}(x^{(s)}_{k-1}) $ are simple matrix multiplications for each grid point $i$ or sample $\bm{x}^{(s)}$.
+
+\begin{algorithm}[!ht]
+	\caption{Squared Inverse Rosenblatt Transform}
+	\begin{algorithmic}[1]
+		\STATE \textbf{Input:} seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $ and $\bm{B}_1 , \dots,\bm{B}_d$  from Prob. \ref{prob:backMarg}
+		\FOR{ \( s = 1, \dots, N\)}
+		\FOR{ \( k = 1, \dots, d\)}
+		\STATE compute normalised PDF $ f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1)$, Eq. \ref{eq:CurrMarg}
+		\STATE compute cumulative distribution function $F_{X_k}(x_k)$, Eq. \ref{eq:CurrCDF}
+		\STATE project sample $x^{(s)}_k = F_{X_k}^{-1}(u^{(s)}_k)$
+		\STATE interpolate $\bm{G}_k(x^{(s)}_k)$, Eq. \ref{eq:LinPol}
+		\STATE update $\bm{G}_{\leq k}(x^{(s)}_{\leq k}) = \bm{G}_{<k}(x^{(s)}_{<k}) \bm{G}_k(x^{(s)}_k)$
+		\ENDFOR
+		\ENDFOR
+		\STATE \textbf{Output:} samples $\{ \bm{x}^{(1)},\dots, \bm{x}^{(N)} \} $, where each $\bm{x}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N$
+	\end{algorithmic}
+	\label{alg:SIRT}
+\end{algorithm}
 
 
 \section{Affine Map}
