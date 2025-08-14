@@ -115,6 +115,7 @@ where we define the integrated autocorrelation time (IACT) $\tau_{\text{int}}$ a
 More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
 We calculate the IACT using the Python implementation of \cite{WOLFF2004143}, accessed \cite{wolff2004monte}, which also provides errors on the IACT, which helps us to assess convergence of the chain.
 
+\textcolor{red}{since we expect an exponential decay of the autocorrelate function we can write...}
 
 \section{Sampling Methods}
 \label{sec:sampling}
@@ -215,6 +216,7 @@ Convergence to the target distribution is guaranteed by construction of the algo
 %\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
 Instead of sampling from a target distribution $\pi(\bm{x})$ we can approximate that distribution on a d-dimensional grid with far fewer function evaluation compared to sampling methods using a tensor train (TT) approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, with  $\bm{x}\in \mathbb{R}^d$.
 First, we provide a short overview of probability spaces and their associated measures, as a foundation for calculating marginal probability distributions from the tensor train format.
+Then we explain how we calculate marginal distribution and generate samples via the inverse Rosenblatt transform (IRT).
 Note that we follow the notation of Cui et al. \cite{cui2022deep} to introduce this methodology.
 
 Assume that the triple $(\Omega, \mathcal{F}, \mathbb{P})$ defines a probability space, where $\Omega$ denotes the complete sample space, $\mathcal{F}$ is a $\sigma$-algebra consisting of a collection of countable subsets $\{A_n\}_{n \in \mathbb{N}}$ with $A_n \subseteq \Omega$, and $\mathbb{P}$ is a probability measure defined on $\mathcal{F}$. The formal conditions for $\mathbb{P}$ to be a probability measure, and for $\mathcal{F}$ to be a $\sigma$-algebra over $\Omega$, are given in Appendix~\ref{ch:Mesure}.
@@ -247,8 +249,8 @@ In the tensor train (TT) format, the integral in Eq. \ref{eq:margInt} for the ma
 \begin{align*}
 	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d)  \in \mathbb{R},
 \end{align*}
-which is a sequence of matrix multiplications, with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$ for a fixed grid point $\bm{x} = (x_1, \dots, x_d)$ on a $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$ bounded by the outer ranks $r_0 = r_d = 1$.
-We call $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ a TT-core with ranks $r_{k-1}$ and $r_k$, representing each dimension on $n$ grid points.
+which is a sequence of matrix multiplications, with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$ for a fixed point $\bm{x} = (x_1, \dots, x_d)$ on a predefined $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$. 
+We call $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ a TT-core with ranks $r_{k-1}$ and $r_k$, where the outer ranks are $r_0 = r_d = 1$, representing each dimension on $n$ grid points and connecting to neighbouring dimensions through its ranks.
 This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d  \in \mathbb{R}^{d}$ using $2nr + (d-2)nr^2$ evaluation points, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluation.
 Consequently, the marginal target distribution
 \begin{align}

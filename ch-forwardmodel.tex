@@ -55,46 +55,72 @@ is based on a matrix-vector multiplication, where we define $\bm{A}(\bm{x},  \bm
 If we neglect the absorption, e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}, this problem becomes a linear problem with the forward model given by $\bm{A}_{L}\bm{x}$ or $\bm{A}_{L}\bm{p}/\bm{T}$. 
 Further, we classify the inverse problem as weakly non-linear, see e.g. Fig. \ref{fig:MapAsses}, as neglecting the absorption changes the measurement only slightly.
 
-\section{Singular value decompostion of linear forward model matrix}
+\section{Singular value decomposition of linear forward model matrix}
+In this section we want to give an intuitive way of how we can measure most effectively depending on the information passed through the forward model and how the signal to noise ratio affects that information.
+One way of doing this is via a singular value decomposition (SVD) of the forward model matrix
+\begin{align}
+	\bm{A} = \sum_{i =1}^{r} \bm{u}_i  \sigma_i \bm{v}^T_i = \bm{U} \bm{\Sigma} \bm{V}^T
+\end{align}
+where $r = \min\{m,n\}$ for $\bm{A} \in \mathbb{R}^{m \times n}$.
+One way of thinking about the SVD when considering a parameter $\bm{x}$, which is passed though the froward model as in $\bm{A}\bm{x}$, is that the right singular vectors $\bm{v}_i$ span the parameter space.
+So if the right singular vectors are flat in heigh altitudes the forward model does not pick up any structure of the parameter in that region.
+Then the right singular vectors are weighted with the singular values $\sigma_i$, which are ordered in size from the largest $\sigma_1$ to the smallest $\sigma_{r}$ singular value.
+Lastly, the left singular vectors $ \bm{u}_i$ project to the data space.
+See \cite{tan2016LecNot} for a more comprehensive analysis.
+
+If we consider very small singular values below a threshold negligible we can introduce an effective rank $r_{\text{eff}} \leq r$, then $ \{\bm{v}_{r_{\text{eff}} +1}, \dots ,\bm{v}_r \}$ spans the null space, see Figure \ref{fig:nullSpac}.
+This threshold may be affected by noise in the data.
+If the rough assumption that the maximum singular value $\max(y) \approx \sigma_1$ holds and the signal-to-noise-ratio (SNR) is defined as 
+\begin{align}
+	\text{SNR} \coloneqq \frac{\max(y)}{\text{std. noise}}
+\end{align}
+then we can eye ball the information transmitted through the forward model, which are roughly the singular values $s_i \gtrsim \max(y)/ \text{SNR}$.
+
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{MeasTangHeight.png}
 	\caption[Tangent heights for different sequence of measurements.]{We plot the tangent heights for different cases of measurements.}
 	\label{fig:TangHCases}
 \end{figure}
-
-Similar to a rpcial compontent ananlyis or ... we can find the singular value decompositon of $\bm{A}_L$ for ozone
-\begin{align}
-	\bm{A}_L = \bm{U} \bm{Sigma} \bm{V}
-\end{align}
-to anlayes where the forward model is sensitive and where not
-we find the data space the image image space
-linked by the isngular valiues nprojection
-
-we dop that show that it donest matter how we emasure we wont get more information otu if the forward map.. it is deteminet by the measuremetn technique.
-
-we can also adjust the number of measurement and find a suitable measurement set up
-
-
-and show the limits of the meaduremts given a signal to noise ratio
-
-
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SingValA.png}
 	\caption[Singular values of linear forward model matrix for different sequences of measurements.]{We plot the singular values of linear forward model matrix for different sequences of measurements.
-	The corresponding tangent heights of the different cases are plotted in Fig. \ref{fig:TangHCases}. We include an approximate for the disiered Signal to noise ratio if $s_1 \approx max(\bm{y}) $ the signal.}
+		The corresponding tangent heights of the different cases are plotted in Fig. \ref{fig:TangHCases}. We include an approximate for the disiered Signal to noise ratio if $s_1 \approx max(\bm{y}) $ the signal.}
 	\label{fig:SingA}
 \end{figure}
+Next we analyse the singular values for a few different measurement scenarios, to see which of those measurement cases is most effective.
+We test for different pointing accuracies, which determines how well the satellite can point in a certain direction, and we correlate that to the number of measurements.
+The singular values for measurements with equally distanced tangent heights in between a set atmosphere, see case 3 in Fig. \ref{fig:TangHCases}, are plotted in Fig. \ref{fig:SingA}.
+The pointing accuracy of $150\text{arc sec}$, was given to us by the team in \cite{CubeSatInternal}.
+We can see that value of the singular values are linearly decreasing in log space (exponentially in normal space) and that we can roughly capture information of the first 15 to 20 singular values. 
+In comparison, if we measure with exponentially decreasing pointing accuracy, see case 1 Fig. \ref{fig:TangHCases}, or increasing pointing accuracy, see case 2 Fig. \ref{fig:TangHCases}, the forward model does not give us more information.
+We actually get fewer large singular values for case 2 and more very small singular values as we measure more in higher altitude where noise is dominant due to decreasing pressure and hence density.
+Similarly case 2 does also not seem better than case 3, as we do get some larger singular values which then decease rapidly.
+Also if we would half the pointing accuracy and double the number of measurements, case 4 in Fig. \ref{fig:TangHCases}, we do not increase the amount of information through our forward model.
+Since I assume it is easier to build a satellite with lower pointing accuracy we find through exploratory analysis that we can tolerate a pointing accuracy of $150\text{arc sec}$ without much loss of information above a SNR of around 100.
+And since we see that measuring more does not give more information we only measure until around 60 km in height, where the data start to get dominated by noise.
+Consequently ozone values at higher altitudes are not determined by data but by the prior and given these singular values we can show quite clearly the ill-posedness of this model/problem.
+Of course, if we increase the SNR by a factor of $10^5$ we would be able to see ozone peaks around 60km but that does not seem realistic.
 
-
-Not sensible in hght altidues
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SingVecA.png}
 	\caption[Left singular vectors of forward model matrix for one sequence of measurements.]{We plot the first 20 left singular vectors of forward model matrix for case 5 sequence of measurements, see Fig. \ref{fig:SingA}.}
 	\label{fig:SingVecA}
 \end{figure}
+\begin{figure}[ht!]
+	\centering
+	%\includegraphics{}
+	\caption[]{}
+	\label{fig:nullSpace}
+\end{figure}
+Consequently we proceed with case 5 and plot the parameter space of the model for the first 20 of 25 or so right singular vectors in Fig. \ref{fig:SingVecA}
+We observe that we do not pick up structures above 60km.
+The last 5 right singular vectors (null space) include structures above 60 km and hence our model is not sensitive to those.
+
+
+
 
 
 
