@@ -4,42 +4,45 @@ We describe where we can fill in gaps in with our contributions to and combinati
 Lastly, we provide the reader with the thesis structure.
 
 \section{Motivation}
-Since the only current ozone limb sounder the MLS on the Aura satellite is drifting away from its orbit will be phased out within 2026, a group around Harald Schwefel proposed to fill that gap with a much smaller platform such an disk shape resonator on a cube-sat  https://science.nasa.gov/science-research/earth-science/aura-at-20-years/. \cite{ustin2024current}
-The idea is to target a very narrow frequency band and convert the thermal radiation of ozone from the Terahertz region to the optical domain \cite{}.
-This is an energy efficient solution and does not on measuring terahertz radiation directly, so that big powering or cooling devices are not needed \cite{}.
+Since the only currently operating ozone limb sounder, the Microwave Limb Sounder (MLS) on NASA's Aura satellite, is gradually drifting from its orbit and scheduled to be phased out by 2026, a group led by Harald Schwefel has proposed an alternative approach to fill this observational gap using a much smaller platform, such as a disk-shaped resonator mounted on a 6U CubeSat~\cite{ustin2024current}. The proposed system targets a narrow frequency band and converts the thermal radiation emitted by ozone from the terahertz region to the optical domain~\cite{}. 
+https://science.nasa.gov/science-research/earth-science/aura-at-20-years/
+This conversion offers a cost-effective and energy-efficient solution, as it circumvents the need for energy hungry and large cooling devices that are traditionally required to capture terahertz signals. Instead, signal acquisition in the optical domain can be implemented by using compact, low-power photonic technologies.
 
-This inverse problem is currently approached in the atmospheric physics community by methods based on optimisation/regularisation from the 1970s (which is a very long time ago) \cite{rodgers1976retrieval}, instead we employ a hierarchically ordered Bayesian framework to recover ozone values.
-This approach provides one solution, which is a "best fit to data but not the best fit to parameters" \cite{tan2016LecNot}.
+Currently, the inverse problem to retrieve ozone profiles from limb-sounding data is approach by the atmospheric physics community using optimisation and regularisation techniques developed in the 1970s~\cite{rodgers1976retrieval}.
+This approach is based on a "best fit to data but not the best fit to parameters" \cite{tan2016LecNot}.
+Instead, we employ a hierarchically structured Bayesian framework to infer ozone concentrations, where we find the best range of parameters given some data.
+This probabilistic approach provides estimates and their true uncertainties.
 
 \section{Research Gap and Contribution}
 
-As already mentioned, currently the MLS retrieval algorithm \cite{livesey2006retrieval} is based on the “optimal estimation” method from \cite{rodgers1976retrieval}, which is essentially iteratively minimising a squared residual norm by fitting parameters to some data.
-This does not provide comprehensive information about the parameters, the underlying correlation structures and can lead to unphysical results e.g. negative ozone values \cite{MLSdata}.
-The errors provided are based on a local derivative of the forward map around one optimal parameter, which is obviously highly dependent on the optimal retrieval parameter.
-Additionally these retrieval are conditioned on estimates of other parameters such as temperature or pressure and errors of those are just added to a fixed noise covariance matrix \cite[Eq. 6]{livesey2006retrieval}, which may result in one biased solutions and gives poor predictions \cite{}.
-Pressure and temperature are usually retrived from other measruement, where radaince emitting pramaters are nnlwon such aas water vapuor or H other...
-But still hten one not condiyionn on estimates and rahter shoudl include that jointly...
+As already mentioned, currently the MLS retrieval algorithm \cite{livesey2006retrieval} is based on the “optimal estimation” method from \cite{rodgers1976retrieval}.
+This approach iteratively minimises a squared residual norm by fitting parameters to a set of data and penalises against a chosen regularisation.
+This does not provide comprehensive information about the parameters, the underlying correlation structures and can lead to unphysical results e.g. negative ozone concentration values \cite{MLSdata}.
+The errors provided are based on a local derivative of the forward map around one optimal solution, which is obviously highly sensitive to its location.
+Additionally these retrievals are conditioned on external estimates of other parameters such as temperature or pressure \cite{livesey2006retrieval}.
+This does results in solution with a bias \cite{} .
+A natural way to address these limitations is to include measurement noise explicitly in both the modelling and inversion process.
+Current machine learning efforts condition on one single noise hyper-parameter values in their trained model, which takes about one month, but they do not include noise as a retrieval parameter and they do compare to a "ground truth" provided by the previously describe optimal estimation approach \cite{werner2023machlearn, bojkov2008NeuralNet}.
 
-
-One way of fixing this would be to include noise in the modelling process but even current machine learning do not include noise in their modelling and are meaningless since they compare to a "ground truth" provided by the previously describe optimal estimation approach \cite{werner2023machlearn, bojkov2008NeuralNet}.
-
-When random noise is included in the modelling process naturally we deal with distributions over parameters, where the noise acts as hyper-parameter and is also estimated, and hence can provide errors, instead of one optimal solution.
+If we include random noise in the modelling and inversion process, we naturally deal with distributions over parameters (e.g. ozone concentrations), where the noise acts as hyper-parameter, and can provide errors according to those distributions, instead of one "optimal" solution.
 This approach is called \textit{hierarchical} Bayesian modelling.
+Additionally, \cite{livesey2006retrieval} report "unexpected spectrally correlated noise" on the MLS aura so there is another real reason why one should include and estimate noise.
 
-Additionally, \cite{livesey2006retrieval} report unexpected spectrally correlated noise on the MLS aura so there is another real reason why one should include noise in the modelling process.
+To solve this inverse problem within a linear-Gaussian hierarchical Bayesian framework, we apply the marginal-and-then-conditional (MTC) method~\cite{fox2016fast}, with which we evaluate distributions over both hyper-parameters and parameters.
+This is a fairly new method within the Bayesian community and we are the first to our knowledge to apply it to a physical forward model based on the radiative transfer equation (RTE).
+Another novelty is that instead of sampling from those posterior distribution we utilise a tensor-train to approximate the posterior distribution, which enables us to provide estimates and uncertainties via quadrature.
 
-
-We simulate some data from a limb sounder by solving the radiative transfer equation (RTE) for one specific frequency but leave out any measurement device related details, as they are not available yet.
-We compare a regularisation method to a hierarchialy ordered linear-Gaussian Bayesian model, where we separate the posterior distribution over the hyper-parameters, describing noise of the data and smoothens of the ozone profile, and the posterior distribution over the ozone profile.
-Fox and Norton call this the marginal and then conditional (MTC) method \cite{} and we are the first to apply it to a physical based problem and hence the first to tackle the RTE with a hierarchichally order Bayesian model.
-Since the RTE is weakly non-linear we do approximate the RTE with an affine map, which is another novelty.
-Then, instead of sampling from the posterior distributions we are the first to calculate marginal posterior distributions using a tensor-train (TT).
-Additionally, we are the first to provide pressure, temperature and ozone profile given one set of measurements. \cite{}
+Since the RTE is weakly non-linear we approximate the RTE with an affine map, which seems to be another novelty in the field of atmospheric remote sensing.
+Additionally, to give posterior distribution of ozone profiles, we are the first to provide joint pressure, temperature and ozone profiles given one set of measurements. \cite{}
 
 
 \section{Thesis Structure}
 In Ch. \ref{ch:background}, we give a brief overview of the methods used and provide references for more details.
-Then, in Ch. \ref{ch:formodel}, we provide the forward model based on the RTE and some functional dependencies.
-Using that, in Ch. \ref{ch:res} we use that forward model and simulate some data according to a ground truth.
-Then to characterise the posterior distributions, we set up a Bayesian framework, where we discuss some prior modelling.
-Finally, we use the in Ch. \ref{ch:background} introduced methods to aprroximate the non-linear forward model and provide distribution of ozone, pressure and temperature profiles.
+Then, in Ch. \ref{ch:formodel}, we provide the forward model based on a simplified RTE, discuss some functional dependencies.
+Then we asses a few ways of how to accumulate data and evaluate which information passed through the froward model to find an effective way of measuring ozone in the atmosphere.
+Using our findings we simulate some data including noise from a limb sounder based on the RTE for one specific frequency including noise and omit any measurement device related details, as they are not available yet.
+Then, in Ch. \ref{ch:res}, we build our linear hierarchical Bayesian model and discuss some prior modelling.
+Given the simulated data we provide posterior distributions of our Bayesian framework based on the linearised RTE to then approximate the non-linear forward model with an affine map. 
+Then we compare a regularisation solution with the posterior distributions of the approximated linear Bayesian model against a ground truth ozone profile, where we also provide posterior distributions over hyper-parameters.
+Additionally, we condition on an ozone profile and noise sample, to give joint pressure and temperature posterior profiles.
+Lastly, we discuss our results and provide an outlook.

@@ -76,7 +76,7 @@ Can also see that when we plot the data
 \end{figure}.
 Now, given the data, we want to invert the process and determine a posterior distribution over the ozone $\bm{x}$, pressure $\bm{p}$ and temperature $\bm{T}$.
 
-\section{Set up the Bayesian framework}
+\section{Set up a hierarchical Bayesian framework}
 \label{sec:BayModel}
 Since the forward model described in Ch. \ref{ch:formodel} is weakly non-linear we will set up a linear Bayesian hierarchical framework first based on the linear forward model $\bm{A}_L$ and then later the approximated version $\bm{A}_{NL}\bm{M} \bm{A}_L$.
 Furthermore, the noise is normally distributed, so we establish a linear-Gaussian Bayesian hierarchical framework, aiming to recover an ozone profile and a pressure over temperature profile.
@@ -355,7 +355,7 @@ We plot the approximations in Fig. \ref{fig:fandg} and elaborate on approximatio
 %\end{align}
 %is normal distribution and we compute weighted expectations, as in Eq.~\ref{eq:MargExpPos}, of the conditional mean and covariance matrix, where the weights are given by $\pi(\bm{\theta} | \bm{y})$. 
 %Note that both the noise covariance $\bm{\Sigma} = \bm{\Sigma}(\bm{\theta})$ and the prior precision matrix $\bm{Q} = \bm{Q}(\bm{\theta})$ depend on the hyper-parameters $\bm{\theta}$.
-\subsection{Pressure over temperature conditioned on noise and ozone}
+\subsection{Pressure temperature ratio conditioned on noise and ozone}
 \label{subsec:PressTempSetup}
 First, we observe that we can describe the pressure values in between $h_{L,0}=7$km and $h_{L,n} = 83.3$km with an exponential function
 \begin{align}
