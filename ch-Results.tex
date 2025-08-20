@@ -76,6 +76,16 @@ Can also see that when we plot the data
 \end{figure}.
 Now, given the data, we want to invert the process and determine a posterior distribution over the ozone $\bm{x}$, pressure $\bm{p}$ and temperature $\bm{T}$.
 
+
+In \cite[8]{Froidevaux2008snrozone} a signal around 235.71 GHz fro targeting ozone is reported with a signal strength of about 50-100 K with a noise of 0.4 to 1.6 K is reported, which we related very roughly to a signal-to-noise ratio of around 100.
+We would like to note that this can be adjusted once the proposed set up is airborne and we have some reference values.
+
+
+
+The profile we pick seems to eb a typical night time ozone profile \cite{Lee2020NightOzone}
+
+
+
 \section{Set up a hierarchical Bayesian framework}
 \label{sec:BayModel}
 Since the forward model described in Ch. \ref{ch:formodel} is weakly non-linear we will set up a linear Bayesian hierarchical framework first based on the linear forward model $\bm{A}_L$ and then later the approximated version $\bm{A}_{NL}\bm{M} \bm{A}_L$.

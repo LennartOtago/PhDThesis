@@ -255,7 +255,7 @@ This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\p
 Consequently, the marginal target distribution
 \begin{align}
 	\begin{split}
-		f_{X_k}(x_k) = \frac{1}{z} \Big|\, 
+		f_{X_k}(x_k) \approx \frac{1}{z} \Big|\, 
 		&\left( \int_{\mathbb{R}} \uplambda_1(x_1) \tilde{\pi}_1(x_1) \, \mathrm{d}x_1 \right) \cdots 
 		\left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \tilde{\pi}_{k-1}(x_{k-1}) \, \mathrm{d}x_{k-1} \right) \\
 		&\quad \uplambda_k(x_k) \tilde{\pi}_k(x_k) \\
@@ -462,6 +462,24 @@ $  and $\bm{G}_{<k}(x^{(s)}_{<k}) = \bm{G}_{1}(x^{(s)}_{1}) \cdots \bm{G}_{k-1}(
 	\label{alg:SIRT}
 \end{algorithm}
 
+\subsection{Error in TT approximation}
+In this subsection we like to provide two ways of how the error
+\begin{align}
+ \int | \pi(x) - f_{X}(x) | \text{d} x \leq \frac{\epsilon}{2} 
+\end{align}
+can be approximated
+\begin{align}
+	w(x) = \pi(x)/f(x)
+	\begin{cases}
+		\leq 1 + O(\epsilon) &\\
+		1 &\\
+		O(\epsilon) & \text{for} \pi  
+	\end{cases}
+\end{align}
+then we argure that most ofen the error is 
+smaller than the $epsioln$
+espiaclly when considering that 
+we can argue that within we do not stay oin those regions sicn ergosisyt of themh chain 
 
 \section{Affine Map}
 \label{sec:affine}

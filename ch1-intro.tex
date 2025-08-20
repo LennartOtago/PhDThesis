@@ -4,11 +4,12 @@ We describe where we can fill in gaps in with our contributions to and combinati
 Lastly, we provide the reader with the thesis structure.
 
 \section{Motivation}
-Since the only currently operating ozone limb sounder, the Microwave Limb Sounder (MLS) on NASA's Aura satellite, is gradually drifting from its orbit and scheduled to be phased out by 2026, a group led by Harald Schwefel has proposed an alternative approach to fill this observational gap using a much smaller platform, such as a disk-shaped resonator mounted on a 6U CubeSat~\cite{ustin2024current}. The proposed system targets a narrow frequency band and converts the thermal radiation emitted by ozone from the terahertz region to the optical domain~\cite{}. 
+Since the only currently operating ozone limb sounder, the Microwave Limb Sounder (MLS) on NASA's Aura satellite, is gradually drifting from its orbit and scheduled to be phased out by 2026, a group led by Harald Schwefel has proposed an alternative approach to fill this observational gap using a much smaller platform, such as a disk-shaped resonator mounted on a 6U CubeSat~\cite{ustin2024current}. The proposed system targets a narrow frequency band and converts the thermal radiation emitted by ozone from the terahertz region to the optical domain~\cite{Suresh25,Sedlmeir14}. 
 https://science.nasa.gov/science-research/earth-science/aura-at-20-years/
 This conversion offers a cost-effective and energy-efficient solution, as it circumvents the need for energy hungry and large cooling devices that are traditionally required to capture terahertz signals. Instead, signal acquisition in the optical domain can be implemented by using compact, low-power photonic technologies.
 
 Currently, the inverse problem to retrieve ozone profiles from limb-sounding data is approach by the atmospheric physics community using optimisation and regularisation techniques developed in the 1970s~\cite{rodgers1976retrieval}.
+\cite{NASA2022MLSv5}
 This approach is based on a "best fit to data but not the best fit to parameters" \cite{tan2016LecNot}.
 Instead, we employ a hierarchically structured Bayesian framework to infer ozone concentrations, where we find the best range of parameters given some data.
 This probabilistic approach provides estimates and their true uncertainties.
