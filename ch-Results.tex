@@ -64,9 +64,10 @@ The height values $h_{L,i}$ for each layer $i = 0,\dots, n$ are defined by the o
 We target thermal radiation at a wave number $\nu = 7.86\text{cm}^{-1}$, equal to a frequency of roughly $235$GHz, where we assume that ozone is the only emitter at that frequency, see \cite{}, and calculate the absorption constant $k(\nu,T)$ as in Eq. \ref{eq:absRTE}, following the \textit{HITRAN} database \cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
 Lastly we add normally distributed $\bm{\nu} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ noise so that we have a voltage Signal-to-Noise (SNR) of $60$, similar to THz module on the MLS aura satellite \cite{pickett2006snr}.
 \begin{align}
-	\text{SNR} = \frac{max(y)}{std noise} = \frac{max(y)}{std noise}
+	\text{SNR} = \frac{max(y)}{rms noise} = \frac{max(y)}{std noise}
 \end{align}
-Note that we multiply the data with $10^{11}$ to avoid numerical issues within the inversion process.
+for noise with zero mean.
+Note that we multiply the data with  to avoid numerical issues within the inversion process.
 Can also see that when we plot the data
 \begin{figure}[ht!]
 	\centering
@@ -77,7 +78,7 @@ Can also see that when we plot the data
 Now, given the data, we want to invert the process and determine a posterior distribution over the ozone $\bm{x}$, pressure $\bm{p}$ and temperature $\bm{T}$.
 
 
-In \cite[8]{Froidevaux2008snrozone} a signal around 235.71 GHz fro targeting ozone is reported with a signal strength of about 50-100 K with a noise of 0.4 to 1.6 K is reported, which we related very roughly to a signal-to-noise ratio of around 100.
+In \cite[8]{Froidevaux2008snrozone} a signal around 235.71 GHz fro targeting ozone is reported with a maximal signal strength of $ \approx 100$K with a noise range of 0.4 to 1.6 K is reported, which we related very roughly to a signal-to-noise ratio of around 100.
 We would like to note that this can be adjusted once the proposed set up is airborne and we have some reference values.
 
 
@@ -534,11 +535,12 @@ We calculate the integrated autocorrelation time (IACT) with the Python implemen
 \subsection{Tensor-train approximation of the marginal posterior distribution for ozone}
 \label{sec:firstMargTT}
 Alternatively, we can approximate the marginal posterior with a tensor-train (TT) of the square root of the marginal posterior on a predefined grid.
-We define a grid similar to the sampling region of the MWG sampler with 25 grid points in each dimension and use the \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} Python package, based on the rect cross algorithm in \cite{}.
+We define a grid similar to the sampling region of the MWG sampler with 25 grid points in each dimension and use the \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy}\cite{Oseledets2018ttpy}, Python package, based on the rect cross algorithm in \cite{OSELEDETS2010TTCross}.
 We set the number of ranks to a constant value $r = 4$ and optimise over those ranks with one sweep to calculate the cores in less than $0.1$s.
 To avoid underflow, we have to add a 'normalisation' constant $c = 460$ so that we approximate $\pi(\lambda | \gamma ,\bm{y}) = \exp\{ \log{\pi(\lambda | \gamma, \bm{y})} + c\}$.
 Then we calculate the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as described in section \ref{}, assuming an absolute error of $1$ the constant $\xi = 1/ \uplambda(\mathcal{X}) $, with a diagonal mass matrix $\bm{M}_k=  \text{diag}(\uplambda(X_k))$, where $\uplambda(X_k)$ is the length of the grid of the $k$th dimension also knows as the Lebesgue measure of a closed interval.
 We plot the TT approximation as a colour map on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
+
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{ScatterplusHistoPlusTT.png}

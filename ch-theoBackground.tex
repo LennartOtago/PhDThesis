@@ -237,21 +237,21 @@ Then the associated PDF $\pi(\bm{x})$, is a joint density of $X$, induced by the
 As in~\cite{cui2022deep}, we can define the parameter space as the Cartesian product $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$ and $\bm{x} = ( x_1,\dots ,x_k,\dots,x_d )$.
 The marginal density function for the $k$-th component is then given by
 \begin{align}
-	f_{X_k}(x_k) = \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_d} \uplambda(\bm{x}) \, \pi(\bm{x}) \, \mathrm{d}x_1 \cdots \mathrm{d}x_{k-1} \, \mathrm{d}x_{k+1} \cdots \mathrm{d}x_d, \label{eq:margInt}
+	f_{X_k}(x_k) = \frac{1}{z} \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_d} \uplambda(\bm{x}) \, \pi(\bm{x}) \, \mathrm{d}x_1 \cdots \mathrm{d}x_{k-1} \, \mathrm{d}x_{k+1} \cdots \mathrm{d}x_d, \label{eq:margInt}
 \end{align}
-where we integrate over all dimensions except the $k$-th.
+where we integrate over all dimensions except the $k$-th and $z$ is a normalisation constant.
 Here, we introduce a weight function $\uplambda(x)$, which can be useful for quadrature rules~\cite{davis2007methods}, to which~\cite{cui2022deep} refer to as a "product-form Lebesgue-measurable weighting function" and define it as
-\begin{align*}
+\begin{align}
 	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \mathrm{d}x_i. \label{eq:lebesgueWeight}
-\end{align*}
+\end{align}
 
 In the tensor train (TT) format, the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost as $\pi(\bm{x})$ is approximated by
 \begin{align*}
 	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d)  \in \mathbb{R},
 \end{align*}
 which is a sequence of matrix multiplications, with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$ for a fixed point $\bm{x} = (x_1, \dots, x_d)$ on a predefined $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$. 
-We call $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ a TT-core with ranks $r_{k-1}$ and $r_k$, where the outer ranks are $r_0 = r_d = 1$, representing each dimension on $n$ grid points and connecting to neighbouring dimensions through its ranks.
-This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d  \in \mathbb{R}^{d}$ using $2nr + (d-2)nr^2$ evaluation points, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluation.
+We call $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ a TT-core with ranks $ r_{k-1} = r_k= r$, where the outer ranks are $r_0 = r_d = 1$, representing each dimension on $n$ grid points and connecting to neighbouring dimensions through its ranks.
+This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d$ over the whole parameter space $\mathcal{X}$ using $2nr + (d-2)nr^2$ evaluation points, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluation.
 Consequently, the marginal target distribution
 \begin{align}
 	\begin{split}
@@ -292,7 +292,7 @@ is computed by integrating over all TT cores except $\pi_k$, as in~\cite{dolgov2
 \caption[Visualisation of a tensor train]{Here, we visualise the tensor train cores as two- and three-dimensional matrices. 
 Each core has a length $n$, corresponding to the number of grid points in one dimension, and the cores are connected through ranks $r_k$. 
 More specifically, a core $\tilde{\pi}_k$ has dimensions $r_{k-1} \times n \times r_k$, with outer ranks $r_0 = r_d = 1$.
-Using the TT-format enables us to represent a $d$-dimensional grid with only $dnr^2$ evaluation points instead of $n^d$ grid points.
+Using the TT-format enables us to represent a $d$-dimensional grid with only $2nr + (d-2)nr^2$ evaluation points instead of $n^d$ grid points.
 Figure~(a) is adapted from~\cite{fox2021grid}.}
 \label{fig:TTfig}
 \end{figure}
@@ -302,7 +302,7 @@ Figure~(a) is adapted from~\cite{fox2021grid}.}
 In practice, tensor train approximations may suffer from numerical instability, in particular because it is not advantageous to approximate the target function $\pi(\bm{x})$ in e.g. the logarithmic space. 
 Hence, Cui et al.~\cite{cui2022deep} approximate the square root of the probability density
 \begin{align}
-	\sqrt{\pi(\bm{x})} \approx \sqrt{\tilde{\pi}} = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\, ,
+	\sqrt{\pi(\bm{x})} \approx \tilde{g}(\bm{x}) = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\, ,
 \end{align}
 which ensures positivity.
 Here, each TT-core is given by
@@ -310,19 +310,19 @@ Here, each TT-core is given by
 	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, \dots, d,
 \end{equation}
 where $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the $k$-th coefficient tensor and $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ are the basis functions corresponding to the $k$-th coordinate.
-The approximated density is written as:
+The approximated unnormalised density is written as:
 \begin{align}
-	\pi(\bm{x}) \approx \xi + (\sqrt{\tilde{\pi}})^2(\bm{x}),
+	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2,
 \end{align}
-where $\xi$ is a positive constant added according to the absolute error and the Lebesgue weighting, see Eq. \ref{eq:lebesgueWeight}, such that
+where $\xi$ is a positive constant added according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting, see Eq. \ref{eq:lebesgueWeight}, such that
 \begin{align}
-	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \sqrt{\tilde{\pi}} - \sqrt{\pi} \rVert_2^2.
+	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(x)}^2.
 \end{align}
 This leads to the normalised target function
 \begin{align}
-	f_X(x)  \approx \frac{1}{z} \left( \uplambda(x) \xi  + \uplambda(x) \tilde{\pi}(x) \right),
+	f_X(\bm{x})  \approx \frac{1}{z} \left( \uplambda(\bm{x}) \xi  + \uplambda(\bm{x}) \tilde{g}(\bm{x})^2 \right),
 \end{align}
-where $z$ is the normalisation constant.
+which is the normalisation constant $z = \int_{\mathcal{X}} f_X(\bm{x}) \text{d} \bm{x} $.
 Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{X_k}(x_k)$ can be expressed as
 \begin{align}
 	\begin{split}
@@ -413,6 +413,23 @@ Note that we calculate the normalisation numerically within the process of findi
 If instead of evaluating integrals we draw samples from the approximated function via the inverse Rosenblatt transform (IRT), as in \cite{dolgov2020approximation}, to preserve the correlation structure.
 Since we approximate the square root of the target function Cui et. al. \cite{cui2022deep} call that the squared inverse Rosenblatt transform (SIRT).
 
+\begin{algorithm}[!th]
+	\caption{Squared Inverse Rosenblatt Transform (SIRT)}
+	\begin{algorithmic}[1]
+		\STATE \textbf{Input:} seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $ and $\bm{B}_1 , \dots,\bm{B}_d$  from Prob. \ref{prob:backMarg}
+		\FOR{ \( s = 1, \dots, N\)}
+		\FOR{ \( k = 1, \dots, d\)}
+		\STATE compute normalised PDF $ f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1)$, Eq. \ref{eq:CurrMarg}
+		\STATE compute cumulative distribution function $F_{X_k}(x_k)$, Eq. \ref{eq:CurrCDF}
+		\STATE project sample $x^{(s)}_k = F_{X_k}^{-1}(u^{(s)}_k)$
+		\STATE interpolate $\bm{G}_k(x^{(s)}_k)$, Eq. \ref{eq:LinPol}
+		\STATE update $\bm{G}_{\leq k}(x^{(s)}_{\leq k}) = \bm{G}_{<k}(x^{(s)}_{<k}) \bm{G}_k(x^{(s)}_k)$
+		\ENDFOR
+		\ENDFOR
+		\STATE \textbf{Output:} samples $\{ \bm{x}^{(1)},\dots, \bm{x}^{(N)} \} $, where each $\bm{x}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N$
+	\end{algorithmic}
+	\label{alg:SIRT}
+\end{algorithm}
 In doing so we start by calculating the Backward marginals as in Prob \ref{prob:backMarg} and draw $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is d-dimensional for $s = 1, \dots, N$.
 Then we calculate the first marginal $f_{X_1}(x_1)$ as in Eq. \ref{eq:firstMarg} and normalise with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$.
 Next we compute the cumulative distribution function (CDF)
@@ -444,25 +461,69 @@ We repeat the procedure for each $u^{(s)}_k \in \bm{u}^{(s)}$ to gain samples $\
 Note that with Cartesian basis $ \sum \phi^{(i)}_k(x_k) \Bigg( \sum \bm{G}^{(\alpha_{k-1})}_{<k}(x_{<k}) \bm{B}_k[\alpha_{k-1},i,l_k] \Bigg) \Bigg)^2 
 $  and $\bm{G}_{<k}(x^{(s)}_{<k}) = \bm{G}_{1}(x^{(s)}_{1}) \cdots \bm{G}_{k-1}(x^{(s)}_{k-1}) $ are simple matrix multiplications for each grid point $i$ or sample $\bm{x}^{(s)}$.
 
+
+
+\subsection{Error in TT approximation}
+Once we have drawn samples we are able to asses the error of two dimensional distribution the Wasserstein distance \cite{} may be suitable, but in higher dimension we consider proceeding with a Metropolis-Hastings (MH) correction step on the samples from the SIRT scheme.
+Then we have various methods available to quantify the error.
+and follow \cite{dolgov2020approximation}
+
+\subsubsection{MH - correction step}
 \begin{algorithm}[!ht]
-	\caption{Squared Inverse Rosenblatt Transform}
+	\caption{MH correction step}
 	\begin{algorithmic}[1]
-		\STATE \textbf{Input:} seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $ and $\bm{B}_1 , \dots,\bm{B}_d$  from Prob. \ref{prob:backMarg}
+		\STATE \textbf{Input:} samples $\{ \bm{x}^{(1)},\dots, \bm{x}^{(N+1)} \} $, where each $\bm{x}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N+1$
 		\FOR{ \( s = 1, \dots, N\)}
-		\FOR{ \( k = 1, \dots, d\)}
-		\STATE compute normalised PDF $ f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1)$, Eq. \ref{eq:CurrMarg}
-		\STATE compute cumulative distribution function $F_{X_k}(x_k)$, Eq. \ref{eq:CurrCDF}
-		\STATE project sample $x^{(s)}_k = F_{X_k}^{-1}(u^{(s)}_k)$
-		\STATE interpolate $\bm{G}_k(x^{(s)}_k)$, Eq. \ref{eq:LinPol}
-		\STATE update $\bm{G}_{\leq k}(x^{(s)}_{\leq k}) = \bm{G}_{<k}(x^{(s)}_{<k}) \bm{G}_k(x^{(s)}_k)$
+		\STATE compute importance weights $w^{(s)} = \frac{\pi(\bm{x}^{(s)})}{f_X(\bm{x}^{(s)})}$ and $w^{(s+1)} =  \frac{\pi(\bm{x}^{(s+1)})}{f_X(\bm{x}^{(s+1)})} $ 
+		\STATE compute acceptance probability $\alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$ 
+		\STATE Draw $u \sim \mathcal{U}(0,1)$
+		\IF{$\alpha \geq u$ }
+		\STATE Accept and set $\bm{x}_{\text{MH}}^{(s+1)} = \bm{x}^{(s+1)}$
+		\ELSE  
+		\STATE Reject and keep $\bm{x}_{\text{MH}}^{(s+1)} = \bm{x}^{(s)}$
+		\ENDIF
 		\ENDFOR
-		\ENDFOR
-		\STATE \textbf{Output:} samples $\{ \bm{x}^{(1)},\dots, \bm{x}^{(N)} \} $, where each $\bm{x}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N$
+		\STATE \textbf{Output:} corrected sample chain $\{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)} \} $, where each $\bm{x}_{\text{MH}}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N$
 	\end{algorithmic}
 	\label{alg:SIRT}
 \end{algorithm}
+To do the MH-correction step we have to compute the acceptance probability MH ratio, where we use Eq. \ref{eq:CurrMarg} to caclute the in the log space $\log f_X(\bm{x}) =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$
+we also do not have to normalize $\pi(\bm{x})$ since that cancels in the acceptance ratio, which we calculate in the log space.
+The correct chain$ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)} \} $ and the importance ratio
+\begin{align}
+	w(x) = \frac{\pi(\bm{x})}{f_X(\bm{x})} = \frac{\pi(\bm{x})}{\gamma + \tilde{g}(\bm{x})} =
+	\begin{cases}
+		\approx 1  &\text{for } \pi(x) \approx \epsilon \\
+		\leq 1 + O(\epsilon) &\text{for } \pi(x) \gg \epsilon\\
+		< 1  & \text{for } \pi(x) \ll \epsilon 
+	\end{cases}
+\end{align}
 
-\subsection{Error in TT approximation}
+wheen $\pi(\bm{x}) \ll \epsilon$ we have $g(\bm{x}) \approx \epsilon $ and this bumps up the ratio
+when $\pi(\bm{x}) \ll \epsilon$
+can be assessed to calculate various error quantities.
+Where we cenote $\epsilon$ as the absolute error
+
+
+motivete by \cite{Rohrbach2022tterror}
+we caculate the approximation error due to the tt-cross aproximation 
+and the error of the smaple due to interpoaltion.
+we calulate the relative root mean squared error of the approximation and interpolation as
+Mean sqaure root error
+\begin{align}
+ \Bigg( \frac{ \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(\bm{x}) \text{d} \bm{x}}{ \int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \text{d} \bm{x} } \Bigg)^{1/2} =	\frac{\lVert 	\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2)  \rVert_{L^2_{\uplambda}(\bm{x})}}{\lVert 	\pi(\bm{x}) \rVert_{L^2_{\uplambda}(x)}  }
+\end{align}
+we can approximate the this integral as with our samples and randomly evaluated grid points as 
+\begin{align}
+	\frac{1}{N} \sum^{N}_{i =1} \big(\pi(\bm{x}^{(i)}) - (\gamma + \tilde{g}(\bm{x}^{(i)})^2)\big)^2 \uplambda(\bm{x})   \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(x) \text{d} \bm{x} \Bigg)^{1/2} 
+\end{align}
+and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \text{d} \bm{x}$
+ 
+\subsubsection{mean absolute error}
+
+\subsubsection{total approximation error}
+
+
 In this subsection we like to provide two ways of how the error
 \begin{align}
  \int | \pi(x) - f_{X}(x) | \text{d} x \leq \frac{\epsilon}{2} 
@@ -480,6 +541,8 @@ then we argure that most ofen the error is
 smaller than the $epsioln$
 espiaclly when considering that 
 we can argue that within we do not stay oin those regions sicn ergosisyt of themh chain 
+
+
 
 \section{Affine Map}
 \label{sec:affine}
