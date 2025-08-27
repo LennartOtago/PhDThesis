@@ -372,11 +372,10 @@
 %% APPENDICES %% 
 % Starts lettered appendices, adds a heading in table of contents, and adds a
 %    page that just says "Appendices" to signal the end of your main text.
-\startappendices
+
 % Add or remove any appendices you'd like here:
 %\include{appendix-1}
-\include{appendix-2}
-\include{appendix-3}
+
 
 %%%%% REFERENCES\\
 
@@ -384,5 +383,8 @@
 {\renewcommand*\MakeUppercase[1]{#1}%
 \printbibliography[heading=bibintoc,title={\bibtitle}]}
 
+\startappendices
+\include{appendix-2}
+\include{appendix-3}
 
 \end{document}

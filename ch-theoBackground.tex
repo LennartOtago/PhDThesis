@@ -39,7 +39,7 @@ Lastly, we provide some background information on affine maps and the Tikhonov r
 
 Assume we observe some data
 \begin{align}
-	\bm{y} = \bm{A} \bm{x} + \bm{\eta},
+	\bm{y} = \bm{A} (\bm{x}) + \bm{\eta},
 	\label{eq:LinDat}
 \end{align}
 based on a linear forward model $\bm{A}$, a unknown parameter $\bm{x}$ and some additive random noise $\bm{\eta}$.
@@ -91,6 +91,18 @@ Furthermore, the central limit theorem states that the samples mean $ \bm{\mu}^{
 	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
 \end{align}
 and if $\sigma^2 < \infty$ the Monte-Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bounded.
+\subsubsection{Linear-Gaussian hierarchical Bayesian model}
+\begin{align}
+	\bm{y} = \bm{A} \bm{x} + \bm{\eta},
+	\label{eq:LinDat}
+\end{align}
+for the linear gaussain case 
+joint probailty
+distr 
+
+cancel aout and 
+
+conditional becomes that
 
 \subsubsection{On the Monte-Carlo Error and Integrated Autocorrelation time}
 To assess the error $\sigma^2$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
@@ -463,10 +475,24 @@ $  and $\bm{G}_{<k}(x^{(s)}_{<k}) = \bm{G}_{1}(x^{(s)}_{1}) \cdots \bm{G}_{k-1}(
 
 
 
-\subsection{Error in TT approximation}
-Once we have drawn samples we are able to asses the error of two dimensional distribution the Wasserstein distance \cite{} may be suitable, but in higher dimension we consider proceeding with a Metropolis-Hastings (MH) correction step on the samples from the SIRT scheme.
-Then we have various methods available to quantify the error.
-and follow \cite{dolgov2020approximation}
+\subsection{On the error in TT approximation}
+Once we have draw samples from the TT approximation we have a few options to quantify the approximation error.
+
+A straight forward way to asses the error from the TT approximation is to calculate the relative root mean squared error
+\begin{align}
+	\Bigg( \frac{ \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(\bm{x}) \text{d} \bm{x}}{ \int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \text{d} \bm{x} } \Bigg)^{1/2} =	\frac{\lVert 	\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2)  \rVert_{L^2_{\uplambda}(\bm{x})}}{\lVert 	\pi(\bm{x}) \rVert_{L^2_{\uplambda}(x)}  }
+\end{align}
+we can approximate the this integral as with our samples and randomly evaluated grid points as 
+\begin{align}
+	\frac{1}{N} \sum^{N}_{i =1} \big(\pi(\bm{x}^{(i)}) - (\gamma + \tilde{g}(\bm{x}^{(i)})^2)\big)^2 \uplambda(\bm{x})   \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(x) \text{d} \bm{x} \Bigg)^{1/2} 
+\end{align}
+and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \text{d} \bm{x}$.
+
+Another way is to do a Metropolis-Hastings correction step and to calculate the Wasserstein distance \cite{} between approximation and the true function.
+In higher dimensions this might not be possible so we can compare the samples from a trusted sampler, which samples in the log space to the samples from the SIRT after a Metropolis-Hastings correction step as in \cite{dolgov2020approximation}.
+This gives us marginal distributions to compare by calculating the Wasserstein distance.
+
+
 
 \subsubsection{MH - correction step}
 \begin{algorithm}[!ht]
@@ -474,7 +500,7 @@ and follow \cite{dolgov2020approximation}
 	\begin{algorithmic}[1]
 		\STATE \textbf{Input:} samples $\{ \bm{x}^{(1)},\dots, \bm{x}^{(N+1)} \} $, where each $\bm{x}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N+1$
 		\FOR{ \( s = 1, \dots, N\)}
-		\STATE compute importance weights $w^{(s)} = \frac{\pi(\bm{x}^{(s)})}{f_X(\bm{x}^{(s)})}$ and $w^{(s+1)} =  \frac{\pi(\bm{x}^{(s+1)})}{f_X(\bm{x}^{(s+1)})} $ 
+		\STATE compute MH ratio $\frac{w^{(s+1)}}{w^{(s)} } =\frac{\pi(\bm{x}^{(s+1)})}{\pi(\bm{x}^{(s)})} \frac{f_X(\bm{x}^{(s)})}{f_X(\bm{x}^{(s+1)})}$ 
 		\STATE compute acceptance probability $\alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$ 
 		\STATE Draw $u \sim \mathcal{U}(0,1)$
 		\IF{$\alpha \geq u$ }
@@ -487,60 +513,17 @@ and follow \cite{dolgov2020approximation}
 	\end{algorithmic}
 	\label{alg:SIRT}
 \end{algorithm}
-To do the MH-correction step we have to compute the acceptance probability MH ratio, where we use Eq. \ref{eq:CurrMarg} to caclute the in the log space $\log f_X(\bm{x}) =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$
-we also do not have to normalize $\pi(\bm{x})$ since that cancels in the acceptance ratio, which we calculate in the log space.
-The correct chain$ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)} \} $ and the importance ratio
+Since the samples using the SIRT scheme are samples from an approximation it is sensible to correct those using a Metropolis-Hastings importance sampler.
+In doing so we compute the acceptance probability $  \alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$, where 
 \begin{align}
-	w(x) = \frac{\pi(\bm{x})}{f_X(\bm{x})} = \frac{\pi(\bm{x})}{\gamma + \tilde{g}(\bm{x})} =
-	\begin{cases}
-		\approx 1  &\text{for } \pi(x) \approx \epsilon \\
-		\leq 1 + O(\epsilon) &\text{for } \pi(x) \gg \epsilon\\
-		< 1  & \text{for } \pi(x) \ll \epsilon 
-	\end{cases}
+	w(x) = \frac{\pi(\bm{x})}{f_X(\bm{x})} = \frac{\pi(\bm{x})}{\gamma + \tilde{g}(\bm{x})^2} 
 \end{align}
-
-wheen $\pi(\bm{x}) \ll \epsilon$ we have $g(\bm{x}) \approx \epsilon $ and this bumps up the ratio
-when $\pi(\bm{x}) \ll \epsilon$
-can be assessed to calculate various error quantities.
-Where we cenote $\epsilon$ as the absolute error
+is the importance ratio.
+In practise we calculate the importance ratio in the log space, where $\log f_X(\bm{x})  =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ is given as in Eq. \ref{eq:CurrMarg}.
+This leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)} \} $.
 
 
-motivete by \cite{Rohrbach2022tterror}
-we caculate the approximation error due to the tt-cross aproximation 
-and the error of the smaple due to interpoaltion.
-we calulate the relative root mean squared error of the approximation and interpolation as
-Mean sqaure root error
-\begin{align}
- \Bigg( \frac{ \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(\bm{x}) \text{d} \bm{x}}{ \int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \text{d} \bm{x} } \Bigg)^{1/2} =	\frac{\lVert 	\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2)  \rVert_{L^2_{\uplambda}(\bm{x})}}{\lVert 	\pi(\bm{x}) \rVert_{L^2_{\uplambda}(x)}  }
-\end{align}
-we can approximate the this integral as with our samples and randomly evaluated grid points as 
-\begin{align}
-	\frac{1}{N} \sum^{N}_{i =1} \big(\pi(\bm{x}^{(i)}) - (\gamma + \tilde{g}(\bm{x}^{(i)})^2)\big)^2 \uplambda(\bm{x})   \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(x) \text{d} \bm{x} \Bigg)^{1/2} 
-\end{align}
-and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \text{d} \bm{x}$
- 
-\subsubsection{mean absolute error}
 
-\subsubsection{total approximation error}
-
-
-In this subsection we like to provide two ways of how the error
-\begin{align}
- \int | \pi(x) - f_{X}(x) | \text{d} x \leq \frac{\epsilon}{2} 
-\end{align}
-can be approximated
-\begin{align}
-	w(x) = \pi(x)/f(x)
-	\begin{cases}
-		\leq 1 + O(\epsilon) &\\
-		1 &\\
-		O(\epsilon) & \text{for} \pi  
-	\end{cases}
-\end{align}
-then we argure that most ofen the error is 
-smaller than the $epsioln$
-espiaclly when considering that 
-we can argue that within we do not stay oin those regions sicn ergosisyt of themh chain 
 
 
 
@@ -618,8 +601,12 @@ The Tikhonov approach in provides one solution $\bm{x}_{\lambda}$ that minimises
 	\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert
 \end{align} and a regularisation semi-norm
 \begin{align}
-	\lambda \left\lVert \bm{T} \bm{x} \right\rVert
-\end{align}, as described in~\cite{fox2016fast}, with a linear forward model matrix $\bm{A}$, the data $\bm{y}$ and a regularisation operator $\bm{T}$ and the regularisation parameter $\lambda > 0$ which penalise $\bm{x}$ accordingly.
+	\lambda \left\lVert \bm{T} \bm{x} \right\rVert \, , \label{semiNorm}
+\end{align}
+as described in~\cite{fox2016fast}, with a linear forward model matrix $\bm{A}$, the data $\bm{y}$, a regularisation operator $\bm{T}$ and the regularisation parameter $\lambda > 0$ which weights the semi norm and penalises $\bm{x}$ according to that.
+If $\lambda$ is large then effect of the data on the solution $\bm{x}_{\lambda}$ is small or negligible.
+If $\lambda$ is small the solution $\bm{x}_{\lambda}$ will be dominated by the noisy data, resulting in over fitted $\bm{x}_{\lambda}$.
+We refer to  \cite{hansen1989GSVD} and \cite{tan2016LecNot} for a more comprehensive analysis of the effects of the regularisation parameter on the solution e.g. due to small singular values of the forward model.
 For a fixed $\lambda$, the regularised solution
 \begin{align}
 	\bm{x}_{\lambda} = \underset{\bm{x}}{\mathrm{arg\,min}} \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2 + \lambda \left\lVert \bm{T} \bm{x} \right\rVert^2
@@ -636,31 +623,69 @@ Solving this equation yields the regularised solution
 	\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L})^{-1} \bm{A}^T \bm{y} \, , \label{eq:regSol}
 \end{align}
 where we define $\bm{L} := \bm{T}^T \bm{T}$, which typically represents a discrete matrix approximation of a differential operator choice~\cite{tan2016LecNot}.
-
-With $\bm{T}$ may represent the first order discrete  derivative then the $\bm{L}$ is the second order discrete derivative.
-
-To show how the regularisation parameter effects the solution one can do a singular value decomposition of $A$
-and the generalised singular value decomposition of $A, T$ as in \cite{hansen1989GSVD}.
-Then $\bm{A} = \bm{U} \bm{\Lambda}_A \bm{M}^{-1}$ and $\bm{L} = \bm{V} [\bm{\Lambda}_L,0] \bm{M}^{-1} $
-Where the general singular values $\bm{\Lambda}_A = \text{diag}(\sigma_{A,1},\dots,\sigma_{A,1},1,\dots,1)$ and $\bm{\Lambda}_L = \text{diag}(\sigma_{L,1},\dots,\sigma_{L,1},1,\dots,1)$
-
-Then one can show that the solution is %$\x_{\lambda} = \bm{M} \bm{F} \bm{U}^T \bm{y} $
-with filter factors
+For example
 \begin{align}
-	f_i = \frac{(\sigma_{A,i}/\sigma_{L,i})^2 }{(\sigma_{A,i}/\sigma_{L,i})^2 + \lambda^2} \approx
-	\begin{cases}
-		\frac{(\sigma_{A,i}/\sigma_{L,i})^2}{ \lambda^2},  & \sigma_{A,i}/\sigma_{L,i} \gg \lambda\\
-				1 ,  & \sigma_{A,i}/\sigma_{L,i} \ll \lambda 
-	\end{cases}
-\, \, \text{for}\, i= 1,\dots,p
+	\bm{T} = \frac{1}{h}
+	\begin{bmatrix}
+		-1 & 1 & & &  \\
+		0 & -1 & 1 & &   \\
+		& \ddots & \ddots & \ddots &\\ 
+		& & 0 & -1 & 1  \\
+		& & & 0 & -1 
+	\end{bmatrix} 
 \end{align}
-Then small singular values depend on prior information only
-for large $(\sigma_{A,i}/\sigma_{L,i})^2$ singular values the solution is unaffected
-for small $(\sigma_{A,i}/\sigma_{L,i})^2$ singular values the solution is affected by the regularisation parameter
+is the first order derivative with equal spacing $h$ as in \cite{tan2016LecNot} then
+\begin{align}
+	\bm{L} = \frac{1}{h^2}
+	\begin{bmatrix}
+		1 & -1 & & &  \\
+		-1 & 2& -1 & &   \\
+		& \ddots & \ddots & \ddots &\\ 
+		& & -1 & 2 & -1  \\
+		& & & -1 & 2 
+	\end{bmatrix} 
+\end{align}
+is the second order derivate with Neumann boundary conditions, see \cite{wang2015graphs}.
+
+In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation semi-norm. The optimal value of $\lambda$ corresponds to the point of maximum curvature of the so-called L-curve~\cite{hansen1993use}, where we plot data misfit norm versus the regularisation semi-norm, see Fig.~\ref{fig:LCurve}.
+
+Additionally one can think about regularisation as a Lagrange multiplier $ \mathcal {L}(\bm{x}, \lambda)\equiv \lambda \bm{x}^T \bm{L} \bm{x} + \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert $, which minimises $ \bm{x}_\lambda = \text{arg min}_{\bm{x}} \bm{x}^T \bm{L} \bm{x} $ with respect to a constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert$, see \cite[fn. 6]{fox2016fast} and \cite[Fig. 2.13]{SANTOSH202265}.
+So every solution $\bm{x}_{\lambda}$ is an extremum and almost every sample of the posterior, which represents a feasible solution given the data, has a higher $\bm{x}^T \bm{L} \bm{x}$ value and lays above the L-Curve.
+
+
+%We refer show that the filter factors as in \cite{tan2016LecNot} for a regularisation parameter as shown here affects the solution the generalised singular value decomposition is given in  of $A, T$ as in \cite{hansen1989GSVD}.
+%Where on can show the the so-called filter factors are dominated by the default regularisaion solution 
+%then the filter factors 
+%
+%
+%
+%
+%We refer to \cite{hansen1989GSVD} and \cite{tan2016LecNot} for the curious reader, who wants to know how the regularisation parameter affects the reconstruction especially for regions where the forward model does not provide much information (small singular values).
+%
+%
+%
+%To show how the regularisation parameter effects the solution one can do a singular value decomposition of $A$
+%and the generalised singular value decomposition of $A, T$ as in \cite{hansen1989GSVD}.
+%
+%Then $\bm{A} = \bm{U} \bm{\Lambda}_A \bm{M}^{-1}$ and $\bm{L} = \bm{V} [\bm{\Lambda}_L,0] \bm{M}^{-1} $
+%Where the general singular values $\bm{\Lambda}_A = \text{diag}(\sigma_{A,1},\dots,\sigma_{A,1},1,\dots,1)$ and $\bm{\Lambda}_L = \text{diag}(\sigma_{L,1},\dots,\sigma_{L,1},1,\dots,1)$
+%
+%
+%
+%Then one can show that the solution is %$\x_{\lambda} = \bm{M} \bm{F} \bm{U}^T \bm{y} $
+%with filter factors
+%\begin{align}
+%	f_i = \frac{(\sigma_{A,i}/\sigma_{L,i})^2 }{(\sigma_{A,i}/\sigma_{L,i})^2 + \lambda^2} \approx
+%	\begin{cases}
+%		\frac{(\sigma_{A,i}/\sigma_{L,i})^2}{ \lambda^2},  & \sigma_{A,i}/\sigma_{L,i} \gg \lambda\\
+%				1 ,  & \sigma_{A,i}/\sigma_{L,i} \ll \lambda 
+%	\end{cases}
+%\, \, \text{for}\, i= 1,\dots,p
+%\end{align}
+%Then small singular values depend on prior information only
+%for large $(\sigma_{A,i}/\sigma_{L,i})^2$ singular values the solution is unaffected
+%for small $(\sigma_{A,i}/\sigma_{L,i})^2$ singular values the solution is affected by the regularisation parameter
 
 
 
-In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation norm. The optimal value of $\lambda$ is often chosen as the point of maximum curvature on the so-called L-curve~\cite{hansen1993use}, which we plot in Fig.~\ref{fig:LCurve}.
-Additionally one can think about it .... in \cite{fox2016fast}
-\cite[Fig. 2.13]{SANTOSH202265}
 
