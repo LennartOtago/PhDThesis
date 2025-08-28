@@ -24,7 +24,7 @@ Lastly, we provide some background information on affine maps and the Tikhonov r
 		
 		\node[align=center] at (2.8,3.5) (tht) {$\sim \pi_{\bm{\theta}}(\cdot) $ hyper-parameters};
 		\node[align=center] at (2.4,1.5) (xt) {$\sim \pi_{\bm{x}}(\cdot|\bm{\theta}) $ parameters};
-		\node[align=center] at (2.5,0) (At) {$\{\bm{Ax}\}$ "noise free data"};
+		\node[align=center] at (2.5,0) (At) {$\{\bm{A}(\bm{x})\}$ "noise free data"};
 		\node[align=center] at (3,-1.5) (ut) {space of all measurables};
 		\node[align=center] at (2,-3.5) (yt) {$\sim \pi_{\bm{y}}(\cdot|\bm{\theta},\bm{x})$ data};
 		\node[align=center] at (-3,0) (nt) {noise};
@@ -42,12 +42,13 @@ Assume we observe some data
 	\bm{y} = \bm{A} (\bm{x}) + \bm{\eta},
 	\label{eq:LinDat}
 \end{align}
-based on a linear forward model $\bm{A}$, a unknown parameter $\bm{x}$ and some additive random noise $\bm{\eta}$.
-Naturally, due to the noise, we have some uncertainty which we include in the modelling process through the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$ as well as other relevant information about the measurement process.
+based on a forward model $\bm{A}(\bm{x})$, which may be non-linear, a unknown parameter $\bm{x}$ and some additive random noise $\bm{\eta}$.
+Naturally, due to the noise, we deal with a random process and we have to include that in our modelling.
+Then define the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$ according to the nature of the noise as well as include all relevant information about the measurement process.
 We read $\pi(\bm{y}|\bm{\theta},\bm{x})$ as the distribution over $\bm{y}$ conditioned on $\bm{x}$ and the hyper-parameter $\bm{\theta}$.
 Here $\bm{\theta}$ may account for multiple variables and is e.g. describing the distribution of the noise vector $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$ as well as the prior distribution $\pi(\bm{x}|\bm{\theta})$, which accounts for physical properties or functional dependences of $\bm{x}$.
 Consequently we define a hyper-prior distribution $\pi(\bm{\theta})$, where $\pi(\bm{x}, \bm{\theta}) = \pi(\bm{x}|\bm{\theta}) \pi(\bm{\theta}) $.
-Choosing these prior distributions is a delicate topic, as it shall not affect the posterior distribution 
+Choosing these prior distributions is crucial, as it shall not affect the posterior distribution 
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, ,
 \end{align}
@@ -56,16 +57,14 @@ We can visualise this hierarchically ordered correlation structure between param
 
 The expectation of any function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}$ may depend on $\bm{\theta}$, is described as 
 \begin{align}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] =  \underbrace{\int \int   h(\bm{x}_{\bm{\theta}}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}}_{\bm{\mu}_{\text{int}}}   \label{eq:expPos} \, ,
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] =  \underbrace{\int \int   h(\bm{x}_{\bm{\theta}}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}}_{\bm{\mu}_{\text{int}}}   \label{eq:expPos} \, .
 \end{align}
-where $\pi(\bm{x}, \bm{\theta} | \bm{y} )$ is the posterior distribution.
-This may be a high-dimensional integral and computationally not feasible to solve.
-Therefore the unbiased sample-based Monte Carlo estimate \cite{roberts2004general}
+If that is a high-dimensional integral and computationally not feasible to solve, we approximate 
 \begin{align}
 	\label{eq:sampMean}
 	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] \approx \underbrace{ \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}})  }_{\bm{\mu}_{\text{samp}}} \, ,
 \end{align}
-for large enough $N$ (law of large numbers \cite[Chapter 17]{tweedie2009measprob}) is often used.
+with an the unbiased sample-based Monte Carlo estimate \cite{roberts2004general} for large enough $N$ (law of large numbers \cite[Chapter 17]{tweedie2009measprob}).
 Here, the samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
 Generating a representative sample set quickly from the posterior distribution often presents a significant challenge. This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
 If $\bm{x}$ can not be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, i.e., $\bm{x}(\bm{\theta})$, it is beneficial to factorise the posterior distribution as
@@ -74,7 +73,7 @@ If $\bm{x}$ can not be parametrised directly in terms of the hyper-parameters $\
 \end{align}
 into the conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the latent field $\bm{x}$ and the marginal posterior 
 \begin{align}
-	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) }
+	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) } \label{eq:margGen}
 \end{align}
 over the hyper-parameters $\bm{\theta}$.
 This approach, known as the marginal and then conditional (MTC) method, is particularly advantageous when $\bm{x}$ is high-dimensional (e.g., $\bm{x} \in \mathbb{R}^n$ with $n \geq 45$), while $\bm{\theta}$ is low-dimensional (e.g., two-dimensional).
@@ -85,24 +84,57 @@ Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovarian
 	= \int \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right] \, \pi(\bm{\theta} |  \bm{y}) \, \mathrm{d}\bm{\theta},
 	\label{eq:fullCond}
 \end{align}
-where, in the case of a linear-Gaussian Bayesian hierarchical model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right]$ are well defined see Result chapter.
-Furthermore, the central limit theorem states that the samples mean $ \bm{\mu}^{(i)}_{\text{samp}} $, of independent samples sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converge in distribution to a normal distribution so that
+where, in the case of a linear-Gaussian hierarchical Bayesian model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right]$ are well defined see next subsection.
+Furthermore, the central limit theorem states that the sample mean $ \bm{\mu}^{(i)}_{\text{samp}} $, of independent samples sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converge in distribution to a normal distribution so that
 \begin{align}
 	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
 \end{align}
 and if $\sigma^2 < \infty$ the Monte-Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bounded.
+
+
 \subsubsection{Linear-Gaussian hierarchical Bayesian model}
+In case of a normally distributed noise $\bm{\eta} \sim \mathcal{N}(0,\bm{\Sigma}(\bm{\theta}))$, with zero mean and covariance $\bm{\Sigma}(\bm{\theta})$, and a linear model $\bm{A}$, the data is given as 
 \begin{align}
-	\bm{y} = \bm{A} \bm{x} + \bm{\eta},
+	\bm{y} = \bm{A} \bm{x} + \bm{\eta} \, ,
 	\label{eq:LinDat}
 \end{align}
-for the linear gaussain case 
-joint probailty
-distr 
+and we can derive the marginal and conditional posterior distribution explicitly.
+We define our hierarchical Bayesian model as
+\begin{subequations}
+	\begin{align}
+		\bm{y} |  \bm{x}, \bm{\theta} &\sim \mathcal{N}(\bm{A} \bm{x}, \bm{\Sigma}(\bm{\theta}) ) \\
+		\bm{x} |  \bm{\theta} &\sim \mathcal{N}(\bm{\mu}, \bm{Q}(\bm{\theta})^{-1} ) \\
+		\bm{\theta} &\sim \pi(\bm{\theta}) ,
+	\end{align}
+	\label{eq:GenBayMode}
+\end{subequations}
+with a Gaussian likelihood function $\pi(\bm{y} |  \bm{x}, \bm{\theta} )$, the prior mean $\bm{\mu}$, prior precision $\bm{Q}(\bm{\theta})$ and a hyper-prior distribution $\pi(\bm{\theta})$.
+To derive the marginal posterior and the conditional posterior distribution we consider the joint multivariate Gaussian distribution
+\begin{align}
+	\begin{pmatrix}
+	\bm{x} \\
+	\bm{y}
+\end{pmatrix}\sim \mathcal{N}\left[  \begin{pmatrix}
+	\bm{\mu} \\
+	\bm{A}\bm{\mu}
+\end{pmatrix},\begin{pmatrix}
+	\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A} & - \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \\
+	 \bm{\Sigma}(\bm{\theta})^{-1} \bm{A} & \bm{\Sigma}(\bm{\theta})^{-1} 
+\end{pmatrix}^{-1} \right] \, ,
+\end{align}
+where we provide the joint precision matrix as in \cite{SIMPSON201216}.
+Immediately we formulate the conditional posterior as 
+\begin{align}
+	\bm{x} | \bm{y}, \bm{\theta} \sim \mathcal{N}(\bm{\mu} + (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}(\bm{y} - \bm{A}\bm{\mu}),(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}) \, .
+\end{align}
+Then the marginal posterior distribution over the hyper-parameters can be derived as in Eq. \ref{eq:margGen}, where as noted in \cite{fox2016fast} the parameter $\bm{x}$ cancels and we arrive at
+\begin{align}\begin{split}
+	\pi(\bm{\theta} | \bm{y}) \propto & \sqrt{\frac{\det{(\bm{\Sigma}(\bm{\theta})^{-1})} \det{(\bm{Q}(\bm{\theta}))} }{\det{(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})} } }  \exp \Bigg\{  -\frac{1}{2} (\bm{y} - \bm{A} \bm{\mu})^T \\ &\big[ \bm{\Sigma}(\bm{\theta})^{-1} - \bm{\Sigma}(\bm{\theta})^{-1} \bm{A}  (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1} \bm{A}^T \bm{\Sigma} (\bm{\theta})^{-1} \big] (\bm{y} - \bm{A} \bm{\mu}) \Bigg\} \pi(\bm{\theta}) \, .
+	\end{split} 
+\end{align} 
+Having the marginal posterior distribution available breaks up the correlation structure between $\bm{x}$ and $\bm{\theta}$, see Appendix \ref{ap:Correlation}, and makes the marginal and then conditional (MTC) approach so efficient \cite{fox2016fast}.
+This scheme evaluates the marginal posterior values first and then conditions on hyper-parameters to draw posterior samples $\bm{x} \sim \pi (\bm{x} | \bm{y}, \bm{\theta})$ or to evaluate expectation and variance of $\pi(\bm{x}| \bm{y})$ by integration over the marginal posterior.
 
-cancel aout and 
-
-conditional becomes that
 
 \subsubsection{On the Monte-Carlo Error and Integrated Autocorrelation time}
 To assess the error $\sigma^2$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
@@ -121,11 +153,22 @@ with the auto correlation coefficient $C(k-s) =  \big( h(\bm{x}^{(k)}_{\bm{\thet
 with the normalised auto correlation coefficient $\rho(k-s) =  C(k-s)/ C(0)$ at lag $k-s$, where $C(0) = \text{var}(h(\bm{x}_{\bm{\theta}}) )$ for $k = s$.
 Then the estimate for the Monte-Carlo error is:
 \begin{align}
-	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}_{\bm{\theta}}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{	2\tau_{\text{int}} } = \text{var}(h(\bm{x}_{\bm{\theta}})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
+	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}_{\bm{\theta}}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x}_{\bm{\theta}})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
 \end{align}
 where we define the integrated autocorrelation time (IACT) $\tau_{\text{int}}$ as in \cite{Sokal1997} and \cite{}, which provides a good estimate on how many steps the sampling algorithm needs to take to produce one independent sample.
 More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
-We calculate the IACT using the Python implementation of \cite{WOLFF2004143}, accessed \cite{wolff2004monte}, which also provides errors on the IACT, which helps us to assess convergence of the chain.
+We calculate the IACT using the Python implementation of \cite{WOLFF2004143}, accessed \cite{wolff2004monte}, which also provides errors on the IACT and helps to assess convergence of the chain.
+\begin{align}
+	\rho(t) \overset{t \rightarrow \infty }{=} \exp \Big\{ - \frac{t}{\tau} \Big\} 
+\end{align}
+then for $\tau \gg 1$ then $\tau_{int} \approx \tau$
+\begin{align}
+	\sum_{t = - \infty }^{\infty} \rho(t) =  1 + 2 \sum_{t = 1}^{\infty} \big(e^{-1/ \tau}\big)^t =  1 + 2 \frac{e^{-1/ \tau} }{1 - e^{-1/ \tau}} \approx  1 + 2 \frac{1 -1/ \tau }{1/ \tau} =  2 \tau -1 \approx 2 \tau_{int}
+\end{align}
+The Taylor series for the exponential function is
+power series  geometric series formula 
+
+
 
 \textcolor{red}{since we expect an exponential decay of the autocorrelate function we can write...}
 
@@ -649,7 +692,7 @@ is the second order derivate with Neumann boundary conditions, see \cite{wang201
 
 In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation semi-norm. The optimal value of $\lambda$ corresponds to the point of maximum curvature of the so-called L-curve~\cite{hansen1993use}, where we plot data misfit norm versus the regularisation semi-norm, see Fig.~\ref{fig:LCurve}.
 
-Additionally one can think about regularisation as a Lagrange multiplier $ \mathcal {L}(\bm{x}, \lambda)\equiv \lambda \bm{x}^T \bm{L} \bm{x} + \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert $, which minimises $ \bm{x}_\lambda = \text{arg min}_{\bm{x}} \bm{x}^T \bm{L} \bm{x} $ with respect to a constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert$, see \cite[fn. 6]{fox2016fast} and \cite[Fig. 2.13]{SANTOSH202265}.
+Additionally one can think about regularisation as a Lagrange multiplier $ \mathcal {L}(\bm{x}, \lambda) \coloneq\lambda \bm{x}^T \bm{L} \bm{x} + \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert $, which minimises $ \bm{x}_\lambda = \text{arg min}_{\bm{x}} \bm{x}^T \bm{L} \bm{x} $ with respect to a constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert$, see \cite[fn. 6]{fox2016fast} and \cite[Fig. 2.13]{SANTOSH202265}.
 So every solution $\bm{x}_{\lambda}$ is an extremum and almost every sample of the posterior, which represents a feasible solution given the data, has a higher $\bm{x}^T \bm{L} \bm{x}$ value and lays above the L-Curve.
 
 
