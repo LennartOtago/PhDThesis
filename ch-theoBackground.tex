@@ -137,40 +137,41 @@ This scheme evaluates the marginal posterior values first and then conditions on
 
 
 \subsubsection{On the Monte-Carlo Error and Integrated Autocorrelation time}
-To assess the error $\sigma^2$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
-In general, the error of a Monte-Carlo-based estimate from a sample set $\mathcal{M}_i$ is:
+To assess the error $\sigma^2$ of chain $\mathcal{M}_i$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
+To derive the integrated autocorrelation time (IATC) we follow the lecture notes \cite{wolff2002LecNot}.
+In general, the error of a Monte-Carlo-based estimate from a sample set $\mathcal{M}_i = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\} \sim \pi(\bm{x}|\bm{y})$ is:
 \begin{align}
-	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
+	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
 \end{align}
 Expanding this summation, we see that
 \begin{align}
-	(\sigma^{(i)})^2	= \frac{1}{N^2} \sum_{k,s=1}^{N} C(k-s)
+	(\sigma^{(i)})^2 = \frac{1}{N^2} \sum_{k,s=1}^{N} \Gamma(k-s)
 \end{align}
-with the auto correlation coefficient $C(k-s) =  \big( h(\bm{x}^{(k)}_{\bm{\theta}}) - \bm{\mu}^{(i)} \big) \big(h(\bm{x}^{(s)}_{\bm{\theta}}) - \bm{\mu}^{(i)} \big)$ and define the sample auto correlation function
+with the auto correlation coefficient $\Gamma(k-s) =  \big( h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \big) \big(h(\bm{x}^{(s)}) - \bm{\mu}^{(i)} \big)$.
+Next we rewrite
 \begin{align}
-	\frac{C(0)}{N} \sum_{k,s=1}^{N} \frac{C(k-s)}{C(0)} \approx \text{var}(h(\bm{x}_{\bm{\theta}}) ) \sum_{t = - \infty }^{\infty} \rho(t)
+ 	\sum_{k,s=1}^{N} \Gamma(k-s) = \text{var}(\bm{\mu}^{(i)}_{\text{samp}})  \sum_{k,s=1}^{N} \frac{\Gamma(k-s)}{\Gamma(0)} =  \text{var}(\bm{\mu}^{(i)}_{\text{samp}}) \sum_{k,s=1}^{N}\rho(k-s)\, ,
 \end{align}
-with the normalised auto correlation coefficient $\rho(k-s) =  C(k-s)/ C(0)$ at lag $k-s$, where $C(0) = \text{var}(h(\bm{x}_{\bm{\theta}}) )$ for $k = s$.
-Then the estimate for the Monte-Carlo error is:
+with the normalised auto correlation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$ and $\Gamma(0) = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} )$ for $k=s$.
+Typically $\Gamma(t)$ decays exponentially so that $\Gamma(t) \overset{t \rightarrow \infty }{ \propto} \exp\{ - t / \tau \}  $ and for positive $\tau$ and $N\gg \tau$ we can approximate
 \begin{align}
-	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}_{\bm{\theta}}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x}_{\bm{\theta}})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
+ \sum_{k,s=1}^{N}\rho(k-s)  = N \sum_{t = -(N-1) }^{N-1} \Bigg(1- \frac{t}{N} \Bigg) \rho(t)  \approx N  \sum_{t = - \infty }^{\infty} \rho(t) \coloneqq 2 N \tau_{\text{int}}\, ,
 \end{align}
-where we define the integrated autocorrelation time (IACT) $\tau_{\text{int}}$ as in \cite{Sokal1997} and \cite{}, which provides a good estimate on how many steps the sampling algorithm needs to take to produce one independent sample.
-More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
-We calculate the IACT using the Python implementation of \cite{WOLFF2004143}, accessed \cite{wolff2004monte}, which also provides errors on the IACT and helps to assess convergence of the chain.
-\begin{align}
-	\rho(t) \overset{t \rightarrow \infty }{=} \exp \Big\{ - \frac{t}{\tau} \Big\} 
-\end{align}
-then for $\tau \gg 1$ then $\tau_{int} \approx \tau$
+see \cite{Sokal1997}, and define the IATC as in \cite[pp. 103-105]{wolff2002LecNot}.
+If $\tau \gg 1$ one can show that $\tau_{\text{int}} \approx \tau$
 \begin{align}
 	\sum_{t = - \infty }^{\infty} \rho(t) =  1 + 2 \sum_{t = 1}^{\infty} \big(e^{-1/ \tau}\big)^t =  1 + 2 \frac{e^{-1/ \tau} }{1 - e^{-1/ \tau}} \approx  1 + 2 \frac{1 -1/ \tau }{1/ \tau} =  2 \tau -1 \approx 2 \tau_{int}
 \end{align}
-The Taylor series for the exponential function is
-power series  geometric series formula 
+where we use the geometric power series $\sum^{\infty}_{n=0} x^n= 1/ (1+x)$ and the Taylor series $ e^x \approx 1+x$ for small $x$.
+Consequently the estimate for the Monte-Carlo error is:
+\begin{align}
+	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
+\end{align}
+where we define the IACT provides a good estimate on how many steps the sampling algorithm needs to take to produce one independent sample.
+More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
+%We calculate the IACT using the Python implementation of \cite{wolff2004monte}, accessed \cite{wolff2004monte}, which also provides errors on the IACT and helps to assess convergence of the chain.
 
 
-
-\textcolor{red}{since we expect an exponential decay of the autocorrelate function we can write...}
 
 \section{Sampling Methods}
 \label{sec:sampling}
@@ -261,7 +262,7 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 %
 %If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic, and the conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y})$ is also ergodic~\cite{acosta2014markov}.
 
-\subsection{t-walk sampler as black box}
+\subsection{T-walk sampler as black box}
 If the parameters $\bm{x}$ are functionally dependent on the hyper-parameters $\bm{\theta}$, i.e., $\bm{x} = \bm{x}(\bm{\theta})$, we can sample directly from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the t-walk algorithm by Christen and Fox~\cite{christen2010general}. 
 The t-walk is employed as a black-box sampler, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
 Convergence to the target distribution is guaranteed by construction of the algorithm.
@@ -573,9 +574,9 @@ This leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\
 \section{Affine Map}
 \label{sec:affine}
 The forward map, which we introduce in Ch. \ref{ch:formodel}, poses a weakly non-linear forward problem, which we could tackle by treating the problem as a linear problem and then iteratively updating the non-linear part after each parameter sample.
-Instead, we approximate the non-linear model using an affine map $ \bm{M}:\bm{A}_L \bm{x} \rightarrow \bm{A}_{NL}\bm{x}$, which approximates the non-linear model using the linear model.
+Instead, we approximate the non-linear model using an affine map $ \bm{M}:\bm{A}_L \rightarrow \bm{A}_{NL}$, which maps from the linear model to the non-linear model, so that we set $ \bm{A} = \bm{M} \bm{A}_{NL} \approx \bm{A}_{NL} $.
 Here we give a brief introduction to affine maps and present our approach to calculating the affine map deterministically. 
-Alternatively, one can also determine this map using other methods, e.g. machine learning methods \cite{}.
+Alternatively, one can also determine this map using other methods, e.g. machine learning methods or matrix inversion \cite{}.
 
 
 An affine map is any linear map between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin, see~\cite[Def. 2.3.1]{berger2009geometry}.
@@ -597,8 +598,8 @@ For more information on affine spaces and maps, we refer to the books \cite{berg
 \end{figure}
 
 
-Consequently, to map between the linear and non-linear forward map, we generate two affine subspaces $V$ and $W$ over the same field.
-Assume we have noise free data vector $A_{NL}\bm{x} \in \mathbb{R}^m$, then the subspace associated with the linear forward model is \begin{align}
+Consequently, to map between the linear and non-linear forward map, we generate two affine subspaces $\bm{V}$ and $\bm{W}$ over the same field.
+Assume we draw samples $\{\bm{x}^{(1)}, \dots, \bm{x}^{(j)}, \dots ,\bm{x}^{(m)}\} \sim \pi(\bm{x}|\bm{y})$ then the affine subspace associated with the linear forward model is \begin{align}
 	\bm{W} = \begin{bmatrix}
 		\vert&   &  \vert & & \vert \\
 		\bm{A}_{L} \bm{x}^{(1)} &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
@@ -617,11 +618,9 @@ Assume we have noise free data vector $A_{NL}\bm{x} \in \mathbb{R}^m$, then the 
 		\rule[.5ex]{1em}{0.4pt} &v_j &	\rule[.25ex]{1em}{0.4pt}\\
 		&\vdots  & \\
 		\rule[.5ex]{1em}{0.4pt}& v_m&	\rule[.25ex]{1em}{0.4pt}
-	\end{bmatrix} \in \mathbb{R}^{m \times m} \, ,
+	\end{bmatrix} \in \mathbb{R}^{m \times m} \, .
 \end{align}
-Here $\big\{  \bm{x}^{(1)} , \dots, \bm{x}^{(m)} \big\}$ are $m$ different parameters.
-
-Then we find the affine map 
+Then the affine map 
 \begin{align}
 	\bm{V}\bm{W}^{-1} = \bm{M} = \begin{bmatrix}
 		\text{---} & r_0 &   \text{---}  \\
@@ -631,36 +630,38 @@ Then we find the affine map
 		\text{---} & r_m &   \text{---}
 	\end{bmatrix} \, \in \mathbb{R}^{m \times m} ,
 \end{align}
-row wise by solving $v_j = r_j \bm{W}$ for $ r_j $, so that $ \bm{A} = \bm{M} \bm{A}_{NL} \approx \bm{A}_{NL} $.
-Alternately one could also compute $\bm{M}$ using the inverse $\bm{W}^{-1}$.
+can be found by either matrix inversion of $\bm{W}$ or alternatively if the noise free data points in $\bm{A}_{NL}\bm{x}^{(j)}$ are independent of each other by row wise by solving $v_j = r_j \bm{W}$ for $ r_j $.
+
 
 \section{Regularisation}
 \label{sec:regularise}
-As mentioned in the introduction, the currently most used method to analyse any data in atmospheric physics is regularisation.
-Since we want to show that our methods are computationally comparable if not faster, and provide more information than regularisation, we choose a regulariser closest to our linear-Gaussian Bayesian framework, see section \ref{sec:BayModel}.
+As mentioned in the introduction, the currently most used method to analyse data in atmospheric physics is regularisation based.
+Since we want to show that our methods are computationally comparable if not faster, and provide more information than regularisation, we choose a linear-Gaussian Bayesian framework closest to our regulariser, see section \ref{sec:BayModel}.
 
-The Tikhonov approach in provides one solution $\bm{x}_{\lambda}$ that minimises both the data misfit norm
+The Tikhonov regularisation approach provides one solution $\bm{x}_{\lambda}$ that minimises both the data misfit norm
 \begin{align}
 	\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert
 \end{align} and a regularisation semi-norm
 \begin{align}
 	\lambda \left\lVert \bm{T} \bm{x} \right\rVert \, , \label{semiNorm}
 \end{align}
-as described in~\cite{fox2016fast}, with a linear forward model matrix $\bm{A}$, the data $\bm{y}$, a regularisation operator $\bm{T}$ and the regularisation parameter $\lambda > 0$ which weights the semi norm and penalises $\bm{x}$ according to that.
+for a given regularisation parameter $\lambda > 0 $ as described in~\cite{fox2016fast}, with a linear forward model matrix $\bm{A}$, the data $\bm{y}$, a regularisation operator $\bm{T}$.
+The regularisation parameter weights the semi norm and penalises $\bm{x}$ according to that.
 If $\lambda$ is large then effect of the data on the solution $\bm{x}_{\lambda}$ is small or negligible.
 If $\lambda$ is small the solution $\bm{x}_{\lambda}$ will be dominated by the noisy data, resulting in over fitted $\bm{x}_{\lambda}$.
 We refer to  \cite{hansen1989GSVD} and \cite{tan2016LecNot} for a more comprehensive analysis of the effects of the regularisation parameter on the solution e.g. due to small singular values of the forward model.
+
 For a fixed $\lambda$, the regularised solution
 \begin{align}
 	\bm{x}_{\lambda} = \underset{\bm{x}}{\mathrm{arg\,min}} \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2 + \lambda \left\lVert \bm{T} \bm{x} \right\rVert^2
 \end{align}
-is obtained by taking the derivative with respect to $\bm{x}$ of the objective function:
+is obtained by taking the derivative with respect to $\bm{x}$:
 \begin{align}
 	& & \nabla_{\bm{x}} \left\{ (\bm{y} - \bm{A} \bm{x})^T (\bm{y} - \bm{A} \bm{x}) + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
 	&\iff & \nabla_{\bm{x}} \left\{ \bm{y}^T \bm{y} + \bm{x}^T \bm{A}^T \bm{A} \bm{x} - 2 \bm{y}^T \bm{A} \bm{x} + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
 	&\iff & 2 \bm{A}^T \bm{A} \bm{x} - 2 \bm{A}^T \bm{y} + 2 \lambda \bm{T}^T \bm{T} \bm{x} &= 0,
 \end{align}
-or equivalently the "regularised normal equations" $\bm{A}^T \bm{y} = \bm{A}^T \bm{A} \bm{x} + \lambda \bm{T}^T \bm{T} \bm{x}$ \cite{Hansen2001LCurve}.
+also know as the "regularised normal equations" $\bm{A}^T \bm{y} = \bm{A}^T \bm{A} \bm{x} + \lambda \bm{T}^T \bm{T} \bm{x}$ \cite{Hansen2001LCurve}.
 Solving this equation yields the regularised solution
 \begin{align}
 	\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L})^{-1} \bm{A}^T \bm{y} \, , \label{eq:regSol}
@@ -690,10 +691,10 @@ is the first order derivative with equal spacing $h$ as in \cite{tan2016LecNot} 
 \end{align}
 is the second order derivate with Neumann boundary conditions, see \cite{wang2015graphs}.
 
-In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation semi-norm. The optimal value of $\lambda$ corresponds to the point of maximum curvature of the so-called L-curve~\cite{hansen1993use}, where we plot data misfit norm versus the regularisation semi-norm, see Fig.~\ref{fig:LCurve}.
+In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation semi-norm. The optimal value of $\lambda$ corresponds to the point of maximum curvature of the so-called L-curve~\cite{hansen1993use}, where the data misfit norm versus the regularisation semi-norm is plotted, see Fig.~\ref{fig:LCurve}.
 
 Additionally one can think about regularisation as a Lagrange multiplier $ \mathcal {L}(\bm{x}, \lambda) \coloneq\lambda \bm{x}^T \bm{L} \bm{x} + \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert $, which minimises $ \bm{x}_\lambda = \text{arg min}_{\bm{x}} \bm{x}^T \bm{L} \bm{x} $ with respect to a constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert$, see \cite[fn. 6]{fox2016fast} and \cite[Fig. 2.13]{SANTOSH202265}.
-So every solution $\bm{x}_{\lambda}$ is an extremum and almost every sample of the posterior, which represents a feasible solution given the data, has a higher $\bm{x}^T \bm{L} \bm{x}$ value and lays above the L-Curve.
+So every solution $\bm{x}_{\lambda}$ is an extremum (the most regularised solution for a given data misfit norm) and almost every sample of the posterior, which represents a feasible solution given the data, has a higher $\bm{x}^T \bm{L} \bm{x}$ value and lays above the L-Curve.
 
 
 %We refer show that the filter factors as in \cite{tan2016LecNot} for a regularisation parameter as shown here affects the solution the generalised singular value decomposition is given in  of $A, T$ as in \cite{hansen1989GSVD}.
