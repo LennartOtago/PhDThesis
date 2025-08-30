@@ -567,14 +567,14 @@ Another way to asses the error is to calculate the Wasserstein distance, beacuse
 
 We define the 1-Wasserstein distance as
 \begin{align}
-	W(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}\int_{\mathcal{X} \times \mathcal{X}} d(\bm{x},\bm{y}) \, \nu(\bm{x},\bm{y}) d\bm{x} d\bm{y} 
+	W_1(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}\int_{\mathcal{X} \times \mathcal{X}} d(\bm{x},\bm{y}) \, \nu(\bm{x},\bm{y}) d\bm{x} d\bm{y} 
 	\label{eq:wass} \, ,
 \end{align}
 where $\nu$ couples $\bm{x}$ and $\bm{y}$ so that the intgral over the distance $ d(\bm{x},\bm{y}) $ weighted by the probility measures $\pi$ and $\tilde{\pi}$ is the greatest lower bound of all integral with repesct to the coupling $\nu$ in the set of all couplings $ \Pi(\pi,\tilde{\pi})$.
 Often $\nu$ is a transport plan, where $d(\bm{x}, \bm{y})$ is the (ground) cost function, and $\nu(\bm{x}, \bm{y})$ is related to the mass which has to be transported and the 1-Wasserstein distance is called the earth mover distance.
 On the other hand (Kantorovich-Rubinstein duality) we can describe the 1-Wasserstein distance 
 \begin{align}
-	W(\pi,\tilde{\pi})  =&\underset{ |h(\bm{x}) - h(\bm{y})| \leq  d(\bm{x},\bm{y}) }{ \text{sup}} \Bigg\{  \int_{\mathcal{X}} h(\bm{x}) d \pi (\bm{x})  - \int_{\mathcal{X}} h(\bm{y}) d \tilde{\pi} (\bm{y}) \Bigg\} \\
+	W_1(\pi,\tilde{\pi})  =&\underset{ |h(\bm{x}) - h(\bm{y})| \leq  d(\bm{x},\bm{y}) }{ \text{sup}} \Bigg\{  \int_{\mathcal{X}} h(\bm{x}) d \pi (\bm{x})  - \int_{\mathcal{X}} h(\bm{y}) d \tilde{\pi} (\bm{y}) \Bigg\} \\
 		=&\underset{ |h(\bm{x}) - h(\bm{y})| \leq  d(\bm{x},\bm{y}) }{ \text{sup}}  \Bigg\{  \underset{\bm{x} \sim  \pi }{\mathbb{E}} \big[ h(\bm{x}) \big]  -  \underset{\bm{y} \sim \tilde{\pi}}{\mathbb{E}} \big[ h(\bm{y}) \big] \Bigg\} .
 \end{align}
 as the lowest upper bound of differences in expecations of the 1-Lipschitz function $h$ over the two distributions $\pi$ and $\tilde{\pi}$.
@@ -586,6 +586,25 @@ and for two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(1)}\} \sim \pi$ and $\{ 
 This gives us an upper bound of the absolute error in between the expected value of any 1-Lipshitz function, e.g the absolute difference in means of $\pi$ and $\tilde{\pi}$. 
 
 
+Now consider the 2-Wasserstein distance
+\begin{align}
+	W_2(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}  \Bigg(\int_{\mathcal{X} \times \mathcal{X}} d(\bm{x},\bm{y})^2 \, \nu(\bm{x},\bm{y}) d\bm{x} d\bm{y} \Bigg)^{1/2}
+	\label{eq:wass} \, .
+\end{align}
+For two multivariate normal distrinbutions $\pi \sim \mathcal{N}(\bm{\mu}, \bm{\Sigma})$ and $\tilde{\pi} \sim \mathcal{N}(\tilde{\bm{\mu}},  \tilde{\bm{\Sigma}})$this is defined as 
+\begin{align}
+	W_2(\pi,\tilde{\pi}) = \lVert \bm{\mu} -\tilde{\bm{\mu}} \rVert^2_{L^2} + \text{trace}(\bm{\Sigma}+  \tilde{ \bm{\Sigma}} - 2 (\tilde{ \bm{\Sigma}}^{1/2} \bm{\Sigma} \tilde{ \bm{\Sigma}}^{1/2} )^{1/2} ) \, \text{\cite{Asuka2011Wasser}.}
+\end{align}
+We can write the Wassertein distance as the infimum of expectations
+\begin{align}
+	W_2(\pi,\tilde{\pi}) =  \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}} \Bigg( \underset{ \bm{x},\bm{y} \sim  \nu  }{\mathbb{E}}  d(\bm{x},\bm{y})^2 \Bigg)^{1/2}
+\end{align}
+and one can show that
+\begin{align}
+ \Bigg(   \underset{ \bm{x},\bm{y} \sim  \nu  }{\mathbb{E}}  d(\bm{x},\bm{y})^p \Bigg)^{1/p} \leq  \Bigg(  \underset{ \bm{x},\bm{y} \sim  \nu  }{\mathbb{E}}  d(\bm{x},\bm{y})^q \Bigg)^{1/q}
+\end{align}
+for every $p \leq q$, \cite{Chizat2020LecNot}.
+Then we can bound the absolute difference in expexations for a 1-Lipschitz function $h$ by the 2-Wasserstein distance $W_2(\pi,\tilde{\pi})$.
 
 
 \section{Affine Map}
