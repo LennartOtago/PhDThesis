@@ -518,26 +518,6 @@ Note that with Cartesian basis $ \sum \phi^{(i)}_k(x_k) \Bigg( \sum \bm{G}^{(\al
 $  and $\bm{G}_{<k}(x^{(s)}_{<k}) = \bm{G}_{1}(x^{(s)}_{1}) \cdots \bm{G}_{k-1}(x^{(s)}_{k-1}) $ are simple matrix multiplications for each grid point $i$ or sample $\bm{x}^{(s)}$.
 
 
-
-\subsection{On the error in TT approximation}
-Once we have draw samples from the TT approximation we have a few options to quantify the approximation error.
-
-A straight forward way to asses the error from the TT approximation is to calculate the relative root mean squared error
-\begin{align}
-	\Bigg( \frac{ \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(\bm{x}) \text{d} \bm{x}}{ \int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \text{d} \bm{x} } \Bigg)^{1/2} =	\frac{\lVert 	\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2)  \rVert_{L^2_{\uplambda}(\bm{x})}}{\lVert 	\pi(\bm{x}) \rVert_{L^2_{\uplambda}(x)}  }
-\end{align}
-we can approximate the this integral as with our samples and randomly evaluated grid points as 
-\begin{align}
-	\frac{1}{N} \sum^{N}_{i =1} \big(\pi(\bm{x}^{(i)}) - (\gamma + \tilde{g}(\bm{x}^{(i)})^2)\big)^2 \uplambda(\bm{x})   \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(x) \text{d} \bm{x} \Bigg)^{1/2} 
-\end{align}
-and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \text{d} \bm{x}$.
-
-Another way is to do a Metropolis-Hastings correction step and to calculate the Wasserstein distance \cite{} between approximation and the true function.
-In higher dimensions this might not be possible so we can compare the samples from a trusted sampler, which samples in the log space to the samples from the SIRT after a Metropolis-Hastings correction step as in \cite{dolgov2020approximation}.
-This gives us marginal distributions to compare by calculating the Wasserstein distance.
-
-
-
 \subsubsection{MH - correction step}
 \begin{algorithm}[!ht]
 	\caption{MH correction step}
@@ -567,6 +547,43 @@ In practise we calculate the importance ratio in the log space, where $\log f_X(
 This leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)} \} $.
 
 
+\subsection{On the error in TT approximation}
+Once we have drawn samples from the TT approximation we have a few options to quantify the approximation error.
+
+\subsubsection{realtive root mean sqaured error}
+A straight forward way to asses the error from the TT approximation is to calculate the relative root mean squared error
+\begin{align}
+	\Bigg( \frac{ \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(\bm{x}) \text{d} \bm{x}}{ \int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \text{d} \bm{x} } \Bigg)^{1/2} =	\frac{\lVert 	\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2)  \rVert_{L^2_{\uplambda}(\mathcal{X})}}{\lVert 	\pi(\bm{x}) \rVert_{L^2_{\uplambda}(\mathcal{X})}  } \, .
+\end{align}
+We can approximate the this integral with our samples 
+\begin{align}
+	\Bigg( \frac{1}{N} \sum^{N}_{i =1} \big(\pi(\bm{x}^{(i)}) - (\gamma + \tilde{g}(\bm{x}^{(i)})^2)\big)^2 \uplambda(\bm{x})\Bigg)^{1/2}    \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(x) \text{d} \bm{x} \Bigg)^{1/2} 
+\end{align}
+and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(\bm{x})  \text{d} \bm{x}$.
+
+
+\subsubsection{Absolute error bound}
+Another way to asses the error is to calculate the Wasserstein distance, beacuse the Kantorovich-Rubinstein duality, as in \cite{thickstun2019kantorovich, Ambrosio2024Kanta}, says that the Wasserstein distance is equal to the upper bound of differences in expeactions of a function $h$ over two probaility distributions.
+
+We define the 1-Wasserstein distance as
+\begin{align}
+	W(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}\int_{\mathcal{X} \times \mathcal{X}} d(\bm{x},\bm{y}) \, \nu(\bm{x},\bm{y}) d\bm{x} d\bm{y} 
+	\label{eq:wass} \, ,
+\end{align}
+where $\nu$ couples $\bm{x}$ and $\bm{y}$ so that the intgral over the distance $ d(\bm{x},\bm{y}) $ weighted by the probility measures $\pi$ and $\tilde{\pi}$ is the greatest lower bound of all integral with repesct to the coupling $\nu$ in the set of all couplings $ \Pi(\pi,\tilde{\pi})$.
+Often $\nu$ is a transport plan, where $d(\bm{x}, \bm{y})$ is the (ground) cost function, and $\nu(\bm{x}, \bm{y})$ is related to the mass which has to be transported and the 1-Wasserstein distance is called the earth mover distance.
+On the other hand (Kantorovich-Rubinstein duality) we can describe the 1-Wasserstein distance 
+\begin{align}
+	W(\pi,\tilde{\pi})  =&\underset{ |h(\bm{x}) - h(\bm{y})| \leq  d(\bm{x},\bm{y}) }{ \text{sup}} \Bigg\{  \int_{\mathcal{X}} h(\bm{x}) d \pi (\bm{x})  - \int_{\mathcal{X}} h(\bm{y}) d \tilde{\pi} (\bm{y}) \Bigg\} \\
+		=&\underset{ |h(\bm{x}) - h(\bm{y})| \leq  d(\bm{x},\bm{y}) }{ \text{sup}}  \Bigg\{  \underset{\bm{x} \sim  \pi }{\mathbb{E}} \big[ h(\bm{x}) \big]  -  \underset{\bm{y} \sim \tilde{\pi}}{\mathbb{E}} \big[ h(\bm{y}) \big] \Bigg\} .
+\end{align}
+as the lowest upper bound of differences in expecations of the 1-Lipschitz function $h$ over the two distributions $\pi$ and $\tilde{\pi}$.
+We set the distance measure to
+\begin{align}
+ d(\bm{x},\bm{y})= \lVert \bm{x} - \bm{y} \rVert_{L^2} \, ,
+\end{align}
+and for two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(1)}\} \sim \pi$ and $\{ \bm{y}^{(1)},\dots,\bm{y}^{(1)}\} \sim \tilde{\pi}$ the caculation of the Wasserstein distance becomes an optimasation problem, that is to find the best permutation (order) of samples weighted by their distribution value \cite{feydy2020OT}.
+This gives us an upper bound of the absolute error in between the expected value of any 1-Lipshitz function, e.g the absolute difference in means of $\pi$ and $\tilde{\pi}$. 
 
 
 
