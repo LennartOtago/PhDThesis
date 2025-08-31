@@ -597,7 +597,7 @@ For two multivariate normal distrinbutions $\pi \sim \mathcal{N}(\bm{\mu}, \bm{\
 with distance measure set to $c(\bm{x},\bm{y})= \lVert \bm{x} - \bm{y} \rVert_{L^2} $.
 To realte that to the 1-Wassertein distance, we write the p-Wassertein distance as the infimum of expectations
 \begin{align}
-	W_p(\pi,\tilde{\pi}) =  \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}} \Bigg( \underset{ \bm{x},\bm{y} \sim  \nu  }{\mathbb{E}}  c(\bm{x},\bm{y})^2 \Bigg)^{1/p}
+	W_p(\pi,\tilde{\pi}) =  \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}} \Bigg( \underset{ \bm{x},\bm{y} \sim  \nu  }{\mathbb{E}}  c(\bm{x},\bm{y})^p \Bigg)^{1/p}
 \end{align}
 and one can show that
 \begin{align}
