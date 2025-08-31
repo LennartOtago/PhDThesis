@@ -29,11 +29,11 @@ Lastly, we provide some background information on affine maps and the Tikhonov r
 		\node[align=center] at (2,-3.5) (yt) {$\sim \pi_{\bm{y}}(\cdot|\bm{\theta},\bm{x})$ data};
 		\node[align=center] at (-3,0) (nt) {noise};
 	\end{tikzpicture}
-	\caption[Bayesian Inference DAG]{The directed acyclic graph (DAG) for a linear inverse problem visualises statistical dependencies as solid line arrows and deterministic dependencies as dotted arrows.
+	\caption[Hierarchichal Bayesian Inference -- DAG]{The directed acyclic graph (DAG) for a inverse problem visualises statistical dependencies as solid line arrows and deterministic dependencies as dotted arrows.
 	The hyper-parameters $\bm{\theta}$ are distributed as the hyper-prior distribution $\pi(\bm{\theta})$.
-	The prior distribution $ \pi_{\bm{x}}(\cdot|\bm{\theta})$ for the parameter $\bm{x}$ and the noise are statsitically dependent on have some on those hyper-parameters.
-	 Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is mapped onto the space of all measurables $\bm{u}=\bm{Ax}$ deterministically through the linear forward model $\bm{A}$.
-	From the space of all measurable noise free data we observe a data set $\bm{y} = \bm{Ax} + \bm{\eta}$ with some random noise $ \bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$, which determines the likelihood function $\pi(\bm{y}|\bm{\theta}, \bm{x})$. }
+	The prior distribution $ \pi_{\bm{x}}(\cdot|\bm{\theta})$ for the parameter $\bm{x}$ and the noise are statsitically dependent on some on those hyper-parameters.
+	 Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is mapped onto the space of all measurables $\bm{\Omega}=\bm{A}(\bm{x})$ deterministically through the forward model.
+	From the space of all measurable noise free data we observe a data set $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}$ with some random noise $ \bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$, which determines the likelihood function $\pi(\bm{y}|\bm{\theta}, \bm{x})$. }
 	\label{fig:FirstDAG}
 \end{figure}
 
@@ -43,16 +43,17 @@ Assume we observe some data
 	\label{eq:LinDat}
 \end{align}
 based on a forward model $\bm{A}(\bm{x})$, which may be non-linear, a unknown parameter $\bm{x}$ and some additive random noise $\bm{\eta}$.
-Naturally, due to the noise, we deal with a random process and we have to include that in our modelling.
-Then define the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$ according to the nature of the noise as well as include all relevant information about the measurement process.
+Naturally, due to the noise, which we classify as a hyper-parameter, we deal with a random process and we wish to include that in our hierachially orderd modelling.
+Then define the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$ according to the nature of the noise as well as all relevant information about the measurement process, capturde by the model $\bm{A}(\bm{x})$.
 We read $\pi(\bm{y}|\bm{\theta},\bm{x})$ as the distribution over $\bm{y}$ conditioned on $\bm{x}$ and the hyper-parameter $\bm{\theta}$.
 Here $\bm{\theta}$ may account for multiple variables and is e.g. describing the distribution of the noise vector $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$ as well as the prior distribution $\pi(\bm{x}|\bm{\theta})$, which accounts for physical properties or functional dependences of $\bm{x}$.
 Consequently we define a hyper-prior distribution $\pi(\bm{\theta})$, where $\pi(\bm{x}, \bm{\theta}) = \pi(\bm{x}|\bm{\theta}) \pi(\bm{\theta}) $.
-Choosing these prior distributions is crucial, as it shall not affect the posterior distribution 
+Choosing these prior distributions is a modellers choice and crucial, as it shall not affect the posterior distribution 
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, ,
 \end{align}
 which according to Bayes theorem gives us a distribution of $\bm{x}$ and $\bm{\theta}$ given (conditioned) on some data.
+Note that here we include the hyper-parametres wihtin the posterior distribution, which is the key idea of hierachral Bayesian modelling, as we do not only aim to qauntify the postreiror distribution over the parameters $\bm{x}$ but also the posterior distribution over the hyper-parameter $\bm{\theta}$.
 We can visualise this hierarchically ordered correlation structure between parameters as well as how distributions progress through a measurement process, using a directed acyclic graph (DAG), see Figure~\ref{fig:FirstDAG}.
 
 The expectation of any function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}$ may depend on $\bm{\theta}$, is described as 
@@ -76,6 +77,8 @@ into the conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the lat
 	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) } \label{eq:margGen}
 \end{align}
 over the hyper-parameters $\bm{\theta}$.
+In \cite{} they calssify inverse problems in problems with known depdensince or unkown dependices and that if one know $\pi(\bm{x} | \bm{\theta} ,   \bm{y})$ one can almost surely determine the marginal posterior to some xetnd.
+
 This approach, known as the marginal and then conditional (MTC) method, is particularly advantageous when $\bm{x}$ is high-dimensional (e.g., $\bm{x} \in \mathbb{R}^n$ with $n \geq 45$), while $\bm{\theta}$ is low-dimensional (e.g., two-dimensional).
 Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovariance}, Eq.~\eqref{eq:expPos} becomes
 \begin{align}
@@ -593,18 +596,18 @@ Now consider the 2-Wasserstein distance
 \end{align}
 For two multivariate normal distrinbutions $\pi \sim \mathcal{N}(\bm{\mu}, \bm{\Sigma})$ and $\tilde{\pi} \sim \mathcal{N}(\tilde{\bm{\mu}},  \tilde{\bm{\Sigma}})$this is defined as 
 \begin{align}
-	W_2(\pi,\tilde{\pi}) = \lVert \bm{\mu} -\tilde{\bm{\mu}} \rVert^2_{L^2} + \text{trace}(\bm{\Sigma}+  \tilde{ \bm{\Sigma}} - 2 (\tilde{ \bm{\Sigma}}^{1/2} \bm{\Sigma} \tilde{ \bm{\Sigma}}^{1/2} )^{1/2} ) \, \text{\cite{Asuka2011Wasser}.}
+	W_2(\pi,\tilde{\pi}) = \Bigg(  \lVert \bm{\mu} -\tilde{\bm{\mu}} \rVert^2_{L^2} + \text{trace}(\bm{\Sigma}+  \tilde{ \bm{\Sigma}} - 2 (\tilde{ \bm{\Sigma}}^{1/2} \bm{\Sigma} \tilde{ \bm{\Sigma}}^{1/2} )^{1/2} )  \Bigg)^{1/2} \, \text{\cite{Asuka2011Wasser}.}
 \end{align}
-We can write the Wassertein distance as the infimum of expectations
+To realte that to the 1-Wassertein distance, we write the p-Wassertein distance as the infimum of expectations
 \begin{align}
-	W_2(\pi,\tilde{\pi}) =  \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}} \Bigg( \underset{ \bm{x},\bm{y} \sim  \nu  }{\mathbb{E}}  d(\bm{x},\bm{y})^2 \Bigg)^{1/2}
+	W_p(\pi,\tilde{\pi}) =  \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}} \Bigg( \underset{ \bm{x},\bm{y} \sim  \nu  }{\mathbb{E}}  d(\bm{x},\bm{y})^2 \Bigg)^{1/p}
 \end{align}
 and one can show that
 \begin{align}
  \Bigg(   \underset{ \bm{x},\bm{y} \sim  \nu  }{\mathbb{E}}  d(\bm{x},\bm{y})^p \Bigg)^{1/p} \leq  \Bigg(  \underset{ \bm{x},\bm{y} \sim  \nu  }{\mathbb{E}}  d(\bm{x},\bm{y})^q \Bigg)^{1/q}
 \end{align}
 for every $p \leq q$, \cite{Chizat2020LecNot}.
-Then we can bound the absolute difference in expexations for a 1-Lipschitz function $h$ by the 2-Wasserstein distance $W_2(\pi,\tilde{\pi})$.
+Then we can bound the supremum of the absolute difference in expexations of a 1-Lipschitz function $h$ by the 2-Wasserstein distance $W_2(\pi,\tilde{\pi})$.
 
 
 \section{Affine Map}
