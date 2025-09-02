@@ -72,8 +72,8 @@
 % CRESTS
 %
 
-\def\crest{{\includegraphics[height=7cm,keepaspectratio]{logo_thres.jpg}}}
-
+%\def\crest{{\includegraphics[height=7cm,keepaspectratio]{logo_thres.jpg}}}
+\def\crest{{\includegraphics[height=9cm,keepaspectratio]{BWLogo.jpg}}}
 
 %
 % Define text area of page and margin offsets
@@ -259,12 +259,14 @@ breaklinks=true
 \else
   \begin{center}
     { \LARGE {\bfseries {\@title}} \par}
-{\large \vspace*{30mm} {\crest \par} \vspace*{25mm}}
+%{\large \vspace*{30mm} {\crest \par} \vspace*{25mm}}
+{\large \vspace*{20mm} {\crest \par} \vspace*{15mm}}
     {{\Large \@author} \par}
 {\large \vspace*{1ex}
     {{\@college} \par}
 \vspace*{1ex}
-    {University of Otago \par}
+    %{University of Otago \par}
+        %{University of Otago \par}
 \vspace*{20mm}
     {{\submittedtext} \par}
 \vspace*{1ex}

@@ -8,7 +8,7 @@ In this chapter, we present the forward model on which we apply all our methodol
 	\caption[Schematic of measurement and analysis geometry.]{Schematic of measurement and analysis geometry, not to scale.
 		The stationary satellite, at a constant height $h_\text{sat}$ above Earth, takes $m = 41$ measurements along its line-of-sight defined by the line $\Gamma_j$.
 		Each measurement has a limb height $\ell_j$, $j=1,2,\dots,m$ defined as the closest distance of $\Gamma_j$ to the Earth's surface.
-		Between $h_{L,0} = 7$km and $h_{L,n} = 83.3$km, the stratosphere is discretised into $n =44$ layers as illustrated by the solid green lines.}
+		Between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$km, the stratosphere is discretised into $n =34$ layers as illustrated by the solid green lines.}
 	\label{fig:LIMB}
 \end{figure}
 
@@ -67,7 +67,7 @@ One way of doing this is via a singular value decomposition (SVD) of the forward
 	\bm{A} = \sum_{i =1}^{r} \bm{u}_i  \sigma_i \bm{v}^T_i = \bm{U} \bm{\Sigma} \bm{V}^T
 \end{align}
 where $r = \min\{m,n\}$ for a forward model $\bm{A} \in \mathbb{R}^{m \times n}$.
-Consider $\bm{A}\bm{x}$, where $\bm{x}$ is the ozone VMR, then the SVD gives us information on how information is picked up from the parameter space by the forward model, described through the right singular values $\bm{v}_i$.
+Consider noise free measurements $\bm{A}\bm{x}$ for a satellite at a fixed height of $h_{\text{sat}} = 500$km above sea level, where $\bm{x}$ is the ozone VMR, then the SVD gives us information on how information is picked up from the parameter space by the forward model, described through the right singular values $\bm{v}_i$.
 The singular values $\sigma_i $, ordered in size from the largest $\sigma_1$ to the smallest $\sigma_{r}$, weight that information from the right singular values to the left singular values $\bm{u}_i$, which project onto the data space.
 If we have lots of high-valued singular values, we can say that the forward model is informative and vice versa.
 The right singular vectors indicate which structures of the parameter space are picked up by the model.
@@ -105,7 +105,7 @@ In comparison, if we measure a lot of times in regions where the data is noise-d
 Measuring lots of times at low altitudes, where the data is informative, and less at higher altitudes, case 2, does not seem optimal either, as we observe one larger singular value, but the other singular values decrease faster compared to case 3.
 Now, if we double the number of measurements compared to case 3, see case 4, we do get slightly larger singular values, but not significantly so that it would be worth the engineering effort required to achieve that.
 The measurements with equidistance-spaced tangent height seem to be most informative.
-By exploratory analysis, we find that we can tolerate a slightly larger distance between tangent height than required by \cite{CubeSatInternal}, see case 5.
+By exploratory analysis, we find that we can tolerate a slightly larger distance between tangent heights (pointing accuracy of $175\text{arc sec}$) than required by \cite{CubeSatInternal}, see case 5.
 In that case, we also stop measuring when the signal is too noisy and decrease the number of measurements taken without losing information.
 We note that if one wanted to obtain all information provided by the forward model, we would need a signal-to-noise ratio of roughly $10^7$.
 

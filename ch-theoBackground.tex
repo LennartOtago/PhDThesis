@@ -404,7 +404,7 @@ The proposition used to compute $\bm{B}_k$, stated in Proposition~\ref{prob:back
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
 		\begin{equation}
-			\bm{C}_k[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{B}_k[\alpha_{k-1}, i, l_k] \bm{L}_k[i, \tau].
+			\bm{C}_k[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{B}_k[\alpha_{k-1}, i, l_k] \bm{L}_k[i, \tau] \text{\cite[Eq. ()]{cui2022deep}}.
 		\end{equation}
 		\item Unfold $\bm{C}_k$ along the first coordinate and compute the thin QR decomposition, so that $\bm{C}_k^{(R)} \in \mathbb{R}^{r_{k-1} \times (n_k r_k)}$:
 		\begin{equation}
@@ -537,7 +537,7 @@ In doing so we compute the acceptance probability $  \alpha = \text{min}(w^{(s+1
 \end{align}
 is the importance ratio.
 In practise we calculate the importance ratio in the log space, where $\log f_X(\bm{x})  =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ is given as in Eq. \ref{eq:CurrMarg}.
-This leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \tilde{ \pi}(\bm{x}) $.
+This leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
 
 
 \subsection{On the Error in the TT Approximation}

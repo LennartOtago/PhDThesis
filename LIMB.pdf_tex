@@ -54,9 +54,9 @@
     \lineheight{1}%
     \setlength\tabcolsep{0pt}%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{LIMB.pdf}}%
-    \put(0.82212824,0.12102016){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,n}=83.3$km\end{tabular}}}}%
+    \put(0.82212824,0.12102016){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,n}\approx 82$km\end{tabular}}}}%
     \put(0.71421526,0.07059122){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,i}$\end{tabular}}}}%
-    \put(0.70306414,0.01769629){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,0}=7$km\end{tabular}}}}%
+    \put(0.70306414,0.01769629){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,0}\approx7$km\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{LIMB.pdf}}%
     \put(0.89183462,0.20018385){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{\text{sat}}=500$km\end{tabular}}}}%
     \put(0.6288998,0.12693188){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Gamma_j$\end{tabular}}}}%

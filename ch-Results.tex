@@ -1,4 +1,4 @@
-\chapter{Results}
+\chapter{Results and Conclusions}
 \label{ch:res}
 In this chapter, we use the forward model to generate data given an underlying ground truth and then guide the reader towards obtaining the posterior distributions.
 Once we simulated some data, we established a Bayesian framework in Sec. \ref{sec:BayModel}, where we discuss the choice of prior distributions and formulate the posterior distributions for ozone and pressure over temperature, respectively.
@@ -9,7 +9,7 @@ Finally, we calculate the posterior distribution for ozone and pressure over tem
 Lastly, we evaluate some errors occurring during the process.
 All programming and analysis are done in Python on a MacBook Pro from 2019 with a 2.4 GHz quad-core Intel Core i5 processor.
 
-\section{Simulate Data based on a ground truth}
+\section{Simulate Data based on a Ground Truth}
 We target Ozone ate \cite{waters2006earth}
 This says that ozone is the main emitter around 240 Ghz \cite[34]{livesey2008ozonecarbonmono}
 
@@ -29,16 +29,17 @@ Following \cite{atmosphere1976us} we form a temperature function
 \begin{align}
 	T(h) = \begin{cases*}
 			T_0 &, \, \text{$h  = 0$}\\
-			T_0 + a_0 h   &, \, \text{$0 \leq h < h_{1}$}\\
-			T_0 + a_0 h_{1} &, \, \text{$h_{1} \leq  h < h_{2}$}\\
-			T_0 + a_0 h_{1} + a_1 (h_2   - h_1)  + a_2 (h   - h_2)  &,  \, \text{$h_{2} \leq h < h_{3}$}\\
-			T_0 + a_0 h_{1} + a_1 (h_2   - h_1)  + a_2 (h_3   - h_2) + a_3 (h   - h_3) &, \, \text{$h_{3} \leq h < h_{4}$}\\
-			T_0 + a_0 h_{1} + a_1 (h_2   - h_1)  + a_2 (h_3   - h_2) + a_3 (h_4   - h_3)&\nonumber \\
-			\hphantom{{} T_0 } + a_4 (h   - h_4) &,  \, \text{$h_{4} \leq h < h_{5}$}\\
-			T_0 + a_0 h_{1} + a_1 (h_2   - h_1)  + a_2 (h_3   - h_2) &\nonumber \\
-			\hphantom{{} T_0 } + a_3 (h_4   - h_3) + a_4 (h_5   - h_4)+ a_5 (h   - h_5) &,  \, \text{$h_{5} \leq h < h_{6}$}\\
-			T_0 + a_0 h_{1} + a_1 (h_2   - h_1) + a_2 (h_3   - h_2)  &\nonumber\\
-			\hphantom{{} T_0} + a_3 (h_4   - h_3) + a_4 (h_5   - h_4)+ a_5 (h_6   - h_5)  &,  \, \text{$h_{6} \leq h \lesssim 86$}
+			T_0 + a_0 h   &, \, \text{$0 \leq h < h_{T,1}$}\\
+			T_0 + a_0 h_{T,1} &, \, \text{$h_{T,1} \leq  h < h_{T,2}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  + a_2 (h   - h_{T,2})  &,  \, \text{$h_{T,2} \leq h < h_{T,3}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  + a_2 (h_{T,3}   - h_{T,2}) &\nonumber \\
+			\hphantom{{} T_0 }  + a_3 (h   - h_{T,3}) &, \, \text{$h_{T,3} \leq h < h_{T,4}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  + a_2 (h_{T,3}   - h_{T,2}) &\nonumber \\
+			\hphantom{{} T_0 } + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h   - h_{T,4}) &,  \, \text{$h_{T,4} \leq h < h_{T,5}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  + a_2 (h_{T,3}   - h_{T,2}) &\nonumber \\
+			\hphantom{{} T_0 } + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h_{T,5}   - h_{T,4})+ a_5 (h   - h_{T,5}) &,  \, \text{$h_{T,5} \leq h < h_{T,6}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1}) + a_2 (h_{T,3}   - h_{T,2})   &\nonumber\\
+			\hphantom{{} T_0}  + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h_{T,5}   - h_{T,4})+ a_5 (h_{T,6}   - h_{T,5}) &\nonumber\\ \hphantom{{} T_0} + a_6 (h   - h_{T,6})   &,  \, \text{$h_{T,6} \leq h \lesssim 86$}
 	\end{cases*} 
 \label{eq:tempFunc}
 \end{align}
@@ -47,7 +48,7 @@ with gradient and height values provided by \cite{atmosphere1976us}, see Tab. \r
 	\centering
 	\begin{tabular}{ |c||c|c|  }
 		\hline
-		subscript $i$ & geometric height $h_i$ in km&gradient $a_i$\\
+		subscript $i$ & geometric height $h_{T,i}$ in km&gradient $a_i$\\
 		\hhline{|=||=|=|}
 		0& 0 & -6.5\\
 		1& 11 & 0\\
@@ -90,7 +91,7 @@ The profile we pick seems to eb a typical night time ozone profile \cite{Lee2020
 
 
 
-\section{Set up a hierarchical Bayesian framework}
+\section{Setup a hierarchical Bayesian Framework}
 \label{sec:BayModel}
 Since the forward model described in Ch. \ref{ch:formodel} is weakly non-linear we will set up a linear Bayesian hierarchical framework first based on the linear forward model $\bm{A}_L$ and then later the approximated version $\bm{A}_{NL}\bm{M} \bm{A}_L$.
 Furthermore, the noise is normally distributed, so we establish a linear-Gaussian Bayesian hierarchical framework, aiming to recover an ozone profile and a pressure over temperature profile.
@@ -104,7 +105,7 @@ Then we define prior distributions over all parameters as well as a likelihood f
 		\node[roundnode2] at (-4.5,6.5) (Q)     {$\bm{Q}$};
 		\node[roundnode2] at (-3,5) (x)     {$\bm{x}$};
 		\node[align=center] at (-1,4) (A)    {$\bm{A}_{NL} \approx  \bm{M}\bm{A}_L$};
-		\node[roundnode2] at (-1,2.5) (u)    {$\bm{\Omega}$};
+		\node[roundnode2] at (-1,2.5) (u)    {$\Omega$};
 		\node[rectnode] at (-1,1) (y)    {$\bm{y}$};
 		\node[roundnode2] at (-2.5,2.5) (e)    {$\bm{\eta}$};
 		\node[roundnode2] at (-6.25,6.5) (S)    {$\bm{\Sigma}$};
@@ -124,7 +125,7 @@ Then we define prior distributions over all parameters as well as a likelihood f
 		\node[roundnode2] at (0,10) (b1hyp)    {$\bm{\theta}_{b}$};
 		%\node[roundnode2] at (-2.5,10) (h1hyp)    {$\bm{\theta}_{h_{0}}$};
 		\node[roundnode2] at (-1.5,10) (p0hyp)    {$\bm{\theta}_{p_{0}}$};
-		\node[roundnode2] at (2,10) (hthyp)    {$\bm{\theta}_{\bm{h}}$};
+		\node[roundnode2] at (2,10) (hthyp)    {$\bm{\theta}_{\bm{h}_T}$};
 		\node[roundnode2] at (3.25,10) (cthyp)    {$\bm{\theta}_{T_{0}}$};
 		\node[roundnode2] at (4.5,10) (athyp)    {$\bm{\theta}_{\bm{a}}$};
 		
@@ -206,35 +207,29 @@ Next, we need to specify the prior distribution, which we summarise in Tab. \ref
 		$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& $1.5 \pm 0.1$ & $\bm{x}$\\ \hline
 		$\lambda$ &- & 500&$10^4$& $3.5 \pm 0.3$ &$\bm{x}$\\ \hline
 		$\bm{x}$ &$\mathcal{N}(0,\delta \bm{L})$ & -&-&& $\bm{x}$\\ \hhline{|=||=|=|=|=|=|}
-		%$\gamma$ & $\mathcal{N}(2.58e-9,2.58e-11)$ &2.45e-9&2.7e-9 &$\bm{x}$\\
-		%$\delta_0$ &  $\mathcal{N}(0.8e-4,0.75e-5)$& 4e-5 & 1.1e-4&$\bm{x}$\\
-		%$a_0$ &  $\mathcal{T}(3,1e6)$& 1e-15&1e-5&$\bm{x}$\\ \hline
-		%$h_0$ &  $\mathcal{N}(31.35,1)$&27 &35&$\bm{x}$\\ \hline
-		%$h_0$ &  $\mathcal{N}(5.5,0.5)$& 4.76&5.74&&$\bm{p/T}$\\ \hline
-		%$b_2$ & $\mathcal{N}(0.13,0.067)$& 0&0.32&$\bm{p/T}$\\ \hline
-		$h_{1}$ &  $\mathcal{N}(11,0.5)$&9.5 &12.5&$1820 \pm 49$ &$\bm{p/T}$\\ \hline
-		$h_{2}$ &  $\mathcal{N}(20.1,1.6)$&17.7 &22.3&$454 \pm 7$&$\bm{p/T}$\\ \hline
-		$h_{3}$ &  $\mathcal{N}(32.3,2.5)$&25.2&39.8&$394 \pm 5$&$\bm{p/T}$\\ \hline
-		$h_{4}$ &  $\mathcal{N}(47.4,5)$&45.9 &48.9&$324 \pm 4$&$\bm{p/T}$\\ \hline
-		$h_{5}$ &  $\mathcal{N}(51.4,5)$&49.9 &52.9&$319 \pm 4$&$\bm{p/T}$\\ \hline
-		$h_{6}$ &  $\mathcal{N}(71.8,3)$&62.5 &80.8&$347 \pm 5$&$\bm{p/T}$\\ \hline
+		$p_0$ &  $\mathcal{N}(1243,5)$&1229 &1259&$550 \pm 9$&$\bm{p/T}$\\ \hline
+		$T_{0}$ &  $\mathcal{N}(288.15,4.5)$& 275 &302&$2446 \pm 76$&$\bm{p/T}$\\ \hline
+		$h_{T,1}$ &  $\mathcal{N}(11,0.5)$&9.5 &12.5&$1820 \pm 49$ &$\bm{p/T}$\\ \hline
+		$b$ &  $\mathcal{N}(0.167,5\,10^{-4})$& 0.165& 0.171 &$2813 \pm 92$&$\bm{p/T}$\\ \hline
+		$h_{T,3}$ &  $\mathcal{N}(32.3,2.5)$&25.2&39.8&$394 \pm 5$&$\bm{p/T}$\\ \hline
 		$a_{0}$ &  $\mathcal{N}(-6.5,0.01)$&-6.53 &-6.47&$330 \pm 4$&$\bm{p/T}$\\ \hline
+		$h_{T,2}$ &  $\mathcal{N}(20.1,1.6)$&17.7 &22.3&$454 \pm 7$&$\bm{p/T}$\\ \hline
 		$a_{1}$ &  $\mathcal{N}(0,0.1)$&-0.3 &0.3&$508 \pm 8$&$\bm{p/T}$\\ \hline
 		$a_{2}$ &  $\mathcal{N}(1,0.01)$&0.97 &1.03&$341 \pm 5$&$\bm{p/T}$\\ \hline
 		$a_{3}$ &  $\mathcal{N}(2.8,0.1)$&2.5 &3.1&$316 \pm 4$&$\bm{p/T}$\\ \hline
+		$h_{T,4}$ &  $\mathcal{N}(47.4,5)$&45.9 &48.9&$324 \pm 4$&$\bm{p/T}$\\ \hline
 		$a_{4}$ &  $\mathcal{N}(0,0.1)$&-0.3 &0.3&$335 \pm 4$&$\bm{p/T}$\\ \hline
+		$h_{T,5}$ &  $\mathcal{N}(51.4,5)$&49.9 &52.9&$319 \pm 4$&$\bm{p/T}$\\ \hline
 		$a_{5}$ &  $\mathcal{N}(-2.8,0.1)$&-3.1 &-2.5&$335 \pm 4$&$\bm{p/T}$\\ \hline
-		$a_{6}$ & $\mathcal{N}(-2,0.01)$ &-2.03 &-1.97&$320 \pm 4$&$\bm{p/T}$\\ \hline
-		$T_{0}$ &  $\mathcal{N}(288.15,4.5)$& 275 &302&$2446 \pm 76$&$\bm{p/T}$\\ \hline
-		$b$ &  $\mathcal{N}(0.167,5\,10^{-4})$& 0.165& 0.171 &$2813 \pm 92$&$\bm{p/T}$\\ \hline
-		$p_0$ &  $\mathcal{N}(1243,5)$&1229 &1259&$550 \pm 9$&$\bm{p/T}$\\ 
+		$h_{T,6}$ &  $\mathcal{N}(71.8,3)$&62.5 &80.8&$347 \pm 5$&$\bm{p/T}$\\ \hline
+		$a_{6}$ & $\mathcal{N}(-2,0.01)$ &-2.03 &-1.97&$320 \pm 4$&$\bm{p/T}$\\
 		\hline
 	\end{tabular}
 	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in \cite{UwerrM} from posterior samples based on the approximated forward map.}
 	\label{tab:priors}
 \end{table}
 
-\subsection{Ozone conditioned on pressure and temperature}
+\subsection{Ozone conditioned on Pressure and Temperature}
 \label{subsec:OzoneSetup}
 In this section, we choose prior distributions and describe the approach to evaluate the posterior distribution for ozone $\pi(\delta, \gamma, \bm{x}|\bm{y})$, including the noise hyper-parameter $\gamma$.
 Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \bm{I})$, we define a linear-Gaussian Bayesian hierarchical model~\cite{fox2016fast}
@@ -274,7 +269,7 @@ We plot the corresponding prior ozone profiles according to $\bm{x}\sim \mathcal
 
 
 
-\subsubsection{posterior distribution into marginal and conditional posterior distribution}
+\subsubsection{Marginal and Conditional Posterior}
 \label{subsec:MTC}
 As noted in Sec. \ref{sec:bayes}, we factorise the posterior
 \begin{align}
@@ -369,7 +364,7 @@ We plot the approximations in Fig. \ref{fig:fandg} and elaborate on approximatio
 %\end{align}
 %is normal distribution and we compute weighted expectations, as in Eq.~\ref{eq:MargExpPos}, of the conditional mean and covariance matrix, where the weights are given by $\pi(\bm{\theta} | \bm{y})$. 
 %Note that both the noise covariance $\bm{\Sigma} = \bm{\Sigma}(\bm{\theta})$ and the prior precision matrix $\bm{Q} = \bm{Q}(\bm{\theta})$ depend on the hyper-parameters $\bm{\theta}$.
-\subsection{Pressure temperature ratio conditioned on noise and ozone}
+\subsection{Pressure and Temperature Ratio conditioned on Noise and Ozone}
 \label{subsec:PressTempSetup}
 First, we observe that we can describe the pressure values in between $h_{L,0}=7$km and $h_{L,n} = 83.3$km with an exponential function
 \begin{align}
@@ -394,7 +389,7 @@ we define a normally distributed likelihood (due to Gaussian noise) and priors, 
 $\bm{\theta}_{T_0} = (\mu_{T_0}, \sigma_{T_0})$, $\bm{\theta}_{p_0} = (\mu_{p_0}, \sigma_{p_0})$, and $\bm{\theta}_{b} = (\mu_{b}, \sigma_{b})$.
 Note that we do not include $h_0$, from Tab. \ref{tab:tempGrad}, in $\bm{h}_T$ since we model temperature variability at sea level through $T_0$.
 
-\subsubsection{Prior modelling}
+\subsubsection{Prior Modelling}
 We summarise the mean and variance in Tab. \ref{tab:priors} and plot samples from the prior distribution against the ground truth for the pressure $\bm{p}$ and temperature $\bm{T}$ separately in Fig. \ref{fig:PriorPress} and \ref{fig:PriorTemp} and jointly as $\bm{p}/\bm{T}$ in Fig. \ref{fig:PriorTemp}.
 We plot the prior samples against the ground truth for $1/\bm{K}$ in Fig. \ref{fig:OverTempPrior}.
 \begin{figure}[ht!]
@@ -406,14 +401,16 @@ We plot the prior samples against the ground truth for $1/\bm{K}$ in Fig. \ref{f
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics{PriorTempPostMeanSigm.png}
+	\input{TrueTemp.pdf_tex}
+	%\includegraphics{PriorTempPostMeanSigm.png}
 	\caption[Prior Samples of $\bm{T}$ according to the respective hyper-prior distribution.]{We draw samples from the hyper-prior distribution of $h_1, h_2,h_3,h_4,h_5,h_6, a_0, a_1, a_2,a_3,a_4$ and $T_0$ as defined in table \ref{tab:priors} and then calculate $\bm{T}$ according to the function in Eq. \ref{eq:tempFunc}.}
 	\label{fig:PriorTemp}
 \end{figure}
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics{PriorPressPostMeanSigm.png}
+	\input{TruePress.pdf_tex}
+	%\includegraphics{PriorPressPostMeanSigm.png}
 	\caption[Prior Samples of $\bm{p}$ according to the respective hyper-prior distribution.]{We draw samples from the hyper-prior distribution of $h_0, b$ and $p_0$ as defined in table \ref{tab:priors} and then calculate $\bm{p}$ according to the function in Eq. \ref{eq:pressFunc}.}
 	\label{fig:PriorPress}
 \end{figure}
@@ -423,7 +420,7 @@ We carefully choose the hyper-prior distributions $\bm{h}_{\bm{T}} $ so that the
 Additionally, we define the sampling space and the grid for the TT approximation accordingly.
 We remark that we can already observe in Fig. \ref{fig:PriorPressOverTemp} that $\bm{p}/\bm{T}$ inherits the structure of the pressure function.
 
-\subsubsection{posterior distribution}
+\subsubsection{Posterior Distribution}
 Then we can define the posterior distribution
 \begin{align}
 		\pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert^2 \Bigr\} \pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T})\, ,
@@ -432,7 +429,7 @@ which is, conditioned on the noise hyper-parameter $\gamma$, the ozone profile $
 \clearpage
 
 
-\section{Approximate non-linear forward model with affine Map} 
+\section{Approximate non-linear Forward Model with Affine Map} 
 \label{sec:affineMap}
 With the posterior distributions formulated, we can now approximate the non-linear forward model with an affine map $\bm{M}$; we see Fig. \ref{fig:affinStrat} for the summarised strategy.
 We focus on the posterior distribution of ozone profiles by conditioning on pressure and temperature, as this is a quick process when using the MTC method.
@@ -466,7 +463,7 @@ Given samples $\bm{x} \sim \pi(\bm{x}|\bm{y})$ from the full conditional posteri
 \end{figure}
 
 
-\subsection{Sample from marginal posterior distribution for ozone}
+\subsection{Sample from Marginal Posterior Distribution}
 \label{subsec:firstMarg}
 We set $\bm{A} = \bm{A}_L$ and characterise the marginal posterior $\pi(\lambda, \gamma | \bm{y})$ as in Eq. \ref{eq:MargPostAppl} by employing a Metropolis within Gibbs (MWG) algorithm, see sec. \ref{}.
 More specifically, we implement a Metropolis random walk on the full conditional
@@ -535,7 +532,7 @@ We calculate the integrated autocorrelation time (IACT) with the Python implemen
 %	\label{alg:margPost}
 %\end{algorithm}
 
-\subsection{Tensor-train approximation of the marginal posterior distribution for ozone}
+\subsection{Tensor-train Approximation of the Marginal Posterior Distribution}
 \label{sec:firstMargTT}
 Alternatively, we can approximate the marginal posterior with a tensor-train (TT) of the square root of the marginal posterior on a predefined grid.
 We define a grid similar to the sampling region of the MWG sampler with 25 grid points in each dimension and use the \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy}\cite{Oseledets2018ttpy}, Python package, based on the rect cross algorithm in \cite{OSELEDETS2010TTCross}.
@@ -560,7 +557,7 @@ We plot the TT approximation as a colour map on top of the obtained samples in t
 
 
 
-\subsection{Calculate mean and variance of the full conditional posterior for ozone}
+\subsection{Full Conditional Posterior of Ozone}
 \label{subsec:firstCond}
 Based on the marginal posteror distribution $\pi(\gamma, \delta | \bm{y})$ we calculate the weighted mean and covariance of the conditional posterior $\pi(\bm{x} | \gamma, \delta, \bm{y})$ by quadrature as in Eq. \ref{eq:MeanInt} and Eq. \ref{eq:CovInt}.
 
@@ -595,7 +592,7 @@ Computation time is less than $0.2$s.
 %See Fig. \ref{fig:O3Samp}, where we plot $m = $ samples of the conditional posterior.
 %
 %The histogram in is binned as we intergate over it to 7 bins
-\subsection{Asses approximated forward model}
+\subsection{Asses approximated Forward Model}
 Given $m$ samples $\bm{x}^{j} \sim \pi{\bm{x}|\bm{y}}$ for $j = 1, \dots,m$ from the full conditional, as plotted in\ref{fig:O3Samp}, we are able approximate the non-linear forward model
 \begin{align}
 	\bm{A}_{NL} \approx \bm{M A}_L = \bm{A} \, ,
@@ -619,7 +616,7 @@ Consequently, from here onwards, we use the approximated forward map $\bm{A} = \
 
 %$|| \bm{M}\bm{A}_L \bm{x} - \bm{A}_{NL} \bm{x} || / || \bm{M}\bm{A}_L \bm{x} ||$
 
-\section{Solution by regularisation}
+\section{Solution by Regularisation}
 \label{sec:reg}
 Since we like to compare the MTC method to regularisation methods, we calculate a solution by Tikhonov regularisation, as this is most similar to our chosen linear-Gaussian Bayesian framework.
 The Tikhonov regularised solution is defined as~\cite{hansen2010discrete} 
@@ -644,14 +641,14 @@ The best regularised solution corresponding to the corner of the L-curve is loca
 \end{figure}
 
 
-\section{Characterise the posterior distribution of ozone with approximated forward model}
+\section{Conditional Posterior Distribution of Ozone with approximated Model}
 With the affine approximation
 \begin{align}
 	\bm{A} =  \bm{M A}_L \, 
 \end{align}
 of the non-linear forward map, we use the same setup as in Sec. \ref{sec:firstMarg} and \ref{subsec:firstCond} to evaluate the marginal posterior and the conditional posterior.
 
-\subsection{Hyper-parameters samples from and Tensor-train approximation of the marginal posterior distribution}
+\subsection{Samples from Tensor-train approximation of the Marginal Posterior}
 The marginal posterior is defined as in Eq. \ref{eq:marg} but with $ \bm{A} =  \bm{M A}_L$.
 We run the MWG algorithm for $N = 20000$ plus $N_{\text{burn-in}} = 100$ and plot the samples in Fig. \ref{fig:MargPostHistTT} as well as the marginal approximations provided by the TT decomposition, where we use the same setup as in Sec. \ref{sec:firstMargTT}.
 
@@ -662,7 +659,7 @@ We run the MWG algorithm for $N = 20000$ plus $N_{\text{burn-in}} = 100$ and plo
 	\label{fig:MargPostHistTT}
 \end{figure}
 
-\subsection{Full conditional posterior variance and mean}
+\subsection{Conditional Posterior Variance and Mean}
 Next, we characterise the conditional posterior $\pi(\bm{x}|\gamma, \delta, \bm{y})$ as in Eq. \ref{eq:CondPost}. 
 Again, we calculate the full conditional mean \ref{eq:MeanInt} and full conditional covariance matrix \ref{eq:CovInt} as weighted expectation over a 25-point grid provided by either the marginal TT approximations or the histogram of samples.
 We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the regularised solution and one sample from the posterior.
@@ -683,7 +680,7 @@ We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the 
 
 \clearpage
 
-\section{Posterior distribution for pressure and temperature with approximated forward model}
+\section{Posterior Distribution for Pressure and Temperature with approximated Forward Model}
 \label{sec:postPT}
 
 The aim now is to characterise the posterior
@@ -824,7 +821,7 @@ We plot the posterior temperature and pressure profiles in Fig. \ref{fig:TempPos
 In this section, we estimate errors due to the function approximations of $f(\lambda)$ and $g(\lambda)$ and how these errors propagate to the marginal posterior.
 Additionally, we approximate errors of the TT-approximation as well as Monte-Carlo errors when binning up the samples.
 
-\subsubsection{Error due to approximation of f and g}
+\subsubsection{Error due to Approximation of f and g}
 \label{sec:fgErros}
 When approximating the functions $f(\lambda)$ and $g(\lambda)$, we find that the 3rd-order Taylor series of $f(\lambda)$ and a linear approximation of $g(\lambda)$ in log-space give the smallest error.
 The Taylor series truncation error of $f(\lambda)$ is bounded by the fourth order Taylor series $E_f = \underset{\lambda}{\text{arg max}\,} f^{(4)}(\lambda_0)/ 4! \, (\lambda - \lambda_{0} )^4$ and corresponds to an relative error bounded by $20\%$.

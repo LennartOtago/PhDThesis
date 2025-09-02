@@ -55,8 +55,7 @@
     \setlength\tabcolsep{0pt}%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{TruePress.pdf}}%
     \put(0.89093218,0.28993609){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$p_{0}$\end{tabular}}}}%
-    \put(0.18679355,0.14638972){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{0}$\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{TruePress.pdf}}%
-    \put(0.36485655,0.51811996){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$b$\end{tabular}}}}%
+    \put(0.38063439,0.51925388){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$b$\end{tabular}}}}%
   \end{picture}%
 \endgroup%
