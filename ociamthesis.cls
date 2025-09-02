@@ -260,7 +260,7 @@ breaklinks=true
   \begin{center}
     { \LARGE {\bfseries {\@title}} \par}
 %{\large \vspace*{30mm} {\crest \par} \vspace*{25mm}}
-{\large \vspace*{20mm} {\crest \par} \vspace*{15mm}}
+{\large \vspace*{25mm} {\crest \par} \vspace*{25mm}}
     {{\Large \@author} \par}
 {\large \vspace*{1ex}
     {{\@college} \par}
