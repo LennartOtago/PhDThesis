@@ -429,39 +429,7 @@ which is, conditioned on the noise hyper-parameter $\gamma$, the ozone profile $
 \clearpage
 
 
-\section{Approximate non-linear Forward Model with Affine Map} 
-\label{sec:affineMap}
-With the posterior distributions formulated, we can now approximate the non-linear forward model with an affine map $\bm{M}$; we see Fig. \ref{fig:affinStrat} for the summarised strategy.
-We focus on the posterior distribution of ozone profiles by conditioning on pressure and temperature, as this is a quick process when using the MTC method.
-We approximate and sample from the marginal posterior $ \pi(\gamma , \delta|\bm{y})$ and then characterise the full conditional posterior distribution $\pi(\bm{x}|\bm{y})$ based on the linear forward model $\bm{A}_L$, neglecting absorption, see Eq. \ref{eq:RTE}.
-Given samples $\bm{x} \sim \pi(\bm{x}|\bm{y})$ from the full conditional posterior distribution, we can generate two affine subspaces based on the linear and non-linear model and find the mapping between those.
-
-\begin{figure}[htb!]
-	\centering
-	\begin{tikzpicture}
-		\node[rectnode] at (0,0) (Oy)    {$\bm{y}$};
-		\node[roundnode2] at (0,-2) (x)     {$\bm{x}$};
-		\node[rectnode] at (-1.75,-4) (NLy)    {$\bm{A}_{NL}\bm{x}$};
-		\node[rectnode] at (1.75,-4) (y)    {$\bm{A}_L\bm{x}$};
-		\draw[->, very thick] (Oy.south) -- (x.north); 
-		\draw[->, very thick] (x.south west) -- (NLy.north); 
-		\draw[->, very thick] (x.south east) -- (y.north); 
-		\draw[->, very thick] (NLy.east) -- (y.west); 
-		\node[align=center] at (1,0) (l1) {Data};
-		\node[align=center] at (3.5,-2) (f2) {Ozone Profiles from $\pi(\bm{x}|\gamma, \lambda ,\bm{y}) $};
-		\node[align=center] at (1.75,-1) (l1) {$\pi(\lambda , \gamma  | \bm{y})$ with $\bm{A}_L$};
-		
-		\node[align=center] at (-4.75,-4) (f3) {non-linear forward model};
-		\node[align=center] at (4.25,-4) (f4) {linear forward model};
-		\node[align=center] at (0,-5) (f5) {$\bm{A}_{NL} \approx \bm{M A}_L= \bm{A}$ };
-		
-		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
-		
-	\end{tikzpicture}
-	\caption[Strategy to find affine map.]{The strategy to find the affine map consist of evaluating the marginal posterior for ozone using the linear forward model. Then we draw ozone samples from the conditional posterior and calculate noise free data based on the linear and non-linear forward model. Next we find a mapping in between those two space so that we can approximate the non-linear forward model using an affine map and the linear forward model.}
-	\label{fig:affinStrat}
-\end{figure}
-
+\section{Posterior distribution of Ozone -- linear Model}
 
 \subsection{Sample from Marginal Posterior Distribution}
 \label{subsec:firstMarg}
@@ -592,6 +560,40 @@ Computation time is less than $0.2$s.
 %See Fig. \ref{fig:O3Samp}, where we plot $m = $ samples of the conditional posterior.
 %
 %The histogram in is binned as we intergate over it to 7 bins
+
+\section{Approximate non-linear Forward Model with Affine Map} 
+\label{sec:affineMap}
+With the posterior distributions formulated, we can now approximate the non-linear forward model with an affine map $\bm{M}$; we see Fig. \ref{fig:affinStrat} for the summarised strategy.
+We focus on the posterior distribution of ozone profiles by conditioning on pressure and temperature, as this is a quick process when using the MTC method.
+We approximate and sample from the marginal posterior $ \pi(\gamma , \delta|\bm{y})$ and then characterise the full conditional posterior distribution $\pi(\bm{x}|\bm{y})$ based on the linear forward model $\bm{A}_L$, neglecting absorption, see Eq. \ref{eq:RTE}.
+Given samples $\bm{x} \sim \pi(\bm{x}|\bm{y})$ from the full conditional posterior distribution, we can generate two affine subspaces based on the linear and non-linear model and find the mapping between those.
+
+\begin{figure}[htb!]
+	\centering
+	\begin{tikzpicture}
+		\node[rectnode] at (0,0) (Oy)    {$\bm{y}$};
+		\node[roundnode2] at (0,-2) (x)     {$\bm{x}$};
+		\node[rectnode] at (-1.75,-4) (NLy)    {$\bm{A}_{NL}\bm{x}$};
+		\node[rectnode] at (1.75,-4) (y)    {$\bm{A}_L\bm{x}$};
+		\draw[->, very thick] (Oy.south) -- (x.north); 
+		\draw[->, very thick] (x.south west) -- (NLy.north); 
+		\draw[->, very thick] (x.south east) -- (y.north); 
+		\draw[->, very thick] (NLy.east) -- (y.west); 
+		\node[align=center] at (1,0) (l1) {Data};
+		\node[align=center] at (3.5,-2) (f2) {Ozone Profiles from $\pi(\bm{x}|\gamma, \lambda ,\bm{y}) $};
+		\node[align=center] at (1.75,-1) (l1) {$\pi(\lambda , \gamma  | \bm{y})$ with $\bm{A}_L$};
+		
+		\node[align=center] at (-4.75,-4) (f3) {non-linear forward model};
+		\node[align=center] at (4.25,-4) (f4) {linear forward model};
+		\node[align=center] at (0,-5) (f5) {$\bm{A}_{NL} \approx \bm{M A}_L= \bm{A}$ };
+		
+		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
+		
+	\end{tikzpicture}
+	\caption[Strategy to find affine map.]{The strategy to find the affine map consist of evaluating the marginal posterior for ozone using the linear forward model. Then we draw ozone samples from the conditional posterior and calculate noise free data based on the linear and non-linear forward model. Next we find a mapping in between those two space so that we can approximate the non-linear forward model using an affine map and the linear forward model.}
+	\label{fig:affinStrat}
+\end{figure}
+
 \subsection{Asses approximated Forward Model}
 Given $m$ samples $\bm{x}^{j} \sim \pi{\bm{x}|\bm{y}}$ for $j = 1, \dots,m$ from the full conditional, as plotted in\ref{fig:O3Samp}, we are able approximate the non-linear forward model
 \begin{align}
@@ -640,15 +642,14 @@ The best regularised solution corresponding to the corner of the L-curve is loca
 	\label{fig:LCurve}
 \end{figure}
 
-
-\section{Conditional Posterior Distribution of Ozone with approximated Model}
+\section{Posterior Distribution of Ozone -- approximated Model}
 With the affine approximation
 \begin{align}
 	\bm{A} =  \bm{M A}_L \, 
 \end{align}
 of the non-linear forward map, we use the same setup as in Sec. \ref{sec:firstMarg} and \ref{subsec:firstCond} to evaluate the marginal posterior and the conditional posterior.
 
-\subsection{Samples from Tensor-train approximation of the Marginal Posterior}
+\subsection{Marginal Posterior}
 The marginal posterior is defined as in Eq. \ref{eq:marg} but with $ \bm{A} =  \bm{M A}_L$.
 We run the MWG algorithm for $N = 20000$ plus $N_{\text{burn-in}} = 100$ and plot the samples in Fig. \ref{fig:MargPostHistTT} as well as the marginal approximations provided by the TT decomposition, where we use the same setup as in Sec. \ref{sec:firstMargTT}.
 
@@ -680,7 +681,7 @@ We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the 
 
 \clearpage
 
-\section{Posterior Distribution for Pressure and Temperature with approximated Forward Model}
+\section{Posterior Distribution of Pressure and Temperature -- approximated Forward Model}
 \label{sec:postPT}
 
 The aim now is to characterise the posterior
@@ -836,7 +837,7 @@ The wasserstein distance between the normalised true marginal posterior $\pi(\la
 %Note that one can reduce the maximum errors when approximation $f(\lambda)$ at the mean of $\pi(\lambda,\gamma|\bm{y})$ instead of the modes since $\pi(\lambda | \bm{y})$ is skewed, but we don't see noticeable differences in the conditional posterior $\pi(\bm{x}|\lambda,\gamma,\bm{y})$ when doing so.
 %We consider these errors as tolerable.
 
-\subsubsection{Error due to grid size and number of sample bins when calculating the full conditinal mean and covariance}
+\subsubsection{Error due to grid size}
 When we calculate the mean and covariance matrix of the full conditional $\pi(\bm{x}|\bm{y})$ we have to bin up the samples of the marginal posterior $\pi(\gamma, \delta |\bm{y})$ or use a TT approximation on a predefined grid with a certain number of grid points, we like to give an estimate for this error as well.
 In doing we bin up samples and use the height $\tilde{\pi}(\bm{\theta}^{(k)}_d)$ for a bin $k = 1, \dots, \text{N}_b$ to calculate the mean $\tilde{\mu}_d = \sum_{\text{N}_b} \tilde{\pi}(\bm{\theta}^{(k)}_d) $.
 We compare to the sample mean $\bm{\mu}_d = \sum_{k=1}^N \bm{\theta}^{(k)}_d/N$ and calculate the relative error $||\bm{\mu}_{\text{samp}} -\bm{\mu}_{\text{distr}} ||/ || \bm{\mu}_{\text{samp}} ||$
