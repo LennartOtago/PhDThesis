@@ -49,8 +49,8 @@ Assume we observe some data
 based on a forward model $\bm{A}(\bm{x})$, which may be non-linear, a unknown parameter $\bm{x}$ and some additive random noise $\bm{\eta}$.
 Naturally, due to the noise, which we classify through a hyper-parameter, we deal with a random process, and we wish to include that in our hierarchically ordered modelling.
 Then define the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$ according to the nature of the noise as well as all relevant information about the measurement process, captured by the model $\bm{A}(\bm{x})$.
-We read $\pi(\bm{y}|\bm{\theta},\bm{x})$ as the distribution over $\bm{y}$ conditioned on $\bm{x}$ and the hyper-parameter $\bm{\theta}$.
-Here $\bm{\theta}$ may account for multiple variables and is e.g. describing the distribution of the noise vector $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$ as well as the prior distribution $\pi(\bm{x}|\bm{\theta})$, which accounts for physical properties or functional dependences of $\bm{x}$.
+We read $\pi(\bm{y}|\bm{\theta},\bm{x})$ as the distribution over $\bm{y}$ conditioned on $\bm{x}$ and $\bm{\theta}$, and $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$ as $\bm{\eta}$ is distributed as $\pi_{\bm{\eta}}(\cdot|\bm{\theta})$.
+Here $\bm{\theta}$ may account for multiple hyper-parameters, e.g. describing the distribution $\pi_{\bm{\eta}}(\cdot|\bm{\theta})$ over the noise vector $\bm{\eta}$, and describing physical properties or functional dependencies of $\bm{x}$, e.g. smoothness, trough the prior distribution $\pi(\bm{x}|\bm{\theta})$.
 Consequently we define a hyper-prior distribution $\pi(\bm{\theta})$, where $\pi(\bm{x}, \bm{\theta}) = \pi(\bm{x}|\bm{\theta}) \pi(\bm{\theta}) $.
 Choosing these prior distributions is ultimately a modeller's choice and crucial, as it shall not affect the posterior distribution 
 \begin{align}

@@ -98,8 +98,143 @@ In other words, the empty set $\emptyset$ and the entire sample space $\Omega$ m
 If, in terms of a probability measure, we are able to assign a probability $\mathbb{P}(A)$ to an event $A$, we must also be able to assign a probability to the event “not $A$”, i.e., $\mathbb{P}(A^C)$.
 Finally, if a countable collection of sets $A_1, A_2, \dots \in \mathcal{F}$, then their union $\bigcup_{j \in \mathbb{N}} A_j$ must also be in $\mathcal{F}$. These three properties define the requirements for $\mathcal{F}$ to be a $\sigma$-algebra.
 
+\clearpage
+\section{Python Code}
+\the\baselineskip
+
+\begin{lstlisting}[language=Python, caption=Python example, escapeinside={"}{"}]
+def MargBack(TTCore, univarGrid):
+	''' Backward marginalisation, see Prop. "\ref{prob:BackMarg}" as in SIRT from Cui et al. "\cite{cui2022deep}" '''
+	
+	dim = len(univarGrid)
+	B = dim * [None]  # coeffTensor
+	B[-1] = TTCore[-1]
+	R = [None] * dim
+	C = [None] * dim
+	
+	for k in range(dim - 1, 0, -1):
+		r_kmin1, n, r_k = np.shape(TTCore[k])
+		# !! we set Lebesgue Measure to const = one
+		M = np.identity(n) * (univarGrid[k][-1] - univarGrid[k][0])  # Mass matrix
+		L = scy.linalg.cholesky(M)
+		
+		# construct Tensor C Eq. (27)
+		C[k] = np.zeros((r_kmin1, n, r_k))
+		for alpha in range(0, r_kmin1):
+			for l in range(0, r_k):
+				C[k][alpha, :, l] = B[k][alpha, :, l] @ L[:, :]
+		
+		# unfold along first coordinate and compute thin QR decomposition of C^T
+		# Eq. (28)
+		Q, R[k] = np.linalg.qr(C[k].reshape((r_kmin1, n * r_k), order='C').transpose(), mode='reduced')
+		
+		# compute next coefficient tensor
+		# Eq. (29)
+		r_kmin2, n, r_kmin1 = np.shape(TTCore[k - 1])
+		B[k - 1] = np.zeros(np.shape(TTCore[k - 1]))
+		for alpha_2 in range(0, r_kmin2):
+		#for i in range(0, n):
+			for l_1 in range(0, r_kmin1):
+				B[k - 1][alpha_2, :, l_1] = TTCore[k - 1][alpha_2, :, :] @ R[k][l_1, :]
+
+return B
+
+\end{lstlisting}
 
 
-
+\clearpage
+\begin{lstlisting}[language=Python, caption=Python example, escapeinside={"}{"}]
+def SIRT(seeds, SQTT, univarGrid, BackMarg, absError):
+	''' do squared inverse rosenblatt transform SIRT as in Cui et al. "\cite{cui2022deep}" '''
+	
+	dim, numbSampl = seeds.shape
+	sampls = np.zeros(seeds.shape)
+	probVal = np.zeros(seeds.shape)
+	Approx = np.zeros(seeds.shape[1])
+	
+	# lebesgue measure for qudrature
+	WholeLebLam = np.zeros(dim)
+	for k in range(0, dim):
+		WholeLebLam[k] = (univarGrid[k][-1] - univarGrid[k][0])
+	lamX = np.ones(dim)
+	for k in range(1, dim):
+		lamX[k - 1] = np.prod(WholeLebLam[k:])
+	
+	# error as in "\cite[Eq. (35)]{cui2022deep}"
+	gamError = absError / np.prod(WholeLebLam)
+	
+	# sample from first dimension "\cite[Eq. (35)]{cui2022deep}"
+	firstMarg = gamError * lamX[0] + np.sum(BackMarg[0][0, :, :] ** 2, 1)
+	# cumulative distribution function, normalised numerical
+	firstCDF = np.cumsum(firstMarg / np.sum(firstMarg))
+	# draw samples as 'inverse transform'
+	sampls[0] = np.interp(seeds[0], firstCDF, univarGrid[0])
+	probVal[0] = np.interp(sampls[0], univarGrid[0], firstMarg / np.sum(firstMarg))
+	
+	# sample from other dimensions
+	for n in range(0, numbSampl):
+		# interpolate linear on grid in first dimension
+		CurrApprCore = LinInterPolTT(SQTT[0], univarGrid[0], sampls[0][n])
+		for d in range(1, dim):
+			# marginal function condition on previous samples
+			rank_min, gridSize, rank_pls = BackMarg[d].shape
+			MargDep = np.zeros((BackMarg[d].shape))
+			
+			for r in range(0, rank_min):
+				# condition on previous samples
+				MargDep[r, :, :] = CurrApprCore[0, r] * BackMarg[d][r, :, :]
+	
+			currMarg = gamError * lamX[d] + np.sum(np.sum(np.copy(MargDep), axis=0)** 2, axis=1)
+			currCDF = np.cumsum(currMarg / np.sum(currMarg))
+			
+			# draw sample as 'inverse transform'
+			sampls[d][n] = np.interp(seeds[d][n], currCDF, univarGrid[d])
+			probVal[d][n] = np.interp(sampls[d][n], univarGrid[d], currMarg / np.sum(currMarg))
+			# piecewise polynomial interpolation, see Eq. "\ref{eq:LinPol}", as in "\cite{dolgov2020approximation}"
+			# multiply (condition) current dimension with previous samples
+			CurrApprCore = np.copy(CurrApprCore) @ LinInterPolTT(SQTT[d], univarGrid[d], sampls[d][n])
+	
+	Approx[n] = gamError + CurrApprCore ** 2
+	
+	return sampls, probVal, Approx
+\end{lstlisting}
+\clearpage
+\begin{lstlisting}[language=Python, caption=Python example, escapeinside={"}{"}]
+def MargForw(TTCore, univarGrid):
+''' Forward marginalisation, see Prop. "\ref{prob:ForMarg}", similar to backward marginalsiation as in  Cui et al. "\cite{cui2022deep}" '''
+	# compute pre marginal coefficients sarting at dim = 1, k = 0
+	BPre = dim * [None]  # coeffTensor
+	LebLam = 1  # !! Lebesgue Measure
+	BPre[0] = TTCore[0]
+	RPre = [None] * dim
+	CPre = [None] * dim
+	
+	for k in range(0, dim-1):
+		r_kmin1, n, r_k = np.shape(TTCore[k])
+		# !! we set Lebesgue Measure to const = one
+		M = np.identity(n) * (univarGrid[k][-1] - univarGrid[k][0])  # Mass matrix
+		L = scy.linalg.cholesky(M)
+		
+		# construct Tensor C "\cite[Eq. (27)]{cui2022deep}"
+		CPre[k] = np.zeros((r_kmin1, n, r_k))
+		for alpha in range(0, r_kmin1):
+			for l in range(0, r_k):
+				CPre[k][alpha, :, l] = BPre[k][alpha, :, l] @ L[:, :]
+		
+		# unfold along first coordinate and compute thin QR decomposition of C
+		# "\ref{eq:RTE} \cite[Eq. (28)]{cui2022deep}"
+		Q, RPre[k] = np.linalg.qr(CPre[k].reshape((r_kmin1 * n, r_k), order='C'), mode='reduced')
+		
+		# compute next coefficient tensor
+		# "\cite[Eq. (29)]{cui2022deep}"
+		r_k, n, r_kpls1 = np.shape(TTCore[k + 1])
+		BPre[k + 1] = np.zeros(np.shape(TTCore[k + 1]))
+		for alpha_1 in range(0, r_kpls1):
+			for l_1 in range(0, r_k):
+				BPre[k + 1][l_1, :, alpha_1] = RPre[k][l_1,:] @ TTCore[k + 1][:, :, alpha_1]
+	
+	return BPre
+	
+\end{lstlisting}
 
 

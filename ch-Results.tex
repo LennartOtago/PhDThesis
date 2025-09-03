@@ -1,29 +1,31 @@
 \chapter{Results and Conclusions}
 \label{ch:res}
-In this chapter, we use the forward model to generate data given an underlying ground truth and then guide the reader towards obtaining the posterior distributions.
-Once we simulated some data, we established a Bayesian framework in Sec. \ref{sec:BayModel}, where we discuss the choice of prior distributions and formulate the posterior distributions for ozone and pressure over temperature, respectively.
-Since our forward model is weakly non-linear we like to approximates the non-linear forward model $\bm{A}_{NL} \approx \bm{M} \bm{A}_{NL}$ with an affine map $\bm{M}$, see Sec. \ref{sec:affineMap}.
+In this chapter, we use the forward model to generate data given an underlying ground truth and then guide the reader through the process of setting up a Bayesian framework and ultimately to obtaining the posterior distributions of parameters of interest, such as ozone concentration or pressure and temperature profiles.
+Once we simulated some data, we established a choice of prior distributions within our Bayesian model, see Sec. \ref{sec:BayModel}, and formulate the posterior distributions for ozone and pressure over temperature, respectively.
 In doing so, we sample from the marginal posterior for ozone and compare that to the tensor-train (TT) approximation.
-Then we calculate the mean and the covariance matrix of the full conditional posterior and use the obtained posterior ozone samples to create two affine subspaces, to which we map in between.
-Finally, we calculate the posterior distribution for ozone and pressure over temperature with the updated forward map $\bm{A} = \bm{M} \bm{A}_{NL}$ and compare to a ground truth.
+Based on the linear forward model $\bm{A}_L$ we calculate the mean and the covariance matrix of the full conditional posterior of ozone and generate an affine subspace with samples from that distribution.
+Then we approximate the non-linear forward model $\bm{A}_{NL} \approx \bm{M} \bm{A}_{NL}$, with the affine map$\bm{M}$, see Sec. \ref{sec:affineMap}.
+We repeat the marginal and then conditional (MTC) scheme to provide a posterior distribution of ozone VMR based on the approximate forward model as well as posterior pressure and temperature profiles, and compare to a ground truth.
 Lastly, we evaluate some errors occurring during the process.
 All programming and analysis are done in Python on a MacBook Pro from 2019 with a 2.4 GHz quad-core Intel Core i5 processor.
 
 \section{Simulate Data based on a Ground Truth}
-We target Ozone ate \cite{waters2006earth}
-This says that ozone is the main emitter around 240 Ghz \cite[34]{livesey2008ozonecarbonmono}
 
-We take a ground truth ozone profile generated from some data \cite{MLSdata} of the microwave limb sounder on the aura satellite in the Antarctic region with a peak in high altitude (to show that the data is uninformative in those regions), see Fig. \ref{fig:O3Samp}.
-The ozone profile from \cite{MLSdata} provides ozone volume mixing ratios versus pressure, so we recursively calculate the geometric height with the hydrostatic equilibrium equation
+
+We take a ground truth ozone VMR at distinct pressure values generated from some data \cite{MLSdata} of the MLS on the aura satellite within the Antarctic region and with a peak in high altitude, see Fig. \ref{fig:O3Samp}, which seems to be a typical night time profile \cite{Lee2020NightOzone}.
+
+We target Ozone at a frequency of 235.71 Ghz, which lies within the region where the MLS observers ozone \cite{livesey2008ozonecarbonmono, waters2006earth}.
+The corresponding wave number is $\nu = 7.86\text{cm}^{-1}$.
+We recursively calculate the geometric height with the hydrostatic equilibrium equation
 \begin{align}
-	\frac{\text{d}p}{p} = \frac{- g M}{R^* T} \text{d} h \, ,
+	\frac{\text{d}p}{p} = \frac{- g M}{R^* T} \text{d} h \, ,\label{eq:hydr}
 \end{align}
 with the acceleration due to gravity
 \begin{align}
 	g = g_0 \Bigg( \frac{r_0}{r_0 + h} \Bigg) \, ,
 \end{align}
 where the polar radius pf the earth is $r_0 \approx 6356 \, \text{km}$, the gravitation at sea level is $g_0 \approx 9.81 \text{m}/\text{s}^2$, $R^* = 8.31432 \times 10^{-3} \text{Nm} / \text{kmol} / \text{K}$ and the mean molecular weight of the air is $M = 28.97 \text{kg/kmol}$ \cite{atmosphere1976us}.
-This holds up to a geometric height of $86$km, where ignore a $0.04\%$ change in $M$ from $80$km to $86$km in geometric altitude.
+This holds up to a geometric height of $86$km, where we ignore a $0.04\%$ non-linear change in $M$ from $80$km to $86$km in geometric altitude.
 
 Following \cite{atmosphere1976us} we form a temperature function
 \begin{align}
@@ -43,7 +45,8 @@ Following \cite{atmosphere1976us} we form a temperature function
 	\end{cases*} 
 \label{eq:tempFunc}
 \end{align}
-with gradient and height values provided by \cite{atmosphere1976us}, see Tab. \ref{tab:tempGrad}, which act as the ground truth temperature, see Fig. \ref{fig:PriorTemp}.
+with gradient and height values provided by \cite{atmosphere1976us}, see Tab. \ref{tab:tempGrad}.
+This acts as the ground truth temperature profile, see Fig. \ref{fig:PriorTemp}.
 \begin{table}
 	\centering
 	\begin{tabular}{ |c||c|c|  }
@@ -59,35 +62,27 @@ with gradient and height values provided by \cite{atmosphere1976us}, see Tab. \r
 		6& 71.8& -2\\
 		\hline
 	\end{tabular}
-\caption[Temperature gradients]{Definition of height depending temperature gradients.}
+\caption[Height depending temperature gradients]{Definition of height depending temperature gradients.}
 \label{tab:tempGrad}
 \end{table}
 
-Then we can compute a data vector $\bm{y}$, with $m = 42$ measurements according to the radiative transfer equation (RTE), see Eq. \ref{eq:RTE}, determined by the satellite pointing accuracy of $150$arcsec as requested by the internal report of the proposed cube-satellite \cite{CubeSatInternal}, within an atmosphere $h_{L,0}=7$km and $h_{L,n} = 83.3$km with $n = 45$ layers.
-The height values $h_{L,i}$ for each layer $i = 0,\dots, n$ are defined by the ozone profile from \cite{MLSdata} and its pressure values.
-We target thermal radiation at a wave number $\nu = 7.86\text{cm}^{-1}$, equal to a frequency of roughly $235$GHz, where we assume that ozone is the only emitter at that frequency, see \cite{}, and calculate the absorption constant $k(\nu,T)$ as in Eq. \ref{eq:absRTE}, following the \textit{HITRAN} database \cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
-Lastly we add normally distributed $\bm{\nu} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ noise so that we have a voltage Signal-to-Noise (SNR) of $60$, similar to THz module on the MLS aura satellite \cite{pickett2006snr}.
-\begin{align}
-	\text{SNR} = \frac{max(y)}{rms noise} = \frac{max(y)}{std noise}
-\end{align}
-for noise with zero mean.
-Note that we multiply the data with  to avoid numerical issues within the inversion process.
-Can also see that when we plot the data
+Then we can compute a data vector $\bm{y} = \bm{A}_{NL} + \bm{\nu} $, with $m = 30$ measurements according to the radiative transfer equation (RTE), see Eq. \ref{eq:RTE} which we solve using the trapezoidal integration rule, determined by the satellite pointing accuracy of $175\text{arc sec}$, see Fig. \ref{fig:TangHCases}.
+We assume an atmosphere between $h_{L,1}=7$km and $h_{L,n} = 83.3$km with $n = 34$ equidistant layers.
+The height value $h_{L,i}$ for each layer $i = 1,\dots, n$ is defined by the pressure values from \cite{MLSdata} and the hydrostatic equilibrium equation, see Eq. \ref{eq:hydr}.
+We calculate the absorption constant $k(\nu,T)$ as in Eq. \ref{eq:absRTE}, following the \textit{HITRAN} database \cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
+This gives us a non-linear forward model matrix $\bm{A}_{NL} = \bm{A}(\bm{x}, \bm{p}, \bm{T}) \in \mathbb{R}^{m \times n}$, where $\bm{x}\in \mathbb{R}^{n}$ is vector related to the ozone VMR, $\bm{p}\in \mathbb{R}^{n}$ is the vector describing the pressure values and $\bm{T}\in \mathbb{R}^{n}$ the temperature values.
+
+Lastly we add normally distributed $\bm{\nu} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ noise so that the SNR is $150$, see Eq. \ref{eq:SNR}, similar to \cite{Froidevaux2008snrozone}, where a signal with a maximal spectral intensity of around $100\text{K}$ and a noise range of $0.4$ to $1.6\text{K}$ is reported.
+We would like to note that the methods used in this thesis, will work with different SNR or other frequencies.
+
+When we plot the data in Fig. \ref{fig:DataPlot}, we see that, as mentioned in Section \ref{sec:SVD}, the data is noise dominated in higher altitudes.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{DataPlot.png}
-	\caption[Logarithmic plot of data points at different tangent height.]{Logarithmic plot of data points at different tangent height. Note that negative values are not appearing and we see that at a caertein heitgh noise is dominating.}
-	\label{fig:}
-\end{figure}.
-Now, given the data, we want to invert the process and determine a posterior distribution over the ozone $\bm{x}$, pressure $\bm{p}$ and temperature $\bm{T}$.
-
-
-In \cite[8]{Froidevaux2008snrozone} a signal around 235.71 GHz fro targeting ozone is reported with a maximal signal strength of $ \approx 100$K with a noise range of 0.4 to 1.6 K is reported, which we related very roughly to a signal-to-noise ratio of around 100.
-We would like to note that this can be adjusted once the proposed set up is airborne and we have some reference values.
-
-
-
-The profile we pick seems to eb a typical night time ozone profile \cite{Lee2020NightOzone}
+	\caption[Logarithmic plot of data points at different tangent height.]{Logarithmic plot of data points at different tangent height. Note that negative values are not appearing and we see that at noise is dominating at high altitudes.}
+	\label{fig:DataPlot}
+\end{figure}
+Now, given the data, we like to determine the posterior distributions over ozone $\bm{x}$, pressure $\bm{p}$ and temperature $\bm{T}$ at different heights.
 
 
 

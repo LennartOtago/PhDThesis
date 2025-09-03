@@ -247,6 +247,37 @@
 \definecolor{squa}{RGB}{255,193,7}
 \definecolor{tri}{RGB}{216,27,96}
 
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\fontsize{8}{11.75}\selectfont\ttfamily,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+
+\lstset{style=mystyle}
+
+	%basicstyle=\fontsize{5}{5}\selectfont\ttfamily\footnotesize,
+	%basicstyle=\fontsize{5}{5}\selectfont\ttfamily,
 %\newcommand{\Chapter}[2]{
 %	\setcounter{chapter}{\numexpr#1-1}%
 %	\refstepcounter{chapter}%
@@ -256,14 +287,14 @@
 %	\setcounter{equation}{0}
 %	\include{#2}
 %}
-\usepackage{numprint}
-\usepackage{siunitx}
+%\usepackage{numprint}
+%\usepackage{siunitx}
 
 
 %%%%% THE ACTUAL DOCUMENT STARTS HERE
 \begin{document}
-\npdecimalsign{.}
-\nprounddigits{2}
+%\npdecimalsign{.}
+%\nprounddigits{2}
 
 %%%%% CHOOSE YOUR LINE SPACING HERE
 % This is the official option.  Use it for your submission copy and library copy:

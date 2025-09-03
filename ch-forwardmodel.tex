@@ -6,7 +6,7 @@ In this chapter, we present the forward model on which we apply all our methodol
 	\centering
 	\input{LIMB.pdf_tex}
 	\caption[Schematic of measurement and analysis geometry.]{Schematic of measurement and analysis geometry, not to scale.
-		The stationary satellite, at a constant height $h_\text{sat}$ above Earth, takes $m = 41$ measurements along its line-of-sight defined by the line $\Gamma_j$.
+		The stationary satellite, at a constant height $h_\text{sat}$ above Earth, takes $m = 30$ measurements along its line-of-sight defined by the line $\Gamma_j$.
 		Each measurement has a limb height $\ell_j$, $j=1,2,\dots,m$ defined as the closest distance of $\Gamma_j$ to the Earth's surface.
 		Between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$km, the stratosphere is discretised into $n =34$ layers as illustrated by the solid green lines.}
 	\label{fig:LIMB}
@@ -61,6 +61,7 @@ Further, we classify the inverse problem as weakly non-linear, see e.g. Fig. \re
 
 
 \section{Singular Value Decomposition of the Forward Model}
+\label{sec:SVD}
 Before simulating some data, we provide a quick and intuitive way of assessing if the data collection is effective, how much information is passed through the forward model, depending on how we measure and how the signal-to-noise ratio affects that information.
 One way of doing this is via a singular value decomposition (SVD) of the forward model matrix
 \begin{align}
@@ -76,7 +77,7 @@ Further, for very small singular values $\sigma_i \ll \sigma_1/\text{SNR}$ below
 Then information of parameter space spanned by $ \{\bm{v}_{r_{\text{eff}} +1}, \dots ,\bm{v}_r \}$ is not passed through the forward model and the data is noise dominated in the corresponding data space, see Figure \ref{fig:nullSpace}.
 This is based on the rough assumption that if we define the signal-to-noise ratio (SNR) as
 \begin{align}
-	\text{SNR} \coloneqq \frac{\max(y)}{\text{std. noise}} = \frac{\text{peak signal}}{\text{rms noise}} \text{\cite{fox2025BlokkLecNot}}
+	\text{SNR} \coloneqq \frac{\max(y)}{\text{std. noise}} = \frac{\text{peak signal}}{\text{rms noise}} \text{\cite{fox2025BlokkLecNot}} \label{eq:SNR}
 \end{align}
 then the maximum singular value $\max(y) \approx \sigma_1$ and the information transmitted through the forward model corresponds roughly to the singular values $\sigma_i \gtrsim \max(y)/ \text{SNR}$.
 See \cite{tan2016LecNot} for a more comprehensive analysis.
