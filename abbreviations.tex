@@ -1,22 +1,42 @@
+
+% database
+\DTLnewdb{abbr}
+\DTLnewrow{abbr}\DTLnewdbentry{abbr}{label}{MRF}\DTLnewdbentry{abbr}{desc}{Markov Random Field}
+\DTLnewrow{abbr}\DTLnewdbentry{abbr}{label}{GMRF}\DTLnewdbentry{abbr}{desc}{Gaussian Markov Random Field}
+\DTLnewrow{abbr}\DTLnewdbentry{abbr}{label}{GOMOS}\DTLnewdbentry{abbr}{desc}{Global Ozone Monitoring by Occultation of Stars}
+\DTLnewrow{abbr}\DTLnewdbentry{abbr}{label}{MCMC}\DTLnewdbentry{abbr}{desc}{Markov Chain Monte-Carlo}
+
+% sort by label
+\DTLsort{label}{abbr}
+
+
+\begin{mclistof}{List of Abbreviations}{4cm}
+	\printmclist{abbr}
+\end{mclistof}
 % First parameter can be changed eg to "Glossary" or something.
 % Second parameter is the max length of bold terms.
-\begin{mclistof}{List of Abbreviations}{3.2cm}
-
-\item[i.i.d.]  independent and identically distributed
-
-\item[MRF] Markov Random Field
-
-\item[GMRF] Gaussian Markov Random Field
-
-\item[MTC] Marginal Then Conditional sampler
-
-\item[GOMOS] Global Ozone Monitoring by Occultation of Stars
-
-\item[MCMC] Markov Chain Monte-Carlo
-
-\item[MH] Metropolis-Hastings
-\end{mclistof} 
-
+%\begin{mclistof}{List of Abbreviations}{3.2cm}
+%
+%\item[i.i.d.]  independent and identically distributed
+%
+%\item[MRF] Markov Random Field
+%
+%\item[GMRF] Gaussian Markov Random Field
+%
+%\item[MTC] Marginal Then Conditional sampler
+%
+%\item[GOMOS] Global Ozone Monitoring by Occultation of Stars
+%
+%\item[MCMC] Markov Chain Monte-Carlo
+%
+%\item[MH] Metropolis-Hastings
+%\end{mclistof} 
+%\clearpage
+%\begin{mclistof2}
+%\item{label}{Banana}
+%\item{label}{Apple}
+%\item{label}{Cherry}
+%\end{mclistof2} 
 %\begin{sortedlist}{List of Abbreviations}{3.2cm}
 %	
 %	\sortitem[i.i.d.]  independent and identically distributed

@@ -290,51 +290,6 @@
 %\usepackage{numprint}
 %\usepackage{siunitx}
 
-\usepackage{datatool}% http://ctan.org/pkg/datatool
-%\newcommand{\sortitem}[2][\relax]{%
-%	\DTLnewrow{list}% Create a new entry
-%	\ifx#1\relax
-%	\DTLnewdbentry{list}{sortlabel}{#2}% Add entry sortlabel (no optional argument)
-%	\else
-%	\DTLnewdbentry{list}{sortlabel}{#1}% Add entry sortlabel (optional argument)
-%	\fi%
-%	\DTLnewdbentry{list}{description}{#2}% Add entry description
-%}
-
-%\newcommand{\t@cfill}{\cleaders\hbox{$\m@th \mkern\@dotsep mu . \mkern\@dotsep mu$}\hfill}
-%\newcommand{\abbrl@bel}[1]{\makebox[\labelwidth][l]{\textbf{#1}\ \t@cfill}}
-
-%\newcommand{\sortitem}[2][\relax]{%
-%	\DTLnewrow{list}% Create a new entry
-%	\ifx#1\relax
-%	\DTLnewdbentry{list}{sortlabel}{#2}% Add entry sortlabel (no optional argument)
-%	\else
-%	\DTLnewdbentry{list}{sortlabel}{#1}% Add entry sortlabel (optional argument)
-%	\fi%
-%	\DTLnewdbentry{list}{description}{#2}% Add entry description
-%}
-%
-%
-%
-%\newenvironment{sortedlist}{%
-%	\DTLifdbexists{list}{\DTLcleardb{list}}{\DTLnewdb{list}}% Create new/discard old list
-%}{%
-%	\DTLsort{sortlabel}{list}% Sort list
-%	\begin{mclistof}%
-%		\DTLforeach*{list}{\theDesc=description}{%
-%		 \item \theDesc }% Print each item
-%	\end{mclistof}%
-%}
-
-%\newenvironment{sortedlist}{%
-%	\DTLifdbexists{list}{\DTLcleardb{list}}{\DTLnewdb{list}}% Create new/discard old list
-%}{%
-%	\DTLsort{sortlabel}{list}% Sort list
-%	\begin{itemize}%
-%		\DTLforeach*{list}{\theDesc=description}{%
-%			\item \theDesc }% Print each item
-%	\end{itemize}%
-%}
 
 
 %%%%% THE ACTUAL DOCUMENT STARTS HERE
@@ -426,7 +381,6 @@
 % formatted.  The template can handle any kind of list though, so this might be a good place for a
 % glossary, etc.
 \include{abbreviations}
-
 
 % The Roman pages, like the Roman Empire, must come to its inevitable close.
 \end{romanpages}

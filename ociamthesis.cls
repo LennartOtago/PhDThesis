@@ -398,8 +398,8 @@ breaklinks=true
 
 % JEM: Stuff for List of Abbreviations (or Glossary or other list)
 \usepackage{calc}
+\usepackage{datatool}
 \newcommand{\t@cfill}{\cleaders\hbox{$\m@th \mkern\@dotsep mu . \mkern\@dotsep mu$}\hfill}
-%\newcommand{\abbrl@bel}[2]{\makebox[\labelwidth][l]{\textbf{#1}\ \t@cfill}}
 \newcommand{\abbrl@bel}[1]{\makebox[\labelwidth][l]{\textbf{#1}\ \t@cfill}}
 \newenvironment{mclistof}[2]{%
    \chapter*{#1}%
@@ -412,6 +412,14 @@ breaklinks=true
     \markboth{#1}{#1}%
    }}
    {\end{list}\mtcaddchapter}
+
+% print all items from the database
+\newcommand{\printmclist}[1]{%
+	\DTLforeach{#1}{\thelabel=label,\thedesc=desc}{%
+		\item[\thelabel] \thedesc
+	}%
+}
+
 
 
 \usepackage[grey,utopia]{quotchap} 
