@@ -399,6 +399,7 @@ breaklinks=true
 % JEM: Stuff for List of Abbreviations (or Glossary or other list)
 \usepackage{calc}
 \newcommand{\t@cfill}{\cleaders\hbox{$\m@th \mkern\@dotsep mu . \mkern\@dotsep mu$}\hfill}
+%\newcommand{\abbrl@bel}[2]{\makebox[\labelwidth][l]{\textbf{#1}\ \t@cfill}}
 \newcommand{\abbrl@bel}[1]{\makebox[\labelwidth][l]{\textbf{#1}\ \t@cfill}}
 \newenvironment{mclistof}[2]{%
    \chapter*{#1}%

@@ -27,7 +27,7 @@ Naturally, noise (hyper-parameter) is a random process and occording to that noi
 This approach is called \textit{hierarchical} Bayesian modelling.
 Livesey et al. \cite{livesey2006retrieval} report "unexpected spectrally correlated noise" on the MLS aura, so here is another real reason why one should include and estimate noise.
 
-To solve this inverse problem within a linear-Gaussian hierarchical Bayesian framework, we apply the marginal-and-then-conditional (MTC) method~\cite{fox2016fast}, with which we evaluate distributions over both hyper-parameters (e.g. noise and ozone smoothness) and parameters.
+To solve this inverse problem within a linear-Gaussian hierarchical Bayesian framework, we apply the marginal-and-then-conditional (MTC) method~\cite{fox2016fast}, with which we evaluate distributions over both hyper-parameters (e.g. noise and ozone smoothness) and parameters within seconds.
 This is a fairly new method within the Bayesian community, and we are the first to our knowledge to apply it to a forward model based on the radiative transfer equation (RTE).
 Then, instead of sampling from those posterior distributions, we are the first to utilise a tensor-train (TT) to approximate the posterior distribution, which enables us to provide estimates and uncertainties via quadrature or the inverse Rosenblatt transform (IRT).
 

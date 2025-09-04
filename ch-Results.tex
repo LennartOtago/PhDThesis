@@ -10,8 +10,6 @@ Lastly, we evaluate some errors occurring during the process.
 All programming and analysis are done in Python on a MacBook Pro from 2019 with a 2.4 GHz quad-core Intel Core i5 processor.
 
 \section{Simulate Data based on a Ground Truth}
-
-
 We take a ground truth ozone VMR at distinct pressure values generated from some data \cite{MLSdata} of the MLS on the aura satellite within the Antarctic region and with a peak in high altitude, see Fig. \ref{fig:O3Samp}, which seems to be a typical night time profile \cite{Lee2020NightOzone}.
 
 We target Ozone at a frequency of 235.71 Ghz, which lies within the region where the MLS observers ozone \cite{livesey2008ozonecarbonmono, waters2006earth}.
@@ -67,7 +65,7 @@ This acts as the ground truth temperature profile, see Fig. \ref{fig:PriorTemp}.
 \end{table}
 
 Then we can compute a data vector $\bm{y} = \bm{A}_{NL} + \bm{\nu} $, with $m = 30$ measurements according to the radiative transfer equation (RTE), see Eq. \ref{eq:RTE} which we solve using the trapezoidal integration rule, determined by the satellite pointing accuracy of $175\text{arc sec}$, see Fig. \ref{fig:TangHCases}.
-We assume an atmosphere between $h_{L,1}=7$km and $h_{L,n} = 83.3$km with $n = 34$ equidistant layers.
+We assume an atmosphere between $h_{L,1}=7$km and $h_{L,n} = 83.3$km with $n = 45$ equidistant layers.
 The height value $h_{L,i}$ for each layer $i = 1,\dots, n$ is defined by the pressure values from \cite{MLSdata} and the hydrostatic equilibrium equation, see Eq. \ref{eq:hydr}.
 We calculate the absorption constant $k(\nu,T)$ as in Eq. \ref{eq:absRTE}, following the \textit{HITRAN} database \cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
 This gives us a non-linear forward model matrix $\bm{A}_{NL} = \bm{A}(\bm{x}, \bm{p}, \bm{T}) \in \mathbb{R}^{m \times n}$, where $\bm{x}\in \mathbb{R}^{n}$ is vector related to the ozone VMR, $\bm{p}\in \mathbb{R}^{n}$ is the vector describing the pressure values and $\bm{T}\in \mathbb{R}^{n}$ the temperature values.
@@ -76,7 +74,7 @@ Lastly we add normally distributed $\bm{\nu} \sim \mathcal{N}(0,\gamma^{-1} \bm{
 We would like to note that the methods used in this thesis, will work with different SNR or other frequencies.
 
 When we plot the data in Fig. \ref{fig:DataPlot}, we see that, as mentioned in Section \ref{sec:SVD}, the data is noise dominated in higher altitudes.
-\begin{figure}[ht!]
+\begin{figure}[th!]
 	\centering
 	\includegraphics{DataPlot.png}
 	\caption[Logarithmic plot of data points at different tangent height.]{Logarithmic plot of data points at different tangent height. Note that negative values are not appearing and we see that at noise is dominating at high altitudes.}
@@ -88,12 +86,6 @@ Now, given the data, we like to determine the posterior distributions over ozone
 
 \section{Setup a hierarchical Bayesian Framework}
 \label{sec:BayModel}
-Since the forward model described in Ch. \ref{ch:formodel} is weakly non-linear we will set up a linear Bayesian hierarchical framework first based on the linear forward model $\bm{A}_L$ and then later the approximated version $\bm{A}_{NL}\bm{M} \bm{A}_L$.
-Furthermore, the noise is normally distributed, so we establish a linear-Gaussian Bayesian hierarchical framework, aiming to recover an ozone profile and a pressure over temperature profile.
-In doing so, we first draw a directed acyclic graph (DAG) to visualise the measurement and modelling process and determine hyper-parameters and correlations between parameters.
-Then we define prior distributions over all parameters as well as a likelihood function so that we can formulate the posterior distribution.
-
-
 \begin{figure}[thb!]
 	\centering
 	\begin{tikzpicture}
@@ -162,33 +154,36 @@ Then we define prior distributions over all parameters as well as a likelihood f
 		
 		
 	\end{tikzpicture} 
-	\caption[Complete directed acyclic graph of the forward model.]{Complete directed acyclic graph of the forward model. The hyper-parameters at the top deterministically (dotted line) describe the parameters ($\bm{p}/\bm{T}$) or the noise covariance $\bm{\Sigma} = \gamma^{-1} \bm{I}$ of the random (solid line) noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I} ) $ and precision matrix $\bm{Q} = \delta \bm{L}$ of the distribution of $\bm{x}\sim \mathcal{N}(0,\delta \bm{L}) $, where $\bm{L}$ is a graph Laplacian as in Eq. \ref{eq:GLapl}. We can group the noise precision $\gamma$  and the smoothness parameter $\delta$ to define the marginal posterior over those hyper-parameters and then condition on them for the conditional posterior distribution,for further details see Fig. \ref{fig:DAGO3}. In this whole process where we condition on the pressure $\bm{p}$ and temperature $\bm{T}$, which we retrieve separately, see Fig. \ref{fig:DAGPT}. The hyper-parameters $h_0,p_0,b$ deterministically describe the pressure function in Eq. \ref{eq:pressFunc}, note that we only need three parameters here since $h_0< h_{L,0}$ and $\bm{h}= \{ h_1, h_2,h_3,h_4,h_5,h_6\}$, $\bm{a} = \{ a_0, a_1, a_2,a_3,a_4\}$ and $T_0$ determine the temperature function.
+	\caption[Complete directed acyclic graph of the forward model.]{Complete directed acyclic graph (DAG) of the forward model. The hyper-parameters at the top deterministically (dotted line) describe the parameters ($\bm{p}/\bm{T}$) or the noise covariance $\bm{\Sigma} = \gamma^{-1} \bm{I}$ of the random (solid line) noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I} ) $ and precision matrix $\bm{Q} = \delta \bm{L}$ of the distribution of $\bm{x}\sim \mathcal{N}(0,\delta \bm{L}) $, where $\bm{L}$ is a graph Laplacian as in Eq. \ref{eq:GLapl}. We can group the noise precision $\gamma$  and the smoothness parameter $\delta$ to define the marginal posterior over those hyper-parameters and then condition on them for the conditional posterior distribution,for further details see Fig. \ref{fig:DAGO3}. In this whole process where we condition on the pressure $\bm{p}$ and temperature $\bm{T}$, which we retrieve separately, see Fig. \ref{fig:DAGPT}. The hyper-parameters $h_0,p_0,b$ deterministically describe the pressure function in Eq. \ref{eq:pressFunc}, note that we only need three parameters here since $h_0< h_{L,0}$ and $\bm{h}= \{ h_1, h_2,h_3,h_4,h_5,h_6\}$, $\bm{a} = \{ a_0, a_1, a_2,a_3,a_4\}$ and $T_0$ determine the temperature function.
 		The parameters $\bm{x}$ and $\bm{p}/ \bm{T}$ determine the space of all measurable noise free data $\bm{\Omega}$ through the forward model $\bm{A}(\bm{x},\bm{p},\bm{T})$ from which we randomly observe data set plus some random noise.}
 	\label{fig:DAGComplete}
 \end{figure}
 
+A directed acyclic graph (DAG) helps us to visualise the measurement process and correlations between parameters.
+We draw a DAG in Fig. \ref{fig:DAGComplete} and already see that the parameters pressure $\bm{p}$, temperature $\bm{T}$ and ozone $\bm{x}$ are correlated, and progress deterministically (dashed line) into the forward model, via $\bm{x} \times \bm{p} / \bm{T}$ and generate a space of all possible noise free data $\bm{\Omega}$, through their respective prior distributions, from which we observe some data.
+Ideally we should infer all of them jointly, but since that is computationally very expensive, we condition on either ozone when inferring pressure and temperature or on pressure and temperature when inferring ozone.
+Then one would iteratively proceed until convergence, which we will not show here since we focus on the underlying Bayesian framework and methods to obtain posterior distributions of either one.
+Since we consider a hierarchical Bayesian framework, we include the hyper-parameters $\gamma, \delta, p_0, b, \bm{h}_T, \bm{T}_0, \bm{a}$ within the modelling process.
+Here pressure and temperature are functionally dependent on $p_0, b, \bm{h}_T, \bm{T}_0, \bm{a}$, see Eq. \ref{eq:tempFunc} and Eq. \ref{eq:pressFunc}, visualised through dashed lines, but $\delta$, accounting for the smoothness of $\bm{x}$, determines the precision matrix $\bm{Q}$ of the prior distribution $\pi(\bm{x}|\delta)$, which then represents a distribution over non-parametric $\bm{x}$ (solid line).
+Similarly $\gamma$ determines the noise covariance matrix $\bm{\Sigma}$, which then describes the noise-vector as $\eta \sim \mathcal{N}( \bm{0}| \gamma^{-1} \bm{I})$, where assume independent and identically distributed normal noise with zero mean.
+Each of those hyper-parameters is described by hyper-prior distributions $\pi(\gamma, \delta, p_0, b, \bm{h}_T, \bm{T}_0, \bm{a} |\theta_{\gamma}, \theta_{\delta},\theta_{p_0},\theta_{b},\theta_{\bm{h}},\theta_{T_0},\theta_{\bm{a}} )$ (solid lines).
+Here $\theta_{\gamma}, \theta_{\delta},\theta_{p_0},\theta_{b},\theta_{\bm{h}},\theta_{T_0},\theta_{\bm{a}}$ are set by us and determine in this case gamma distributions $\gamma, \delta \sim \pi(\theta_{\gamma}, \theta_{\delta})$, so that e.g. $\gamma \sim \Gamma(\alpha_{\gamma},\beta_{\gamma}) $ with $\theta_{\gamma} = \{\alpha_{\gamma},\beta_{\gamma} \}$, and a normal distribution $p_0, b, \bm{h}_T, \bm{T}_0, \bm{a} \sim \pi( \theta_{p_0},\theta_{b},\theta_{\bm{h}},\theta_{T_0},\theta_{\bm{a}})$, so that e.g. $b \sim \mathcal{N}(\mu_b, \sigma_b)$ and $\theta_{b} = \{\mu_b, \sigma_b\}$
+Note that we write the non-linear forward model, with with which we generate the data as $\bm{A}_{NL}$, but denote the approximated forward model as $\bm{M} \bm{A}_L$, which we will ultimately use to determine posterior distribution over the parameters.
 
-We draw a DAG for the measurement and modelling process, where the hyper-hyper-parameters $\theta_{\gamma}, \theta_{\delta},\theta_{p_0},\theta_{b},\theta_{\bm{h}},\theta_{T_0},\theta_{\bm{a}}$ in the top row of Fig. \ref{fig:DAGComplete} determine the hyper-prior distributions $\pi(\gamma, \delta, p_0, b, \bm{h}_T, \bm{T}_0, \bm{a})$ statistically (solid line).
-Then the hyper-parameters determine the parameters $\bm{p}/\bm{T}$ deterministically.
-The temperature function $\bm{T} = (T_0,\bm{a}, \bm{h}_T)$, Eq. \ref{eq:tempFunc}, is determined through $\bm{a}$ the temperature gradients at heights $\bm{h}$, see Tab. \ref{tab:tempGrad}, where $h_0$ is set to zero as we model temperature variability at the sea-level temperature trough the an additional input $T_0$.
-Note that we define an exponential pressure function, Eq. \ref{eq:pressFunc}, later in Sec. \ref{subsec:presTempPrior} so that $\bm{p}(p_0,b)$ is defined through the hyper-parameters $p_0$ (pressure at sea-level) and $b$ (exponential gradient).
-Since we do not parametrise the ozone profile, we assume a certain smoothness defined through the smoothness hyper-parameter $\delta$ and a precision matrix $\bm{Q}(\delta)$ which statistically defines a distribution over $\bm{x}$ (solid lines).
-The parameters $\bm{x}, \bm{p},\bm{T}$ progress deterministically, see RTE in Eq. \ref{eq:RTE}, into the forward model $\bm{A}_{NL}$ and generate a space of all possible noise free data $\bm{\Omega}$.
-From that space of all measurable $\bm{\Omega}$ we pick one data set to which we add some noise $\bm{\eta} \sim \mathcal{N}(0, \bm{\Sigma})$, which is modelled through the hyper-parameter $\gamma$ and the precision matrix $\bm{\Sigma} = \gamma^{-1} \bm{I}$ so that we obtain the noisy data vector $\bm{y}$.
+
 Since the noise is normally distributed, so is the likelihood function $\pi(\bm{y} | \bm{x}, \bm{p}, \bm{T})$.
 Then the joint posterior distribution
 \begin{align}
 	\pi(p_0,b,\bm{h_T},\bm{a},\delta, \gamma, \bm{x}| \bm{y}) \propto \pi(\bm{y} | \bm{x}, \bm{p}, \bm{T}) \pi(p_0,b,\bm{h_T},\bm{a},\delta, \gamma) 
 \end{align}
-over all 17 hyper-parameters and the parameter $\bm{x} \in \mathbb{R}^{45}$ is 62 dimensional.
-Ideally, we characterise the joint posterior, but this is computationally not feasible.
-Instead, we factorise the posterior into
+over all 18 hyper-parameters and the parameter $\bm{x} \in \mathbb{R}^{45}$ is 63 dimensional.
+Instead of characterising the joint posterior we factorise the posterior into
 \begin{align}
 	\pi(p_0,b,\bm{h_T},\bm{a},\delta, \gamma, \bm{x}| \bm{y}) = \pi(\delta, \gamma, \bm{x}| p_0,b,\bm{h_T},\bm{a},\bm{y}) \pi(p_0,b,\bm{h_T},\bm{a}|\delta, \gamma, \bm{x}, \bm{y}) \, , 
 \end{align}
 where we either condition on ozone $\bm{x}$ and the smoothness hyper-parameter $\delta$ as well as the noise hyper-parameter $\gamma$ or on the fraction $\bm{p}/\bm{T}$, pressure over temperature, and its hyper-parameters.
-Again as in Sec. \ref{ch:formodel} for brevity we write $\pi(p_0,b,\bm{h_T},\bm{a}| \gamma,\bm{y}) $ and $\pi(\delta, \gamma, \bm{x}|\bm{y})$, which implies that we conditioned on $\bm{x}$ or $\bm{p}$ and $\bm{T}$. 
-Next, we need to specify the prior distribution, which we summarise in Tab. \ref{tab:priors}, to formulate the posterior distributions.
+Again, as in Sec. \ref{ch:formodel}, for brevity we write $\pi(\delta, \gamma, \bm{x}|\bm{y})$ for $\pi(\delta, \gamma, \bm{x}|p_0,b,\bm{h_T},\bm{a},\bm{y})$, which implies that we conditioned on $\bm{p}$ and $\bm{T}$. 
+Next, we need to make prior assumptions about the parameters and to specify the prior and hyper-prior distributions, which we summarise in Tab. \ref{tab:priors}, and to formulate the posterior distributions.
 \begin{table}
 	\centering
 	\begin{tabular}{ |c||c|c|c|c|c|   }
@@ -224,8 +219,15 @@ Next, we need to specify the prior distribution, which we summarise in Tab. \ref
 	\label{tab:priors}
 \end{table}
 
+
+%Since the forward model described in Ch. \ref{ch:formodel} is weakly non-linear we will set up a linear Bayesian hierarchical framework first based on the linear forward model $\bm{A}_L$ and then later the approximated version $\bm{A}_{NL}\bm{M} \bm{A}_L$.
+%Furthermore, the noise is normally distributed, so we establish a linear-Gaussian Bayesian hierarchical framework, aiming to recover an ozone profile and a pressure over temperature profile.
+%In doing so, we first draw a directed acyclic graph (DAG) to visualise the measurement and modelling process and determine hyper-parameters and correlations between parameters.
+%Then we define prior distributions over all parameters as well as a likelihood function so that we can formulate the posterior distribution.
+
 \subsection{Ozone conditioned on Pressure and Temperature}
 \label{subsec:OzoneSetup}
+we reduce x to from 45 to $34$ by taken every second value over $\approx47$km
 In this section, we choose prior distributions and describe the approach to evaluate the posterior distribution for ozone $\pi(\delta, \gamma, \bm{x}|\bm{y})$, including the noise hyper-parameter $\gamma$.
 Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \bm{I})$, we define a linear-Gaussian Bayesian hierarchical model~\cite{fox2016fast}
 \begin{subequations}

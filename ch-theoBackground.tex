@@ -62,7 +62,7 @@ We can visualise this hierarchically ordered correlation structure between param
 
 The expectation of any function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}$ may depend on $\bm{\theta}$, is described as 
 \begin{align}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] =  \underbrace{\int \int   h(\bm{x}_{\bm{\theta}}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \text{d} \bm{x}  \, \text{d} \bm{\theta}}_{\bm{\mu}_{\text{int}}}   \label{eq:expPos} \, .
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] =  \underbrace{\int \int   h(\bm{x}_{\bm{\theta}}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \diff \bm{x}  \, \diff \bm{\theta}}_{\bm{\mu}_{\text{int}}}   \label{eq:expPos} \, .
 \end{align}
 If that is a high-dimensional integral and computationally not feasible to solve, we approximate 
 \begin{align}
@@ -89,7 +89,7 @@ Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovarian
 \begin{align}
 	\mathbb{E}_{\bm{x} |  \bm{y}} [h(\bm{x})] 
 	= \mathbb{E}_{\bm{\theta} |  \bm{y}} \left[ \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} [h(\bm{x}_{\bm{\theta}})] \right] 
-	= \int \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right] \, \pi(\bm{\theta} |  \bm{y}) \, \mathrm{d}\bm{\theta},
+	= \int \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right] \, \pi(\bm{\theta} |  \bm{y}) \, \diff \bm{\theta},
 	\label{eq:fullCond}
 \end{align}
 where, in the case of a linear-Gaussian hierarchical Bayesian model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right]$ are well defined see next subsection.
@@ -149,7 +149,7 @@ To derive the marginal posterior and the conditional posterior distribution, we 
 		\bm{\Sigma}(\bm{\theta})^{-1} \bm{A} & \bm{\Sigma}(\bm{\theta})^{-1} 
 	\end{pmatrix}^{-1} \right] \, ,
 \end{align}
-where we provide the joint precision matrix as in \cite{SIMPSON201216}.
+where we provide the joint precision matrix as in \cite{SIMPSON201216}, see also \cite{rue2005gaussian}.
 Immediately, we formulate the conditional posterior as 
 \begin{align}
 	\bm{x} | \bm{y}, \bm{\theta} \sim \mathcal{N}(\bm{\mu} + (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}(\bm{y} - \bm{A}\bm{\mu}),(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}) \, .
@@ -269,12 +269,12 @@ Note that we follow the notation of Cui et al. \cite{cui2022deep} to introduce t
 Assume that the triple $(\Omega, \mathcal{F}, \mathbb{P})$ defines a probability space, where $\Omega$ denotes the complete sample space, $\mathcal{F}$ is a $\sigma$-algebra consisting of a collection of countable subsets $\{A_n\}_{n \in \mathbb{N}}$ with $A_n \subseteq \Omega$, and $\mathbb{P}$ is a probability measure defined on $\mathcal{F}$. The formal conditions for $\mathbb{P}$ to be a probability measure, and for $\mathcal{F}$ to be a $\sigma$-algebra over $\Omega$, are given in Appendix~\ref{ch:Mesure}.
 We denote
 \begin{align}
-	\mathbb{P}(A) = \int_A \mathrm{d} \mathbb{P}
+	\mathbb{P}(A) = \int_A \diff  \mathbb{P}
 \end{align}
 as the probability of an event $A \in \mathcal{F}$.
 By applying the Radon-Nikodym theorem~\cite{kopp2004measintprob}, we can change variables
 \begin{align}
-	\mathbb{P}(A) = \int_A \frac{\mathrm{d} \mathbb{P}}{\mathrm{d}\bm{x}} \, \mathrm{d}\bm{x} = \int_A \pi(\bm{x}) \, \mathrm{d}\bm{x},
+	\mathbb{P}(A) = \int_A \frac{\diff \mathbb{P}}{\diff \bm{x}} \, \diff \bm{x} = \int_A \pi(\bm{x}) \, \diff \bm{x},
 \end{align}
 where $\mathrm{d}\bm{x}$ is a reference measure on the same probability space, commonly referred to as the Lebesgue measure. 
 The Radon-Nikodym derivative $\frac{\mathrm{d} \mathbb{P}}{\mathrm{d}\bm{x}}$ of $\mathbb{P}$ with respect to $\bm{x}$ is often interpreted as the probability density function (PDF) $\pi(\bm{x})$. Thus, we say that $\mathbb{P}$ has a density $\pi(\bm{x})$ with respect to $\bm{x}$~\cite[Chapter 10]{simonnet1996measprob}.
@@ -284,12 +284,12 @@ Then the associated PDF $\pi(\bm{x})$ is a joint density of $X$, induced by the 
 As in~\cite{cui2022deep}, we can define the parameter space as the Cartesian product $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$ and $\bm{x} = ( x_1,\dots ,x_k,\dots,x_d )$.
 The marginal density function for the $k$-th component is then given by
 \begin{align}
-	f_{X_k}(x_k) = \frac{1}{z} \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_d} \uplambda(\bm{x}) \, \pi(\bm{x}) \, \mathrm{d}x_1 \cdots \mathrm{d}x_{k-1} \, \mathrm{d}x_{k+1} \cdots \mathrm{d}x_d, \label{eq:margInt}
+	f_{X_k}(x_k) = \frac{1}{z} \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_d} \uplambda(\bm{x}) \, \pi(\bm{x}) \, \diff x_1 \cdots \diff x_{k-1} \, \diff x_{k+1} \cdots \diff x_d, \label{eq:margInt}
 \end{align}
 where we integrate over all dimensions except the $k$-th, and $z$ is a normalisation constant.
 Here, we introduce a weight function $\uplambda(x)$, which can be useful for quadrature rules~\cite{davis2007methods}, to which~\cite{cui2022deep} refer to as a "product-form Lebesgue-measurable weighting function" and define it as
 \begin{align}
-	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \mathrm{d}x_i. \label{eq:lebesgueWeight}
+	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \diff x_i. \label{eq:lebesgueWeight}
 \end{align}
 
 In the tensor train (TT) format, the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost as $\pi(\bm{x})$ is approximated by
@@ -303,11 +303,11 @@ Consequently, the marginal target distribution
 \begin{align}
 	\begin{split}
 		f_{X_k}(x_k) \approx \frac{1}{z} \Big|\, 
-		&\left( \int_{\mathbb{R}} \uplambda_1(x_1) \tilde{\pi}_1(x_1) \, \mathrm{d}x_1 \right) \cdots 
-		\left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \tilde{\pi}_{k-1}(x_{k-1}) \, \mathrm{d}x_{k-1} \right) \\
+		&\left( \int_{\mathbb{R}} \uplambda_1(x_1) \tilde{\pi}_1(x_1) \, \diff x_1 \right) \cdots 
+		\left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \tilde{\pi}_{k-1}(x_{k-1}) \, \diff x_{k-1} \right) \\
 		&\quad \uplambda_k(x_k) \tilde{\pi}_k(x_k) \\
-		& \left( \int_{\mathbb{R}} \uplambda_{k+1}(x_{k+1}) \tilde{\pi}_{k+1}(x_{k+1}) \, \mathrm{d}x_{k+1} \right) \cdots 
-		\left( \int_{\mathbb{R}} \uplambda_d(x_d) \tilde{\pi}_d(x_d) \, \mathrm{d}x_d \right)
+		& \left( \int_{\mathbb{R}} \uplambda_{k+1}(x_{k+1}) \tilde{\pi}_{k+1}(x_{k+1}) \,\diff x_{k+1} \right) \cdots 
+		\left( \int_{\mathbb{R}} \uplambda_d(x_d) \tilde{\pi}_d(x_d) \, \diff x_d \right)
 		\Big| 
 	\end{split}
 \end{align}
@@ -349,36 +349,36 @@ Figure~(a) is adapted from~\cite{fox2021grid}.}
 In practice, tensor train approximations may suffer from numerical instability, in particular because it is not advantageous to approximate the target function $\pi(\bm{x})$ in e.g. the logarithmic space. 
 Hence, Cui et al.~\cite{cui2022deep} approximate the square root of the probability density
 \begin{align}
-	\sqrt{\pi(\bm{x})} \approx \tilde{g}(\bm{x}) = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\, ,
+	\sqrt{\pi(\bm{x})} \approx \tilde{g}(\bm{x}) = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\, \,  \text{\cite[Eq. 18]{cui2022deep}},
 \end{align}
 which ensures positivity.
 Here, each TT-core is given by
 \begin{equation}
-	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, \dots, d,
+	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, \dots, d,\, \,  \text{\cite[Eq. 21]{cui2022deep}},
 \end{equation}
 where $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the $k$-th coefficient tensor and $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ are the basis functions corresponding to the $k$-th coordinate.
 The approximated unnormalised density is written as:
 \begin{align}
-	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2,
+	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2\, \,  \text{\cite[Eq. 19]{cui2022deep}},
 \end{align}
 where $\xi$ is a positive constant added according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting, see Eq. \ref{eq:lebesgueWeight}, such that
 \begin{align}
-	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(x)}^2.
+	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(x)}^2\, \,  \text{\cite[Eq. 35]{cui2022deep}}.
 \end{align}
 This leads to the normalised target function
 \begin{align}
-	f_X(\bm{x})  \approx \frac{1}{z} \left( \uplambda(\bm{x}) \xi  + \uplambda(\bm{x}) \tilde{g}(\bm{x})^2 \right),
+	f_X(\bm{x})  \approx \frac{1}{z} \left( \uplambda(\bm{x}) \xi  + \uplambda(\bm{x}) \tilde{g}(\bm{x})^2 \right)\, \,  \text{\cite[Eq. 19]{cui2022deep}},
 \end{align}
-which is the normalisation constant $z = \int_{\mathcal{X}} f_X(\bm{x}) \text{d} \bm{x} $.
+which is the normalisation constant $z = \int_{\mathcal{X}} f_X(\bm{x}) \diff \bm{x} $.
 Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{X_k}(x_k)$ can be expressed as
 \begin{align}
 	\begin{split}
 		f_{X_k}(x_k)  \approx \frac{1}{z} \Bigg(&\xi \prod_{i=1}^{k-1} \uplambda_i(\mathcal{X}_i) \prod_{i=k+1}^{d} \uplambda_i(\mathcal{X}_i) \\
-		&+ \left( \int_{\mathbb{R}} \uplambda_1(x_1) \bm{G}_1^2(x_1)  \, \mathrm{d}x_1 \right) \cdots 
-		\left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \bm{G}_{k-1}^2(x_{k-1}) \, \mathrm{d}x_{k-1} \right) \\
+		&+ \left( \int_{\mathbb{R}} \uplambda_1(x_1) \bm{G}_1^2(x_1)  \, \diff x_1 \right) \cdots 
+		\left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \bm{G}_{k-1}^2(x_{k-1}) \, \diff x_{k-1} \right) \\
 		& \uplambda_k(x_k) \bm{G}_k^2(x_k)  \\
-		&\left( \int_{\mathbb{R}} \uplambda_{k+1}(x_{k+1}) \bm{G}_{k+1}^2(x_{k+1})  \, \mathrm{d}x_{k+1} \right) \cdots 
-		\left( \int_{\mathbb{R}} \uplambda_d(x_d) \bm{G}_d^2(x_d)  \, \mathrm{d}x_d \right) \Bigg).
+		&\left( \int_{\mathbb{R}} \uplambda_{k+1}(x_{k+1}) \bm{G}_{k+1}^2(x_{k+1})  \,\diff x_{k+1} \right) \cdots 
+		\left( \int_{\mathbb{R}} \uplambda_d(x_d) \bm{G}_d^2(x_d)  \, \diff x_d \right) \Bigg).
 	\end{split}
 \end{align}
 
@@ -393,7 +393,7 @@ The backwards marginalisation provides us with the coefficient matrices $\bm{B}_
 These matrices enable the efficient evaluation of marginal functions since they integrate over the coordinates either left or right of the $k$-th dimension, as in \cite{cui2022deep}.
 In doing so, we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ as
 \begin{equation}
-	\bm{M}_k[i, j] = \int_{\mathcal{X}_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \uplambda(x_k) \, \mathrm{d}x_k, \quad i, j = 1, \dots, n_k,
+	\bm{M}_k[i, j] = \int_{\mathcal{X}_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \uplambda(x_k) \, \diff x_k, \quad i, j = 1, \dots, n_k, \, \,  \text{\cite[Eq. 22]{cui2022deep}},
 \end{equation}
 where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ denotes the set of basis functions for the $k$-th coordinate.
 The proposition used to compute $\bm{B}_k$, stated in Proposition~\ref{prob:backMarg}, is adapted directly from~\cite{cui2022deep}.
@@ -404,15 +404,15 @@ The proposition used to compute $\bm{B}_k$, stated in Proposition~\ref{prob:back
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
 		\begin{equation}
-			\bm{C}_k[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{B}_k[\alpha_{k-1}, i, l_k] \bm{L}_k[i, \tau] \text{\cite[Eq. ()]{cui2022deep}}.
+			\bm{C}_k[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{B}_k[\alpha_{k-1}, i, l_k] \bm{L}_k[i, \tau] \text{\cite[Eq. (27)]{cui2022deep}}.
 		\end{equation}
 		\item Unfold $\bm{C}_k$ along the first coordinate and compute the thin QR decomposition, so that $\bm{C}_k^{(R)} \in \mathbb{R}^{r_{k-1} \times (n_k r_k)}$:
 		\begin{equation}
-			\bm{Q}_k \bm{R}_k = {(\bm{C}_k^{(R)})}^{\top}.
+			\bm{Q}_k \bm{R}_k = {(\bm{C}_k^{(R)})}^{\top} \, \,  \text{\cite[Eq. 28]{cui2022deep}}.
 		\end{equation}
 		\item Compute the new coefficient tensor:
 		\begin{equation}
-			\bm{B}_{k-1}[\alpha_{k-2}, i, l_{k-1}] = \sum_{\alpha_{k-1}=1}^{r_{k-1}} \bm{A}_{k-1}[\alpha_{k-2}, i, \alpha_{k-1}] \bm{R}_k[l_{k-1}, \alpha_{k-1}].
+			\bm{B}_{k-1}[\alpha_{k-2}, i, l_{k-1}] = \sum_{\alpha_{k-1}=1}^{r_{k-1}} \bm{A}_{k-1}[\alpha_{k-2}, i, \alpha_{k-1}] \bm{R}_k[l_{k-1}, \alpha_{k-1}]\, \,  \text{\cite[Eq. 29]{cui2022deep}}.
 		\end{equation}
 	\end{enumerate}
 \end{prop}
@@ -446,7 +446,7 @@ where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ and $\bm{R}_{\text
 
 For the first dimension, $f_{X_1}(x_1)$ can be expressed as
 \begin{equation}
-	f_{X_1}(x_1)  \approx \frac{1}{z} \left(\xi \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1),
+	f_{X_1}(x_1)  \approx \frac{1}{z} \left(\xi \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1)\, \,  \text{\cite[Eq. 30]{cui2022deep}},
 	\label{eq:firstMarg}
 \end{equation}
 where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$,
@@ -468,8 +468,8 @@ Since we approximate the square root of the target function, Cui et. al. \cite{c
 		\FOR{ \( s = 1, \dots, N\)}
 		\FOR{ \( k = 1, \dots, d\)}
 		\STATE compute normalised PDF $ f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1)$, Eq. \ref{eq:CurrMarg}
-		\STATE compute cumulative distribution function $F_{X_k}(x_k)$, Eq. \ref{eq:CurrCDF}
-		\STATE project sample $x^{(s)}_k = F_{X_k}^{-1}(u^{(s)}_k)$
+		\STATE compute cumulative distribution function $F_{X_k|X_{<k}}(x_k)$, Eq. \ref{eq:CurrCDF},
+		\STATE project sample $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$
 		\STATE interpolate $\bm{G}_k(x^{(s)}_k)$, Eq. \ref{eq:LinPol}
 		\STATE update $\bm{G}_{\leq k}(x^{(s)}_{\leq k}) = \bm{G}_{<k}(x^{(s)}_{<k}) \bm{G}_k(x^{(s)}_k)$
 		\ENDFOR
@@ -482,7 +482,7 @@ We start by calculating the Backward marginals $\bm{B}_1 , \dots,\bm{B}_d$ as in
 Then we calculate the first marginal $f_{X_1}(x_1)$ as in Eq. \ref{eq:firstMarg} and normalise with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$.
 Next, we compute the cumulative distribution function (CDF)
 \begin{align}
-	F_{X_k}(x_k) \approx \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\tilde{x}_k|x_{k-1},\dots,x_1) d \tilde{x}_k
+	F_{X_k|X_{<k}}(x_k) \approx \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\tilde{x}_k|x_{k-1},\dots,x_1) \diff \tilde{x}_k  \, \, \text{\cite[Eq. 17]{cui2022deep}}
 	\label{eq:CurrCDF}
 \end{align}
 for the first dimension $k = 1$ and then project the seed  on the parameter space $x^{(s)}_k = F_{X_k}^{-1}(u^{(s)}_k)$.
@@ -495,12 +495,12 @@ for $x^{(i)}_k \leq x^{(s)}_k \leq x^{(i+1)}_k$ in between two grid points $i$ a
 Through $\bm{G}_k(x^{(s)}_k)\in \mathbb{R}^{1 \times r_{k-1}}$ we condition on the previous samples, which denotes the product of all approximated tensors of the previous $k-1$ samples to preserve the correlation structure.
 Then we marginalise over the dimensions $k+1 , \dots, d$ via $\bm{B}_k$ so that the next "conditional marginal" is given as:
 \begin{align}\begin{split} 
-		f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1) \approx \frac{1}{z}
-		\Bigg( 
-		\xi \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \\
-		\sum_{l_{k} = 1}^{r_{k}} \Bigg( \sum_{i = 1}^{n}  \phi^{(i)}_k(x^{(s)}_k) \bigg( \sum_{\alpha_{k-1} = 1}^{r_{k-1}} \bm{G}^{(\alpha_{k-1})}_{<k}(x^{(s)}_{<k}) \bm{B}_k[\alpha_{k-1},i,l_k] \bigg) \Bigg)^2 \Bigg) \uplambda_k(x_k)
+	 f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1) \approx \frac{1}{z}
+\Bigg( 
+\xi \prod_{i=k+1}^{d} \uplambda_i(X_i) +&  \\
+\sum_{l_{k} = 1}^{r_{k}} \Bigg( \sum_{i = 1}^{n}  \phi^{(i)}_k(x^{(s)}_k) \bigg( \sum_{\alpha_{k-1} = 1}^{r_{k-1}} \bm{G}^{(\alpha_{k-1})}_{<k}(x^{(s)}_{<k}) &\bm{B}_k[\alpha_{k-1},i,l_k] \bigg) \Bigg)^2 \Bigg) \uplambda_k(x_k) \, \,  \text{\cite[Eq. 31]{cui2022deep}}.
 	\end{split} 
-	\label{eq:CurrMarg} \, .
+	\label{eq:CurrMarg} 
 \end{align}
 We repeat the procedure for each $u^{(s)}_k \in \bm{u}^{(s)}$ to gain samples $\bm{x}^{(s)} \sim f_{X}(x)$, see algorithmic box \ref{alg:SIRT} for a summarised version.
 
@@ -536,20 +536,20 @@ In doing so we compute the acceptance probability $  \alpha = \text{min}(w^{(s+1
 	w(x) = \frac{\pi(\bm{x})}{f_X(\bm{x})} = \frac{\pi(\bm{x})}{\gamma + \tilde{g}(\bm{x})^2} 
 \end{align}
 is the importance ratio.
-In practise we calculate the importance ratio in the log space, where $\log f_X(\bm{x})  =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ is given as in Eq. \ref{eq:CurrMarg}.
+In practise we calculate the importance ratio in the log space, where $\log f_X(\bm{x})  =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ is given as in Eq. \ref{eq:CurrMarg}, see \cite{dolgov2020approximation}.
 This leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
 
 
 \subsection{On the Error in the TT Approximation}
 A straight forward way to asses the error from the TT approximation is to calculate the relative root mean squared error
 \begin{align}
-	\Bigg( \frac{ \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(\bm{x}) \text{d} \bm{x}}{ \int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \text{d} \bm{x} } \Bigg)^{1/2} =	\frac{\lVert 	\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2)  \rVert_{L^2_{\uplambda}(\mathcal{X})}}{\lVert 	\pi(\bm{x}) \rVert_{L^2_{\uplambda}(\mathcal{X})}  } \, .
+	\Bigg( \frac{ \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(\bm{x}) \diff \bm{x}}{ \int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \diff \bm{x} } \Bigg)^{1/2} =	\frac{\lVert 	\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2)  \rVert_{L^2_{\uplambda}(\mathcal{X})}}{\lVert 	\pi(\bm{x}) \rVert_{L^2_{\uplambda}(\mathcal{X})}  } \, .
 \end{align}
 We can approximate the this integral as 
 \begin{align}
-	\Bigg( \frac{1}{N} \sum^{N}_{i =1} \Big(\pi(\bm{x}^{(i)}) - \big(\gamma + \tilde{g}(\bm{x}^{(i)})^2\big)\Big)^2 \uplambda(\bm{x})\Bigg)^{1/2}    \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - \big(\gamma + \tilde{g}(\bm{x})^2\big)\Big)^2 \uplambda(x) \text{d} \bm{x} \Bigg)^{1/2} 
+	\Bigg( \frac{1}{N} \sum^{N}_{i =1} \Big(\pi(\bm{x}^{(i)}) - \big(\gamma + \tilde{g}(\bm{x}^{(i)})^2\big)\Big)^2 \uplambda(\bm{x})\Bigg)^{1/2}    \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - \big(\gamma + \tilde{g}(\bm{x})^2\big)\Big)^2 \uplambda(x) \diff \bm{x} \Bigg)^{1/2} 
 \end{align}
-and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(\bm{x})  \text{d} \bm{x}$.
+and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(\bm{x})  \diff \bm{x}$.
 
 
 \subsubsection{Absolute Error Bound}
