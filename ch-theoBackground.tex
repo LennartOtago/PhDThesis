@@ -44,7 +44,7 @@ Lastly, we provide some background information on affine maps and the Tikhonov r
 Assume we observe some data
 \begin{align}
 	\bm{y} = \bm{A} (\bm{x}) + \bm{\eta},
-	\label{eq:LinDat}
+	\label{eq:NonLinDat}
 \end{align}
 based on a forward model $\bm{A}(\bm{x})$, which may be non-linear, a unknown parameter $\bm{x}$ and some additive random noise $\bm{\eta}$.
 Naturally, due to the noise, which we classify through a hyper-parameter, we deal with a random process, and we wish to include that in our hierarchically ordered modelling.
@@ -73,7 +73,7 @@ with an the unbiased sample-based Monte Carlo estimate \cite{roberts2004general}
 Here, the samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
 
 Generating a representative sample set quickly from the posterior distribution often presents a significant challenge. This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
-If $\bm{x}$ can not be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, i.e., $\bm{x}(\bm{\theta})$, it is beneficial to factorise the posterior distribution as
+If $\bm{x}$ can not be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, so that $\bm{x}(\bm{\theta})$ is function of $\bm{\theta}$, it is beneficial to factorise the posterior distribution as
 \begin{align}
 	\pi(\bm{x}, \bm{\theta} |  \bm{y}) = \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \pi(\bm{\theta} |   \bm{y}), \label{eq:MTC}
 \end{align}
@@ -120,6 +120,7 @@ See Appendix \ref{ap:IATC} and \cite{Sokal1997} for a more detailed derivation.
 The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample, accordingly we define the effective sample size as $\frac{ 2 \tau_{\text{int}} }{N}$.
 
 \subsubsection{Linear-Gaussian hierarchical Bayesian model}
+\label{subsec:LinBay}
 In case of normally distributed noise $\bm{\eta} \sim \mathcal{N}(0,\bm{\Sigma}(\bm{\theta}))$, with zero mean and covariance $\bm{\Sigma}(\bm{\theta})$, and a linear model $\bm{A}$, the data is given as 
 \begin{align}
 	\bm{y} = \bm{A} \bm{x} + \bm{\eta} \, ,
@@ -149,10 +150,10 @@ To derive the marginal posterior and the conditional posterior distribution, we 
 		\bm{\Sigma}(\bm{\theta})^{-1} \bm{A} & \bm{\Sigma}(\bm{\theta})^{-1} 
 	\end{pmatrix}^{-1} \right] \, ,
 \end{align}
-where we provide the joint precision matrix as in \cite{SIMPSON201216}, see also \cite{rue2005gaussian}.
+where we provide the joint precision matrix as in \cite{SIMPSON201216}, see also \cite{rue2005gaussian, fox2016fast}.
 Immediately, we formulate the conditional posterior as 
 \begin{align}
-	\bm{x} | \bm{y}, \bm{\theta} \sim \mathcal{N}(\bm{\mu} + (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}(\bm{y} - \bm{A}\bm{\mu}),(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}) \, .
+	\bm{x} | \bm{y}, \bm{\theta} \sim \mathcal{N}(\bm{\mu} + (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}(\bm{y} - \bm{A}\bm{\mu}),(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}) \, \label{eq:CondPostLin}.
 \end{align}
 Then the marginal posterior distribution over the hyper-parameters can be derived as in Eq. \ref{eq:margGen}, where, as noted in \cite{fox2016fast}, the parameter $\bm{x}$ cancels and we arrive at
 \begin{align}\begin{split}
@@ -177,7 +178,8 @@ Then the chain converges to the desired target distribution  with $ \mathcal{M} 
 In practice, one can inspect the trace $\pi(\bm{x}^{(k)}, \bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence and mixing properties of the chain to evaluate ergodicity.
 The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details.
 
-\subsection{Sampling from the Marginal Posterior}
+\subsection{Metropolis within Gibbs}
+\label{subsec:MWG}
 As in Eq. \ref{eq:MTC}, when using the MTC method we sample from $\pi(\bm{\theta} |  \bm{y})$ first and then determine the full conditional $\pi(\bm{x} | \bm{\theta} , \bm{y})$ as in Eq. \ref{eq:fullCond}. To sample from $\pi(\bm{\theta} |  \bm{y})$, we use a Metropolis-within-Gibbs (MWG) sampler as described in~\cite{fox2016fast}.
 We apply the MWG sample for the two-dimensional case only, with $\bm{\theta} = (\theta_1, \theta_2)$, where we perform a Metropolis step in the $\theta_1$ direction and a Gibbs step in the $\theta_2$ direction.
 Ergodicity for this approach is proven in~\cite{roberts2006harris}.
@@ -363,7 +365,7 @@ The approximated unnormalised density is written as:
 \end{align}
 where $\xi$ is a positive constant added according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting, see Eq. \ref{eq:lebesgueWeight}, such that
 \begin{align}
-	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(x)}^2\, \,  \text{\cite[Eq. 35]{cui2022deep}}.
+	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(x)}^2\, \,  \text{\cite[Eq. 35]{cui2022deep}}. \label{eq:gamErr}
 \end{align}
 This leads to the normalised target function
 \begin{align}
@@ -386,6 +388,7 @@ Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{
 
 
 \subsection{Marginal Functions}
+\label{subsec:TTMarg}
 TT-approximations are handy when approximating integrals, as marginal functions can be easily computed which may simplify the integration significantly.
 We compute those by a procedure, to which Cui et al. \cite{cui2022deep} refer to as backwards marginalisation, see Prop. \ref{prob:ForMarg}, and to which I add the forward marginalisation, see Prob. \ref{prob:backMarg}. 
 This is similar to the left and right orthogonalisation of TT-cores~\cite{oseledets2011tensor, Oseledets2011DMRG}.
@@ -537,7 +540,7 @@ In doing so we compute the acceptance probability $  \alpha = \text{min}(w^{(s+1
 \end{align}
 is the importance ratio.
 In practise we calculate the importance ratio in the log space, where $\log f_X(\bm{x})  =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ is given as in Eq. \ref{eq:CurrMarg}, see \cite{dolgov2020approximation}.
-This leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
+In theory this leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
 
 
 \subsection{On the Error in the TT Approximation}

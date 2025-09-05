@@ -22,8 +22,8 @@ Additionally, these retrievals are conditioned on external estimates of other pa
 This does result in biased solutions, where the bias is then removed based on empirical decisions \cite{livesey2008ozonecarbonmono, Froidevaux2008snrozone}.
 Even current machine learning efforts condition on one single noise hyper-parameter value in their model, which is trained for about one month, and do not include noise as a retrieval parameter, additionally they do compare to a "ground truth" provided by the previously described optimal estimation approach \cite{werner2023machlearn, bojkov2008NeuralNet}.
 
-We address these limitations by including measurement noise as well as other hyperparamters, e. g. smoothness of the ozone profile, explicitly in both the modelling and inversion process to provide a range of ozone profiles all fitting to the data within seconds.
-Naturally, noise (hyper-parameter) is a random process and occording to that noise we deal with distributions over hyperparameters and parameters (e.g. ozone concentrations) and can provide errors according to those distributions, instead of one "optimal" solution.
+We address these limitations by including measurement noise as well as other hyper-paramters, e. g. smoothness of the ozone profile, explicitly in both the modelling and inversion process to provide a range of ozone profiles all fitting to the data within seconds.
+Naturally, noise (hyper-parameter) is a random process and according to that noise we deal with distributions over hyper-parameters and parameters (e.g. ozone concentrations) and can provide errors according to those distributions, instead of one "optimal" solution.
 This approach is called \textit{hierarchical} Bayesian modelling.
 Livesey et al. \cite{livesey2006retrieval} report "unexpected spectrally correlated noise" on the MLS aura, so here is another real reason why one should include and estimate noise.
 
@@ -32,7 +32,7 @@ This is a fairly new method within the Bayesian community, and we are the first 
 Then, instead of sampling from those posterior distributions, we are the first to utilise a tensor-train (TT) to approximate the posterior distribution, which enables us to provide estimates and uncertainties via quadrature or the inverse Rosenblatt transform (IRT).
 
 Since the RTE is weakly non-linear, we approximate the RTE with an affine map, which seems to be another novelty in the field of atmospheric remote sensing.
-Additionally, we provide a new approach by jointly inferring pressure, temperature and ozone profiles given one set of measurements.
+Additionally, we provide a new approach to tackle this inverse problem by jointly inferring pressure, temperature and ozone profiles given one set of measurements.
 
 
 

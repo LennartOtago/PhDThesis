@@ -152,7 +152,7 @@ def SIRT(seeds, SQTT, univarGrid, BackMarg, absError):
 	probVal = np.zeros(seeds.shape)
 	Approx = np.zeros(seeds.shape[1])
 	
-	# lebesgue measure for qudrature
+	# lebesgue measure for qudrature "Eq. \ref{eq:lebesgueWeight}"
 	WholeLebLam = np.zeros(dim)
 	for k in range(0, dim):
 		WholeLebLam[k] = (univarGrid[k][-1] - univarGrid[k][0])
@@ -160,12 +160,13 @@ def SIRT(seeds, SQTT, univarGrid, BackMarg, absError):
 	for k in range(1, dim):
 		lamX[k - 1] = np.prod(WholeLebLam[k:])
 	
-	# error as in "\cite[Eq. (35)]{cui2022deep}"
+	# error as in "Eq. \ref{eq:gamErr} \cite[Eq. (35)]{cui2022deep}"
 	gamError = absError / np.prod(WholeLebLam)
 	
-	# sample from first dimension "\cite[Eq. (35)]{cui2022deep}"
+	# sample from first dimension "\cite[Eq. (30)]{cui2022deep}"
 	firstMarg = gamError * lamX[0] + np.sum(BackMarg[0][0, :, :] ** 2, 1)
-	# cumulative distribution function, normalised numerical
+	# cumulative distribution function, numerically normalised  
+	# "Eq. \ref{eq:CurrCDF} \cite[Eq. (17)]{cui2022deep}"
 	firstCDF = np.cumsum(firstMarg / np.sum(firstMarg))
 	# draw samples as 'inverse transform'
 	sampls[0] = np.interp(seeds[0], firstCDF, univarGrid[0])
@@ -173,7 +174,7 @@ def SIRT(seeds, SQTT, univarGrid, BackMarg, absError):
 	
 	# sample from other dimensions
 	for n in range(0, numbSampl):
-		# interpolate linear on grid in first dimension
+		# interpolate linear on grid in first dimension "Eq. \ref{eq:LinPol} \cite{dolgov2020approximation}"
 		CurrApprCore = LinInterPolTT(SQTT[0], univarGrid[0], sampls[0][n])
 		for d in range(1, dim):
 			# marginal function condition on previous samples
@@ -183,14 +184,16 @@ def SIRT(seeds, SQTT, univarGrid, BackMarg, absError):
 			for r in range(0, rank_min):
 				# condition on previous samples
 				MargDep[r, :, :] = CurrApprCore[0, r] * BackMarg[d][r, :, :]
-	
+			
+			# "Eq. \ref{eq:CurrMarg} \cite[Eq. (31)]{cui2022deep}"
 			currMarg = gamError * lamX[d] + np.sum(np.sum(np.copy(MargDep), axis=0)** 2, axis=1)
-			currCDF = np.cumsum(currMarg / np.sum(currMarg))
+			# "Eq. \ref{eq:CurrCDF} \cite[Eq. (17)]{cui2022deep}"
+			currCDF = np.cumsum(currMarg / np.sum(currMarg)) 
 			
 			# draw sample as 'inverse transform'
 			sampls[d][n] = np.interp(seeds[d][n], currCDF, univarGrid[d])
 			probVal[d][n] = np.interp(sampls[d][n], univarGrid[d], currMarg / np.sum(currMarg))
-			# piecewise polynomial interpolation, see Eq. "\ref{eq:LinPol}", as in "\cite{dolgov2020approximation}"
+			# piecewise polynomial interpolation, "Eq. \ref{eq:LinPol} \cite{dolgov2020approximation}"
 			# multiply (condition) current dimension with previous samples
 			CurrApprCore = np.copy(CurrApprCore) @ LinInterPolTT(SQTT[d], univarGrid[d], sampls[d][n])
 	
