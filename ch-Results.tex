@@ -1,18 +1,18 @@
 \chapter{Results and Conclusions}
 \label{ch:res}
-In this chapter, we use the forward model to generate data given an underlying ground truth and then guide the reader through the process of setting up a Bayesian framework and ultimately to obtaining the posterior distributions of parameters of interest, such as ozone concentration or pressure and temperature profiles.
-Once we simulated some data, we established a choice of prior distributions within our Bayesian model, see Sec. \ref{sec:BayModel}, and formulate the posterior distributions for ozone and pressure over temperature, respectively.
+In this chapter, we use the forward model to generate data given an underlying ground truth and then guide the reader through the process of setting up a Bayesian framework and ultimately obtaining the posterior distributions of parameters of interest, such as ozone concentration or pressure and temperature profiles.
+Once we simulated some data, we established a choice of prior distributions within our Bayesian model, see Sec. \ref{sec:BayModel}, and formulated the posterior distributions for ozone and pressure over temperature, respectively.
 In doing so, we sample from the marginal posterior for ozone and compare that to the tensor-train (TT) approximation.
-Based on the linear forward model $\bm{A}_L$ we calculate the mean and the covariance matrix of the full conditional posterior of ozone and generate an affine subspace with samples from that distribution.
+Based on the linear forward model $\bm{A}_L$, we calculate the mean and the covariance matrix of the full conditional posterior of ozone and generate an affine subspace with samples from that distribution.
 Then we approximate the non-linear forward model $\bm{A}_{NL} \approx \bm{M} \bm{A}_{NL}$, with the affine map$\bm{M}$, see Sec. \ref{sec:affineMap}.
 We repeat the marginal and then conditional (MTC) scheme to provide a posterior distribution of ozone VMR based on the approximate forward model as well as posterior pressure and temperature profiles, and compare to a ground truth.
 Lastly, we evaluate some errors occurring during the process.
-All programming and analysis are done in Python on a MacBook Pro from 2019 with a 2.4 GHz quad-core Intel Core i5 processor.
+All of programming and analysis is done in Python and the reported computation times correspond to a MacBook Pro from 2019 with a 2.4 GHz quad-core Intel Core i5 processor.
 
 \section{Simulate Data based on a Ground Truth}
-We take a ground truth ozone VMR at distinct pressure values generated from some data \cite{MLSdata} of the MLS on the aura satellite within the Antarctic region and with a peak in high altitude, see Fig. \ref{fig:O3Samp}, which seems to be a typical night time profile \cite{Lee2020NightOzone}.
+We take a ground truth ozone VMR at distinct pressure values generated from some data \cite{MLSdata} of the MLS on the Aura satellite within the Antarctic region and with a peak in high altitude, see Fig. \ref{fig:O3Samp}, which seems to be a typical nighttime profile \cite{Lee2020NightOzone}.
 
-We target Ozone at a frequency of 235.71 Ghz, which lies within the region where the MLS observers ozone \cite{livesey2008ozonecarbonmono, waters2006earth}.
+We target Ozone at a frequency of 235.71 GHz, which lies within the region where the MLS observers ozone \cite{livesey2008ozonecarbonmono, waters2006earth}.
 The corresponding wave number is $\nu = 7.86\text{cm}^{-1}$.
 We recursively calculate the geometric height with the hydrostatic equilibrium equation
 \begin{align}
@@ -71,13 +71,13 @@ We calculate the absorption constant $k(\nu,T)$ as in Eq. \ref{eq:absRTE}, follo
 This gives us a non-linear forward model matrix $\bm{A}_{NL} = \bm{A}(\bm{x}, \bm{p}, \bm{T}) \in \mathbb{R}^{m \times n}$, where $\bm{x}\in \mathbb{R}^{n}$ is vector related to the ozone VMR, $\bm{p}\in \mathbb{R}^{n}$ is the vector describing the pressure values and $\bm{T}\in \mathbb{R}^{n}$ the temperature values.
 
 Lastly we add normally distributed $\bm{\nu} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ noise so that the SNR is $150$, see Eq. \ref{eq:SNR}, similar to \cite{Froidevaux2008snrozone}, where a signal with a maximal spectral intensity of around $100\text{K}$ and a noise range of $0.4$ to $1.6\text{K}$ is reported.
-We would like to note that the methods used in this thesis, will work with different SNR or other frequencies.
+We note that the methods used in this thesis will work with different SNRs or other frequencies.
 
-When we plot the data in Fig. \ref{fig:DataPlot}, we see that, as mentioned in Section \ref{sec:SVD}, the data is noise dominated in higher altitudes.
+When we plot the data in Fig. \ref{fig:DataPlot}, we see that, as mentioned in Section \ref{sec:SVD}, the data is noise-dominated in higher altitudes.
 \begin{figure}[th!]
 	\centering
 	\includegraphics{DataPlot.png}
-	\caption[Logarithmic plot of data points at different tangent height.]{Logarithmic plot of data points at different tangent height. Note that negative values are not appearing and we see that at noise is dominating at high altitudes.}
+	\caption[Logarithmic plot of data points at different tangent height.]{Logarithmic plot of data points at different tangent height. Note that negative values are not appearing, and we see that the noise is dominating at high altitudes.}
 	\label{fig:DataPlot}
 \end{figure}
 Now, given the data, we like to determine the posterior distributions over ozone $\bm{x}$, pressure $\bm{p}$ and temperature $\bm{T}$ at different heights.
@@ -161,14 +161,15 @@ Now, given the data, we like to determine the posterior distributions over ozone
 
 A directed acyclic graph (DAG) helps us to visualise the measurement process and correlations between parameters.
 We draw a DAG in Fig. \ref{fig:DAGComplete} and already see that the parameters pressure $\bm{p}$, temperature $\bm{T}$ and ozone $\bm{x}$ are correlated, and progress deterministically (dashed line) into the forward model, via $\bm{x} \times \bm{p} / \bm{T}$ and generate a space of all possible noise free data $\bm{\Omega}$, through their respective prior distributions, from which we observe some data.
-Ideally we should infer all of them jointly, but since that is computationally very expensive, we condition on either ozone when inferring pressure and temperature or on pressure and temperature when inferring ozone.
+Ideally, we should infer all of them jointly, but that is computationally very expensive.
+Instead, we condition on either ozone when inferring pressure and temperature or on pressure and temperature when inferring ozone.
 Then one should iteratively proceed until convergence, but this is not the focus of this thesis since we provide the underlying Bayesian framework and methods to obtain posterior distributions of either one and suggest adjustments to the proposed framework in Ch. \ref{ch:Concl}.
 Since we consider a hierarchical Bayesian framework, we include the hyper-parameters $\gamma, \delta, p_0, b, \bm{h}_T, \bm{T}_0, \bm{a}$ within the modelling process.
 Here pressure and temperature are functionally dependent on $p_0, b, \bm{h}_T, \bm{T}_0, \bm{a}$, see Eq. \ref{eq:tempFunc} and Eq. \ref{eq:pressFunc}, visualised through dashed lines, but $\delta$, accounting for the smoothness of $\bm{x}$, determines the precision matrix $\bm{Q}$ of the prior distribution $\pi(\bm{x}|\delta)$, which then represents a distribution over non-parametric $\bm{x}$ (solid line).
-Similarly $\gamma$ determines the noise covariance matrix $\bm{\Sigma}$, which then describes the noise-vector as $\eta \sim \mathcal{N}( \bm{0}| \gamma^{-1} \bm{I})$, where assume independent and identically distributed normal noise with zero mean.
+Similarly, $\gamma$ determines the noise covariance matrix $\bm{\Sigma}$, which then describes the noise vector as $\eta \sim \mathcal{N}( \bm{0}| \gamma^{-1} \bm{I})$, where we assume independent and identically distributed normal noise with zero mean.
 Each of those hyper-parameters is described by hyper-prior distributions $\pi(\gamma, \delta, p_0, b, \bm{h}_T, \bm{T}_0, \bm{a} |\theta_{\gamma}, \theta_{\delta},\theta_{p_0},\theta_{b},\theta_{\bm{h}},\theta_{T_0},\theta_{\bm{a}} )$ (solid lines).
 Here $\theta_{\gamma}, \theta_{\delta},\theta_{p_0},\theta_{b},\theta_{\bm{h}},\theta_{T_0},\theta_{\bm{a}}$ are set by us and determine in this case gamma distributions $\gamma, \delta \sim \pi(\theta_{\gamma}, \theta_{\delta})$, so that e.g. $\gamma \sim \Gamma(\alpha_{\gamma},\beta_{\gamma}) $ with $\theta_{\gamma} = \{\alpha_{\gamma},\beta_{\gamma} \}$, and a normal distribution $p_0, b, \bm{h}_T, \bm{T}_0, \bm{a} \sim \pi( \theta_{p_0},\theta_{b},\theta_{\bm{h}},\theta_{T_0},\theta_{\bm{a}})$, so that e.g. $b \sim \mathcal{N}(\mu_b, \sigma_b)$ and $\theta_{b} = \{\mu_b, \sigma_b\}$
-Note that we write the non-linear forward model, with with which we generate the data as $\bm{A}_{NL}$, but denote the approximated forward model as $\bm{M} \bm{A}_L$, which we will ultimately use to determine posterior distribution over the parameters.
+Note that we write the non-linear forward model, with which we generate the data as $\bm{A}_{NL}$, but denote the approximated forward model as $\bm{M} \bm{A}_L$, which we will ultimately use to determine the posterior distribution over the parameters.
 
 
 Since the noise is normally distributed, so is the likelihood function $\pi(\bm{y} | \bm{x}, \bm{p}, \bm{T})$.
@@ -177,7 +178,7 @@ Then the joint posterior distribution
 	\pi(p_0,b,\bm{h_T},\bm{a},\delta, \gamma, \bm{x}| \bm{y}) \propto \pi(\bm{y} | \bm{x}, \bm{p}, \bm{T}) \pi(p_0,b,\bm{h_T},\bm{a},\delta, \gamma) 
 \end{align}
 over all 18 hyper-parameters and the parameter $\bm{x} \in \mathbb{R}^{45}$ is 63 dimensional.
-Instead of characterising the joint posterior we factorise the posterior into
+Instead of characterising the joint posterior, we factorise the posterior into
 \begin{align}
 	\pi(p_0,b,\bm{h_T},\bm{a},\delta, \gamma, \bm{x}| \bm{y}) = \pi(\delta, \gamma, \bm{x}| p_0,b,\bm{h_T},\bm{a},\bm{y}) \pi(p_0,b,\bm{h_T},\bm{a}|\delta, \gamma, \bm{x}, \bm{y}) \, , 
 \end{align}
@@ -238,13 +239,13 @@ Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \bm{I})$, we 
 	\label{eq:O3BayMode}
 \end{subequations}
 with a normally distributed likelihood $\pi(\bm{y} |  \bm{x}, \gamma)$ including the forward model matrix $\bm{A}$ and prior distributions $\pi(\bm{x} |  \delta)$ and $\pi(\delta, \gamma)$, the noise covariance matrix $\gamma^{-1} \bm{I}$, the prior precision matrix $\delta \bm{L}$ and the prior mean set to zero, as in ~\cite{fox2016fast}.
-The chosen Bayesian model is very similar to the regularisation approach, since we like to show we are able to receive much more meaningful results compared to one regularisation solution.
+The chosen Bayesian model is very similar to the regularisation approach, since we like to show that we receive much more meaningful results compared to a single regularisation solution.
 
 
 \subsubsection{Prior Modelling}
 To complete the Bayesian framework, we have to define prior distributions over the hyper-parameters and parameters.
 Ideally, we define the prior distributions as uninformative as possible, and include functional dependencies and physical properties.
-Here we can already see that the our prior model is not taking into account that ozone values can not be negative and we currently have no means to include that in a non-parametric approach.
+Here we can already see that our prior model is not taking into account that ozone values can not be negative, and we currently have no means to include that in a non-parametric approach.
 
 
 First, we set the precision matrix of the prior distribution $\bm{x}|\delta$ to
@@ -262,11 +263,11 @@ First, we set the precision matrix of the prior distribution $\bm{x}|\delta$ to
 \end{align}
 which is a 1-dimensional Graph Laplacian as in \cite{wang2015graphs,fox2016fast} with Dirichlet boundary condition.
 This matrix will also act as the regulariser later in the Regularisation section, see Sec. \ref{sec:regularise}.
-We reduce the dimension of $\bm{x}$ to from $45$ to $34$ by discarding every second ozone VMR over a height of $\approx47$km.
-Doing that, while not changing $\bm{L}$, we induce a larger correlation in between point at higher altitude.
+We reduce the dimension of $\bm{x}$ from $45$ to $34$ by discarding every second ozone VMR over a height of $\approx47$km.
+Doing that, while not changing $\bm{L}$, we induce a larger correlation between points at higher altitude.
 For $\delta$ and $\gamma$ we pick  relatively uninformative gamma distributions so that $\gamma \sim \mathcal{T}(\bm{\theta_{\gamma}}) $ and $\delta \sim \mathcal{T}(\bm{\theta_{\delta}})$, where $\bm{\theta_{\gamma}} = \bm{\theta_{\delta}} = (1,10^{-35})$, see Fig. \ref{fig:MargPostHistTT}, similar to \cite{fox2016fast}.
 These gamma distributions have another advantage when sampling using a MWG sampler from the marginal posterior distribution $\pi(\gamma,\delta | \bm{y})$, and $\pi(\gamma | \lambda, \bm{y}) \sim \mathcal{T}(\cdot)$ is gamma distribution and easy to sample from, with the regularisation parameter $\lambda = \delta / \gamma $.
-We plot the corresponding prior ozone profiles according to $\bm{x}\sim \mathcal{N}(0, \delta \bm{L})$ in Fig. \ref{fig:O3Prior}, where can see that the prior distribution is not informative but does include negative values.
+We plot the corresponding prior ozone profiles according to $\bm{x}\sim \mathcal{N}(0, \delta \bm{L})$ in Fig. \ref{fig:O3Prior}, where we see that the prior distribution is not informative but does include negative values.
 See Tab. \ref{tab:priors} for a summary. 
 
 
@@ -283,7 +284,7 @@ into
 \end{align}
 the marginal posterior $\pi(\gamma, \delta | \bm{y})$ and conditional posterior $\pi( \bm{x}|\gamma, \delta, \bm{y})$.
 Fox and Norton call this method the marginal and then conditional method (MTC) \cite{fox2016fast}, where we break the correlation structure between $\bm{x}$ and $\gamma, \delta$ as illustrated in Fig. \ref{fig:RueHeld} by marginalising over $\bm{x}$.
-For the liner-Gaussian case $\bm{x}$ cancels in the marginal posterior over the hyper-parameters, which we evaluate first and \textit{then} the conditional posterior of $\pi(\bm{x} | \gamma, \delta)$.
+For the linear-Gaussian case, $\bm{x}$ cancels in the marginal posterior over the hyper-parameters, which we evaluate first and \textit{then} the conditional posterior of $\pi(\bm{x} | \gamma, \delta)$.
 
 Consequently, for the hierarchical model specified in Eq.~\ref{eq:O3BayMode}, the marginal posterior distribution over the hyper-parameters is given by
 \begin{align}
@@ -304,7 +305,7 @@ Note that, when changing variables from $\delta = \lambda \gamma$ to $\lambda$ t
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{f_and_g_phd.png}
-	\caption[Plot of the functions $f(\lambda)$ and $g(\lambda)$ for marginal posterior.]{Plot of the functions $f(\lambda)$ and $g(\lambda)$ from the marginal posterior for a wide range of $\lambda = \delta / \gamma$. We plot the third order Taylor series in black around the mode of the marginal posterior (vertical line) for the sampling range of $\lambda$ within the MWG algorithm.}
+	\caption[Plot of the functions $f(\lambda)$ and $g(\lambda)$ for marginal posterior.]{Plot of the functions $f(\lambda)$ and $g(\lambda)$ from the marginal posterior for a wide range of $\lambda = \delta / \gamma$. We plot the third-order Taylor series in black around the mode of the marginal posterior (vertical line) for the sampling range of $\lambda$ within the MWG algorithm.}
 	\label{fig:fandg}
 \end{figure}
 Most of the computational effort, for each function evaluation of the marginal posterior in Eq. \ref{eq:MargPostAppl}, lies in the calculation of $f(\lambda)$ in Eq. \ref{eq:fAppl} and $g(\lambda)$ in Eq. \ref{eq:gAppl}.
@@ -359,8 +360,8 @@ In this thesis, we compute the mean
 	\Sigma_{\bm{x}|\bm{y}} = \int \gamma^{-1}  \pi(\gamma | \bm{y} ) \, \text{d} \gamma \, \int  \bm{B}_{\lambda}^{-1} \, \pi(\lambda | \bm{y} )  \, \text{d} \lambda  \approx \sum {\gamma_i}^{-1}\pi(\gamma_i| \bm{y}) \sum \bm{B}_{\lambda_i}^{-1}\pi(\lambda_i| \bm{y})\, \label{eq:CovInt}
 \end{align}
 of $\pi(\bm{x}| \delta, \gamma, \bm{y})$ as weighted expectations, by quadrature \cite[Sec. 2.1]{Dick_Kuo_Sloan_2013}, with $\sum \pi(\lambda_i| \bm{y}) = \sum \pi(\gamma_i| \bm{y}) = 1$.
-The weights $\pi(\lambda_i| \bm{y})$ and $\pi(\gamma_i| \bm{y})$ are either given by the TT approximation or by the bins for the sample based histograms.
-If calculating the variance is too costly, the randomise then optimise method as in \cite{bardsley2015randomize, fox2016fast} may be a feasible alternative to draw sample from Eq. \ref{eq:CondPost}.
+The weights $\pi(\lambda_i| \bm{y})$ and $\pi(\gamma_i| \bm{y})$ are either given by the TT approximation or by the bins for the sample-based histograms.
+If calculating the variance is too costly, the randomise then optimise method as in \cite{bardsley2015randomize, fox2016fast} may be a feasible alternative to draw a sample from Eq. \ref{eq:CondPost}.
 
 
 
@@ -420,14 +421,14 @@ $\bm{\theta}_{T_0} = (\mu_{T_0}, \sigma_{T_0})$, $\bm{\theta}_{p_0} = (\mu_{p_0}
 
 
 \subsubsection{Prior Modelling}
-To complete the model we have to define a sensible hyper-prior distribution $\pi(\bm{h}_T, \bm{a}, T_0)$.
+To complete the model, we have to define a sensible hyper-prior distribution $\pi(\bm{h}_T, \bm{a}, T_0)$.
 In doing so, we choose the variance and mean of the normally distributed hyper-prior distribution $\pi(\bm{h}_T)$ so that the temperature profile maintains its structure, $ h_{T, i} < h_{T, i+1}$ for $i = 1,\dots, 5$, see \ref{fig:HeightPriors}.
 Further, we define $\pi(\bm{a})$ as normally distributed, because we find, through exploratory and prior analysis, see Fig. \ref{fig:PriorPressOverTemp}, that the data is uninformative about the temperature profile.
-Similarly, we set $\pi(T_0)$ to a normal distribution so that is mimics a daily temperature variability of roughly 30K.
-The hyper-prior distribution $\pi(p_0, b)$ for pressure related hyper-parameters are also normally distributed.
+Similarly, we set $\pi(T_0)$ to a normal distribution so that it mimics a daily temperature variability of roughly 30K.
+The hyper-prior distribution $\pi(p_0, b)$ for pressure-related hyper-parameters is also normally distributed.
 We choose the variance for $\pi(p_0)$ so that $p_0$ has a variability of around 80hPa, close to what we can observe when looking at weather data.
-Note the we fit one exponential function to ground truth pressure values between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$, so that the pressure values $p_0$ at sea level maybe skewed due to that approximation.
-To describe pressure values from sea level to $h_{L,0}$ we recommend using another exponential function with a different gradient.
+Note that we fit one exponential function to ground truth pressure values between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$, so that the pressure values $p_0$ at sea level may be skewed due to that approximation.
+To describe pressure values from sea level to $h_{L,0}$, we recommend using another exponential function with a different gradient.
 We summarise the hyper-prior means and variances in Tab. \ref{tab:priors}.
 \begin{figure}[ht!]
 	\centering
@@ -454,12 +455,12 @@ We summarise the hyper-prior means and variances in Tab. \ref{tab:priors}.
 
 We plot prior samples of the pressure $\bm{p}$ in Fig. \ref{PriorPress}, the temperature $\bm{T}$ in Fig. \ref{PriorTemp} and the ratio $\bm{p}/\bm{T}$ in Fig. \ref{PriorPressOverTemp} against the ground truth profiles.
 Additionally, we plot prior samples of $1/\bm{T}$ in Fig. \ref{fig:OverTempPrior}.
-Here we already observe that $\bm{p}/\bm{T}$ inherits the structure of the pressure function and hence the data is uninformative about the temperature and that is one of the reasons why we chose those hyper-prior distributions.
+Here we already observe that $\bm{p}/\bm{T}$ inherits the structure of the pressure function and hence the data is uninformative about the temperature, and that is one of the reasons why we chose those hyper-prior distributions.
 
 \subsubsection{Posterior Distribution}
-Then we can define the posterior distribution according to Bayes theorem
+Then we can define the posterior distribution according to Bayes' theorem
 \begin{align}
-		\pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert_{L^2}^2 \Bigr\} \pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T})\, ,
+	\pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert_{L^2}^2 \Bigr\} \pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T})\, ,
 \end{align}
 which is, conditioned on the noise hyper-parameter $\gamma$ and the ozone profile $\bm{x}$, a 16 dimensional distribution.
 We either use the \texttt{t-walk} algorithm \cite{christen2010general} to draw samples from $\pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})$ or we utilise a TT approximation on a predefined grid to then use the SIRT method to draw samples from that posterior.
