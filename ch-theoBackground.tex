@@ -573,8 +573,11 @@ On the other hand (Kantorovich-Rubinstein duality), we can describe the 1-Wasser
 as the lowest upper bound of differences in expecations of the 1-Lipschitz function $h$ in between the two distributions $\pi$ and $\tilde{\pi}$, with distance measure $c(\bm{x},\tilde{\bm{x}})= \lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2} $ for $\mathcal{X} \in \mathbb{R}^d$.
 For two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(N)}\} \sim \pi$ and $\{\tilde{ \bm{x}}^{(1)},\dots,\tilde{\bm{x}}^{(M)}\} \sim \tilde{\pi}$ the calculation of the Wasserstein distance becomes an optimisation problem, that is to find the best permutation (order) of samples weighted by their distribution value according to an appropriate distance measure \cite{feydy2020OT}.
 This gives us an upper bound of the absolute error in between the expected value of any 1-Lipschitz function $h$, e.g the upper bound of absolute differences in means of $\pi$ and $\tilde{\pi}$. 
-
-
+\begin{align}
+\underset{\text{all comb. of $i$ and $j$}}{\text{min}} \sum^M_{j = 1} \sum^N_{i =1} \pi(\bm{x}^{(i)}) \tilde{\pi}(\tilde{\bm{x}}^{(j)}) \lVert\bm{x}^{(i)}  -  \tilde{\bm{x}}^{(j)} \rVert_{L^2}
+\end{align}
+\cite[Eq. 3.166]{feydy2020OT}
+where $\sum^N_{i =1} \pi(\bm{x}^{(i)}) = \sum^M_{j = 1} \tilde{\pi}(\tilde{\bm{x}}^{(j)})= 1 $
 %Now consider the 2-Wasserstein distance
 %\begin{align}
 %	W_2(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}  \Bigg(\int_{\mathcal{X} \times \mathcal{X}} c(\bm{x},\tilde{\bm{x}})^2 \, \nu(\bm{x},\tilde{\bm{x}}) d\bm{x} d\tilde{\bm{x}} \Bigg)^{1/2}

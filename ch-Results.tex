@@ -162,7 +162,7 @@ Now, given the data, we like to determine the posterior distributions over ozone
 A directed acyclic graph (DAG) helps us to visualise the measurement process and correlations between parameters.
 We draw a DAG in Fig. \ref{fig:DAGComplete} and already see that the parameters pressure $\bm{p}$, temperature $\bm{T}$ and ozone $\bm{x}$ are correlated, and progress deterministically (dashed line) into the forward model, via $\bm{x} \times \bm{p} / \bm{T}$ and generate a space of all possible noise free data $\bm{\Omega}$, through their respective prior distributions, from which we observe some data.
 Ideally we should infer all of them jointly, but since that is computationally very expensive, we condition on either ozone when inferring pressure and temperature or on pressure and temperature when inferring ozone.
-Then one should iteratively proceed until convergence, but this is not the focus of this thesis since we provide the underlying Bayesian framework and methods to obtain posterior distributions of either one.
+Then one should iteratively proceed until convergence, but this is not the focus of this thesis since we provide the underlying Bayesian framework and methods to obtain posterior distributions of either one and suggest adjustments to the proposed framework in Ch. \ref{ch:Concl}.
 Since we consider a hierarchical Bayesian framework, we include the hyper-parameters $\gamma, \delta, p_0, b, \bm{h}_T, \bm{T}_0, \bm{a}$ within the modelling process.
 Here pressure and temperature are functionally dependent on $p_0, b, \bm{h}_T, \bm{T}_0, \bm{a}$, see Eq. \ref{eq:tempFunc} and Eq. \ref{eq:pressFunc}, visualised through dashed lines, but $\delta$, accounting for the smoothness of $\bm{x}$, determines the precision matrix $\bm{Q}$ of the prior distribution $\pi(\bm{x}|\delta)$, which then represents a distribution over non-parametric $\bm{x}$ (solid line).
 Similarly $\gamma$ determines the noise covariance matrix $\bm{\Sigma}$, which then describes the noise-vector as $\eta \sim \mathcal{N}( \bm{0}| \gamma^{-1} \bm{I})$, where assume independent and identically distributed normal noise with zero mean.
@@ -873,7 +873,9 @@ The wasserstein distance between the normalised true marginal posterior $\pi(\la
 %We consider this error negligible because the absolute error at $\gamma_{\text{max}}$ and $\lambda_{\text{max}}$ is smaller than $10^{-24} \approx 0$.
 %Note that one can reduce the maximum errors when approximation $f(\lambda)$ at the mean of $\pi(\lambda,\gamma|\bm{y})$ instead of the modes since $\pi(\lambda | \bm{y})$ is skewed, but we don't see noticeable differences in the conditional posterior $\pi(\bm{x}|\lambda,\gamma,\bm{y})$ when doing so.
 %We consider these errors as tolerable.
-
+$\lVert \pi(\bm{x}_{MH}) - \tilde{\pi}(\bm{x}_{MH}) \rVert / \lVert \pi(\bm{x}_{MH}) \rVert$
+$\lVert \mathbb{E}\big[ \bm{x} \big]  -  \mathbb{E} \big[ \tilde{\bm{x}} \big] \rVert_{L^2}$
+$\lVert \mathbb{E}  \big[\bm{x}\big] -  \mathbb{E} \big[ \bm{x}_{MH}\big]  \rVert_{L^2}$
 \subsubsection{Error due to grid size}
 When we calculate the mean and covariance matrix of the full conditional $\pi(\bm{x}|\bm{y})$ we have to bin up the samples of the marginal posterior $\pi(\gamma, \delta |\bm{y})$ or use a TT approximation on a predefined grid with a certain number of grid points, we like to give an estimate for this error as well.
 In doing we bin up samples and use the height $\tilde{\pi}(\bm{\theta}^{(k)}_d)$ for a bin $k = 1, \dots, \text{N}_b$ to calculate the mean $\tilde{\mu}_d = \sum_{\text{N}_b} \tilde{\pi}(\bm{\theta}^{(k)}_d) $.
