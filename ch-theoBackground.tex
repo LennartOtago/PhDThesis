@@ -260,15 +260,15 @@ If the parameters $\bm{x}$ are functionally dependent on the hyper-parameters $\
 The t-walk is employed as a black-box sampler, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
 Convergence to the target distribution is guaranteed by construction of the algorithm.
 
-\section{Numerical Approximation Methods - Tensor Train (TT)}
+\section{Numerical Approximation Methods - Tensor-Train (TT)}
 \label{sec:tensortrain}
 %\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
-Instead of sampling from a target distribution $\pi(\bm{x})$ we can approximate that distribution on a d-dimensional grid with far fewer function evaluation compared to sampling methods using a tensor train (TT) approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, with  $\bm{x}\in \mathbb{R}^d$.
-First, we provide a short overview of probability spaces and their associated measures, as a foundation for calculating marginal probability distributions from the tensor train format.
-Then we explain how we calculate marginal distribution and generate samples via the inverse Rosenblatt transform (IRT).
-Note that we follow the notation of Cui et al. \cite{cui2022deep} to introduce this methodology.
+Instead of sampling from a target distribution $\pi(\bm{x})$ we can approximate that distribution on a d-dimensional grid with far fewer function evaluation compared to sampling methods using a tensor-train (TT) approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, with  $\bm{x}\in \mathbb{R}^d$.
+First, we provide a short overview of probability spaces and their associated measures. 
+I am not claiming this overview to be complete but consider it helpful to understand the notation in \cite{cui2022deep}, which we follow to approximate functions in the TT format.
+Then we explain how we calculate marginal distribution from an approximated probaility density in the TT format and generate samples via the inverse Rosenblatt transform (IRT).
 
-Assume that the triple $(\Omega, \mathcal{F}, \mathbb{P})$ defines a probability space, where $\Omega$ denotes the complete sample space, $\mathcal{F}$ is a $\sigma$-algebra consisting of a collection of countable subsets $\{A_n\}_{n \in \mathbb{N}}$ with $A_n \subseteq \Omega$, and $\mathbb{P}$ is a probability measure defined on $\mathcal{F}$. The formal conditions for $\mathbb{P}$ to be a probability measure, and for $\mathcal{F}$ to be a $\sigma$-algebra over $\Omega$, are given in Appendix~\ref{ch:Mesure}.
+Assume that the triple $(\Omega, \mathcal{F}, \mathbb{P})$ defines a probability space, where $\Omega$ denotes the complete sample space, $\mathcal{F}$ is a $\sigma$-algebra consisting of a collection of countable subsets $\{A_n\}_{n \in \mathbb{N}}$ with $A_n \subseteq \Omega$, and $\mathbb{P}$ is a probability measure on $\mathcal{F}$. The formal conditions for $\mathbb{P}$ to be a probability measure, and for $\mathcal{F}$ to be a $\sigma$-algebra over $\Omega$, are given in Appendix~\ref{ch:Mesure}.
 We denote
 \begin{align}
 	\mathbb{P}(A) = \int_A \diff  \mathbb{P}
@@ -281,7 +281,7 @@ By applying the Radon-Nikodym theorem~\cite{kopp2004measintprob}, we can change 
 where $\mathrm{d}\bm{x}$ is a reference measure on the same probability space, commonly referred to as the Lebesgue measure. 
 The Radon-Nikodym derivative $\frac{\mathrm{d} \mathbb{P}}{\mathrm{d}\bm{x}}$ of $\mathbb{P}$ with respect to $\bm{x}$ is often interpreted as the probability density function (PDF) $\pi(\bm{x})$. Thus, we say that $\mathbb{P}$ has a density $\pi(\bm{x})$ with respect to $\bm{x}$~\cite[Chapter 10]{simonnet1996measprob}.
 
-Now, let $X: \Omega \longrightarrow \mathbb{R}^d$ be a $d$-dimensional random variable mapping from the probability space $(\Omega, \mathcal{F}, \mathbb{P})$ to the measurable space $(\mathbb{R}^d, \mathcal{X})$, where $\mathcal{X}$ is a collection of subsets in $\mathbb{R}^d$.
+Now, let $X: \Omega \longrightarrow \mathbb{R}^d$ be a $d$-dimensional random variable mapping from the probability space $(\Omega, \mathcal{F}, \mathbb{P})$ to the measurable space $(\mathbb{R}^d, \mathcal{X})$, where $\mathcal{X}$ is a collection of subsets in $\mathbb{R}^d$ \cite{VesaInvLect}.
 Then the associated PDF $\pi(\bm{x})$ is a joint density of $X$, induced by the probability measure on $\Omega$~\cite{VesaInvLect, kopp2004measintprob}.
 As in~\cite{cui2022deep}, we can define the parameter space as the Cartesian product $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$ and $\bm{x} = ( x_1,\dots ,x_k,\dots,x_d )$.
 The marginal density function for the $k$-th component is then given by
@@ -294,22 +294,22 @@ Here, we introduce a weight function $\uplambda(x)$, which can be useful for qua
 	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \diff x_i. \label{eq:lebesgueWeight}
 \end{align}
 
-In the tensor train (TT) format, the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost as $\pi(\bm{x})$ is approximated by
+In the tensor-train (TT) format, the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost as $\pi(\bm{x})$ is approximated by
 \begin{align*}
 	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d)  \in \mathbb{R},
 \end{align*}
 which is a sequence of matrix multiplications, with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$ for a fixed point $\bm{x} = (x_1, \dots, x_d)$ on a predefined $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$. 
 We call $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ a TT-core with ranks $ r_{k-1} = r_k= r$, where the outer ranks are $r_0 = r_d = 1$, representing each dimension on $n$ grid points and connecting to neighbouring dimensions through its ranks.
-This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d$ over the whole parameter space $\mathcal{X}$ using $2nr + (d-2)nr^2$ evaluation points, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluation.
+This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d$ over the parameter space $\mathcal{X}$ using $2nr + (d-2)nr^2$ evaluation points, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluation.
 Consequently, the marginal target distribution
 \begin{align}
 	\begin{split}
 		f_{X_k}(x_k) \approx \frac{1}{z} \Big|\, 
-		&\left( \int_{\mathbb{R}} \uplambda_1(x_1) \tilde{\pi}_1(x_1) \, \diff x_1 \right) \cdots 
-		\left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \tilde{\pi}_{k-1}(x_{k-1}) \, \diff x_{k-1} \right) \\
+		&\left( \int_{\mathcal{X}_1} \uplambda_1(x_1) \tilde{\pi}_1(x_1) \, \diff x_1 \right) \cdots 
+		\left( \int_{\mathcal{X}_{k-1}} \uplambda_{k-1}(x_{k-1}) \tilde{\pi}_{k-1}(x_{k-1}) \, \diff x_{k-1} \right) \\
 		&\quad \uplambda_k(x_k) \tilde{\pi}_k(x_k) \\
-		& \left( \int_{\mathbb{R}} \uplambda_{k+1}(x_{k+1}) \tilde{\pi}_{k+1}(x_{k+1}) \,\diff x_{k+1} \right) \cdots 
-		\left( \int_{\mathbb{R}} \uplambda_d(x_d) \tilde{\pi}_d(x_d) \, \diff x_d \right)
+		& \left( \int_{\mathcal{X}_{k+1}} \uplambda_{k+1}(x_{k+1}) \tilde{\pi}_{k+1}(x_{k+1}) \,\diff x_{k+1} \right) \cdots 
+		\left( \int_{\mathcal{X}_{d}} \uplambda_d(x_d) \tilde{\pi}_d(x_d) \, \diff x_d \right)
 		\Big| 
 	\end{split}
 \end{align}
@@ -376,11 +376,11 @@ Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{
 \begin{align}
 	\begin{split}
 		f_{X_k}(x_k)  \approx \frac{1}{z} \Bigg(&\xi \prod_{i=1}^{k-1} \uplambda_i(\mathcal{X}_i) \prod_{i=k+1}^{d} \uplambda_i(\mathcal{X}_i) \\
-		&+ \left( \int_{\mathbb{R}} \uplambda_1(x_1) \bm{G}_1^2(x_1)  \, \diff x_1 \right) \cdots 
-		\left( \int_{\mathbb{R}} \uplambda_{k-1}(x_{k-1}) \bm{G}_{k-1}^2(x_{k-1}) \, \diff x_{k-1} \right) \\
+		&+ \left( \int_{\mathcal{X}_1} \uplambda_1(x_1) \bm{G}_1^2(x_1)  \, \diff x_1 \right) \cdots 
+		\left( \int_{\mathcal{X}_{k-1}} \uplambda_{k-1}(x_{k-1}) \bm{G}_{k-1}^2(x_{k-1}) \, \diff x_{k-1} \right) \\
 		& \uplambda_k(x_k) \bm{G}_k^2(x_k)  \\
-		&\left( \int_{\mathbb{R}} \uplambda_{k+1}(x_{k+1}) \bm{G}_{k+1}^2(x_{k+1})  \,\diff x_{k+1} \right) \cdots 
-		\left( \int_{\mathbb{R}} \uplambda_d(x_d) \bm{G}_d^2(x_d)  \, \diff x_d \right) \Bigg).
+		&\left( \int_{\mathcal{X}_{k+1}} \uplambda_{k+1}(x_{k+1}) \bm{G}_{k+1}^2(x_{k+1})  \,\diff x_{k+1} \right) \cdots 
+		\left( \int_{\mathcal{X}_d} \uplambda_d(x_d) \bm{G}_d^2(x_d)  \, \diff x_d \right) \Bigg).
 	\end{split}
 \end{align}
 
