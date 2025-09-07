@@ -74,11 +74,11 @@ The singular values $\sigma_i $, ordered in size from the largest $\sigma_1$ to 
 If we have lots of high-valued singular values, we can say that the forward model is informative and vice versa.
 The right singular vectors indicate which structures of the parameter space are picked up by the model.
 
-Further, for very small singular values $\sigma_i \ll \sigma_1/\text{SNR}$ below the root mean square (rms) noise level or the noise standard deviation (std.), we can introduce an effective rank $r_{\text{eff}} \leq r$.
+Further, for very small singular values $\sigma_i \ll \sigma_1/\text{SNR}$ below the RMS noise level or the noise standard deviation (STD), we can introduce an effective rank $r_{\text{eff}} \leq r$.
 Then information of parameter space spanned by $ \{\bm{v}_{r_{\text{eff}} +1}, \dots ,\bm{v}_r \}$ is not passed through the forward model and the data is noise dominated in the corresponding data space, see Figure \ref{fig:nullSpace}.
 This is based on the rough assumption that if we define the signal-to-noise ratio (SNR) as
 \begin{align}
-	\text{SNR} \coloneqq \frac{\max(y)}{\text{std. noise}} = \frac{\text{peak signal}}{\text{rms noise}} \text{\cite{fox2025BlokkLecNot}} \label{eq:SNR}
+	\text{SNR} \coloneqq \frac{\max(y)}{\text{STD noise}} = \frac{\text{peak signal}}{\text{RMS noise}} \text{\cite{fox2025BlokkLecNot}} \label{eq:SNR}
 \end{align}
 then the maximum singular value $\max(y) \approx \sigma_1$ and the information transmitted through the forward model corresponds roughly to the singular values $\sigma_i \gtrsim \max(y)/ \text{SNR}$.
 See \cite{tan2016LecNot} for a more comprehensive analysis.

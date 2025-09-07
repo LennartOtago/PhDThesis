@@ -544,7 +544,7 @@ In theory this leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots,
 
 
 \subsection{On the Error in the TT Approximation}
-A straight forward way to asses the error from the TT approximation is to calculate the relative root mean squared error
+A straight forward way to asses the error from the TT approximation is to calculate the relative root mean squared error (RMS)
 \begin{align}
 	\Bigg( \frac{ \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(\bm{x}) \diff \bm{x}}{ \int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \diff \bm{x} } \Bigg)^{1/2} =	\frac{\lVert 	\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2)  \rVert_{L^2_{\uplambda}(\mathcal{X})}}{\lVert 	\pi(\bm{x}) \rVert_{L^2_{\uplambda}(\mathcal{X})}  } \, .
 \end{align}
@@ -571,13 +571,15 @@ On the other hand (Kantorovich-Rubinstein duality), we can describe the 1-Wasser
 	=& \underset{ \lVert h(\bm{x})- h(\tilde{\bm{x}}) \rVert_{L^2} \leq \lVert \bm{x} -\tilde{\bm{x}}  \rVert_{L^2} }{ \text{sup}}  \Bigg\{  \underset{\bm{x} \sim  \pi }{\mathbb{E}} \big[ h(\bm{x}) \big]  -  \underset{\tilde{\bm{x}}\sim \tilde{\pi}}{\mathbb{E}} \big[ h(\tilde{\bm{x}}) \big] \Bigg\} .
 \end{align}
 as the lowest upper bound of differences in expecations of the 1-Lipschitz function $h$ in between the two distributions $\pi$ and $\tilde{\pi}$, with distance measure $c(\bm{x},\tilde{\bm{x}})= \lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2} $ for $\mathcal{X} \in \mathbb{R}^d$.
-For two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(N)}\} \sim \pi$ and $\{\tilde{ \bm{x}}^{(1)},\dots,\tilde{\bm{x}}^{(M)}\} \sim \tilde{\pi}$ the calculation of the Wasserstein distance becomes an optimisation problem, that is to find the best permutation (order) of samples weighted by their distribution value according to an appropriate distance measure \cite{feydy2020OT}.
-This gives us an upper bound of the absolute error in between the expected value of any 1-Lipschitz function $h$, e.g the upper bound of absolute differences in means of $\pi$ and $\tilde{\pi}$. 
+For two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(N)}\} \sim \pi$ and $\{\tilde{ \bm{x}}^{(1)},\dots,\tilde{\bm{x}}^{(M)}\} \sim \tilde{\pi}$ the calculation of the Wasserstein distance becomes an optimisation problem, that is to find the best coupling of samples weighted by their distribution value according to an appropriate distance measure \cite{feydy2020OT}.
+More specifically the 1-Wasserstein distance becomes
 \begin{align}
-\underset{\text{all comb. of $i$ and $j$}}{\text{min}} \sum^M_{j = 1} \sum^N_{i =1} \pi(\bm{x}^{(i)}) \tilde{\pi}(\tilde{\bm{x}}^{(j)}) \lVert\bm{x}^{(i)}  -  \tilde{\bm{x}}^{(j)} \rVert_{L^2}
+W_1(\pi,\tilde{\pi}) = 	\underset{\nu \in \Pi(\pi,\tilde{\pi}) }{\text{min}} \sum^M_{j = 1} \sum^N_{i =1}  \nu_{ij} \lVert\bm{x}^{(i)}  -  \tilde{\bm{x}}^{(j)} \rVert_{L^2} \, ,
 \end{align}
-\cite[Eq. 3.166]{feydy2020OT}
-where $\sum^N_{i =1} \pi(\bm{x}^{(i)}) = \sum^M_{j = 1} \tilde{\pi}(\tilde{\bm{x}}^{(j)})= 1 $
+where the transport plan $\nu \in \mathbb{R}^{N \times M}_ {\geq 0}$ defines the copling $\nu_{ij} \in \nu $ as $ \nu_{ij} \coloneqq \pi(\bm{x}^{(i)}) \tilde{\pi}(\tilde{\bm{x}}^{(j)})$ similar to \cite[Eq. 3.166]{feydy2020OT}.
+Additionally we require that $\sum^N_{i =1} \pi(\bm{x}^{(i)}) = \sum^M_{j = 1} \tilde{\pi}(\tilde{\bm{x}}^{(j)})= 1 $.
+This gives us an upper bound of the absolute error in between the expected value of any 1-Lipschitz function $h$, e.g the upper bound of absolute differences in means related to the probaility measures $\pi$ and $\tilde{\pi}$. 
+
 %Now consider the 2-Wasserstein distance
 %\begin{align}
 %	W_2(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}  \Bigg(\int_{\mathcal{X} \times \mathcal{X}} c(\bm{x},\tilde{\bm{x}})^2 \, \nu(\bm{x},\tilde{\bm{x}}) d\bm{x} d\tilde{\bm{x}} \Bigg)^{1/2}
@@ -605,7 +607,7 @@ where $\sum^N_{i =1} \pi(\bm{x}^{(i)}) = \sum^M_{j = 1} \tilde{\pi}(\tilde{\bm{x
 The forward map, which we introduce in Ch. \ref{ch:formodel}, poses a weakly non-linear forward problem, which we could tackle by treating the problem as a linear problem and then iteratively updating the non-linear part after each parameter sample.
 Instead, we approximate the non-linear model using an affine map $ \bm{M}:\bm{A}_L \rightarrow \bm{A}_{NL}$, which maps from the linear model to the non-linear model, so that we set $ \bm{A} = \bm{M} \bm{A}_{NL} \approx \bm{A}_{NL} $.
 Here, we give a brief introduction to affine maps and present our approach to calculating the affine map deterministically. 
-Alternatively, one can also determine this map using other methods, e.g. machine learning methods or matrix inversion \cite{}.
+Alternatively, one can also determine this map using other methods, e.g. machine learning methods or matrix inversion.
 
 
 An affine map is any linear map between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin, see~\cite[Def. 2.3.1]{berger2009geometry}.
@@ -622,18 +624,29 @@ For more information on affine spaces and maps, we refer to the books \cite{berg
 		\node[align=center] at (0,-5) (f5) {$\bm{A}_{NL} \bm{x}  \approx \bm{M A}_L  \bm{x} = \bm{A x} $ };
 		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
 	\end{tikzpicture}
-	\caption[Schematics of the affine map]{This Figure shows the schematic representation of the affine map $\bm{M}$, which approximates the non-linear forward model from the linear forward model. Here, $V$ contains values produced by the linear forward model, and $W$ contains the corresponding values from the non-linear forward model. Both $V$ and $W$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $V$ onto their counterparts in the non-linear forward model space $W$.
+	\caption[Schematics of the affine map]{This Figure shows the schematic representation of the affine map $\bm{M}$, which approximates the non-linear forward model from the linear forward model. Here, $\bm{V}$ contains values produced by the linear forward model, and $\bm{W}$ contains the corresponding values from the non-linear forward model. Both $\bm{V}$ and $\bm{W}$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $\bm{V}$ onto their counterparts in the non-linear forward model space $\bm{W}$.
 	}
 \end{figure}
-
+\newcommand*{\vertbar}{\rule[-1ex]{0.5pt}{2.5ex}}
+\newcommand*{\horzbar}{\rule[.5ex]{2.5ex}{0.5pt}}
 
 Consequently, to map between the linear and non-linear forward map, we generate two affine subspaces $\bm{V}$ and $\bm{W}$ over the same field.
-Assume we draw samples $\{\bm{x}^{(1)}, \dots, \bm{x}^{(j)}, \dots ,\bm{x}^{(m)}\} \sim \pi(\bm{x}|\bm{y})$ then the affine subspace associated with the linear forward model is \begin{align}
+Assume we draw samples $\{\bm{x}^{(1)}, \dots, \bm{x}^{(j)}, \dots ,\bm{x}^{(m)}\} \sim \pi(\bm{x}|\bm{y})$ and the affine subspace associated with the linear forward model is \begin{align}
 	\bm{W} = \begin{bmatrix}
 		\vert&   &  \vert & & \vert \\
 		\bm{A}_{L} \bm{x}^{(1)} &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
 		\vert&   &  \vert & & \vert 
-	\end{bmatrix}\in \mathbb{R}^{m \times m}
+	\end{bmatrix}
+	%	= \begin{bmatrix}
+  %\begin{array}{ccc}
+	%\horzbar & w_{1} & \horzbar \\
+	%	& \vdots    &          \\
+	%\horzbar & w_{j} & \horzbar \\
+	%& \vdots    &          \\
+	%\horzbar &w_{m} & \horzbar
+%end{array}
+%	\end{bmatrix} 
+\in \mathbb{R}^{m \times m}
 \end{align} and with the non-linear forward model is 
 \begin{align}
 	\bm{V} = \begin{bmatrix}
@@ -641,25 +654,30 @@ Assume we draw samples $\{\bm{x}^{(1)}, \dots, \bm{x}^{(j)}, \dots ,\bm{x}^{(m)}
 		\bm{A}_{NL}\bm{x}^{(1)} &  \cdots& \bm{A}_{NL}\bm{x}^{(j)} &  \cdots & \bm{A}_{NL} \bm{x}^{(m)}  \\
 		\vert&   &  \vert & & \vert 
 	\end{bmatrix} = 
-	\begin{bmatrix}
-		\rule[.5ex]{1em}{0.4pt} & v_1 &	\rule[.25ex]{1em}{0.4pt}\\
-		&\vdots  & \\
-		\rule[.5ex]{1em}{0.4pt} &v_j &	\rule[.25ex]{1em}{0.4pt}\\
-		&\vdots  & \\
-		\rule[.5ex]{1em}{0.4pt}& v_m&	\rule[.25ex]{1em}{0.4pt}
-	\end{bmatrix} \in \mathbb{R}^{m \times m} \, .
+		\begin{bmatrix}
+	\begin{array}{ccc}
+		\horzbar & v_{1} & \horzbar \\
+		& \vdots    &          \\
+		\horzbar & v_{j} & \horzbar \\
+		& \vdots    &          \\
+		\horzbar &v_{m} & \horzbar
+	\end{array}
+\end{bmatrix}\in \mathbb{R}^{m \times m} \, .
 \end{align}
-Then the affine map 
+Then the we calculate affine map 
 \begin{align}
-	\bm{V}\bm{W}^{-1} = \bm{M} = \begin{bmatrix}
-		\text{---} & r_0 &   \text{---}  \\
-		&  \vdots  & \\
-		\text{---}& r_j &  \text{---} \\
-		&  \vdots  & \\
-		\text{---} & r_m &   \text{---}
-	\end{bmatrix} \, \in \mathbb{R}^{m \times m} ,
+	\bm{V}\bm{W}^{-1} = \bm{M} =
+		\begin{bmatrix}
+	\begin{array}{ccc}
+		\horzbar & r_{1} & \horzbar \\
+		& \vdots    &          \\
+		\horzbar & r_{j} & \horzbar \\
+		& \vdots    &          \\
+		\horzbar &r_{m} & \horzbar
+	\end{array}
+\end{bmatrix}\, \in \mathbb{R}^{m \times m} ,
 \end{align}
-can be found by either matrix inversion of $\bm{W}$ or alternatively if the noise free data points in $\bm{A}_{NL}\bm{x}^{(j)}$ are independent of each other by row wise by solving $v_j = r_j \bm{W}$ for $ r_j $.
+using that, for the forward model in this thesis, each row of $\bm{V}$ and $\bm{W}$ is independent of each other, we solve $v_j =r_j \bm{W} $ for each row $ r_j  \in \bm{M}$, where $j = 1, \dots, m$.
 
 
 \section{Regularisation}
