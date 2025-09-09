@@ -491,7 +491,7 @@ Since we do not approximate $\sqrt{ \pi(\gamma, \lambda| \bm{y}) }$ in the log-s
 Then we initialise the \texttt{tt.cross.rectcross.rect\_cross.cross} function, based on the rect cross algorithm in \cite{OSELEDETS2010TTCross}, from the Python package \texttt{ttpy} \cite{Oseledets2018ttpy}, with a random tensor and do 3 sweeps to obtain an TT approximation of $\pi(\gamma, \lambda| \bm{y})$.
 This takes about $0.1s$ and $400$ function evaluations.
 Then we approximate the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$  as in Eq. \ref{eq:MargTT}.
-In doing so we calculate $\bm{B}$ and $\bm{B}_{\text{pre}}$ as in Prop. \ref{prob:backMarg} and \ref{prob:ForMarg}, where we set $\uplambda(x) = 1$, so that $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ in Eq. \ref{eq:MassMat}.
+In doing so we calculate $\bm{B}$ and $\bm{B}_{\text{pre}}$ as in Prop. \ref{prob:backMarg} and \ref{prob:ForMarg}, where we set $\uplambda(x) = 1$, so that for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ in Eq. \ref{eq:MassMat}.
 We plot the TT approximation as a colour map on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
 
 \subsection{Sample from Marginal Posterior Distribution}

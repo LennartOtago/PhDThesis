@@ -284,7 +284,7 @@ The Radon-Nikodym derivative $\frac{\mathrm{d} \mathbb{P}}{\mathrm{d}\bm{x}}$ of
 
 Now, let $X: \Omega \longrightarrow \mathbb{R}^d$ be a $d$-dimensional random variable mapping from the probability space $(\Omega, \mathcal{F}, \mathbb{P})$ to the measurable space $(\mathbb{R}^d, \mathcal{X})$, where $\mathcal{X}$ is a collection of subsets in $\mathbb{R}^d$ \cite{VesaInvLect}.
 Then the associated PDF $\pi(\bm{x})$ is a joint density of $X$, induced by the probability measure on $\Omega$~\cite{VesaInvLect, kopp2004measintprob}.
-As in~\cite{cui2022deep}, we can define the parameter space as the Cartesian product $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$ and $\bm{x} = ( x_1,\dots ,x_k,\dots,x_d )$.
+As in~\cite{cui2022deep}, we can define the parameter space as the product $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$ and $\bm{x} = ( x_1,\dots ,x_k,\dots,x_d )$.
 The marginal density function for the $k$-th component is then given by
 \begin{align}
 	f_{X_k}(x_k) = \frac{1}{z} \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_d} \uplambda(\bm{x}) \, \pi(\bm{x}) \, \diff x_1 \cdots \diff x_{k-1} \, \diff x_{k+1} \cdots \diff x_d, \label{eq:margInt}
@@ -486,10 +486,10 @@ We start by calculating the Backward marginals $\bm{B}_1 , \dots,\bm{B}_d$ as in
 Then we calculate the first marginal $f_{X_1}(x_1)$ as in Eq. \ref{eq:firstMarg} and normalise with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$.
 Next, we compute the cumulative distribution function (CDF)
 \begin{align}
-	F_{X_k|X_{<k}}(x_k) \approx \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\tilde{x}_k|x_{k-1},\dots,x_1) \diff \tilde{x}_k  \, \, \text{\cite[Eq. 17]{cui2022deep}}
+	F_{X_k|X_{<k}}(x_k) \approx \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\hat{x}_k|x_{k-1},\dots,x_1) \diff \hat{x}_k  \, \, \text{\cite[Eq. 17]{cui2022deep}}
 	\label{eq:CurrCDF}
 \end{align}
-for the first dimension $k = 1$ and then project the seed  on the parameter space $x^{(s)}_k = F_{X_k}^{-1}(u^{(s)}_k)$.
+for the first dimension $k = 1$ and then project the seed  on the parameter space $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$.
 Once that is done, we use a piecewise polynomial interpolation
 \begin{align}
 	\bm{G}_k(x^{(s)}_k) \approx   \frac{x^{(s)}_k - x^{(i)}_k }{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i+1)}_k) + \frac{ x^{(i+1)}_k - x^{(s)}_k}{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i)}_k)
@@ -506,7 +506,7 @@ Then we marginalise over the dimensions $k+1 , \dots, d$ via $\bm{B}_k$ so that 
 	\end{split} 
 	\label{eq:CurrMarg} 
 \end{align}
-We repeat the procedure for each $u^{(s)}_k \in \bm{u}^{(s)}$ to gain samples $\bm{x}^{(s)} \sim f_{X}(x)$, see algorithmic box \ref{alg:SIRT} for a summarised version.
+We repeat the procedure for each $u^{(s)}_k \in \bm{u}^{(s)}$ to gain samples $\bm{x}^{(s)} \sim f_{X}(\bm{x})$, see algorithmic box \ref{alg:SIRT} for a summarised version.
 
 
 
