@@ -53,7 +53,7 @@ Next we rewrite
 	\sum_{k,s=1}^{N} \Gamma(k-s) = \text{var}(\bm{\mu}^{(i)}_{\text{samp}})  \sum_{k,s=1}^{N} \frac{\Gamma(k-s)}{\Gamma(0)} =  \text{var}(\bm{\mu}^{(i)}_{\text{samp}}) \sum_{k,s=1}^{N}\rho(k-s)\, ,
 \end{align}
 with the normalised auto correlation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$ and $\Gamma(0) = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} )$ for $k=s$.
-Typically $\Gamma(t)$ decays exponentially so that $\Gamma(t) \overset{t \rightarrow \infty }{ \propto} \exp\{ - t / \tau \}  $ and for positive $\tau$ and $N\gg \tau$ we can approximate
+Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) \overset{t \rightarrow \infty }{ \propto} \exp\{ - |t| / \tau \}  $ and we can approximate
 \begin{align}
 	\sum_{k,s=1}^{N}\rho(k-s)  = N \sum_{t = -(N-1) }^{N-1} \Bigg(1- \frac{t}{N} \Bigg) \rho(t)  \approx N  \sum_{t = - \infty }^{\infty} \rho(t) \coloneqq 2 N \tau_{\text{int}}\, ,
 \end{align}
@@ -114,7 +114,7 @@ def MargBack(TTCore, univarGrid):
 	
 	for k in range(dim - 1, 0, -1):
 		r_kmin1, n, r_k = np.shape(TTCore[k])
-		# !! we set Lebesgue Measure to const = one
+		# "Eq. \label{eq:MassMat}, \cite[Eq. 22]{cui2022deep}" !! we set Lebesgue Measure to const = one
 		M = np.identity(n) * (univarGrid[k][-1] - univarGrid[k][0])  # Mass matrix
 		L = scy.linalg.cholesky(M)
 		
@@ -153,7 +153,7 @@ return B
 	
 	for k in range(0, dim-1):
 	r_kmin1, n, r_k = np.shape(TTCore[k])
-	# !! we set Lebesgue Measure to const = one
+	#  "Eq. \label{eq:MassMat}, \cite[Eq. 22]{cui2022deep}" !! we set Lebesgue Measure to const = one
 	M = np.identity(n) * (univarGrid[k][-1] - univarGrid[k][0])  # Mass matrix
 	L = scy.linalg.cholesky(M)
 	

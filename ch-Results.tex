@@ -291,7 +291,7 @@ For the linear-Gaussian case, $\bm{x}$ cancels in the marginal posterior over th
 Consequently, for the hierarchical model specified in Eq.~\ref{eq:O3BayMode}, the marginal posterior distribution over the hyper-parameters is given by
 \begin{align}
 	\pi(\lambda, \gamma | \bm{y})
-	\propto  \lambda^{n/2} \gamma^{m/2}   \exp{ \Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) \Bigr\} } \pi(\lambda, \gamma),
+	\propto  \lambda^{n/2} \gamma^{m/2 + 1}   \exp{ \Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) \Bigr\} } \pi(\lambda, \gamma),
 	\label{eq:MargPostAppl}
 \end{align}
 with the introduced regularisation parameter $\lambda = \delta / \gamma$, and
@@ -336,7 +336,7 @@ More specifically, we implement a Metropolis random walk on
 	\label{eq:lamCondPrior}
 	\pi(\lambda | \gamma, \bm{y}) &\propto \lambda^{n/2+\alpha_\delta -1} \exp{\Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_\delta \gamma \lambda \Bigr\}}.
 \end{align} 
-We accept or reject a proposal $\lambda^{\prime}$ according to the acceptance ratio in log space
+We accept or reject a proposal $\lambda^{\prime} \sim \mathcal{N}(0, \sigma_{\lambda})$ according to the acceptance ratio in log space
 \begin{align} 
 	\log \left\{ \frac{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y})  }{\pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y})}  \right\} 
 	= \log  \{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y} ) \}  -\log  \{ \pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y}) \} \\
@@ -471,44 +471,49 @@ We either use the \texttt{t-walk} algorithm \cite{christen2010general} to draw s
 
 
 \section{Posterior Distribution of Ozone -- linear Model}
-We use the MTC scheme to determine the marginal posterior distributino over the hyperparaemters  $\delta$  and $\lambda = \delta / \gamma$first
+We use the MTC scheme to determine the marginal posterior distribution $\pi(\gamma, \lambda| \bm{y})$ over the hyperparameters $\delta$  and $\lambda = \delta / \gamma$ first and then the mean and covariance of the full posterior distribution $\pi(\bm{x}|\bm{y})$ as in Eq. \ref{eq:MeanInt} and \ref{eq:CovInt}.
+We set $\bm{A} \coloneqq  \bm{A}_L$ and the mode $( \lambda_{0}, \gamma_0 )$ of the marginal posterior distribution, see Eq. \ref{eq:MargPostAppl}, is provided by the \texttt{scipy.optimize.fmin} function.
+In doing so, we calculate the vector $\bm{B}^{-1}\bm{A}^T\bm{y} = (\bm{A}^T\bm{A} + \lambda \bm{L})\bm{A}^T\bm{y} $ and compute the determinant in $g(\lambda)$ using Cholesky decomposition.
+Then we approximate $f(\lambda)$ with a 3rd order Taylor series and $g(\lambda)$ with a linear approximation in the log-space around the mode, where for the approximation in $g(\lambda)$ we set $\lambda_{max}$ to the maximum value of $\lambda$ on the TT-grid.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{ScatterplusHistoPlusTT.png}
+	\caption[Scatter plot of samples from marginal posterior, including weighting from TT approximation; trace plot of the marginal posterior samples.]{We scatter plot the samples of $\lambda = \delta / \gamma $ and $\gamma$ from the marginal posterior $\pi(\lambda , \gamma  | \bm{y})$ and colour code the samples using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. The mode of $(\lambda_0 , \gamma_0)$ of $\pi(\lambda , \gamma  | \bm{y})$ is marked by the pink cross. To show ergodicity we plot the trace of the samples of the MWG sampler below.}
+	\label{fig:ScatterPlotTT}
+\end{figure}
+
+
+\subsection{Tensor-train Approximation of the Marginal Posterior Distribution}
+\label{sec:firstMargTT}
+We approximate the square root of marginal posterior on a predefined univariate grid, where $\gamma = [ 0.1 \times 10^{15}, 6 \times 10^{15}]$ and $\lambda = [ 100, 5000]$.
+We set the number of grid points to $n = 20$ and the number of ranks $r = 5$, which we keep constant.
+Since we do not approximate $\sqrt{ \pi(\gamma, \lambda| \bm{y}) }$ in the log-space we introduce a "normalisation constant" $c = 340$. This avoids underflow so that the values $\sqrt{\pi(\gamma, \lambda| \bm{y})} = \exp \{ 0.5 \log  \pi(\gamma, \lambda| \bm{y}) + c \} $ are within computer precision.
+Then we initialise the \texttt{tt.cross.rectcross.rect\_cross.cross} function, based on the rect cross algorithm in \cite{OSELEDETS2010TTCross}, from the Python package \texttt{ttpy} \cite{Oseledets2018ttpy}, with a random tensor and do 3 sweeps to obtain an TT approximation of $\pi(\gamma, \lambda| \bm{y})$.
+This takes about $0.1s$ and $400$ function evaluations.
+Then we approximate the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$  as in Eq. \ref{eq:MargTT}.
+In doing so we calculate $\bm{B}$ and $\bm{B}_{\text{pre}}$ as in Prop. \ref{prob:backMarg} and \ref{prob:ForMarg}, where we set $\uplambda(x) = 1$, so that $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ in Eq. \ref{eq:MassMat}.
+We plot the TT approximation as a colour map on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
 
 \subsection{Sample from Marginal Posterior Distribution}
 \label{subsec:firstMarg}
-We set $\bm{A} = \bm{A}_L$ and characterise the marginal posterior $\pi(\lambda, \gamma | \bm{y})$ as in Eq. \ref{eq:MargPostAppl} by employing a Metropolis within Gibbs (MWG) algorithm, see sec. \ref{}.
-%More specifically, we implement a Metropolis random walk on the full conditional
-%\begin{align}
-%	\label{eq:lamCondPrior}
-%	\pi(\lambda | \gamma, \bm{y}) &\propto \lambda^{n/2+\alpha_\delta -1} \exp{\Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_\delta \gamma \lambda \Bigr\}} 
-%\end{align} 
-%and do a Gibbs step on
-%\begin{align}
-%	\gamma |  \lambda, \bm{y} &\sim \Gamma \bigg( \frac{m}{2} + \alpha_\delta + \alpha_\gamma, \frac{1}{2} f (\lambda ) + \beta_\gamma + \beta_\delta \lambda \bigg)\label{eq:GibbsStep}
-%\end{align} 
-%to generate marginal posterior samples $(\lambda, \gamma)^{(1)}, \dots, (\lambda, \gamma)^{(N)} \sim  \pi(\lambda, \gamma| \bm{y})$.
-%Note that, when changing variables from $\delta = \lambda \gamma$ to $\lambda$ the hyper-prior distribution changes to $\pi(\lambda) \propto \lambda^{\alpha_\delta-1} \gamma^{\alpha_\delta} \exp{(- \beta_\delta \lambda  \gamma)} $, due to $\text{d}\delta / \text{d} \lambda = \gamma$.
-%
-%Hence we run a Metropolis random walk on $\pi(\lambda | \gamma, \bm{y})$, the proposal distribution $q(\lambda^\prime|\lambda^{(k)}) \sim \mathcal{N}(\lambda^{(k)}, 0.8 \lambda_{0})$ conditioned on the previous sample $\lambda^{(k)}$, with $k = 1 , \dots, N$ is symmetric.
-%Then, we accept or reject a new $\lambda^{\prime}$ sample by comparing the acceptance ratio
-%\begin{align} 
-%	\log \left\{ \frac{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y})  }{\pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y})}  \right\} 
-%	= \log  \{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y} ) \}  -\log  \{ \pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y}) \} \\
-%	= \frac{n}{2} (\log\{\lambda^{\prime}\} - \log\{\lambda^{(t-1)}\} ) + \frac{1}{2} \Delta g + \frac{\gamma^{(t-1)}}{2} \Delta f  + \beta_\delta \gamma^{(t-1)} \Delta \lambda  \, ,
-%\end{align}
-%where $\Delta \lambda = \lambda^{\prime} - \lambda^{(k)} $ to a random uniform number in between 0 and 1.
-%Note that since we calculate the acceptance ratio in the log space $\Delta f \approx \tilde{f}(\lambda^\prime) - \tilde{f}(\lambda^{(k)}) = \sum f^{(r)} (\lambda_0)\Delta \lambda^\prime - \Delta \lambda^{(k)} $ is a 3rd order taylor approximaton, see Fig. \ref{fig:fandg}, where $\Delta \lambda^{\prime} = \lambda^\prime - \lambda_0 $ and $\Delta \lambda^{(k)} =  \lambda^{(k)} - \lambda_0$.
-%Similarly we approximate $\Delta g \approx \exp{\log{\tilde{g}(\lambda^{\prime})}} - \exp{\log{\tilde{g}(\lambda^{(k)})}}$ as in Eq. \ref{eq:fandg}.
-%Lastly, a Gibbs step provides a new $\gamma^{(k+1)} \sim \gamma | \lambda^{(k+1)}, \bm{y}$, see Equation \eqref{eq:GibbsStep}.
-%See Algorithmic Box \ref{alg:margPost} for a summary of the general version.
-
-We initialise the MWG at the mode $( \lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take for $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps in less than $0.3$s.
-The standard deviation of the normal proposal distribution is set to $\sigma_{\lambda} = 0.8 \lambda_0$ so that the acceptance rate is $\approx 0.5$ as suggested in \cite{}.
-The samples are plotted in Fig. \ref{fig:ScatterPlotTT} as a 2D scatter plot, as well as the trace of the MwG to show ergodicity.
-We calculate the integrated autocorrelation time (IACT) with the Python implementation of \cite{}, which gives us $\tau_{\text{int}, \gamma} = $ and $\tau_{\text{int}, \delta} = $.
-
-
-
-
+To sample from $\pi(\gamma, \lambda| \bm{y})$ we employ the MWG algorithm , see Alg. Box \ref{alg:MwG} and Sec. \ref{subsec:MTC}.
+We initialise the MWG at the mode $(\lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps approximately $0.3$s.
+The standard deviation of the normal proposal distribution is set to $\sigma_{\lambda} = 0.8 \lambda_0$ so that the acceptance rate is $\approx 0.5$ as suggested in \cite{robertsLecNot}.
+The samples are plotted in Fig. \ref{fig:ScatterPlotTT} as a 2D scatter plot, as well as the trace of the MWG to show ergodicity.
+We calculate the integrated autocorrelation time (IACT) with the Python implementation of \cite{wolff2004monte}, provided by \cite{drikHesse}, which gives us $\tau_{\text{int}, \gamma} = $ and $\tau_{\text{int}, \delta} = $, see Fig. \ref{fig:IATCLamLin} and Fig. \ref{fig:IATCGamLin}.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{UwerrTauIntFirstO3lam.png}
+	\caption[IATC of $\lambda$ samples from $\pi(\gamma, \lambda| \bm{y})$, for linear model.]{Here the autocorrelation function $\Gamma_{\lambda}$ at different lags W is plotted as well as the IATC $\tau_{\text{int},\lambda}$ for the samples from $\pi(\gamma, \lambda| \bm{y})$ based on the linear forward model.}
+	\label{fig:IATCLamLin}
+\end{figure}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{UwerrTauIntFirstO3gam.png}
+	\caption[IATC of $\gamma$ samples from $\pi(\gamma, \lambda| \bm{y})$, for linear model.]{Here the autocorrelation function $\Gamma_{\gamma}$ at different lags W is plotted as well as the IATC $\tau_{\text{int},\gamma}$ for the samples from $\pi(\gamma, \lambda| \bm{y})$ based on the linear forward model.}
+	\label{fig:IATCGamLin}
+\end{figure}
+\clearpage
 %\begin{algorithm}[!ht]
 %	\caption{Metropolis within Gibbs for $\pi(\lambda, \gamma | \bm{y})$}
 %	\begin{algorithmic}[1]
@@ -531,54 +536,23 @@ We calculate the integrated autocorrelation time (IACT) with the Python implemen
 %	\label{alg:margPost}
 %\end{algorithm}
 
-\subsection{Tensor-train Approximation of the Marginal Posterior Distribution}
-\label{sec:firstMargTT}
-Alternatively, we can approximate the marginal posterior with a tensor-train (TT) of the square root of the marginal posterior on a predefined grid.
-We define a grid similar to the sampling region of the MWG sampler with 25 grid points in each dimension and use the \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy}\cite{Oseledets2018ttpy}, Python package, based on the rect cross algorithm in \cite{OSELEDETS2010TTCross}.
-We set the number of ranks to a constant value $r = 4$ and optimise over those ranks with one sweep to calculate the cores in less than $0.1$s.
-To avoid underflow, we have to add a 'normalisation' constant $c = 460$ so that we approximate $\pi(\lambda | \gamma ,\bm{y}) = \exp\{ \log{\pi(\lambda | \gamma, \bm{y})} + c\}$.
-Then we calculate the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as described in section \ref{}, assuming an absolute error of $1$ the constant $\xi = 1/ \uplambda(\mathcal{X}) $, with a diagonal mass matrix $\bm{M}_k=  \text{diag}(\uplambda(X_k))$, where $\uplambda(X_k)$ is the length of the grid of the $k$th dimension also knows as the Lebesgue measure of a closed interval.
-We plot the TT approximation as a colour map on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{ScatterplusHistoPlusTT.png}
-	\caption[Scatter plot of samples from marginal posterior, including weighting from TT approximation; additional trace plot of the marginal posterior samples.]{We scatter plot the samples of $\lambda = \delta / \gamma $ and $\gamma$ from the marginal posterior $\pi(\lambda , \gamma  | \bm{y})$ and colour code the samples using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. The mode of $(\lambda_0 , \gamma_0)$ of $\pi(\lambda , \gamma  | \bm{y})$ provided by \texttt{scipy.optimize.fmin} is marked with the cross. To show ergodicity we plot the trace of the samples of the Metropolis-within-Gibbs sampler below.}
-	\label{fig:ScatterPlotTT}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{UwerrTauIntFirstO3lam.png}
-	\caption[]{}
-	\label{fig:}
-\end{figure}
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{UwerrTauIntFirstO3gam.png}
-	\caption[]{}
-	\label{fig:}
-\end{figure}
-
 \subsection{Full Conditional Posterior of Ozone}
 \label{subsec:firstCond}
-Based on the marginal posteror distribution $\pi(\gamma, \delta | \bm{y})$ we calculate the weighted mean and covariance of the conditional posterior $\pi(\bm{x} | \gamma, \delta, \bm{y})$ by quadrature as in Eq. \ref{eq:MeanInt} and Eq. \ref{eq:CovInt}.
+Based on the marginal posterior distribution $\pi(\gamma, \delta | \bm{y})$ we calculate the mean and covariance of the conditional posterior $\pi(\bm{x} | \gamma, \delta, \bm{y})$ by quadrature as in Eq. \ref{eq:MeanInt} and Eq. \ref{eq:CovInt}.
+We can either use the samples based histogram bins as weights or the TT approximation to integrate over the whole grid.
 
-By binning the output samples from the MWG, see Fig. \ref{fig:ScatterPlotTT}, into a normalised histogram with 25 bins, we obtain function values for the marginal posterior.
+By binning the output samples from the MWG, see Fig. \ref{fig:ScatterPlotTT}, into a normalised histogram with 20 bins, we obtain empirical "function values" of the marginal posterior.
 With the height of the histogram bars as quadrature weights, e.g. $\pi(\lambda_i| \bm{y})$, where $\lambda_i$ is the centre of each bin we calculate the full conditional mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and covariance matrix $\bm{\Sigma}_{\bm{x}|\bm{y}}$ as weighted expectations.
-
-Alternatively we use the marginal distributions $\pi(\delta | \bm{y})$ and $\pi(\gamma | \bm{y})$ from the TT approximation of $\sqrt{\pi(\delta, \gamma | \bm{y})}$ to calculate 
-weighted expectations of $\bm{\mu}_{\bm{x}|\bm{y}}$ and $\bm{\Sigma}_{\bm{x}|\bm{y}}$.
-
-In practice, we have to invert $\bm{B}_{\lambda} $ and calculate $\bm{x}_{\lambda}$, see Eq. \ref{eq:CondPost} 25 times (TT grid size and number of bins).
-A feasible method is the Cholesky forward and backwards substitution \cite{}, which takes roughly $1$s to compute the mean and variance.
-Note that we reject unphysical samples from the conditional posterior with negative ozone values and plot those in Fig. \ref{fig:O3Samp}, including variance and mean.
-
-Computation time is less than $0.2$s.
+Similarly, we use the approximations of $\pi(\delta| \bm{y})$ and $\pi( \gamma | \bm{y})$ to calculate the weighted expectations of $\bm{\mu}_{\bm{x}|\bm{y}}$ and $\bm{\Sigma}_{ \bm{x}|\bm{y}}$.
+Again, we use Cholesky decomposition to invert $\bm{B}_{\lambda} = \bm{A}^T \bm{A} + \lambda \bm{L}$ and to calculate $\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y}$.
+In total that we have to evaluate $\bm{x}_{\lambda}$ and invert $\bm{B}_{\lambda}$ 25 times to obtain mean and covariance of $\pi(\bm{x}|\bm{y})$, Fig. \ref{fig:O3Samp}, which takes less than $0.2$s.
+We plot posterior samples of $\pi(\bm{x}|\bm{y})$ in Fig. \ref{fig:O3Samp}, where we set negative values ozone VMR to zero.
+Note that the sample mean is slight larger than posterior mean at heights where the data is noise dominated and the ozone values are determined by the prior.
+This indicates that we should use a different more physical based, e.g. parametrised, prior at higher altitudes.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{FirstTestRes.png}
-	\caption[Ozone samples of the conditional posterior.]{We draw samples from the conditional posterior distribution  $\pi(\bm{x}|\lambda,\gamma , \bm{y})$ after characterising the marginal posterior $\pi(\lambda,\gamma | \bm{y})$ through sampling or TT approximation using the linear forward map $\bm{A}_L$. Note that we reject samples with unphysical negative values and effectively treat the conditional posterior as a truncated multivariate normal distribution. We will use those samples to find the affine map $\bm{M}$, see section \ref{sec:affineMap}}
+	\caption[Ozone samples of the full posterior.]{We draw ozone samples from the full posterior distribution $\pi(\bm{x}| \bm{y})$ after characterising mean and covariance of $\pi(\bm{x}| \bm{y})$ by weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$. we determine  $\pi(\lambda,\gamma | \bm{y})$ either through sampling or via TT approximation based on the linear forward map $\bm{A}_L$. Note that we set negative values ozone VMR values to zero. We will use those samples to find the affine map $\bm{M}$, see section \ref{sec:affineMap}}
 	\label{fig:O3Samp}
 \end{figure}
 \clearpage
@@ -598,24 +572,25 @@ Computation time is less than $0.2$s.
 
 \section{Approximate non-linear Forward Model with Affine Map} 
 \label{sec:affineMap}
-With the posterior distributions formulated, we can now approximate the non-linear forward model with an affine map $\bm{M}$; we see Fig. \ref{fig:affinStrat} for the summarised strategy.
-We focus on the posterior distribution of ozone profiles by conditioning on pressure and temperature, as this is a quick process when using the MTC method.
-We approximate and sample from the marginal posterior $ \pi(\gamma , \delta|\bm{y})$ and then characterise the full conditional posterior distribution $\pi(\bm{x}|\bm{y})$ based on the linear forward model $\bm{A}_L$, neglecting absorption, see Eq. \ref{eq:RTE}.
-Given samples $\bm{x} \sim \pi(\bm{x}|\bm{y})$ from the full conditional posterior distribution, we can generate two affine subspaces based on the linear and non-linear model and find the mapping between those.
-
+Given the posterior distribution for ozone $ \pi(\bm{x}|\bm{y})$, we can now approximate the non-linear forward model 
+\begin{align}
+	\bm{A}_{NL} \approx \bm{M A}_L = \bm{A} \, ,
+\end{align}
+with an affine map $\bm{M}$, see Fig. \ref{fig:affinStrat} for the summarised strategy.
+We focus on the posterior distribution of ozone profiles conditioned on pressure and temperature, as to characterise this posterior is a much quicker process, when using the MTC method, compared to obtaining the pressure and temperature posterior distributions.
 \begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}
 		\node[rectnode] at (0,0) (Oy)    {$\bm{y}$};
 		\node[roundnode2] at (0,-2) (x)     {$\bm{x}$};
-		\node[rectnode] at (-1.75,-4) (NLy)    {$\bm{A}_{NL}\bm{x}$};
-		\node[rectnode] at (1.75,-4) (y)    {$\bm{A}_L\bm{x}$};
+		\node[rectnode] at (-1.75,-4) (NLy)    {$\bm{V}$};%{$\bm{A}_{NL}\bm{x}$};
+		\node[rectnode] at (1.75,-4) (y)    {$\bm{W}$};%{$\bm{A}_L\bm{x}$};
 		\draw[->, very thick] (Oy.south) -- (x.north); 
 		\draw[->, very thick] (x.south west) -- (NLy.north); 
 		\draw[->, very thick] (x.south east) -- (y.north); 
 		\draw[->, very thick] (NLy.east) -- (y.west); 
 		\node[align=center] at (1,0) (l1) {Data};
-		\node[align=center] at (3.5,-2) (f2) {Ozone Profiles from $\pi(\bm{x}|\gamma, \lambda ,\bm{y}) $};
+		\node[align=center] at (3.5,-2) (f2) {Ozone Profiles from $\pi(\bm{x}|\bm{y}) $};
 		\node[align=center] at (1.75,-1) (l1) {$\pi(\lambda , \gamma  | \bm{y})$ with $\bm{A}_L$};
 		
 		\node[align=center] at (-4.75,-4) (f3) {non-linear forward model};
@@ -628,30 +603,62 @@ Given samples $\bm{x} \sim \pi(\bm{x}|\bm{y})$ from the full conditional posteri
 	\caption[Strategy to find affine map.]{The strategy to find the affine map consist of evaluating the marginal posterior for ozone using the linear forward model. Then we draw ozone samples from the conditional posterior and calculate noise free data based on the linear and non-linear forward model. Next we find a mapping in between those two space so that we can approximate the non-linear forward model using an affine map and the linear forward model.}
 	\label{fig:affinStrat}
 \end{figure}
-
-\subsection{Asses approximated Forward Model}
-Given $m$ samples $\bm{x}^{j} \sim \pi{\bm{x}|\bm{y}}$ for $j = 1, \dots,m$ from the full conditional, as plotted in\ref{fig:O3Samp}, we are able approximate the non-linear forward model
+Based on posterior ozone samples we generate two affine subspaces and then find the mapping between those.
+The subspace $\bm{W}$ is created  from the linear model and $\bm{V}$ by noise free data the non-linear model, given $m$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$ for $j = 1, \dots,m$.
+We report a relative RMS difference between $\bm{W}$ and $\bm{V}$ of about $1\%$, which we aim to reduce through the affine map $\bm{M}$.
+More specifically, the affine subspace associated with the linear forward model is 
 \begin{align}
-	\bm{A}_{NL} \approx \bm{M A}_L = \bm{A} \, ,
+	\bm{W} = \begin{bmatrix}
+		\vert&   &  \vert & & \vert \\
+		\bm{A}_{L} \bm{x}^{(1)} &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
+		\vert&   &  \vert & & \vert 
+	\end{bmatrix}
+	\in \mathbb{R}^{m \times m}
+\end{align} and with the non-linear forward model is 
+\begin{align}
+	\bm{V} = \begin{bmatrix}
+		\vert&   &  \vert & & \vert \\
+		\bm{A}_{NL}\bm{x}^{(1)} &  \cdots& \bm{A}_{NL}\bm{x}^{(j)} &  \cdots & \bm{A}_{NL} \bm{x}^{(m)}  \\
+		\vert&   &  \vert & & \vert 
+	\end{bmatrix} = 
+	\begin{bmatrix}
+		\begin{array}{ccc}
+			\horzbar & v_{1} & \horzbar \\
+			& \vdots    &          \\
+			\horzbar & v_{j} & \horzbar \\
+			& \vdots    &          \\
+			\horzbar &v_{m} & \horzbar
+		\end{array}
+	\end{bmatrix}\in \mathbb{R}^{m \times m} \, .
 \end{align}
-with the affine map $\bm{M}$ and the linear forward model $\bm{A}_L$.
-In doing so, we can generate two affine subspaces $\bm{W} = \{\bm{A}_L\bm{x}^1, \dots, \bm{A}_L\bm{x}^m \}$ and $\bm{V} = \{\bm{A}_{NL}\bm{x}^1, \dots, \bm{A}_{NL}\bm{x}^m \}$.
-We use the Python function \texttt{numpy.linalg.solve} to solve $ \bm{M}\bm{W} = \bm{V}$ for each row of $ \bm{M}$, see Sec. \ref{sec:affine} for more details.
+Then the we calculate affine map 
+\begin{align}
+	\bm{V}\bm{W}^{-1} = \bm{M} =
+	\begin{bmatrix}
+		\begin{array}{ccc}
+			\horzbar & r_{1} & \horzbar \\
+			& \vdots    &          \\
+			\horzbar & r_{j} & \horzbar \\
+			& \vdots    &          \\
+			\horzbar &r_{m} & \horzbar
+		\end{array}
+	\end{bmatrix}\, \in \mathbb{R}^{m \times m} .
+\end{align}
+by solving $v_j =r_j \bm{W}$ for each row $r_j$ in $\bm{M}$, where $j = 1, \dots, m$, using the Python function \texttt{numpy.linalg.solve}.
+We can do that because every measurement in the data vector $\bm{y}$ is independent of each other, and then every row $v_j$ of $\bm{V} \in \mathbb{R}^{m \times m}$ is independent of each other as well.
 
+We asses the affine map by calculating the relative difference $\lVert \bm{M}\bm{W} - \bm{V}  \rVert_{L^2} / \lVert \bm{M}\bm{W} \rVert_{L^2} $ between the mapped linear noise free data and the non-linear noise free data, which is approximately $0.001\%$.
 
-
-We asses the affine map by calculating the relative error\textcolor{red}{ $|| \bm{M}\bm{W} - \bm{V}  || / || \bm{M}\bm{W} ||$ } between the mapped noise free data and the noise free data of non-linear forward model for all of the $m$ ozone samples, which approximnately $0.1$\%
-We display the approximation for one $\bm{x}$ sample in Fig. \ref{fig:MapAsses}.
-Consequently, from here onwards, we use the approximated forward map $\bm{A} = \bm{M A}_L $.
+In Fig. \ref{fig:MapAsses}, we show the mapping for one posterior ozone sample which has not been used to create this mapping, one could say an unseen event not in the training data.
+The relative error for this mapping is roughly $0.03\%$ and much smaller than the relative difference between noise free linear data and non-linear data.
+Consequently, from here onwards, we use the approximated forward map and define $\bm{A} \coloneqq \bm{M A}_L $.
 \begin{figure}[ht!]
 	\centering
 	%\includegraphics{SampMapAssesment.png}
 	\includegraphics{SampMapAssesmentTT.png}
-	\caption[Assessment of affine map.]{We asses how good we can map the linear forward model onto the non-linear forward model using the previous calculated affine map. The gray stars represent noise free linear data, where as the red circles present noise free non-linear data. Then we map the linear noise free data onto the non-linear noise free data and give the relative error in between the mapped noise free data and the non-linear data.}
+	\caption[Assessment of affine map.]{We asses how good we can map a new ozone sample $\bm{x} \sim \pi(\bm{x}|\bm{y})$ from the linear forward model onto the non-linear forward model using the previous calculated affine map $\bm{M}$. The sample has not been used to create this affine map. The gray stars represent noise free linear data, where as the red circles present noise free non-linear data. Then we map the linear noise free data onto the non-linear noise free data, black start, and provide the relative RMS error in between the mapped noise free data and the non-linear data.}
 	\label{fig:MapAsses}
 \end{figure}
-
-%$|| \bm{M}\bm{A}_L \bm{x} - \bm{A}_{NL} \bm{x} || / || \bm{M}\bm{A}_L \bm{x} ||$
 
 \section{Solution by Regularisation}
 \label{sec:reg}

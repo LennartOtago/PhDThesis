@@ -111,13 +111,14 @@ Expanding this summation, we see that
 	\Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \Bigg)^2  =  \frac{\text{var}(\bm{\mu}^{(i)}_{\text{samp}}) }{N^2} \sum_{k,s=1}^{N}\rho(k-s)\, ,
 \end{align}
 with the normalised auto correlation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$, where the auto correlation coefficient $\Gamma(k-s) =  \big( h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \big) \big(h(\bm{x}^{(s)}) - \bm{\mu}^{(i)} \big)$ and  $\Gamma(0) = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} )$ for $k=s$.
-Typically $\Gamma(t)$ decays exponentially so that $\Gamma(t) \overset{t \rightarrow \infty }{ \propto} \exp\{ - t / \tau \}  $ and for positive $\tau$ and $N\gg \tau$ we can approximate
+Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) \overset{t \rightarrow \infty }{ \propto} \exp\{ - | t| / \tau \}  $ and we can approximate
 \begin{align}
 	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
 \end{align}
 where define the IATC as in \cite[pp. 103-105]{wolff2002LecNot}.
 See Appendix \ref{ap:IATC} and \cite{Sokal1997} for a more detailed derivation.
 The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample, accordingly we define the effective sample size as $\frac{ 2 \tau_{\text{int}} }{N}$.
+Since this is an estimate \cite{wolff2004monte} provides a way to not only calculate the IATC but also to quantify the errors of the estimate of the IATC.
 
 \subsubsection{Linear-Gaussian hierarchical Bayesian model}
 \label{subsec:LinBay}
@@ -396,7 +397,7 @@ The backwards marginalisation provides us with the coefficient matrices $\bm{B}_
 These matrices enable the efficient evaluation of marginal functions since they integrate over the coordinates either left or right of the $k$-th dimension, as in \cite{cui2022deep}.
 In doing so, we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ as
 \begin{equation}
-	\bm{M}_k[i, j] = \int_{\mathcal{X}_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \uplambda(x_k) \, \diff x_k, \quad i, j = 1, \dots, n_k, \, \,  \text{\cite[Eq. 22]{cui2022deep}},
+	\bm{M}_k[i, j] = \int_{\mathcal{X}_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \uplambda(x_k) \, \diff x_k, \quad i, j = 1, \dots, n_k, \, \,  \text{\cite[Eq. 22]{cui2022deep}} \label{eq:MassMat},
 \end{equation}
 where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ denotes the set of basis functions for the $k$-th coordinate.
 The proposition used to compute $\bm{B}_k$, stated in Proposition~\ref{prob:backMarg}, is adapted directly from~\cite{cui2022deep}.
@@ -440,7 +441,7 @@ The proposition used to compute $\bm{B}_k$, stated in Proposition~\ref{prob:back
 \end{prop}
 After computing the coefficient tensors $\bm{B}_{\text{pre}, k+1}$ as in Prop.~\ref{prob:ForMarg} and $\bm{B}_{k+1}$ from Prop.~\ref{prob:backMarg}, the marginal PDF of $k$-th dimension can be expressed as
 \begin{equation}
-	f_{X_k}(x_k)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \uplambda_k(x_k),
+	f_{X_k}(x_k)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \uplambda_k(x_k), \label{eq:MargTT}
 \end{equation}
 where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ and $\bm{R}_{\text{pre},k-1}\in \mathbb{R}^{r_{k-1} \times r_{k-1}}$ and $\bm{B}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$
 \begin{equation}
