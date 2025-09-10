@@ -333,7 +333,7 @@ Note that usually a Taylor series includes a factor $(r!)^{-1}$, in this case it
 Using these approximation we can either utilise a TT approximation of the marginal posterior, see Sec. \ref{subsec:TTMarg}, over a predefined grid and calculate the marginals $\pi(\gamma|\bm{y})$ and $\pi(\lambda|\bm{y})$, or employ a Metropolis within Gibbs (MWG) sampler to sample from $\pi(\gamma,\lambda|\bm{y})$, see sec. \ref{subsec:MWG}.
 More specifically, we implement a Metropolis random walk on
 \begin{align}
-	\label{eq:lamCondPrior}
+	\label{eq:margApplCondGam}
 	\pi(\lambda | \gamma, \bm{y}) &\propto \lambda^{n/2+\alpha_\delta -1} \exp{\Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_\delta \gamma \lambda \Bigr\}}.
 \end{align} 
 We accept or reject a proposal $\lambda^{\prime} \sim \mathcal{N}(0, \sigma_{\lambda})$ according to the acceptance ratio in log space
@@ -471,6 +471,7 @@ We either use the \texttt{t-walk} algorithm \cite{christen2010general} to draw s
 
 
 \section{Posterior Distribution of Ozone -- linear Model}
+\label{sec:FirstO3Post}
 We use the MTC scheme to determine the marginal posterior distribution $\pi(\gamma, \lambda| \bm{y})$ over the hyperparameters $\delta$  and $\lambda = \delta / \gamma$ first and then the mean and covariance of the full posterior distribution $\pi(\bm{x}|\bm{y})$ as in Eq. \ref{eq:MeanInt} and \ref{eq:CovInt}.
 We set $\bm{A} \coloneqq  \bm{A}_L$ and the mode $( \lambda_{0}, \gamma_0 )$ of the marginal posterior distribution, see Eq. \ref{eq:MargPostAppl}, is provided by the \texttt{scipy.optimize.fmin} function.
 In doing so, we calculate the vector $\bm{B}^{-1}\bm{A}^T\bm{y} = (\bm{A}^T\bm{A} + \lambda \bm{L})\bm{A}^T\bm{y} $ and compute the determinant in $g(\lambda)$ using Cholesky decomposition.
@@ -484,7 +485,7 @@ Then we approximate $f(\lambda)$ with a 3rd order Taylor series and $g(\lambda)$
 
 
 \subsection{Tensor-train Approximation of the Marginal Posterior Distribution}
-\label{sec:firstMargTT}
+\label{subsec:firstMargTT}
 We approximate the square root of marginal posterior on a predefined univariate grid, where $\gamma = [ 0.1 \times 10^{15}, 6 \times 10^{15}]$ and $\lambda = [ 100, 5000]$.
 We set the number of grid points to $n = 20$ and the number of ranks $r = 5$, which we keep constant.
 Since we do not approximate $\sqrt{ \pi(\gamma, \lambda| \bm{y}) }$ in the log-space we introduce a "normalisation constant" $c = 340$. This avoids underflow so that the values $\sqrt{\pi(\gamma, \lambda| \bm{y})} = \exp \{ 0.5 \log  \pi(\gamma, \lambda| \bm{y}) + c \} $ are within computer precision.
@@ -497,7 +498,7 @@ We plot the TT approximation as a colour map on top of the obtained samples in t
 \subsection{Sample from Marginal Posterior Distribution}
 \label{subsec:firstMarg}
 To sample from $\pi(\gamma, \lambda| \bm{y})$ we employ the MWG algorithm , see Alg. Box \ref{alg:MwG} and Sec. \ref{subsec:MTC}.
-We initialise the MWG at the mode $(\lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps approximately $0.3$s.
+We initialise the MWG at the mode $(\lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps in approximately $0.3$s.
 The standard deviation of the normal proposal distribution is set to $\sigma_{\lambda} = 0.8 \lambda_0$ so that the acceptance rate is $\approx 0.5$ as suggested in \cite{robertsLecNot}.
 The samples are plotted in Fig. \ref{fig:ScatterPlotTT} as a 2D scatter plot, as well as the trace of the MWG to show ergodicity.
 We calculate the integrated autocorrelation time (IACT) with the Python implementation of \cite{wolff2004monte}, provided by \cite{drikHesse}, which gives us $\tau_{\text{int}, \gamma} = $ and $\tau_{\text{int}, \delta} = $, see Fig. \ref{fig:IATCLamLin} and Fig. \ref{fig:IATCGamLin}.
@@ -649,9 +650,6 @@ We can do that because every measurement in the data vector $\bm{y}$ is independ
 
 We asses the affine map by calculating the relative difference $\lVert \bm{M}\bm{W} - \bm{V}  \rVert_{L^2} / \lVert \bm{M}\bm{W} \rVert_{L^2} $ between the mapped linear noise free data and the non-linear noise free data, which is approximately $0.001\%$.
 
-In Fig. \ref{fig:MapAsses}, we show the mapping for one posterior ozone sample which has not been used to create this mapping, one could say an unseen event not in the training data.
-The relative error for this mapping is roughly $0.03\%$ and much smaller than the relative difference between noise free linear data and non-linear data.
-Consequently, from here onwards, we use the approximated forward map and define $\bm{A} \coloneqq \bm{M A}_L $.
 \begin{figure}[ht!]
 	\centering
 	%\includegraphics{SampMapAssesment.png}
@@ -659,41 +657,23 @@ Consequently, from here onwards, we use the approximated forward map and define 
 	\caption[Assessment of affine map.]{We asses how good we can map a new ozone sample $\bm{x} \sim \pi(\bm{x}|\bm{y})$ from the linear forward model onto the non-linear forward model using the previous calculated affine map $\bm{M}$. The sample has not been used to create this affine map. The gray stars represent noise free linear data, where as the red circles present noise free non-linear data. Then we map the linear noise free data onto the non-linear noise free data, black start, and provide the relative RMS error in between the mapped noise free data and the non-linear data.}
 	\label{fig:MapAsses}
 \end{figure}
-
-\section{Solution by Regularisation}
-\label{sec:reg}
-Since we like to compare the MTC method to regularisation methods, we calculate a solution by Tikhonov regularisation, as this is most similar to our chosen linear-Gaussian Bayesian framework.
-The Tikhonov regularised solution is defined as~\cite{hansen2010discrete} 
-\begin{align}
-	\bm{x}_{\lambda} =\underset{ \bm{x}}{\arg \min}\,  \lVert \bm{A}\bm{x} - \bm{y} \rVert_2^2 + \lambda \bm{x}^T \bm{L} \bm{x} \, ,
-	\label{eq:XLam}
-\end{align}
-with the regularisation parameter $\lambda = \delta / \gamma$.
-The regularised solution is typically calculated by solving the normal equations, see Sec. \ref{sec:regularise},
-\begin{align}
-	\bm{x}_{\lambda} = (\bm{A}^T\bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y} \label{eq:xLam} \, .
-\end{align}
-To find the best regularised solution, we use the L-curve method~\cite{hansen1993use}.
-Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $1$ to $10^7$ and plot the solution semi norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{x} \rVert$, see Figure \ref{fig:LCurve}. 
-The best regularised solution corresponding to the corner of the L-curve is located at the point of maximum curvature, see triangle in Fig. \ref{fig:LCurve}, which we find with the kneedle algorithm~\cite{satopaa2011kneedle} using the python function \texttt{kneed.KneeLocator} in less $0.1$s.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{LCurvePhD.png}
-	\caption[Plot of the L-curve to find the regularised solution.]{We calculate regularised solution as in Eq. \ref{eq:} and plot the regularised semi norm $\sqrt{\bm{x}^T\bm{Lx}}$ against the data misfit norm $||\bm{Ax} -\bm{y} ||$ to find the regularised solution at the point of maximum curvature of the so-called L-Curve. Additionally we calculate the data misfit norm and the regularised norm for the ozone posterior and for samples of the conditional posterior distribution. \textcolor{red}{make box around Kneedle reagion}}
-	\label{fig:LCurve}
-\end{figure}
+In Fig. \ref{fig:MapAsses}, we show the mapping for one posterior ozone sample which has not been used to create this mapping, one could say an unseen event not in the training data.
+The relative error for this mapping is roughly $0.03\%$ and much smaller than the relative difference between noise free linear data and non-linear data.
+Consequently, from here onwards, we use the approximated forward map and define $\bm{A} \coloneqq \bm{M A}_L $.
 \clearpage
+
+
 \section{Posterior Distribution of Ozone -- approximated Model}
-With the affine approximation
+With the affine approximation we define
 \begin{align}
-	\bm{A} =  \bm{M A}_L \, 
+	\bm{A}  \coloneqq \bm{M A}_L \, 
 \end{align}
-of the non-linear forward map, we use the same setup as in Sec. \ref{sec:firstMarg} and \ref{subsec:firstCond} to evaluate the marginal posterior and the conditional posterior.
+of the non-linear forward map, we use the same setup as in Sec. \ref{sec:FirstO3Post} to evaluate the marginal posterior and the conditional posterior.
 
 \subsection{Marginal Posterior}
-The marginal posterior is defined as in Eq. \ref{eq:marg} but with $ \bm{A} =  \bm{M A}_L$.
-We run the MWG algorithm for $N = 20000$ plus $N_{\text{burn-in}} = 100$ and plot the samples in Fig. \ref{fig:MargPostHistTT} as well as the marginal approximations provided by the TT decomposition, where we use the same setup as in Sec. \ref{sec:firstMargTT}.
+The marginal posterior is defined as in Eq. \ref{eq:MargPostAppl} but with $ \bm{A} \coloneqq \bm{M A}_L$.
+We initialise the MWG at the mode of $\pi(\gamma, \lambda | \bm{y})$ and approximate $f(\lambda)$ and $g(\lambda)$ around the mode as in Eq. \ref{eq:fAprox} and Eq. \ref{eq:gAprox}.
+Then we run the MWG algorithm for $N = 20000$ plus $N_{\text{burn-in}} = 100$ steps and plot the samples in Fig. \ref{fig:MargPostHistTT} as well as the marginal approximations provided by the TT decomposition, where we use the exact same setup as in Sec. \ref{subsec:firstMargTT}.
 
 \begin{figure}[ht!]
 	\centering
@@ -703,9 +683,11 @@ We run the MWG algorithm for $N = 20000$ plus $N_{\text{burn-in}} = 100$ and plo
 \end{figure}
 
 \subsection{Conditional Posterior Variance and Mean}
-Next, we characterise the conditional posterior $\pi(\bm{x}|\gamma, \delta, \bm{y})$ as in Eq. \ref{eq:CondPost}. 
-Again, we calculate the full conditional mean \ref{eq:MeanInt} and full conditional covariance matrix \ref{eq:CovInt} as weighted expectation over a 25-point grid provided by either the marginal TT approximations or the histogram of samples.
-We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the regularised solution and one sample from the posterior.
+Next, we characterise the conditional posterior $\pi(\bm{x}|\bm{y})$ as in Eq. \ref{eq:CondPost}. 
+Again, we calculate the full conditional mean $\bm{\mu}_{\bm{x}|\bm{y}}$ \ref{eq:MeanInt} and covariance matrix $\bm{\Sigma}_{ \bm{x}|\bm{y}}$ \ref{eq:CovInt} as weighted expectation over a 25-point grid provided by either the marginal TT approximations of $\pi(\gamma| \bm{y})$ and $\pi(\lambda| \bm{y})$ or by the bins of the sample histogram as quadrature weights.
+We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the regularised solution and one sample from the posterior, which represents a feasible solution to the inverse problem.
+We can see that the ground truth lays within 3 times the variance around the mean accounting for roughly $99 \%$ of all solution.
+We also note that compared to the previously calculated mean and variance based on the linear forward model, see \ref{fig:O3Samp}, the posterior based on the approximated does not differ significantly.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SecRecResinclRegandSampl.png}
@@ -714,13 +696,47 @@ We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg} and the 
 	\label{fig:O3SolplsReg}
 \end{figure}
 
+Additionally in Fig. \ref{fig:PostCov}, we plot the singular values of the covariance matrix $\bm{\Sigma}_{ \bm{x}|\bm{y}}$, to visualise how many ozone values are informative.
+We observe that the last 10 singular values are very small and correspond to the ozone values at the high altitudes $\gtrsim 45$ and have a large variance, see Fig. \ref{fig:O3SolplsReg}.
+At those high altitudes the solution is dominated by the prior.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{CovSing.png}
-	\caption[]{}
-	\label{fig:}
+	\caption[Singular values of the posterior covariance matrix]{Singular values of the covariance matrix of$\bm{\Sigma}_{ \bm{x}|\bm{y}}$ of the posterior distribution $\pi(\bm{x}|\bm{y})$ for ozone.}
+	\label{fig:PostCov}
+\end{figure}
+\clearpage
+
+
+\section{Solution by Regularisation}
+\label{sec:reg}
+Since we claim that Bayesian analysis is superior to regularisation methods we compare the MTC method to a Tikhonov regularisation solution, see Sec. \ref{sec:regularise} and \cite{fox2016fast}.
+This is most similar to our chosen linear-Gaussian Bayesian framework.
+The Tikhonov regularised solution is defined as~\cite{hansen2010discrete} 
+\begin{align}
+	\bm{x}_{\lambda} =\underset{ \bm{x}}{\arg \min}\,  \lVert \bm{A}\bm{x} - \bm{y} \rVert_2^2 + \lambda \bm{x}^T \bm{L} \bm{x} \, ,
+	\label{eq:XLam}
+\end{align}
+with the regularisation parameter $\lambda$.
+The regularised solution is typically calculated by solving the normal equations, see Sec. \ref{sec:regularise},
+\begin{align}
+	\bm{x}_{\lambda} = (\bm{A}^T\bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y} \label{eq:xLam} \, .
+\end{align}
+To find the best regularised solution, we use the L-curve method~\cite{hansen1993use}.
+Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $1$ to $10^7$ and plot the solution semi norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{x} \rVert$, see Figure \ref{fig:LCurve}. 
+The best regularised solution corresponding to the corner of the L-curve is located at the point of maximum curvature, see triangle in Fig. \ref{fig:LCurve}, which we find with the kneedle algorithm~\cite{satopaa2011kneedle} using the python function \texttt{kneed.KneeLocator} in less $0.1$s.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{LCurvePhD.png}
+	\caption[Plot of the L-curve to find the regularised solution.]{We calculate regularised solution as in Eq. \ref{eq:} and plot the regularised semi norm $\sqrt{\bm{x}^T\bm{Lx}}$ against the data misfit norm $||\bm{Ax} -\bm{y} ||$ to find the regularised solution at the point of maximum curvature of the so-called L-Curve. Additionally we calculate the data misfit norm and the regularised norm for the ozone posterior and for samples of the conditional posterior distribution. \textcolor{red}{make box around Kneedle reagion}}
+	\label{fig:LCurve}
 \end{figure}
 
+We plot the regularised solution in Fig. \ref{fig:O3SolplsReg} and observe that it is very similar to the posterior mean.
+It is pretty clear that the regularised solution accounts for only one possible solution and does not provide uncertainties. The regularised solution is not similar to the samples drawn from the posterior $\pi(\bm{x}| \bm{y})$, see also Fig. \ref{fig:O3Samp}.
+In Fig. \ref{fig:LCurve}, the samples of $\pi(\bm{x}| \bm{y})$ lie above the L-Curve where as the mean and the regularised solution lie on the L-Curve.
+This does make sense, if one thinks about the mean (average) and the regularised solution as extremely smooth ozone profiles, see also Sec. \ref{sec:regularise}.
+In contrast the samples are less regularised and hence lie above the L-Curve, but have a similar data misfit norm and as already mentioned are all feasible solution to the data.
 \clearpage
 
 \section{Posterior Distribution of Pressure and Temperature -- approximated Forward Model}

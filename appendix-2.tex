@@ -72,6 +72,23 @@ More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ g
 
 \section{Measure theory}
 \label{ch:Mesure}
+Assume that the triple $(\Omega, \mathcal{F}, \mathbb{P})$ defines a probability space, where $\Omega$ denotes the complete sample space, $\mathcal{F}$ is a $\sigma$-algebra consisting of a collection of countable subsets $\{A_n\}_{n \in \mathbb{N}}$ with $A_n \subseteq \Omega$, and $\mathbb{P}$ is a probability measure on $\mathcal{F}$. The formal conditions for $\mathbb{P}$ to be a probability measure, and for $\mathcal{F}$ to be a $\sigma$-algebra over $\Omega$, are given in Appendix~\ref{ch:Mesure}.
+We denote
+\begin{align}
+	\mathbb{P}(A) = \int_A \diff  \mathbb{P}
+\end{align}
+as the probability of an event $A \in \mathcal{F}$.
+By applying the Radon-Nikodym theorem~\cite{kopp2004measintprob}, we can change variables
+\begin{align}
+	\mathbb{P}(A) = \int_A \frac{\diff \mathbb{P}}{\diff \bm{x}} \, \diff \bm{x} = \int_A \pi(\bm{x}) \, \diff \bm{x},
+\end{align}
+where $\mathrm{d}\bm{x}$ is a reference measure on the same probability space, commonly referred to as the Lebesgue measure. 
+The Radon-Nikodym derivative $\frac{\mathrm{d} \mathbb{P}}{\mathrm{d}\bm{x}}$ of $\mathbb{P}$ with respect to $\bm{x}$ is often interpreted as the probability density function (PDF) $\pi(\bm{x})$. Thus, we say that $\mathbb{P}$ has a density $\pi(\bm{x})$ with respect to $\bm{x}$~\cite[Chapter 10]{simonnet1996measprob}.
+
+Now, let $X: \Omega \longrightarrow \mathbb{R}^d$ be a $d$-dimensional random variable mapping from the probability space $(\Omega, \mathcal{F}, \mathbb{P})$ to the measurable space $(\mathbb{R}^d, \mathcal{X})$, where $\mathcal{X}$ is a collection of subsets in $\mathbb{R}^d$ \cite{VesaInvLect}.
+Then the associated PDF $\pi(\bm{x})$ is a joint density of $X$, induced by the probability measure on $\Omega$~\cite{VesaInvLect, kopp2004measintprob}.
+
+
 Recall the probability space $(\Omega, \mathcal{F}, \mathbb{P})$, where $\Omega$ denotes the sample space, and $\mathcal{F}$ is a collection of countable subsets $\{ A_n \}_{n \in \mathbb{N}}$ of $\Omega$. Each $A_n \subseteq \Omega$ is called an event, and a map $\mathbb{P} : \mathcal{F} \rightarrow \mathbb{R}$ is referred to as a measure.
 In the following, we describe the conditions required for $\mathcal{F}$ to be a $\sigma$-algebra, and for $\mathbb{P}$ to qualify as a probability measure.
 We refer to \cite{lawler2016notes} \cite{kopp2004measintprob} for further reading.
