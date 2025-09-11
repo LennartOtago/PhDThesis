@@ -7,13 +7,14 @@ We compare the marginal posterior distributions based on the drawn samples and f
 While elaboration about the different methods, we also elaborate on how informative the data and what the means in terms of ozone, pressure and temperature profile. 
 
 
-\section{Regularisation vs MTC}
+\section{Regularisation vs Bayesian}
 As already mentioned the regularisation approach only provides on solution, see Fig. \ref{fig:O3SolplsReg}.
 In Fig. \ref{fig:LCurve} we plot samples from the full conditional, which lay above L-Curve and make sense in terms of the Lagrange multipliers as the point on the L-Curve can be seen as extreme values.
 So the regularised estimate does not correlate to posterior solutions of the inverse problem.
 We note that the mean of full conditional is very similar to the regularised solution but is also some sort of an extreme value.
 
 In comparison to the regularisation solution we can provide the mean and variance of the full conditional posterior distribution, as well as the sample mean.
+
 
 
 
@@ -35,6 +36,14 @@ The t-walk is more robust but the TT approximation is faster.
 But both the samples and the TT approximation point towards the same results.
 
 Reduce correlation structure by rotating coordinate system
+\subsection{TT approximation}
+Within the TT approximation we run into numerical problems.
+One way of solving this issue could be to use a different basis set such as Lagrange polynomials as these exactly fit to a Gaussian or Chebychev polynomial as basis functions.
+Another idea is to use different reference measure for integration, such as a Gaussian measure instead of the current Lebesgue measure.
+Or that the TT finds normalisation constants automatically.
+
+\subsection{Sampling}
+The t-walk is a robust easy to implement sampling method, of course one could employ a more efficient sampler such as a gibbs sampler or something similar \cite{}.
 %\subsection{Intuition of TT}
 %more correlation hiegher ranks and/or grid point few sweeps and order is important to correlation structure 
 %keep ranks as low as possible and increse number of sweeps
@@ -48,6 +57,7 @@ When approximation the affine map we get an relative error of about $0.4\%$, whi
 We like to note that the relative difference 
 The error linear to non-linear.
 Low rank bound as in \cite{Rohrbach2022tterror}
+
 \section{Atmospheric Physics}
 Here we want to say how informative the data is and what we can about the ozone pressure and temperature profiles.
 
@@ -59,24 +69,13 @@ So the posterior pressure profile is much more informative, see marginal for $b$
 So we can retrieve an informative pressure profile for the pressure but not for temperature.
 
 Ideally we should do this iteratively update ozone and then temperature and pressure until proven convergence.
-\chapter{Outlook}
-\label{ch:SumOut}
 
-\section{Measurement Device}
+
+\subsection{Measurement Device}
 %From the experience we can say that pointing accuracy is more important than the signal-to-noise ratio.
 Then we can include more measurement specific details such as the pointing accuracy.
 Then we could sample measurement $N_{\Gamma}$ geometries $\Gamma^{(k)}\sim \pi(\Gamma)$ so that the posterior $\pi(\bm{x}|\bm{y}) \approx 1/N_{\Gamma} \sum_{\Gamma} \pi(\bm{x}, \Gamma^{(k)}|\bm{y})$ and include other measurement device specific parameters.
 
-\section{Methods}
-Here we point out possibilities for improvement of the currently used methods
-\subsection{TT approximation}
-Within the TT approximation we run into numerical problems.
-One way of solving this issue could be to use a different basis set such as Lagrange polynomials as these exactly fit to a Gaussian or Chebychev polynomial as basis functions.
-Another idea is to use different reference measure for integration, such as a Gaussian measure instead of the current Lebesgue measure.
-Or that the TT finds normalisation constants automatically.
-
-\subsection{Sampling}
-The t-walk is a robust easy to implement sampling method, of course one could employ a more efficient sampler such as a gibbs sampler or something similar \cite{}.
 
 \subsection{Model}
 Since we have to truncate the full conditional at the end the model is not accurate enough to eliminate those values.
