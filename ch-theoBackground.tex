@@ -227,9 +227,8 @@ Convergence to the target distribution is guaranteed by construction of the algo
 
 \subsection{Randomise then Optimise}
 \label{subsec:RTO}
-If we can not evalutaet the mean and varicne of the full posteior wiht intergartin we can draw sampes by th eRTO schme.
-
-As part of the MTC scheme, we only draw samples from the conditional distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$. For linear-Gaussian Bayesian hierarchical models, samples from the multivariate normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ can be efficiently generated using the Randomise-then-Optimise (RTO) method~\cite{bardsley2012mcmc}.
+If we can not evaluate the mean and variance of the full posterior through integration, e.g. if it is computationlly not feasibel to solve the integral in Eq. \ref{eq:fullCond} due to a large number of hyper-parameters, we need an atlernitve way to charcaterose $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
+For the linear-Gaussian Bayesian model we can draw sampes from the normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the randomise then optimise (RTO)~\cite{bardsley2012mcmc} scheme after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$.
 
 The full conditional distribution can be rewritten as
 \begin{align}
@@ -271,7 +270,7 @@ If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is 
 Instead of sampling from a target distribution $\pi(\bm{x})$ we can approximate that distribution on a d-dimensional grid with far fewer function evaluation compared to sampling methods using a tensor-train (TT) approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, with  $\bm{x}\in \mathbb{R}^d$.
 %First, we provide a short overview of probability spaces and their associated measures. 
 %I am not claiming this overview to be complete but consider it helpful to understand the notation in \cite{cui2022deep}, which we follow to approximate functions in the TT format.
-Then we explain how we calculate marginal distribution from an approximated probaility density in the TT format and generate samples via the inverse Rosenblatt transform (IRT), following the notation of \cite{cui2022deep},
+Here, we explain how to calculate marginal distribution from an approximated probaility density in the TT format and generate samples via the inverse Rosenblatt transform (IRT), following the notation of \cite{cui2022deep},
 
 As in~\cite{cui2022deep}, we can define the parameter space as the product space $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$ and $\bm{x} = ( x_1,\dots ,x_k,\dots,x_d )$.
 Then marginal density function for the $k$-th component is then given by

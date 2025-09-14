@@ -8,8 +8,8 @@ Since the only currently operating ozone limb sounder, the Microwave Limb Sounde
 This conversion offers a cost-effective and energy-efficient solution, as it circumvents the need for large, energy-hungry cooling devices that are traditionally required to capture terahertz signals. Instead, signal acquisition in the optical domain can be implemented by using compact, cheap, and low-power photonic technologies.
 
 Currently, the inverse problem to retrieve any trace gas from limb-sounding data is approached by the atmospheric physics community using optimisation and regularisation techniques developed in the 1970s~\cite{rodgers1976retrieval, NASA2022MLSv5}.
-This approach is based on a ``best fit to data but not the best fit to parameters''\cite{tan2016LecNot}.
-Instead, we employ a hierarchically structured Bayesian framework to infer ozone concentrations, where we find the best distribution of parameters given some data.
+These approaches are based on a ``best fit to data but not the best fit to parameters''\cite{tan2016LecNot}.
+Instead, we employ a hierarchically structured Bayesian framework to infer ozone concentrations, where we find a distribution of parameters given some data.
 This probabilistic approach provides estimates of parameters and their true uncertainties.
 
 \section{Research Gap and Contribution}
@@ -20,15 +20,17 @@ This does not provide comprehensive information about the parameters, the underl
 The errors provided are based on a local derivative of the forward map around one optimal solution, which is inherently highly sensitive to its location.
 Additionally, these retrievals are conditioned on external estimates of other parameters, such as temperature or pressure \cite{livesey2006retrieval}.
 This results in biased solutions, where the bias is then removed based on empirical decisions \cite{livesey2008ozonecarbonmono, Froidevaux2008snrozone}.
-Even current machine learning efforts condition on one single noise hyper-parameter value in their model, which is trained for about one month, and do not include noise as a retrieval parameter.
+Current machine learning efforts condition on one single noise value in the developed model, which is trained for about one month, and do not include noise as a retrieval parameter.
 Additionally they compare to a ``ground truth'' provided by the previously described optimal estimation approach \cite{werner2023machlearn, bojkov2008NeuralNet}.
 
-We address these limitations by including measurement noise as well as other hyper-paramters, e. g. smoothness of the ozone profile, explicitly in both the modelling and inversion process to provide a range of ozone profiles all fitting to the data within seconds.
+We address these limitations by including measurement noise as a hyper-paramter as well as the smoothness of the ozone profile explicitly in the modelling and inversion process.
+Then we are able to provide a range of ozone profiles, which are all fitting to the data.
 Naturally, noise (hyper-parameter) is a random process and according to that noise we deal with distributions over hyper-parameters and parameters (e.g. ozone concentrations) and can provide errors according to those distributions, instead of one "optimal" solution.
 This approach is called \textit{hierarchical} Bayesian modelling.
-Livesey et al. \cite{livesey2006retrieval} report "unexpected spectrally correlated noise" on the MLS aura, so here is another real reason why one should include and estimate noise.
+Livesey et al. \cite{livesey2006retrieval} report "unexpected spectrally correlated noise" on the MLS aura, so here is another real reason why one should model and estimate noise.
 
-To solve this inverse problem within a linear-Gaussian hierarchical Bayesian framework, we apply the marginal-and-then-conditional (MTC) method~\cite{fox2016fast}, with which we evaluate distributions over both hyper-parameters (e.g. noise and ozone smoothness) and parameters within seconds.
+To solve this inverse problem we employ a linear-Gaussian hierarchical Bayesian framework, we apply the marginal and then conditional (MTC) method~\cite{fox2016fast}.
+Within second we can evaluate distributions over both hyper-parameters (e.g. noise and ozone smoothness) and parameters.
 This is a fairly new method within the Bayesian community, and we are the first, to our knowledge, to apply it to a forward model based on the radiative transfer equation (RTE).
 Then, instead of sampling from those posterior distributions, we are the first to utilise a tensor-train (TT) to approximate the posterior distribution, which enables us to provide estimates and uncertainties via quadrature or the inverse Rosenblatt transform (IRT).
 
