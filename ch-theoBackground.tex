@@ -56,9 +56,9 @@ Choosing these prior distributions is ultimately a modeller's choice and crucial
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, ,
 \end{align}
-which according to Bayes theorem gives us a distribution of $\bm{x}$ and $\bm{\theta}$ given (conditioned) on the data.
-Note that here we include the hyper-parameters within the posterior distribution, which is the key idea of hierarchical Bayesian modelling, as we do not only aim to quantify the posterior distribution over the parameters $\bm{x}$ but also the posterior distribution over the hyper-parameter $\bm{\theta}$.
-We can visualise this hierarchically ordered correlation structure between parameters as well as how distributions progress through a measurement process, using a directed acyclic graph (DAG), see Figure~\ref{fig:FirstDAG}.
+which according to Bayes' theorem, gives us a distribution of $\bm{x}$ and $\bm{\theta}$ given (conditioned on) the data.
+Note that here we include the hyper-parameters within the posterior distribution, which is the key idea of hierarchical Bayesian modelling, as we not only aim to quantify the posterior distribution over the parameters $\bm{x}$, but also the posterior distribution over the hyper-parameter $\bm{\theta}$.
+We can visualise this hierarchically-ordered correlation structure between parameters as well as how distributions progress through a measurement process, using a directed acyclic graph (DAG), see Figure~\ref{fig:FirstDAG}.
 
 The expectation of any function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}$ may depend on $\bm{\theta}$, is described as 
 \begin{align}
@@ -73,18 +73,18 @@ with an the unbiased sample-based Monte Carlo estimate \cite{roberts2004general}
 Here, the samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
 
 Generating a representative sample set quickly from the posterior distribution often presents a significant challenge. This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
-If $\bm{x}$ can not be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, so that $\bm{x}(\bm{\theta})$ is function of $\bm{\theta}$, it is beneficial to factorise the posterior distribution as
+If $\bm{x}$ cannot be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, so that $\bm{x}(\bm{\theta})$ is function of $\bm{\theta}$, it is beneficial to factorise the posterior distribution as
 \begin{align}
 	\pi(\bm{x}, \bm{\theta} |  \bm{y}) = \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \pi(\bm{\theta} |   \bm{y}), \label{eq:MTC}
 \end{align}
 into the conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the latent field $\bm{x}$ and the marginal posterior 
 \begin{align}
-	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) } \label{eq:margGen}
+	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) } \label{eq:margGen}\, ,
 \end{align}
 over the hyper-parameters $\bm{\theta}$.
 In \cite{norton2018sampling}, they classify inverse problems into problems with known or unknown conditional posterior distributions, and conclude that if $\pi(\bm{x} | \bm{\theta} ,   \bm{y}) = \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta})  / \pi(   \bm{y}| \bm{\theta})$ has a known form, the normalising constant is available \newline $\int \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta}) \text{d} \bm{x} = \pi(   \bm{y}| \bm{\theta})  \propto \pi( \bm{\theta}|\bm{y}) / \pi(\bm{\theta})$ and one can almost surely determine the $\bm{\theta}$-dependence of the marginal posterior $\pi(\bm{\theta} |   \bm{y})$.
 
-This approach, known as the marginal and then conditional (MTC) method, is particularly advantageous when $\bm{x}\in \mathbb{R}^n$ is high-dimensional, while $\bm{\theta}\in \mathbb{R}^{n_{\bm{\theta}}}$ is low-dimensional, so that $n_{\bm{\theta}} \ll n$ and evaluation $\pi(\bm{\theta}| \bm{y})$ is cheap.
+This approach, known as the marginal and then conditional (MTC) method, is particularly advantageous when $\bm{x}\in \mathbb{R}^n$ is high-dimensional, while $\bm{\theta}\in \mathbb{R}^{n_{\bm{\theta}}}$ is low-dimensional, so that $n_{\bm{\theta}} \ll n$ and evaluation of $\pi(\bm{\theta}| \bm{y})$ is cheap.
 Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovariance}, Eq.~\eqref{eq:expPos} becomes
 \begin{align}
 	\mathbb{E}_{\bm{x} |  \bm{y}} [h(\bm{x})] 
@@ -92,8 +92,8 @@ Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovarian
 	= \int \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right] \, \pi(\bm{\theta} |  \bm{y}) \, \diff \bm{\theta},
 	\label{eq:fullCond}
 \end{align}
-where, in the case of a linear-Gaussian hierarchical Bayesian model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right]$ are well defined see next subsection.
-Furthermore, the central limit theorem states that the sample mean $ \bm{\mu}^{(i)}_{\text{samp}} $, of independent sample sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converges in distribution to a normal distribution so that
+where, in the case of a linear-Gaussian hierarchical Bayesian model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right]$ are well defined (see next subsection).
+Furthermore, the central limit theorem states that the sample mean $ \bm{\mu}^{(i)}_{\text{samp}} $, of independent sample sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converges to be normally distributed, so that
 \begin{align}
 	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
 \end{align}
@@ -115,7 +115,7 @@ Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) 
 \begin{align}
 	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
 \end{align}
-where define the IATC as in \cite[pp. 103-105]{wolff2002LecNot}.
+where we define the IATC as in \cite[pp. 103-105]{wolff2002LecNot}.
 See Appendix \ref{ap:IATC} and \cite{Sokal1997} for a more detailed derivation.
 The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample, accordingly we define the effective sample size as $\frac{ 2 \tau_{\text{int}} }{N}$.
 Since this is an estimate \cite{wolff2004monte} provides a way to not only calculate the IATC but also to quantify the errors of the estimate of the IATC.
@@ -161,7 +161,7 @@ Then the marginal posterior distribution over the hyper-parameters can be derive
 		\pi(\bm{\theta} | \bm{y}) \propto & \sqrt{\frac{\det{(\bm{\Sigma}(\bm{\theta})^{-1})} \det{(\bm{Q}(\bm{\theta}))} }{\det{(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})} } }  \exp \Bigg\{  -\frac{1}{2} (\bm{y} - \bm{A} \bm{\mu})^T \\ &\big[ \bm{\Sigma}(\bm{\theta})^{-1} - \bm{\Sigma}(\bm{\theta})^{-1} \bm{A}  (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1} \bm{A}^T \bm{\Sigma} (\bm{\theta})^{-1} \big] (\bm{y} - \bm{A} \bm{\mu}) \Bigg\} \pi(\bm{\theta}) \, .
 	\end{split} 
 \end{align} 
-Having the marginal posterior distribution available breaks up the correlation structure between $\bm{x}$ and $\bm{\theta}$, see Appendix \ref{ap:Correlation}, and makes the marginal and then conditional (MTC) approach so efficient \cite{fox2016fast}.
+Having the marginal posterior distribution available breaks up the correlation structure between $\bm{x}$ and $\bm{\theta}$ (see Appendix \ref{ap:Correlation}), and makes the MTC approach very efficient \cite{fox2016fast}.
 This scheme evaluates the marginal posterior values first and then conditions on hyper-parameters to draw posterior samples $\bm{x} \sim \pi (\bm{x} | \bm{y}, \bm{\theta})$ or to evaluate expectation and variance of $\pi(\bm{x}| \bm{y})$ by integration over the marginal posterior.
 
 
@@ -219,49 +219,53 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 \end{algorithm}
 
 
-%\subsection{Draw a sample from a multivariate normal distribution}
-%\label{subsec:RTO}
-%As part of the MTC scheme, we only draw samples from the conditional distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$. For linear-Gaussian Bayesian hierarchical models, samples from the multivariate normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ can be efficiently generated using the Randomise-then-Optimise (RTO) method~\cite{bardsley2012mcmc}.
-%
-%The full conditional distribution can be rewritten as
-%\begin{align}
-%	\pi(\bm{x} |  \bm{y}, \bm{\theta}) &\propto \pi(\bm{y} |  \bm{x}, \bm{\theta}) \, \pi(\bm{x} |  \bm{\theta}) \\
-%	&= \exp \left( -\left\lVert \hat{\bm{A}} \bm{x} - \hat{\bm{y}} \right\rVert^2 \right),
-%\end{align}
-%where
-%\begin{align}
-%	\label{eq:minimizer}
-%	\hat{\bm{A}} = 
-%	\begin{bmatrix}
-%		\bm{\Sigma}^{-1/2}(\bm{\theta}) \bm{A} \\
-%		\bm{Q}^{1/2}(\bm{\theta})
-%	\end{bmatrix}, \quad 
-%	\hat{\bm{y}} = 
-%	\begin{bmatrix}
-%		\bm{\Sigma}^{-1/2}(\bm{\theta}) \bm{y} \\
-%		\bm{Q}^{1/2}(\bm{\theta}) \bm{\mu}
-%	\end{bmatrix} \quad \text{\cite{bardsley2014randomize}}.
-%\end{align}
-%A sample $\bm{x}_i $ can be computed by minimising the following equation with respect to $\hat{\bm{x}}$ :
-%\begin{align}
-%	\bm{x}_i = \arg \min_{\hat{\bm{x}}} \lVert \hat{\bm{A}} \hat{\bm{x}} - ( \hat{\bm{y}} + \bm{b} ) \rVert^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
-%\end{align}
-%where we add a randomised perturbation $\bm{b}$.
-%Similar to Section~\ref{sec:regularise}, this expression can be rewritten as
-%\begin{align}
-%	\label{eq:RTO}
-%	\left( \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A} + \bm{Q}(\bm{\theta}) \right) \bm{x}_i = \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{y} + \bm{Q}(\bm{\theta}) \bm{\mu} + \bm{v}_1 + \bm{v}_2,
-%\end{align}
-%where the term $-\hat{\bm{A}}^T \bm{b}$ is decomposed as $\bm{v}_1 + \bm{v}_2$, with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}^T \bm{\Sigma}^{-1}(\bm{\theta}) \bm{A})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}(\bm{\theta}))$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
-%
-%If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic, and the conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y})$ is also ergodic~\cite{acosta2014markov}.
-
 \subsection{T-walk Sampler as a Black Box}
-If the parameters $\bm{x}$ are functionally dependent on the hyper-parameters $\bm{\theta}$, i.e., $\bm{x} = \bm{x}(\bm{\theta})$, we can sample directly from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the t-walk algorithm by Christen and Fox~\cite{christen2010general}. 
+If the parameters $\bm{x}$ are functionally dependent on the hyper-parameters $\bm{\theta}$, i.e., $\bm{x} = \bm{x}(\bm{\theta})$, we can sample directly from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the t-walk sampler as by Christen and Fox~\cite{christen2010general}. 
 The t-walk is employed as a black-box sampler, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
 Convergence to the target distribution is guaranteed by construction of the algorithm.
 
-\section{Numerical Approximation Methods - Tensor-Train (TT)}
+
+\subsection{Randomise then Optimise}
+\label{subsec:RTO}
+If we can not evalutaet the mean and varicne of the full posteior wiht intergartin we can draw sampes by th eRTO schme.
+
+As part of the MTC scheme, we only draw samples from the conditional distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$. For linear-Gaussian Bayesian hierarchical models, samples from the multivariate normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ can be efficiently generated using the Randomise-then-Optimise (RTO) method~\cite{bardsley2012mcmc}.
+
+The full conditional distribution can be rewritten as
+\begin{align}
+	\pi(\bm{x} |  \bm{y}, \bm{\theta}) &\propto \pi(\bm{y} |  \bm{x}, \bm{\theta}) \, \pi(\bm{x} |  \bm{\theta}) \\
+	&= \exp \left( -\left\lVert \hat{\bm{A}} \bm{x} - \hat{\bm{y}} \right\rVert_{L^2}^2 \right),
+\end{align}
+where we define
+\begin{align}
+	\label{eq:minimizer}
+	\hat{\bm{A}} \coloneqq 
+	\begin{bmatrix}
+		\bm{\Sigma}_{\bm{\theta}}^{-1/2} \bm{A}_{\bm{\theta}} \\
+		\bm{Q}_{\bm{\theta}}^{1/2}
+	\end{bmatrix}, \quad 
+	\hat{\bm{y}} \coloneqq 
+	\begin{bmatrix}
+		\bm{\Sigma}_{\bm{\theta}}^{-1/2} \bm{y} \\
+		\bm{Q}_{\bm{\theta}}^{1/2} \bm{\mu}
+	\end{bmatrix} \quad \text{\cite{bardsley2014randomize}}.
+\end{align}
+Here we write $\bm{A}(\bm{\theta}) = \bm{A}_{\bm{\theta}}$, $\bm{Q}(\bm{\theta}) = \bm{Q}_{\bm{\theta}} $ and $\bm{\Sigma}^{-1}(\bm{\theta}) = \bm{\Sigma}^{-1}_{\bm{\theta}}$, which are all dependent on the hyper-parameters $\bm{\theta}$.
+A sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}, \bm{y}) $ from the conditional posterior is obtained by minimising the following equation with respect to $\hat{\bm{x}}$ :
+\begin{align}
+	\bm{x}^{(k)} = \arg \min_{\hat{\bm{x}}} \lVert \hat{\bm{A}} \hat{\bm{x}} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
+\end{align}
+where we add a randomised perturbation $\bm{b}$.
+Similar to Section~\ref{sec:regularise}, this expression can be rewritten as
+\begin{align}
+	\label{eq:RTO}
+	\left( \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{A}_{\bm{\theta}} + \bm{Q}_{\bm{\theta}} \right) \bm{x}^{(k)} = \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{y} + \bm{Q}_{\bm{\theta}} \bm{\mu} + \bm{v}_1 + \bm{v}_2,
+\end{align}
+where the term $-\hat{\bm{A}}^T \bm{b}$ is decomposed as $\bm{v}_1 + \bm{v}_2$, with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{A}_{\bm{\theta}})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\bm{\theta}})$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
+
+If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic, and the conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) =  \pi(\bm{x} |  \bm{\theta} , \bm{y}) \pi( \bm{\theta} | \bm{y})$ is also ergodic~\cite{acosta2022markov}.
+
+\section{Numerical Approximation -- Tensor-Train (TT)}
 \label{sec:tensortrain}
 %\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
 Instead of sampling from a target distribution $\pi(\bm{x})$ we can approximate that distribution on a d-dimensional grid with far fewer function evaluation compared to sampling methods using a tensor-train (TT) approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, with  $\bm{x}\in \mathbb{R}^d$.
@@ -280,7 +284,7 @@ Here, we introduce a weight function $\uplambda(x)$, which can be useful for qua
 	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \diff x_i. \label{eq:lebesgueWeight}
 \end{align}
 
-In the tensor-train (TT) format, the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost as $\pi(\bm{x})$ is approximated by
+In the TT format, the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost as $\pi(\bm{x})$ is approximated by
 \begin{align*}
 	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d)  \in \mathbb{R},
 \end{align*}
@@ -349,9 +353,9 @@ The approximated unnormalised density is written as:
 \begin{align}
 	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2\, \,  \text{\cite[Eq. 19]{cui2022deep}},
 \end{align}
-where $\xi$ is a positive constant added according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting, see Eq. \ref{eq:lebesgueWeight}, such that
+where $\xi$ is a positive constant added according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting (see Eq. \ref{eq:lebesgueWeight}) such that
 \begin{align}
-	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(x)}^2\, \,  \text{\cite[Eq. 35]{cui2022deep}}. \label{eq:gamErr}
+	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(\mathcal{X})}^2\, \,  \text{\cite[Eq. 35]{cui2022deep}}. \label{eq:gamErr}
 \end{align}
 This leads to the normalised target function
 \begin{align}
@@ -376,7 +380,7 @@ Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{
 \subsection{Marginal Functions}
 \label{subsec:TTMarg}
 TT-approximations are handy when approximating integrals, as marginal functions can be easily computed which may simplify the integration significantly.
-We compute those by a procedure, to which Cui et al. \cite{cui2022deep} refer to as backwards marginalisation, see Prop. \ref{prob:ForMarg}, and to which I add the forward marginalisation, see Prob. \ref{prob:backMarg}. 
+We compute those by a procedure, to which Cui et al. \cite{cui2022deep} refer to as backwards marginalisation, see Prop. \ref{prob:ForMarg}, and to which I add the forward marginalisation, see Prop. \ref{prob:backMarg}. 
 This is similar to the left and right orthogonalisation of TT-cores~\cite{oseledets2011tensor, Oseledets2011DMRG}.
 The backwards marginalisation provides us with the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{B}_{\text{pre}, k}$. 
 These matrices enable the efficient evaluation of marginal functions since they integrate over the coordinates either left or right of the $k$-th dimension, as in \cite{cui2022deep}.
@@ -385,7 +389,7 @@ In doing so, we define the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}
 	\bm{M}_k[i, j] = \int_{\mathcal{X}_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \uplambda(x_k) \, \diff x_k, \quad i, j = 1, \dots, n_k, \, \,  \text{\cite[Eq. 22]{cui2022deep}} \label{eq:MassMat},
 \end{equation}
 where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ denotes the set of basis functions for the $k$-th coordinate.
-The proposition used to compute $\bm{B}_k$, stated in Proposition~\ref{prob:backMarg}, is adapted directly from~\cite{cui2022deep}.
+The proposition used to compute $\bm{B}_k$, stated in Prop.\ref{prob:backMarg}, is adapted directly from~\cite{cui2022deep}.
 
 \begin{prop}[Backwards Marginalisation as in~\cite{cui2022deep}]
 	\label{prob:backMarg}
@@ -446,14 +450,14 @@ and similarly in the last dimension
 where $\bm{D}_d[l_{n-1},i] = \bm{B}_{\text{pre},d}[l_{n-1}, i, \alpha_{n+1}]$ and $\alpha_{d+1} = 1$.
 Note that we calculate the normalisation numerically within the process of finding the marginals so that $\sum f_{X_k}(x_k) = 1$.
 
-\subsection{Sampling from the TT Approximation}
+\subsection{Sampling from a TT Approximation}
 If instead of evaluating integrals we like to draw samples from the approximated function we do this via the inverse Rosenblatt transform (IRT), as in \cite{dolgov2020approximation}, to preserve the correlation structure.
 Since we approximate the square root of the target function, Cui et. al. \cite{cui2022deep} call that the squared inverse Rosenblatt transform (SIRT).
 
 \begin{algorithm}[!th]
 	\caption{Squared Inverse Rosenblatt Transform (SIRT)}
 	\begin{algorithmic}[1]
-		\STATE \textbf{Input:} seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $ and $\bm{B}_1 , \dots,\bm{B}_d$  from Prob. \ref{prob:backMarg}
+		\STATE \textbf{Input:} seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $ and $\bm{B}_1 , \dots,\bm{B}_d$  from Prop. \ref{prob:backMarg}
 		\FOR{ \( s = 1, \dots, N\)}
 		\FOR{ \( k = 1, \dots, d\)}
 		\STATE compute normalised PDF $ f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1)$, Eq. \ref{eq:CurrMarg}
@@ -467,7 +471,7 @@ Since we approximate the square root of the target function, Cui et. al. \cite{c
 	\end{algorithmic}
 	\label{alg:SIRT}
 \end{algorithm}
-We start by calculating the Backward marginals $\bm{B}_1 , \dots,\bm{B}_d$ as in Prob \ref{prob:backMarg} and draw $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is d-dimensional for $s = 1, \dots, N$.
+We start by calculating the Backward marginals $\bm{B}_1 , \dots,\bm{B}_d$ as in Prop. \ref{prob:backMarg} and draw $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is d-dimensional for $s = 1, \dots, N$.
 Then we calculate the first marginal $f_{X_1}(x_1)$ as in Eq. \ref{eq:firstMarg} and normalise with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$.
 Next, we compute the cumulative distribution function (CDF)
 \begin{align}
@@ -477,7 +481,7 @@ Next, we compute the cumulative distribution function (CDF)
 for the first dimension $k = 1$ and then project the seed  on the parameter space $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$.
 Once that is done, we use a piecewise polynomial interpolation
 \begin{align}
-	\bm{G}_k(x^{(s)}_k) \approx   \frac{x^{(s)}_k - x^{(i)}_k }{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i+1)}_k) + \frac{ x^{(i+1)}_k - x^{(s)}_k}{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i)}_k)
+	\bm{G}_k(x^{(s)}_k) \approx   \frac{x^{(s)}_k - x^{(i)}_k }{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i+1)}_k) + \frac{ x^{(i+1)}_k - x^{(s)}_k}{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i)}_k) \, ,
 	\label{eq:LinPol}
 \end{align}
 for $x^{(i)}_k \leq x^{(s)}_k \leq x^{(i+1)}_k$ in between two grid points $i$ and $i+1$ as in \cite{dolgov2020approximation}.
@@ -529,8 +533,8 @@ In practise we calculate the importance ratio in the log space, where $\log f_X(
 In theory this leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
 
 
-\subsection{On the Error in the TT Approximation}
-A straight forward way to asses the error from the TT approximation is to calculate the relative root mean squared error (RMS)
+\subsection{On the Error of a TT Approximation}
+A straightforward way to asses the error from the TT approximation is to calculate the relative root mean squared error (RMS)
 \begin{align}
 	\Bigg( \frac{ \int_{\mathcal{X}} (\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2))^2 \uplambda(\bm{x}) \diff \bm{x}}{ \int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \diff \bm{x} } \Bigg)^{1/2} =	\frac{\lVert 	\pi(\bm{x}) - (\gamma + \tilde{g}(\bm{x})^2)  \rVert_{L^2_{\uplambda}(\mathcal{X})}}{\lVert 	\pi(\bm{x}) \rVert_{L^2_{\uplambda}(\mathcal{X})}  } \, .
 \end{align}
@@ -616,55 +620,54 @@ For more information on affine spaces and maps, we refer to the books \cite{berg
 \end{figure}
 \newcommand*{\vertbar}{\rule[-1ex]{0.5pt}{2.5ex}}
 \newcommand*{\horzbar}{\rule[.5ex]{2.5ex}{0.5pt}}
-
-Consequently, to map between the linear and non-linear forward map, we generate two affine subspaces $\bm{V}$ and $\bm{W}$ over the same field.
-Assume we draw samples $\{\bm{x}^{(1)}, \dots, \bm{x}^{(j)}, \dots ,\bm{x}^{(m)}\} \sim \pi(\bm{x}|\bm{y})$ and the affine subspace associated with the linear forward model is \begin{align}
-	\bm{W} = \begin{bmatrix}
-		\vert&   &  \vert & & \vert \\
-		\bm{A}_{L} \bm{x}^{(1)} &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
-		\vert&   &  \vert & & \vert 
-	\end{bmatrix}
-	%	= \begin{bmatrix}
-  %\begin{array}{ccc}
-	%\horzbar & w_{1} & \horzbar \\
-	%	& \vdots    &          \\
-	%\horzbar & w_{j} & \horzbar \\
-	%& \vdots    &          \\
-	%\horzbar &w_{m} & \horzbar
-%end{array}
-%	\end{bmatrix} 
-\in \mathbb{R}^{m \times m}
-\end{align} and with the non-linear forward model is 
-\begin{align}
-	\bm{V} = \begin{bmatrix}
-		\vert&   &  \vert & & \vert \\
-		\bm{A}_{NL}\bm{x}^{(1)} &  \cdots& \bm{A}_{NL}\bm{x}^{(j)} &  \cdots & \bm{A}_{NL} \bm{x}^{(m)}  \\
-		\vert&   &  \vert & & \vert 
-	\end{bmatrix} = 
-		\begin{bmatrix}
-	\begin{array}{ccc}
-		\horzbar & v_{1} & \horzbar \\
-		& \vdots    &          \\
-		\horzbar & v_{j} & \horzbar \\
-		& \vdots    &          \\
-		\horzbar &v_{m} & \horzbar
-	\end{array}
-\end{bmatrix}\in \mathbb{R}^{m \times m} \, .
-\end{align}
-Then the we calculate affine map 
-\begin{align}
-	\bm{V}\bm{W}^{-1} = \bm{M} =
-		\begin{bmatrix}
-	\begin{array}{ccc}
-		\horzbar & r_{1} & \horzbar \\
-		& \vdots    &          \\
-		\horzbar & r_{j} & \horzbar \\
-		& \vdots    &          \\
-		\horzbar &r_{m} & \horzbar
-	\end{array}
-\end{bmatrix}\, \in \mathbb{R}^{m \times m} ,
-\end{align}
-using that, for the forward model in this thesis, each row of $\bm{V}$ is independent of each other, we solve $v_j =r_j \bm{W} $ for each row $ r_j  \in \bm{M}$, where $j = 1, \dots, m$.
+%Consequently, to map between the linear and non-linear forward map, we generate two affine subspaces $\bm{V}$ and $\bm{W}$ over the same field.
+%Assume we draw samples $\{\bm{x}^{(1)}, \dots, \bm{x}^{(j)}, \dots ,\bm{x}^{(m)}\} \sim \pi(\bm{x}|\bm{y})$ and the affine subspace associated with the linear forward model is \begin{align}
+%	\bm{W} = \begin{bmatrix}
+%		\vert&   &  \vert & & \vert \\
+%		\bm{A}_{L} \bm{x}^{(1)} &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
+%		\vert&   &  \vert & & \vert 
+%	\end{bmatrix}
+%	%	= \begin{bmatrix}
+%  %\begin{array}{ccc}
+%	%\horzbar & w_{1} & \horzbar \\
+%	%	& \vdots    &          \\
+%	%\horzbar & w_{j} & \horzbar \\
+%	%& \vdots    &          \\
+%	%\horzbar &w_{m} & \horzbar
+%%end{array}
+%%	\end{bmatrix} 
+%\in \mathbb{R}^{m \times m}
+%\end{align} and with the non-linear forward model is 
+%\begin{align}
+%	\bm{V} = \begin{bmatrix}
+%		\vert&   &  \vert & & \vert \\
+%		\bm{A}_{NL}\bm{x}^{(1)} &  \cdots& \bm{A}_{NL}\bm{x}^{(j)} &  \cdots & \bm{A}_{NL} \bm{x}^{(m)}  \\
+%		\vert&   &  \vert & & \vert 
+%	\end{bmatrix} = 
+%		\begin{bmatrix}
+%	\begin{array}{ccc}
+%		\horzbar & v_{1} & \horzbar \\
+%		& \vdots    &          \\
+%		\horzbar & v_{j} & \horzbar \\
+%		& \vdots    &          \\
+%		\horzbar &v_{m} & \horzbar
+%	\end{array}
+%\end{bmatrix}\in \mathbb{R}^{m \times m} \, .
+%\end{align}
+%Then the we calculate affine map 
+%\begin{align}
+%	\bm{V}\bm{W}^{-1} = \bm{M} =
+%		\begin{bmatrix}
+%	\begin{array}{ccc}
+%		\horzbar & r_{1} & \horzbar \\
+%		& \vdots    &          \\
+%		\horzbar & r_{j} & \horzbar \\
+%		& \vdots    &          \\
+%		\horzbar &r_{m} & \horzbar
+%	\end{array}
+%\end{bmatrix}\, \in \mathbb{R}^{m \times m} ,
+%\end{align}
+%using that, for the forward model in this thesis, each row of $\bm{V}$ is independent of each other, we solve $v_j =r_j \bm{W} $ for each row $ r_j  \in \bm{M}$, where $j = 1, \dots, m$.
 
 
 \section{Regularisation}
@@ -674,10 +677,10 @@ Since we want to show that our methods are computationally comparable if not fas
 
 The Tikhonov regularisation approach provides one solution $\bm{x}_{\lambda}$ that minimises both the data misfit norm
 \begin{align}
-	\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert
+	\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2}
 \end{align} and a regularisation semi-norm
 \begin{align}
-	\lambda \left\lVert \bm{T} \bm{x} \right\rVert \, , \label{semiNorm}
+	\lambda \left\lVert \bm{T} \bm{x} \right\rVert_{L^2} \, , \label{semiNorm}
 \end{align}
 for a given regularisation parameter $\lambda > 0 $ as described in~\cite{fox2016fast}, with a linear forward model matrix $\bm{A}$, the data $\bm{y}$, a regularisation operator $\bm{T}$.
 The regularisation parameter weights the semi-norm and penalises $\bm{x}$ according to that.
@@ -687,7 +690,7 @@ We refer to  \cite{hansen1989GSVD} and \cite{tan2016LecNot} for a more comprehen
 
 For a fixed $\lambda$, the regularised solution
 \begin{align}
-	\bm{x}_{\lambda} = \underset{\bm{x}}{\mathrm{arg\,min}} \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2 + \lambda \left\lVert \bm{T} \bm{x} \right\rVert^2
+	\bm{x}_{\lambda} = \underset{\bm{x}}{\mathrm{arg\,min}} \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2}^2 + \lambda \left\lVert \bm{T} \bm{x} \right\rVert_{L^2}^2
 \end{align}
 is obtained by taking the derivative with respect to $\bm{x}$:
 \begin{align}
@@ -710,7 +713,7 @@ For example
 		& \ddots & \ddots & \ddots &\\ 
 		& & 0 & -1 & 1  \\
 		& & & 0 & -1 
-	\end{bmatrix} 
+	\end{bmatrix} \, ,
 \end{align}
 is the first order derivative with equal spacing $h$ as in \cite{tan2016LecNot} then
 \begin{align}
@@ -721,13 +724,13 @@ is the first order derivative with equal spacing $h$ as in \cite{tan2016LecNot} 
 		& \ddots & \ddots & \ddots &\\ 
 		& & -1 & 2 & -1  \\
 		& & & -1 & 2 
-	\end{bmatrix} 
+	\end{bmatrix} \, ,
 \end{align}
 is the second order derivative with Neumann boundary conditions, see \cite{wang2015graphs}.
 
 In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation semi-norm. The optimal value of $\lambda$ corresponds to the point of maximum curvature of the so-called L-curve~\cite{hansen1993use}, where the data misfit norm versus the regularisation semi-norm is plotted, see Fig.~\ref{fig:LCurve}.
 
-Additionally one can think about regularisation as a Lagrange multiplier $ \mathcal {L}(\bm{x}, \lambda) \coloneq\lambda \bm{x}^T \bm{L} \bm{x} + \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert $, which minimises $ \bm{x}_\lambda = \text{arg min}_{\bm{x}} \bm{x}^T \bm{L} \bm{x} $ with respect to a constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert$, see \cite[fn. 6]{fox2016fast} and \cite[Fig. 2.13]{SANTOSH202265}.
+Additionally one can think about regularisation as a Lagrange multiplier $ \mathcal {L}(\bm{x}, \lambda) \coloneq\lambda \bm{x}^T \bm{L} \bm{x} + \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2} $, which minimises $ \bm{x}_\lambda = \text{arg min}_{\bm{x}} \bm{x}^T \bm{L} \bm{x} $ with respect to a constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2}$, see \cite[fn. 6]{fox2016fast} and \cite[Fig. 2.13]{SANTOSH202265}.
 So every solution $\bm{x}_{\lambda}$ is an extremum (the most regularised solution for a given data misfit norm) and almost every sample of the posterior, which represents a feasible solution given the data, has a higher $\bm{x}^T \bm{L} \bm{x}$ value and lays above the L-Curve.
 
 

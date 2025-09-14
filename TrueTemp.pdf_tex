@@ -54,10 +54,10 @@
     \lineheight{1}%
     \setlength\tabcolsep{0pt}%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{TrueTemp.pdf}}%
-    \put(0.66477011,0.2261663){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_0$\end{tabular}}}}%
-    \put(0.65224271,0.2689143){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_1$\end{tabular}}}}%
-    \put(0.76656452,0.42446526){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_3$\end{tabular}}}}%
-    \put(0.86908911,0.59417642){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_4$\end{tabular}}}}%
+    \put(0.67097627,0.22768926){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_0$\end{tabular}}}}%
+    \put(0.62005079,0.26968068){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_1$\end{tabular}}}}%
+    \put(0.79558349,0.4367067){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_3$\end{tabular}}}}%
+    \put(0.90248606,0.59417642){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_4$\end{tabular}}}}%
     \put(0.82398328,0.17127397){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$T_0$\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{TrueTemp.pdf}}%
     \put(0.17369263,0.83557076){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{T,6}$\end{tabular}}}}%
@@ -66,10 +66,10 @@
     \put(0.17445384,0.2971232){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{T,2}$\end{tabular}}}}%
     \put(0.17590632,0.21195097){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{T,1}$\end{tabular}}}}%
     \put(0.17351382,0.60351877){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{T,5}$\end{tabular}}}}%
-    \put(0.47264702,0.92857921){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_6$\end{tabular}}}}%
-    \put(0.74603946,0.76802503){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_5$\end{tabular}}}}%
+    \put(0.51992733,0.93495913){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_6$\end{tabular}}}}%
+    \put(0.76512343,0.782338){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_5$\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=3]{TrueTemp.pdf}}%
-    \put(0.68227986,0.32206254){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_2$\end{tabular}}}}%
+    \put(0.6585391,0.34433891){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$a_2$\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=4]{TrueTemp.pdf}}%
   \end{picture}%
 \endgroup%

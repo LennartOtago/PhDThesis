@@ -7,7 +7,11 @@ We compare the marginal posterior distributions based on the drawn samples and f
 While elaboration about the different methods, we also elaborate on how informative the data and what the means in terms of ozone, pressure and temperature profile. 
 
 
-\section{Regularisation vs Bayesian}
+\section{Regularisation Solution vs. Hierarchical Bayesian Approach}
+200 functino ecalution of $\bm{x}_{\lambda}$
+vs 10000 samples vs 600 funciton evalution  of marg plus 20 $\bm{x}_{\lambda}$ and 20 $\bm{B}^{-1}_{\lambda}$
+time similar within a second
+but no varicne
 As already mentioned the regularisation approach only provides on solution, see Fig. \ref{fig:O3SolplsReg}.
 In Fig. \ref{fig:LCurve} we plot samples from the full conditional, which lay above L-Curve and make sense in terms of the Lagrange multipliers as the point on the L-Curve can be seen as extreme values.
 So the regularised estimate does not correlate to posterior solutions of the inverse problem.
@@ -16,13 +20,28 @@ We note that the mean of full conditional is very similar to the regularised sol
 In comparison to the regularisation solution we can provide the mean and variance of the full conditional posterior distribution, as well as the sample mean.
 
 
+\section{Sampling Methods vs. TT Approximation}
 
 
-\section{Sampling vs TT}
+
+
+
+10000 samples
+vs 600 funciton evalution  of marg
+similair time due approxiamtions of f and g the recto corss semms to be optimised than my code
+
 We can conclude that the TT approximation is faster or as fast as sampling methods.
 For the marginal posterior $\pi(\gamma, \lambda | \bm{y})$ the calculation of the TT-cores takes $0.1$s, which we consider similar to the sampling time of $0.5$s.
 But the TT approximation needs less function evaluations than the MWG sampler.
 More precisely, the TT needs $n_{\text{tot}} = 2n_{\text{sweeps}}((d-2)r^2n+ 2nr) = 400$ function evaluations, with number of sweeps $n_{\text{sweeps}} =2$ and rank $r=10$ and grid size $n = 25$ compared to $10000$ samples.
+Error due to approcimation of f and g but also due TT
+
+
+
+for PT
+once trained signifincaly faster 
+but t walk is not the optimal sampler since it doesn consiger correaltopij structure
+Times
 
 When approximating the posterior distribution of the temperature pressure ratio we are much faster compared to sampling methods.
 Since the parameter space is $16$-dimensional we have to run the t-walk for about $2$ million steps.
@@ -36,20 +55,21 @@ The t-walk is more robust but the TT approximation is faster.
 But both the samples and the TT approximation point towards the same results.
 
 Reduce correlation structure by rotating coordinate system
-\subsection{TT approximation}
+Errors
+
 Within the TT approximation we run into numerical problems.
 One way of solving this issue could be to use a different basis set such as Lagrange polynomials as these exactly fit to a Gaussian or Chebychev polynomial as basis functions.
 Another idea is to use different reference measure for integration, such as a Gaussian measure instead of the current Lebesgue measure.
 Or that the TT finds normalisation constants automatically.
 
-\subsection{Sampling}
+
+
 The t-walk is a robust easy to implement sampling method, of course one could employ a more efficient sampler such as a gibbs sampler or something similar \cite{}.
 %\subsection{Intuition of TT}
 %more correlation hiegher ranks and/or grid point few sweeps and order is important to correlation structure 
 %keep ranks as low as possible and increse number of sweeps
 %less correlation fewer rank and gridpoints maybe more cheaper sweeps
 
-\section{Approximation Errors}
 We consider the approximation errors of the functions $f(\lambda)$, $g(\lambda)$ and propagation error into the marginal posterior for sampling of about $10\%$ good enough.
 The TT approximation error from the marginal posterior is with about $10\%$ also good enough since we do not believe that our model is accurate enough to capture those differences.
 
