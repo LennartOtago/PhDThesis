@@ -84,19 +84,17 @@ When we plot the data in Fig. \ref{fig:DataPlot}, we see that, as mentioned in S
 	\label{fig:DataPlot}
 \end{figure}
 Now, given the data, we like to determine the posterior distributions over ozone $\bm{x}$, pressure $\bm{p}$ and temperature $\bm{T}$ at different heights.
-
+\clearpage
 
 
 \section{Hierarchical Bayesian Framework for Ozone}
-\label{sec:BayModel}
-
-
+\label{sec:BayModelO3}
 \begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}
 		\node[roundnode2] at (-4,6.5) (Q)     {$\bm{Q}$};
 		\node[roundnode2] at (-2.5,5) (x)     {$\bm{x}$};
-		\node[align=center] at (-1,4) (A)    {$\bm{A}_L$};
+		\node[align=center] at (-1,4) (A)    {$\bm{A}$};
 		\node[roundnode2] at (-1,2.5) (u)    {$\Omega$};
 		\node[rectnode] at (-1,1) (y)    {$\bm{y}$};
 		\node[roundnode2] at (-2.5,2.5) (e)    {$\bm{\eta}$};
@@ -104,6 +102,8 @@ Now, given the data, we like to determine the posterior distributions over ozone
 		\node[roundnode2] at (-8,8) (s)    {$\gamma$};
 		\node[roundnode2] at (-5.5,8) (d)    {$\delta$};
 		
+		\node[roundnode2] at (-8,10) (shyp)    {$\bm{\theta}_{\gamma}$};
+		\node[roundnode2] at (-5.5,10) (dhyp)    {$\bm{\theta}_{\delta}$};
 		%Lines
 		\draw[->, very thick] (S) -- (e);
 		\draw[->, mydotted, very thick] (s) -- (S);
@@ -111,30 +111,50 @@ Now, given the data, we like to determine the posterior distributions over ozone
 		\draw[->, very thick] (u.south) -- (y);
 		\draw[->, mydotted, very thick] (A) -- (u);
 		\draw[->, mydotted,  very thick] (x) -- (A.west);
+		\draw[->, very thick] (shyp) -- (s);
+		\draw[->, very thick] (dhyp) -- (d);
 		
 		\draw[->, mydotted, very thick] (d) -- (Q); 
 		
 		\draw[->, very thick] (Q) -- (x); 
 		%\node[align=center] at (0,4) (f3) {$= \bm{A}$};
 		%\node[align=center] at (0.25,3.95) (f3) {$\approx \bm{M A}_L$};
-		\node[align =center] at (-1,8) (T1) {marginal posterior \\ over hyper-parameters \\ $\pi(\gamma, \delta | \bm{y})$};
-		\node[align =center] at (0,5) (T1) {conditional posterior \\ $\pi( \bm{x} |\gamma, \delta, \bm{y})$ };
+		\node[align =center] at (-2,8) (T1) {marginal posterior \\ over hyper-parameters \\ $\pi(\delta,\gamma  | \bm{y})$};
+		\node[align =center] at (0,5) (T1) {conditional posterior \\ $\pi( \bm{x} | \delta,\gamma, \bm{y})$ };
 		
+		\node[align =center] at (-2.5,10) (T1) {hyper-prior distributions \\ $\pi( \delta, \gamma)$ };
 		
 		\node[fit=(s)(d),draw,dotted,black, rounded corners] {};
 	\end{tikzpicture} 
-	\caption[Directed acyclic graph for ozone retrieval and MTC scheme.]{Directed acyclic graph for modelling and measuring process of ozone highlighting the marginal and then conditional (MTC) scheme. The hyper-parameters $\delta$ and $\gamma$ determine the noise covariance $\bm{\Sigma} = \gamma^{-1}\bm{I}$ for the random noise vector $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1}\bm{I})$ and the prior precision matrix $\bm{Q} = \delta \bm{L}$ for the normal distribution over $\bm{x} \sim \mathcal{N}(0, \delta \bm{L})$, where $\bm{L}$ is a graph Laplacian, see Eq. \ref{eq:GLapl}. In the MTC scheme we evaluate the marginal posterior over the hyper-parameters $\pi(\gamma, \delta | \bm{y})$ as in Eq. \ref{eq:} first and then the conditional posterior $\pi(\bm{x}|\gamma,\delta,\bm{y})$ as in Eq. \ref{eq:CondPost}. The MTC scheme allows to evaluate the marginal posterior distribution over the hyper-parameters $\delta, \gamma$ independent of $\bm{x}$, breaking the correlation structure.
-	Through the forward model $\bm{A}_{NL} \approx \bm{M}\bm{A}_L$ and the parameter $\bm{x}$ we generate a space of all measurable from which we randomly observe a data set $\bm{y}$ including random noise $\bm{\eta}$.}
+	\caption[Directed acyclic graph for ozone retrieval and MTC scheme.]{Directed acyclic graph for modelling and measuring process of ozone highlighting the marginal and then conditional (MTC) scheme. The hyper-parameters $\delta$ and $\gamma$ determine the noise covariance $\bm{\Sigma} = \gamma^{-1}\bm{I}$ for the random noise vector $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1}\bm{I})$ and the prior precision matrix $\bm{Q} = \delta \bm{L}$ for the normal distribution over $\bm{x} \sim \mathcal{N}(0, \delta \bm{L})$, where $\bm{L}$ is a graph Laplacian, see Eq. \ref{eq:GLapl}. In the MTC scheme we evaluate the marginal posterior over the hyper-parameters $\pi(\gamma, \delta | \bm{y})$ as in Eq. \ref{eq:} first and then the conditional posterior $\pi(\bm{x}|\delta,\gamma,\bm{y})$ as in Eq. \ref{eq:CondPost}. The MTC scheme allows to evaluate the marginal posterior distribution over the hyper-parameters $\delta, \gamma$ independent of $\bm{x}$, breaking the correlation structure.
+		Through the forward model $\bm{A}_{NL} \approx \bm{M}\bm{A}_L$ and the parameter $\bm{x}$ we generate a space of all measurable from which we randomly observe a data set $\bm{y}$ including random noise $\bm{\eta}$.}
 	\label{fig:DAGO3}
 \end{figure}
+In this section, we setup the hierarchically-ordered linear-Gaussian Bayesian framework to determine the ozone posterior distribution, conditioned on ground truth temperature and pressure,.
+Where for now we define the forward model matrix $\bm{A} = \bm{A}_L$ and define the distributions of that Bayesian model, similarly to a regularisation approach, as:
+\begin{subequations}
+	\begin{align}
+		\bm{y} |  \bm{x},\gamma,\delta  &\sim \mathcal{N}(\bm{A} \, \bm{x}, \gamma^{-1} \bm{I}) \label{eq:likelihoodAppl} \\
+		\bm{x}| \delta  &\sim \mathcal{N}(\bm{0}, (\delta \bm{L})^{-1} ) \label{eq:priorXAppl} \\
+		\delta  &\sim \Gamma(\alpha_{\delta} = 1, \beta_{\delta} = 10^{-35})\label{eq:priorDelAppl} \\
+		\gamma  &\sim \Gamma(\alpha_{\gamma} =1, \beta_{\gamma} = 10^{-35})\label{eq:priorGamAppl} \, .
+	\end{align} 
+	\label{eq:O3BayMode}
+\end{subequations}
+Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \bm{I})$, the likelihood function is a normal distributions with mean $\bm{A} \bm{x}$ and covariance matrix $\gamma^{-1} \bm{I}$.
+We define the normal prior-distribution $\pi(\bm{x}|\delta)$, with zero mean and precision matrix $\delta \bm{L}$, where $\delta$ is a smoothness hyper-parameter and $\bm{L}$ is the second order discrete derivate operator (see Eq. \ref{eq:GLapl}).
+For $\delta$ and $\gamma$ we pick relatively uninformative gamma distributions so that $\gamma \sim \mathcal{T}(\bm{\theta_{\gamma}}) \propto \gamma^{\alpha_\gamma -1 } \exp{( -\beta_\gamma \gamma) } $ and $\delta \sim \mathcal{T}(\bm{\theta_{\delta}})$, where $\bm{\theta_{\gamma}} = \{  \alpha_\gamma, \beta_\gamma\}  = \{ \alpha_\delta ,\beta_\delta\} = \bm{\theta_{\delta}} = (1,10^{-35})$, see Fig. \ref{fig:MargPostHistTT}, similar to \cite{fox2016fast}.
+Here $ \alpha$ is the shape and $\beta$ is the rate parameter.
+
+
 
 %Since the forward model described in Ch. \ref{ch:formodel} is weakly non-linear we will set up a linear Bayesian hierarchical framework first based on the linear forward model $\bm{A}_L$ and then later the approximated version $\bm{A}_{NL}\bm{M} \bm{A}_L$.
 %Furthermore, the noise is normally distributed, so we establish a linear-Gaussian Bayesian hierarchical framework, aiming to recover an ozone profile and a pressure over temperature profile.
 %In doing so, we first draw a directed acyclic graph (DAG) to visualise the measurement and modelling process and determine hyper-parameters and correlations between parameters.
 %Then we define prior distributions over all parameters as well as a likelihood function so that we can formulate the posterior distribution.
 
-In this section, we choose the prior distributions and describe the approach to evaluate the posterior distribution for ozone $\pi(\delta, \gamma, \bm{x}|\bm{y})$, conditioned on temperature and pressure, including the noise hyper-parameter $\gamma$.
-Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \bm{I})$, we define a linear-Gaussian Bayesian hierarchical model, see Sec. \ref{subsec:LinBay},
+%In this section, we choose the prior distributions and describe the approach to evaluate the posterior distribution for ozone $\pi(\delta, \gamma, \bm{x}|\bm{y})$, including the noise hyper-parameter $\gamma$.
+% we define a linear-Gaussian Bayesian hierarchical model, see Sec. \ref{subsec:LinBay},
 %\begin{subequations}
 %	\begin{align}
 %		\bm{y} |  \bm{x}, \gamma &\sim \mathcal{N}(\bm{A} \bm{x}, \gamma^{-1} \bm{I}) \label{eq:likelihood} \\
@@ -143,17 +163,17 @@ Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \bm{I})$, we 
 %	\end{align}
 %	\label{eq:O3BayMode}
 %\end{subequations}
-with a normally distributed likelihood $\pi(\bm{y} |  \bm{x}, \gamma)$ including the forward model matrix $\bm{A}$ and prior distributions $\pi(\bm{x} |  \delta)$ and $\pi(\delta, \gamma)$, the noise covariance matrix $\gamma^{-1} \bm{I}$, the prior precision matrix $\delta \bm{L}$ and the prior mean set to zero, as in ~\cite{fox2016fast}.
-The chosen Bayesian model is very similar to the regularisation approach, since we like to show that we receive much more meaningful results compared to a single regularisation solution.
+%with a normally distributed likelihood $\pi(\bm{y} |  \bm{x}, \gamma)$ including the forward model matrix $\bm{A}$ and prior distributions $\pi(\bm{x} |  \delta)$ and $\pi(\delta, \gamma)$, the noise covariance matrix $\gamma^{-1} \bm{I}$, the prior precision matrix $\delta \bm{L}$ and the prior mean set to zero, as in ~\cite{fox2016fast}.
+%The chosen Bayesian model is very similar to the regularisation approach, since we like to show that we receive much more meaningful results compared to a single regularisation solution.
 
 
 \subsection{Prior Modelling}
+\label{subsec:PriorModelO3}
 To complete the Bayesian framework, we have to define prior distributions over the hyper-parameters and parameters.
 Ideally, we define the prior distributions as uninformative as possible, and include functional dependencies and physical properties.
-Here we can already see that our prior model is not taking into account that ozone values can not be negative, and we currently have no means to include that in a non-parametric approach.
+Here we can already see that our model is not taking into account that ozone values can not be negative (see $\pi(\bm{x}|\delta)$ in Eq. \eqref{eq:priorXAppl}), and we currently have no means to include that in a non-parametric approach.
 
-
-First, we set the precision matrix of the prior distribution $\bm{x}|\delta$ to
+As already mentioned, we set the precision matrix of the prior distribution $\bm{x}|\delta$ to
 \begin{align}
 	\delta \bm{L} =
 	\delta
@@ -169,38 +189,32 @@ First, we set the precision matrix of the prior distribution $\bm{x}|\delta$ to
 which is a 1-dimensional Graph Laplacian as in \cite{wang2015graphs,fox2016fast} with Dirichlet boundary condition.
 This matrix will also act as the regulariser later in the Regularisation section, see Sec. \ref{sec:regularise}.
 We reduce the dimension of $\bm{x}$ from $45$ to $34$ by discarding every second ozone VMR over a height of $\approx47$km.
-Doing that, while not changing $\bm{L}$, we induce a larger correlation between points at higher altitude.
-For $\delta$ and $\gamma$ we pick  relatively uninformative gamma distributions so that $\gamma \sim \mathcal{T}(\bm{\theta_{\gamma}}) \propto \gamma^{\alpha_\gamma -1 } \exp{( -\beta_\gamma \gamma) } $ and $\delta \sim \mathcal{T}(\bm{\theta_{\delta}})$, where $\bm{\theta_{\gamma}} = \{  \alpha_\gamma, \beta_\gamma\}  = \{ \alpha_\delta ,\beta_\delta\} = \bm{\theta_{\delta}} = (1,10^{-35})$, see Fig. \ref{fig:MargPostHistTT}, similar to \cite{fox2016fast}.
-Here $ \alpha$ is the shape and $\beta$ is the rate parameter.
-These gamma distributions have another advantage when using a MWG sampler to sample from the marginal posterior distribution $\pi(\gamma,\delta | \bm{y})$.
+Doing that, while not changing $\bm{L}$, we effectively induce a larger correlation between points at higher altitude.
+
+Choosing gamma distributions for $\pi(\delta)$ and $\pi(\gamma)$ has another advantage when using a MWG sampler to sample from the marginal posterior distribution $\pi(\delta, \gamma | \bm{y})$.
 In doing so, we introduce the regularisation parameter $\lambda = \delta / \gamma $ so that $\pi(\gamma | \lambda, \bm{y}) \sim \mathcal{T}(\cdot)$ is gamma distribution and easy to sample from.
 We plot the corresponding prior ozone profiles according to $\bm{x}\sim \mathcal{N}(0, (\delta \bm{L})^{-1})$ in Fig. \ref{fig:O3Prior}, where we see that the prior distribution is not informative but does include negative values.
-See Tab. \ref{tab:priors} for a summary. 
-
-
+\clearpage
 \subsection{Posterior Distribution -- linear Model}
 \label{sec:FirstO3Post}
-
-\subsubsection{Marginal and Conditional Posterior}
-\label{subsec:MTC}
-As in Eq. \ref{eq:MTC}, we factorise the posterior
+As explained in Sec. \ref{subsec:LinBay} we factorise the posterior
 \begin{align}
-	\pi( \bm{x}, \gamma, \delta| \bm{y}) \propto \pi(\bm{y}| \bm{x}, \gamma, \delta) \pi( \bm{x}, \gamma, \delta)
+	\pi( \bm{x}, \delta, \gamma| \bm{y}) \propto \pi(\bm{y}| \bm{x},\delta,\gamma) \pi( \bm{x},  \delta,\gamma)
 \end{align}
 into 
 \begin{align}
-	\pi( \bm{x}, \gamma, \delta| \bm{y}) =\pi( \bm{x}|\gamma, \delta, \bm{y})\pi(\gamma, \delta | \bm{y})
+	\pi( \bm{x},  \delta,\gamma| \bm{y}) =\pi( \bm{x}| \delta,\gamma, \bm{y})\pi( \delta,\gamma | \bm{y})
 \end{align}
-the marginal posterior $\pi(\gamma, \delta | \bm{y})$ and conditional posterior $\pi( \bm{x}|\gamma, \delta, \bm{y})$.
-Fox and Norton call this method the marginal and then conditional method (MTC) \cite{fox2016fast}, where we break the correlation structure between $\bm{x}$ and $\gamma, \delta$ as illustrated in Fig. \ref{fig:RueHeld} by marginalising over $\bm{x}$.
-For the linear-Gaussian case, $\bm{x}$ cancels in the marginal posterior over the hyper-parameters, which we evaluate first and \textit{then} the conditional posterior of $\pi(\bm{x} | \gamma, \delta)$.
+the marginal posterior $\pi(\delta ,\gamma| \bm{y})$ and conditional posterior $\pi( \bm{x}| \delta,\gamma, \bm{y})$ (see Eq. \ref{eq:MTC}).
+%Fox and Norton call this method the marginal and then conditional method (MTC) \cite{fox2016fast}, where we break the correlation structure between $\bm{x}$ and $\gamma, \delta$ as illustrated in Fig. \ref{fig:RueHeld} by marginalising over $\bm{x}$.
+As discussed in sec. \ref{subsec:LinBay}, for the linear-Gaussian case, $\bm{x}$ cancels in the marginal posterior over the hyper-parameters.
+Following the MTC scheme, we characterise the marginal posterior first and \textit{then} the conditional posterior of $\pi(\bm{x} | \delta,\gamma)$.
 
+\subsubsection{Marginal Posterior}
+\label{subsec:FirstMTC}
 Consequently, for the hierarchical model specified in Eq.~\ref{eq:O3BayMode}, the marginal posterior distribution over the hyper-parameters is given by
 \begin{align}
-	\pi(\lambda, \gamma | \bm{y})
-	\propto & \lambda^{n/2} \gamma^{m/2 }   \exp{ \Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) \Bigr\} } \pi(\lambda, \gamma) \\
-		\pi(\lambda, \gamma | \bm{y})
-	\propto &  \lambda^{n/2} \gamma^{m/2 + 1}   \exp{ \Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_{\delta} \lambda  \gamma - \beta_{\gamma} \gamma \Bigr\}},
+	\pi( \lambda,\gamma  | \bm{y}) \propto &  \lambda^{n/2 + \alpha_{\delta}-1} \gamma^{m/2 + \alpha_{\delta} + \alpha_{\gamma}-1}   \exp{ \Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_{\delta} \lambda  \gamma - \beta_{\gamma} \gamma \Bigr\}},
 	\label{eq:MargPostAppl}
 \end{align}
 with the introduced regularisation parameter $\lambda = \delta / \gamma$, and
@@ -208,12 +222,11 @@ with the introduced regularisation parameter $\lambda = \delta / \gamma$, and
 	\label{eq:fandg}
 	\begin{align}
 		&f ( \lambda) = \bm{y}^T \bm{y} - (\bm{A}^T \bm{y})^T (\bm{A}^T  \bm{A} + \lambda \bm{L})^{-1} (\bm{A}^T \bm{y})  \label{eq:fAppl} \, ,  \\
-		&\text{and } g(\lambda) = \log \det (\bm{A}^T  \bm{A} + \lambda \bm{L}) \label{eq:gAppl} \, ,
+		&\text{and } g(\lambda) = \log \det (\bm{A}^T  \bm{A} + \lambda \bm{L}) \label{eq:gAppl} \, .
 	\end{align}
 \end{subequations}
-see~\cite[Lemma 2]{fox2016fast}.
-Note that, when changing variables from $\delta = \lambda \gamma$ to $\lambda$ the hyper-prior distribution changes to $\pi(\lambda) \propto \lambda^{\alpha_\delta-1} \gamma^{\alpha_\delta} \exp{(- \beta_\delta \lambda  \gamma)} $, due to $\text{d}\delta / \text{d} \lambda = \gamma$.
-\begin{figure}[ht!]
+Note that, when changing variables from $\delta = \lambda \gamma$ to $\lambda$ the hyper-prior distribution changes to $\pi(\lambda) \propto \lambda^{\alpha_{\delta}-1} \gamma^{\alpha_{\delta}} \exp{(- \beta_{\delta} \lambda  \gamma)} $, due to $\text{d}\delta / \text{d} \lambda = \gamma$.
+\begin{figure}[th!]
 	\centering
 	\includegraphics{f_and_g_phd.png}
 	\caption[Plot of the functions $f(\lambda)$ and $g(\lambda)$ for marginal posterior.]{Plot of the functions $f(\lambda)$ and $g(\lambda)$ from the marginal posterior for a wide range of $\lambda = \delta / \gamma$. We plot the third-order Taylor series in black around the mode of the marginal posterior (vertical line) for the sampling range of $\lambda$ within the MWG algorithm.}
@@ -239,11 +252,12 @@ We plot the approximations
 \end{subequations} in Fig. \ref{fig:fandg} and elaborate on the approximation errors in Sec \ref{sec:fgErros}.
 Note that usually a Taylor series includes a factor $(r!)^{-1}$, in this case it cancels in $f^{(r)}(\lambda_0)$, see \cite{fox2016fast}.
 
-Using these approximation we can either utilise a TT approximation of the marginal posterior, see Sec. \ref{subsec:TTMarg}, over a predefined grid and calculate the marginals $\pi(\gamma|\bm{y})$ and $\pi(\lambda|\bm{y})$, or employ a Metropolis within Gibbs (MWG) sampler to sample from $\pi(\gamma,\lambda|\bm{y})$, see sec. \ref{subsec:MWG}.
+\paragraph{Sample from Marginal Posterior}
+Using these approximation we can either utilise a TT approximation of the marginal posterior, see Sec. \ref{subsec:TTMarg}, over a predefined grid and calculate the marginals $\pi(\gamma|\bm{y})$ and $\pi(\lambda|\bm{y})$, or employ a Metropolis within Gibbs (MWG) sampler to sample from $\pi(\lambda,\gamma|\bm{y})$, see sec. \ref{subsec:MWG}.
 More specifically, we implement a Metropolis random walk on
 \begin{align}
 	\label{eq:margApplCondGam}
-	\pi(\lambda | \gamma, \bm{y}) &\propto \lambda^{n/2+\alpha_\delta -1} \exp{\Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_\delta \gamma \lambda \Bigr\}}.
+	\pi(\lambda | \gamma, \bm{y}) &\propto \lambda^{n/2 +\alpha_{\delta}-1} \exp{\Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_\delta \gamma \lambda \Bigr\}}.
 \end{align} 
 We accept or reject a proposal $\lambda^{\prime} \sim \mathcal{N}(0, \sigma_{\lambda})$ according to the acceptance ratio in log space
 \begin{align} 
@@ -258,45 +272,20 @@ Lastly, we do a Gibbs step on
 	\gamma^{(k+1)} |  \lambda^{(k+1)}, \bm{y} &\sim \Gamma \bigg( \frac{m}{2} + \alpha_\delta + \alpha_\gamma, \frac{1}{2} f (\lambda^{(k+1)}) + \beta_\gamma + \beta_\delta \lambda^{(k+1)} \bigg)\label{eq:GibbsStep}
 \end{align} 
 to generate marginal posterior samples $(\lambda, \gamma)^{(1)}, \dots, (\lambda, \gamma)^{(N)} \sim  \pi(\lambda, \gamma| \bm{y})$.
-
-Then we evaluate the normally distributed conditional posterior distribution
-\begin{align}
-	\bm{x}| \delta, \gamma, \bm{y}  \sim \mathcal{N}\big( \underbrace{ (\bm{A}^T \bm{A} + \delta / \gamma \bm{L} )^{-1} \bm{A}^T \bm{y}}_{\bm{x}_{\lambda}}, ( \underbrace{ \gamma \bm{A}^T \bm{A} + \delta \bm{L} }_{\gamma \bm{B}_{\lambda}}  )^{-1} \big) \, \label{eq:CondPost},
-\end{align}
-as in Eq. \ref{eq:CondPostLin}.
-In this thesis, we compute the mean
-\begin{align}
-	\mu_{\bm{x}|\bm{y}} = \int \bm{x}_{\lambda} \pi(\lambda| \bm{y}) \text{d}\lambda \approx \sum \bm{x}_{\lambda_i} \pi(\lambda_i| \bm{y}) \, , \label{eq:MeanInt}
-\end{align} and covariance
-\begin{align}
-	\Sigma_{\bm{x}|\bm{y}} = \int \gamma^{-1}  \pi(\gamma | \bm{y} ) \, \text{d} \gamma \, \int  \bm{B}_{\lambda}^{-1} \, \pi(\lambda | \bm{y} )  \, \text{d} \lambda  \approx \sum {\gamma_i}^{-1}\pi(\gamma_i| \bm{y}) \sum \bm{B}_{\lambda_i}^{-1}\pi(\lambda_i| \bm{y})\, \label{eq:CovInt}
-\end{align}
-of $\pi(\bm{x}| \delta, \gamma, \bm{y})$ as weighted expectations, by quadrature \cite[Sec. 2.1]{Dick_Kuo_Sloan_2013}, with $\sum \pi(\lambda_i| \bm{y}) = \sum \pi(\gamma_i| \bm{y}) = 1$.
-The weights $\pi(\lambda_i| \bm{y})$ and $\pi(\gamma_i| \bm{y})$ are either given by the TT approximation or by the bins for the sample-based histograms.
-If calculating the variance is too costly, the randomise then optimise method as in \cite{bardsley2015randomize, fox2016fast} may be a feasible alternative to draw a sample from Eq. \ref{eq:CondPost}.
-
-
-
 %
 %We find the mode at the minimum of  $-\log\{ \pi(\lambda, \gamma | \bm{y}) \}$  using \texttt{scipy.optimize.fmin} function and limit the number of function evaluation to 25 and use Cholesky back and forward substitution to calculate values of $g(\lambda)$ and $f(\lambda)$.
 %Additionally, we calculate $\bm{B}_0^{-1} \bm{L} $ and  $\bm{B}_0^{-1}  \bm{A}_L^T \bm{y}$ once more at $\lambda_0$ and plot the Taylor approximation within the sampling region in Fig. \ref{fig:fandg}.
-
-
-
 %\subsection{Posterior distributions with Linear model for Ozone -- MTC}
 %\label{sec:firstMTC}
 %In this section we calculate the posterior marginal and then conditional (MTC) posterior distribution for ozone conditioned on the ground truth temperature and pressure profiles using the linear forward model $\bm{A}_L$.
 %This is faster then the other way round (finding temperature over pressure conditioning on ozone) and temperature and pressure are well defined within the atmosphere so it is easier to just condition on a temperature and pressure profile out of a text book.
 %We employ a so-called Metropolis within Gibbs (MWG) algorithm on the marginal posterior as summarised in the algorithmic Box \ref{alg:margPost} or use a Tensor-Train (TT) approximation to calculate marginal posterior values.
 %Then we can either sample from the conditional posterior using the randomise then optimise (RTO) method or calculate conditional mean and variance using quadrature.
-
-
 %The DAG in Fig. \ref{fig:DAGO3} visualises that process and we can show explicitly that we group the hyper-parameters $\delta, \gamma$ together to determine the marginal posterior $\pi(\gamma, \delta | \bm{y})$.
 %Here $\gamma$ , the noise parameter, determines the noise precision $\bm{\Sigma} = \gamma ^{-1} \bm{I}$ and $\delta$, the smoothness parameter, the precision matrix $\bm{Q} = \delta \bm{L}$ of the prior distribution for $\bm{x}$.
 %Then conditioned on the hyper-parameters the conditional posterior $\pi( \bm{x} |\gamma, \delta, \bm{y})$ gives the distribution of posterior ozone profiles.
 %Note that we use the linear model $A_L$ here as we do not have an approximation to the non-linear model yet and all prior distributions are defined in Table \ref{tab:priors}.
 %The full posterior $\pi(\bm{x},\gamma, \delta | \bm{y}) =  \pi(\bm{x}|\gamma, \delta ,\bm{y}) \pi(\gamma, \delta | \bm{y}) $ is given by multiplication of the marginal and conditional posterior densities. 
-
 %\begin{align}
 %	\bm{x} |  \bm{\theta}, \bm{y} \sim \mathcal{N} \Big(
 %	\underbrace{\bm{\mu} + \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} \bm{A}^T \bm{\Sigma}^{-1} (\bm{y} - \bm{A} \bm{\mu})}_{\bm{\mu}_{\bm{x} |  \bm{\theta}, \bm{y}}},
@@ -306,51 +295,41 @@ If calculating the variance is too costly, the randomise then optimise method as
 %is normal distribution and we compute weighted expectations, as in Eq.~\ref{eq:MargExpPos}, of the conditional mean and covariance matrix, where the weights are given by $\pi(\bm{\theta} | \bm{y})$. 
 %Note that both the noise covariance $\bm{\Sigma} = \bm{\Sigma}(\bm{\theta})$ and the prior precision matrix $\bm{Q} = \bm{Q}(\bm{\theta})$ depend on the hyper-parameters $\bm{\theta}$.
 
-
-Within the MTC scheme we determine the marginal posterior distribution $\pi(\gamma, \lambda| \bm{y})$ over the hyperparameters $\delta$  and $\lambda = \delta / \gamma$ first and then the mean and covariance of the full posterior distribution $\pi(\bm{x}|\bm{y})$ as in Eq. \ref{eq:MeanInt} and \ref{eq:CovInt}.
-We set $\bm{A} \coloneqq  \bm{A}_L$ and approximate $f(\lambda)$  and $g(\lambda)$ around the mode $( \lambda_{0}, \gamma_0 )$ of the marginal posterior distribution, see Eq. \ref{eq:MargPostAppl}.
-The mode is provided by the \texttt{scipy.optimize.fmin} function.
+The mode $( \lambda_{0}, \gamma_0 )$ of $\pi(\lambda,\gamma| \bm{y})$ is provided by the \texttt{scipy.optimize.fmin} function and we approximate $f(\lambda)$  and $g(\lambda)$ accordingly.
 In doing so, we compute the vector $\bm{B}_0^{-1}\bm{A}^T\bm{y} = (\bm{A}^T\bm{A} + \lambda_0 \bm{L})\bm{A}^T\bm{y} $, the matrix $\bm{B}_0^{-1}\bm{L}$ and the determinant in $g(\lambda)$ using Cholesky decomposition.
-Then we approximate $f(\lambda)$ with a 3rd order Taylor series and $g(\lambda)$ with a linear approximation in the log-space, where for the approximation in $g(\lambda)$ we set $\lambda_{\text{max}}$ to the maximum value of $\lambda$ on the TT-grid, see Tab. \ref{tab:priors}.
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{ScatterplusHistoPlusTT.png}
-	\caption[Scatter plot of samples from marginal posterior, including weighting from TT approximation; trace plot of the marginal posterior samples.]{We scatter plot the samples of $\lambda = \delta / \gamma $ and $\gamma$ from the marginal posterior $\pi(\lambda , \gamma  | \bm{y})$ and colour code the samples using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. The mode of $(\lambda_0 , \gamma_0)$ of $\pi(\lambda , \gamma  | \bm{y})$ is marked by the pink cross. To show ergodicity we plot the trace of the samples of the MWG sampler below.}
-	\label{fig:ScatterPlotTT}
-\end{figure}
-
-
-\subsubsection{Tensor-train Approximation of the Marginal Posterior Distribution}
-\label{subsec:firstMargTT}
-We approximate the square root of marginal posterior on a predefined univariate grid, where $\gamma = [ 0.1 \times 10^{15}, 6 \times 10^{15}]$ and $\lambda = [ 100, 5000]$.
-We set the number of grid points to $n = 20$ and the number of ranks $r = 5$, which we keep constant.
-Since we do not approximate $\sqrt{ \pi(\gamma, \lambda| \bm{y}) }$ in the log-space we introduce a "normalisation constant" $c = 340$. This avoids underflow so that the values $\sqrt{\pi(\gamma, \lambda| \bm{y})} = \exp \{ 0.5 \log  \pi(\gamma, \lambda| \bm{y}) + c \} $ are within computer precision.
-Then we initialise the \texttt{tt.cross.rectcross.rect\_cross.cross} function, based on the rect cross algorithm in \cite{OSELEDETS2010TTCross}, from the Python package \texttt{ttpy} \cite{Oseledets2018ttpy}, with a random tensor and do 3 sweeps to obtain an TT approximation of $\pi(\gamma, \lambda| \bm{y})$.
-This takes about $0.1s$ for $600$ function evaluations.
-Then we compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as described in Sec. \ref{subsec:TTMarg}.
-In doing so we calculate the coefficient tensor $\bm{B}$ and $\bm{B}_{\text{pre}}$ as in Prop. \ref{prob:backMarg} and \ref{prob:ForMarg}, where we set $\xi = 1 / \uplambda (\mathcal{X})$ and $\uplambda(x) = 1$, so that for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ in Eq. \ref{eq:MassMat}.
-We plot the TT approximation as a colour map on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
-
-\subsubsection{Sample from Marginal Posterior Distribution}
-\label{subsec:firstMarg}
-To sample from $\pi(\gamma, \lambda| \bm{y})$ we employ the MWG algorithm , see Alg. Box \ref{alg:MwG} and Sec. \ref{subsec:MTC}.
-We initialise the MWG at the mode $(\lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps in approximately $0.3$s.
+Then we approximate $f(\lambda)$ with a 3rd order Taylor series and $g(\lambda)$ with a linear approximation in the log-space, where for the approximation in $g(\lambda)$ we set $\lambda_{\text{max}}$ to the maximum value of $\lambda$ on the TT-grid (see next Paragraph).
+To sample from $\pi( \lambda,\gamma| \bm{y})$ we employ the MWG algorithm, see Alg. Box \ref{alg:MwG}, initialised at the mode $(\lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps in approximately $0.3$s.
 The standard deviation of the normal proposal distribution is set to $\sigma_{\lambda} = 0.8 \lambda_0$ so that the acceptance rate is $\approx 0.5$ as suggested in \cite{robertsLecNot}.
 The samples are plotted in Fig. \ref{fig:ScatterPlotTT} as a 2D scatter plot, as well as the trace of the MWG to show ergodicity.
 We calculate the integrated autocorrelation time (IACT) with the Python implementation of \cite{wolff2004monte}, provided by \cite{drikHesse}, which gives us $\tau_{\text{int}, \gamma} = $ and $\tau_{\text{int}, \delta} = $, see Fig. \ref{fig:IATCLamLin} and Fig. \ref{fig:IATCGamLin}.
-\begin{figure}[ht!]
+\begin{figure}[h!]
 	\centering
 	\includegraphics{UwerrTauIntFirstO3lam.png}
 	\caption[IATC of $\lambda$ samples from $\pi(\gamma, \lambda| \bm{y})$, for linear model.]{Here the autocorrelation function $\Gamma_{\lambda}$ at different lags W is plotted as well as the IATC $\tau_{\text{int},\lambda}$ for the samples from $\pi(\gamma, \lambda| \bm{y})$ based on the linear forward model.}
 	\label{fig:IATCLamLin}
 \end{figure}
-\begin{figure}[ht!]
+\clearpage
+
+\paragraph{TT Approximation of Marginal Posterior}
+We approximate the square root of marginal posterior on a predefined univariate grid, where $\gamma = [ 0.25 \times 10^{15}, 5.5 \times 10^{15}]$ and $\lambda = [ 100, 5000]$.
+We set the number of grid points to $n = 20$ and the number of ranks $r = 5$, which we keep constant.
+Since we do not approximate $\sqrt{ \pi( \lambda, \gamma| \bm{y}) }$ in the log-space we introduce a "normalisation constant" $c = 340$. This avoids underflow so that the values $\sqrt{\pi( \lambda,\gamma| \bm{y})} = \exp \{ 0.5 \log  \pi(\lambda,\gamma | \bm{y}) + c \} $ are within computer precision.
+Then we initialise the \texttt{tt.cross.rectcross.rect\_cross.cross} function, based on the TT cross algorithm in \cite{OSELEDETS2010TTCross,Dolgov2018TTCross}, from the Python package \texttt{ttpy} \cite{Oseledets2018ttpy}, with a random tensor and do 1 sweep to obtain a TT approximation of $\pi( \lambda,\gamma| \bm{y})$.
+This takes about $0.1s$ for $400$ function evaluations.
+Then we compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as described in Sec. \ref{subsec:TTMarg}.
+In doing so we calculate the coefficient tensor $\bm{B}$ and $\bm{B}_{\text{pre}}$ as in Prop. \ref{prob:backMarg} and \ref{prob:ForMarg}, where we set $\xi = 1 / \uplambda (\mathcal{X})$ and $\uplambda(x) = 1$, so that for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ in Eq. \ref{eq:MassMat}.
+We plot the TT approximation as a colour map on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
+\begin{figure}[h!]
 	\centering
-	\includegraphics{UwerrTauIntFirstO3gam.png}
-	\caption[IATC of $\gamma$ samples from $\pi(\gamma, \lambda| \bm{y})$, for linear model.]{Here the autocorrelation function $\Gamma_{\gamma}$ at different lags W is plotted as well as the IATC $\tau_{\text{int},\gamma}$ for the samples from $\pi(\gamma, \lambda| \bm{y})$ based on the linear forward model.}
-	\label{fig:IATCGamLin}
+	\includegraphics{ScatterplusHistoPlusTT.png}
+	\caption[Scatter plot of samples from marginal posterior, including weighting from TT approximation; trace plot of the marginal posterior samples.]{We scatter plot the samples of $\lambda = \delta / \gamma $ and $\gamma$ from the marginal posterior $\pi(\lambda , \gamma  | \bm{y})$ and colour code the samples using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. The mode of $(\lambda_0 , \gamma_0)$ of $\pi(\lambda , \gamma  | \bm{y})$ is marked by the pink cross. To show ergodicity we plot the trace of the samples of the MWG sampler below.}
+	\label{fig:ScatterPlotTT}
 \end{figure}
 \clearpage
+
+%\subsubsection{Sample from Marginal Posterior Distribution}
+%\label{subsec:firstMarg}
+
 %\begin{algorithm}[!ht]
 %	\caption{Metropolis within Gibbs for $\pi(\lambda, \gamma | \bm{y})$}
 %	\begin{algorithmic}[1]
@@ -373,24 +352,40 @@ We calculate the integrated autocorrelation time (IACT) with the Python implemen
 %	\label{alg:margPost}
 %\end{algorithm}
 
-\subsubsection{Full Conditional Posterior of Ozone}
+\subsubsection{Full Posterior Ozone Mean and Variance}
 \label{subsec:firstCond}
-Based on the marginal posterior distribution $\pi(\gamma, \lambda | \bm{y})$ we calculate the mean and covariance of the conditional posterior $\pi(\bm{x} | \gamma, \lambda, \bm{y})$ by quadrature as in Eq. \ref{eq:MeanInt} and Eq. \ref{eq:CovInt}.
-We can either use the sample based histogram bins as weights or the TT-approximation to integrate over marginals of $\pi(\gamma, \lambda | \bm{y})$.
+Then we evaluate the normally distributed conditional posterior distribution
+\begin{align}
+	\bm{x}| \delta, \gamma, \bm{y}  \sim \mathcal{N}\big( \underbrace{ (\bm{A}^T \bm{A} + \delta / \gamma \bm{L} )^{-1} \bm{A}^T \bm{y}}_{\bm{x}_{\lambda}}, ( \underbrace{ \gamma \bm{A}^T \bm{A} + \delta \bm{L} }_{\gamma \bm{B}_{\lambda}}  )^{-1} \big) \, \label{eq:CondPost},
+\end{align}
+as in Eq. \ref{eq:CondPostLin}, with $\lambda = \delta / \gamma $
+In this thesis, we compute the mean
+\begin{align}
+	\mu_{\bm{x}|\bm{y}} = \int \bm{x}_{\lambda} \pi(\lambda| \bm{y}) \text{d}\lambda \approx \sum \bm{x}_{\lambda_i} \pi(\lambda_i| \bm{y}) \, , \label{eq:MeanInt}
+\end{align} and covariance
+\begin{align}
+	\Sigma_{\bm{x}|\bm{y}} = \int \gamma^{-1}  \pi(\gamma | \bm{y} ) \, \text{d} \gamma \, \int  \bm{B}_{\lambda}^{-1} \, \pi(\lambda | \bm{y} )  \, \text{d} \lambda  \approx \sum {\gamma_i}^{-1}\pi(\gamma_i| \bm{y}) \sum \bm{B}_{\lambda_i}^{-1}\pi(\lambda_i| \bm{y})\, \label{eq:CovInt}
+\end{align}
+of $\pi(\bm{x}| \delta, \gamma, \bm{y})$ as weighted expectations, by quadrature \cite[Sec. 2.1]{Dick_Kuo_Sloan_2013}, with $\sum \pi(\lambda_i| \bm{y}) = \sum \pi(\gamma_i| \bm{y}) = 1$.
+The weights $\pi(\lambda_i| \bm{y})$ and $\pi(\gamma_i| \bm{y})$ are either given by the TT approximation or by the bins for the sample-based histograms.
+If calculating the variance is too costly, the RTO method (see Sec. \ref{subsec:RTO}) may be a feasible alternative to draw a sample from Eq. \ref{eq:CondPost}.
 
-By binning the output samples from the MWG, see Fig. \ref{fig:ScatterPlotTT}, into a normalised histogram with 20 bins, we obtain empirical "function values" of the marginal posterior.
-With the height of the histogram bars as quadrature weights, e.g. $\pi(\lambda_i| \bm{y})$ at the centre $\lambda_i$ of each bin, we calculate the full conditional mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and covariance matrix $\bm{\Sigma}_{\bm{x}|\bm{y}}$ as weighted expectations.
-Similarly, we use the approximations of $\pi(\lambda| \bm{y})$ and $\pi( \gamma | \bm{y})$ to perform this calculation.
+
+Based on the marginal posterior distribution $\pi(\lambda, \gamma| \bm{y})$ we calculate the mean and covariance of the conditional posterior $\pi(\bm{x} |\lambda, \gamma, \bm{y})$ by quadrature as in Eq. \ref{eq:MeanInt} and Eq. \ref{eq:CovInt}.
+We can either use the sample based histogram bins as weights or the TT approximation to integrate over marginal approximations $\pi(\lambda| \bm{y})$ and $\pi( \gamma | \bm{y})$.
+More precisely, for the sample based evaluation, the height of the histogram bars act as quadrature weights, e.g. $\pi(\lambda_i| \bm{y})$ at the centre $\lambda_i$ of each bin.
+Then, we obtain the full conditional mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and covariance matrix $\bm{\Sigma}_{\bm{x}|\bm{y}}$ as weighted expectations.
 Again, we use Cholesky decomposition to invert $\bm{B}_{\lambda} = \bm{A}^T \bm{A} + \lambda \bm{L}$ and to calculate $\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y}$.
-In total that we have to evaluate $\bm{x}_{\lambda}$ and invert $\bm{B}_{\lambda}$ 20 times to obtain mean and covariance of $\pi(\bm{x}|\bm{y})$, Fig. \ref{fig:O3Samp}, which takes less than $0.2$s.
-We plot posterior samples of $\pi(\bm{x}|\bm{y})$ in Fig. \ref{fig:O3Samp}, where we set negative values ozone VMR to zero.
-The sample mean is slight larger than posterior mean at heights where the data is noise dominated, and the ozone values are determined by the prior, or where the ground truth is close to zero.
-This indicates that we should use a different more physical based prior especially at higher altitudes, e.g. parametrise the ozone profile.
+In total we have to evaluate $\bm{x}_{\lambda}$ and invert $\bm{B}_{\lambda}$ 20 times to obtain mean and covariance of $\pi(\bm{x}|\bm{y})$, Fig. \ref{fig:O3Samp}, which takes less than $0.2$s.
+We plot posterior samples of $\pi(\bm{x}|\bm{y})$ in Fig. \ref{fig:O3Samp}, where we set negative ozone VMR to zero.
+The fact that we have to deal with negative ozone values is due to the poor prior choice of $\pi(\bm{x}|\delta)$.
+Note, that the sample mean is slight larger than posterior mean at heights where the data is noise dominated, and the ozone values are determined by the prior, or where the ground truth is close to zero.
+This indicates that we should use a different more physical based prior or model to parametrise the ozone profile.
 Note, that the posterior samples do not represent the ozone peak at around $80$km.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{FirstTestRes.png}
-	\caption[Ozone samples of the full posterior.]{We draw ozone samples from the full posterior distribution $\pi(\bm{x}| \bm{y})$ after characterising mean and covariance of $\pi(\bm{x}| \bm{y})$ by weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$. we determine  $\pi(\lambda,\gamma | \bm{y})$ either through sampling or via TT approximation based on the linear forward map $\bm{A}_L$. Note that we set negative values ozone VMR values to zero. We will use those samples to find the affine map $\bm{M}$, see section \ref{sec:affineMap}}
+	\caption[Ozone samples of the full posterior.]{We draw ozone samples from the full posterior distribution $\pi(\bm{x}| \bm{y})$ after characterising mean and covariance of $\pi(\bm{x}| \bm{y})$ by weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$. we determine  $\pi(\lambda, \gamma | \bm{y})$ either through sampling or via TT approximation based on the linear forward map $\bm{A}_L$. Note that we set negative values ozone VMR values to zero. We will use those samples to find the affine map $\bm{M}$, see section \ref{sec:affineMap}}
 	\label{fig:O3Samp}
 \end{figure}
 \clearpage
@@ -412,11 +407,10 @@ Note, that the posterior samples do not represent the ozone peak at around $80$k
 \label{sec:affineMap}
 Given the posterior distribution for ozone $ \pi(\bm{x}|\bm{y})$, we can now approximate the non-linear forward model 
 \begin{align}
-	\bm{A}_{NL} \approx \bm{M A}_L = \bm{A} \, ,
+	\bm{A}_{NL} \approx \bm{M A}_L \, ,
 \end{align}
 with an affine map $\bm{M}$, see Fig. \ref{fig:affinStrat} for the summarised strategy.
-We focus on the posterior distribution of ozone profiles conditioned on pressure and temperature.
-Since this as is a much quicker process, when using the MTC method, compared to obtaining the pressure and temperature posterior distributions.
+
 \begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}
@@ -432,9 +426,10 @@ Since this as is a much quicker process, when using the MTC method, compared to 
 		\node[align=center] at (3.5,-2) (f2) {Ozone Profiles from $\pi(\bm{x}|\bm{y}) $};
 		\node[align=center] at (1.75,-1) (l1) {$\pi(\lambda , \gamma  | \bm{y})$ with $\bm{A}_L$};
 		
+		
 		\node[align=center] at (-4.75,-4) (f3) {non-linear forward model};
 		\node[align=center] at (4.25,-4) (f4) {linear forward model};
-		\node[align=center] at (0,-5) (f5) {$\bm{A}_{NL} \approx \bm{M A}_L= \bm{A}$ };
+		\node[align=center] at (0,-5) (f5) {$\bm{A}_{NL} \approx \bm{M A}_L$ };
 		
 		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
 		
@@ -443,7 +438,7 @@ Since this as is a much quicker process, when using the MTC method, compared to 
 	\label{fig:affinStrat}
 \end{figure}
 Based on posterior ozone samples we generate two affine subspaces and then find the mapping between those.
-The subspace $\bm{W}$ is created by noise free data based on the linear model and $\bm{V}$ by noise free data based on the non-linear model, given $m$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$ for $j = 1, \dots,m$.
+The subspace $\bm{W}$ is created by noise free data based on the linear model $\bm{A}_L$ and $\bm{V}$ by noise free data based on the non-linear model $\bm{A}_{NL}$, given $m$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$ for $j = 1, \dots,m$.
 We report a relative RMS difference between $\bm{W}$ and $\bm{V}$ of about $1\%$, which we aim to reduce through the affine map $\bm{M}$.
 More specifically, the affine subspace associated with the linear forward model is 
 \begin{align}
@@ -497,23 +492,25 @@ We asses the affine map by calculating the relative RMS difference $\lVert \bm{M
 In Fig. \ref{fig:MapAsses}, we show the mapping for one posterior ozone sample which has not been used to create this mapping.
 In other word this is an unseen event not in the training data.
 The relative RMS error for this approximation is roughly $0.03\%$ and much smaller than the relative difference between noise free linear data and non-linear data.
-Consequently, from here onwards, we use the approximated forward map and define $\bm{A} \coloneqq \bm{M A}_L $.
-\clearpage
+Consequently, from here onwards, we use the approximated forward map.
+
 
 \section{Regularisation Solution vs. Bayesian Approach -- approximated Model}
 %\section{Posterior Distribution of Ozone -- approximated Model}
-With the affine approximation we define
+With the affine approximation we define the forward model matrix
 \begin{align}
-	\bm{A}  \coloneqq \bm{M A}_L \, 
+	\bm{A}  \coloneqq \bm{M A}_L \,
 \end{align}
-of the non-linear forward map, we use the same setup as in Sec. \ref{sec:FirstO3Post} to evaluate the marginal posterior and the conditional posterior.
+using the affine map $\bm{M}$.
+Here we compare the posterior distribution of ozone to a regularisation approach.
+
 \subsection{Posterior Distribution for Ozone}
+Again we us the MTC scheme and the exact same setup as in Sec. \ref{sec:FirstO3Post} to evaluate the marginal posterior and then the conditional posterior of ozone.
 
 \subsubsection{Marginal Posterior}
 The marginal posterior is defined as in Eq. \ref{eq:MargPostAppl}, but with updated forward model.
-We initialise the MWG at the mode of $\pi(\gamma, \lambda | \bm{y})$ and approximate $f(\lambda)$ and $g(\lambda)$ around the mode as in Eq. \ref{eq:fAprox} and Eq. \ref{eq:gAprox}.
-Then we run the MWG algorithm for $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps and plot the samples in Fig. \ref{fig:MargPostHistTT} as well as the marginal approximations provided by the TT decomposition, where we use the exact same setup as in Sec. \ref{subsec:firstMargTT}.
-
+We initialise the MWG at the mode of $\pi(\lambda,\gamma| \bm{y})$ and approximate $f(\lambda)$ and $g(\lambda)$ around the mode as in Eq. \ref{eq:fAprox} and Eq. \ref{eq:gAprox}.
+Then we run the MWG algorithm for $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps and plot the samples in Fig. \ref{fig:MargPostHistTT} as well as the marginal approximations provided by the TT decomposition on the same grid as previously defined with same number of ranks (see Sec. \ref{subsec:FirstMTC}).
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{secMargO3Res.png}
@@ -521,13 +518,13 @@ Then we run the MWG algorithm for $N = 10000$ plus $N_{\text{burn-in}} = 100$ st
 	\label{fig:MargPostHistTT}
 \end{figure}
 
-\subsubsection{Full Posterior Variance and Mean}
+\subsubsection{Full Posterior Ozone Mean and Variance}
 Next, we characterise the conditional posterior $\pi(\bm{x}|\bm{y})$ as in Eq. \ref{eq:CondPost}. 
-Again, we calculate the full posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$, see Eq. \ref{eq:MeanInt}, and covariance matrix $\bm{\Sigma}_{ \bm{x}|\bm{y}}$ \ref{eq:CovInt} as weighted expectation over a 20-point grid provided by either the marginal TT-approximations of $\pi(\gamma| \bm{y})$ and $\pi(\lambda| \bm{y})$ or by the bins of the sample histogram as quadrature weights.
-We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg}, the regularised solution, see next section, and one sample from the posterior, which represents a feasible solution to this inverse problem.
-We can see that the ground truth lays within 3 times the variance around the mean accounting for roughly $99 \%$ of all solution, except for the peak at around $80$km.
+Again, we calculate the full posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$, see Eq. \ref{eq:MeanInt}, and covariance matrix $\bm{\Sigma}_{ \bm{x}|\bm{y}}$ \ref{eq:CovInt} as weighted expectation over a 20-point grid provided by either the marginal TT approximations of $\pi(\gamma| \bm{y})$ and $\pi(\lambda| \bm{y})$ or by the bins of the sample histogram as quadrature weights.
+We plot the conditional mean and variance in Fig. \ref{fig:O3SolplsReg}, the regularised solution (see next section), and one sample from the posterior, which represents a feasible solution to this inverse problem.
+We can see that the ground truth lays within 3 times of the STD (accounting for $\approx 99 \%$ of all posterior samples) around the mean except for the peak at around $80$km.
 We also note that compared to the previously calculated mean and variance based on the linear forward model, see \ref{fig:O3Samp}, the approximated based posterior distribution does not differ significantly.
-This is expected since the $1\%$ difference between the linear and non-linear forward map is small.
+This is expected since the difference between the linear and non-linear forward map of $\approx 1 \%$ is small.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SecRecResinclRegandSampl.png}
@@ -537,12 +534,12 @@ This is expected since the $1\%$ difference between the linear and non-linear fo
 \end{figure}
 
 Additionally in Fig. \ref{fig:PostCov}, we plot the singular values of the covariance matrix $\bm{\Sigma}_{ \bm{x}|\bm{y}}$, to visualise how many ozone values are informative.
-We observe that the last 10 singular values are very small and correspond to ozone values at the high altitudes $\gtrsim 45$ with a large variance, see Fig. \ref{fig:O3SolplsReg}.
-At those high altitudes the solution is dominated by the prior.
+We observe that the last 10 singular values are very small and correspond to ozone values at the high altitudes $\gtrsim 45$km with a large variance, see Fig. \ref{fig:O3SolplsReg}.
+This is also roughly the region where we introduce a higher correlation structure due (see Eq. \ref{eq:GLapl} Sec. \ref{subsec:PriorModelO3}) and the samples are determined by the prior.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{CovSing.png}
-	\caption[Singular values of the posterior covariance matrix]{Singular values of the covariance matrix of $\bm{\Sigma}_{ \bm{x}|\bm{y}}$ of the posterior distribution $\pi(\bm{x}|\bm{y})$ for ozone.}
+	\caption[Singular values of the posterior covariance matrix]{Singular values of the covariance matrix of $\bm{\Sigma}^{-1}_{ \bm{x}|\bm{y}} = (\sum (\bm{A}^T \bm{A} + \bm{L})^{-1})^{-1}$ of the posterior distribution $\pi(\bm{x}|\bm{y})$ for ozone.}
 	\label{fig:PostCov}
 \end{figure}
 \clearpage
@@ -563,7 +560,7 @@ The regularised solution is typically calculated by solving the normal equations
 	\bm{x}_{\lambda} = (\bm{A}^T\bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y} \label{eq:xLam} \, .
 \end{align}
 To find the best regularised solution, we use the L-curve method~\cite{hansen1993use}.
-Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $1$ to $10^7$ and plot the solution semi norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{x} \rVert$, see Figure \ref{fig:LCurve}. 
+Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $10^{0.5}$ to $10^{6.5}$ and plot the solution semi norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{x} \rVert$, see Figure \ref{fig:LCurve}. 
 The best regularised solution corresponding to the corner of the L-curve is located at the point of maximum curvature, see triangle in Fig. \ref{fig:LCurve}, which we find with the kneedle algorithm~\cite{satopaa2011kneedle} using the python function \texttt{kneed.KneeLocator} in less $0.1$s.
 \begin{figure}[ht!]
 	\centering
@@ -574,8 +571,8 @@ The best regularised solution corresponding to the corner of the L-curve is loca
 
 We plot the regularised solution in Fig. \ref{fig:O3SolplsReg} and observe that it is very similar to the posterior mean.
 It is pretty clear that the regularised solution accounts for only one possible solution and does not provide uncertainties. The regularised solution is not similar to the samples drawn from the posterior $\pi(\bm{x}| \bm{y})$, see also Fig. \ref{fig:O3Samp}.
-In Fig. \ref{fig:LCurve}, the samples of $\pi(\bm{x}| \bm{y})$ lie above the L-Curve where as the mean and the regularised solution lie on the L-Curve.
-This does make sense, if one thinks about the mean (average over less smooth samples) and the regularised solution as extremely smooth ozone profiles, see also Sec. \ref{sec:regularise}.
+In Fig. \ref{fig:LCurve}, the samples of $\pi(\bm{x}| \bm{y})$ lie above the L-Curve where as the posterior mean and the regularised solution lie on the L-Curve.
+This does make sense, if one thinks about the mean (average over non-smooth samples) and the regularised solution as extremely smooth ozone profiles, see also Sec. \ref{sec:regularise}.
 In contrast the samples are less regularised and hence lie above the L-Curve, but have a similar data misfit norm and as already mentioned are all feasible solution to the data.
 Neither the regularisation solution nor the posterior ozone profiles capture the ozone peak of the ground truth at high altitudes.
 \clearpage
@@ -660,7 +657,6 @@ A directed acyclic graph (DAG) helps us to visualise the measurement process and
 We draw a DAG in Fig. \ref{fig:DAGComplete} and already see that the parameters pressure $\bm{p}$, temperature $\bm{T}$ and ozone $\bm{x}$ are correlated, and progress deterministically (dashed line) into the forward model, via $\bm{x} \times \bm{p} / \bm{T}$ and generate a space of all possible noise free data $\bm{\Omega}$, through their respective prior distributions, from which we observe some data.
 Ideally, we should infer all of them jointly, but that is computationally very expensive.
 Instead, we condition on either ozone when inferring pressure and temperature or on pressure and temperature when inferring ozone.
-Then one should iteratively proceed until convergence, but this is not the focus of this thesis since we provide the underlying Bayesian framework and methods to obtain posterior distributions of either one and suggest adjustments to the proposed framework in Ch. \ref{ch:Concl}.
 Since we consider a hierarchical Bayesian framework, we include the hyper-parameters $\gamma, \delta, p_0, b, \bm{h}_T, \bm{T}_0, \bm{a}$ within the modelling process.
 Here pressure and temperature are functionally dependent on $p_0, b, \bm{h}_T, \bm{T}_0, \bm{a}$, see Eq. \ref{eq:tempFunc} and Eq. \ref{eq:pressFunc}, visualised through dashed lines, but $\delta$, accounting for the smoothness of $\bm{x}$, determines the precision matrix $\bm{Q}$ of the prior distribution $\pi(\bm{x}|\delta)$, which then represents a distribution over non-parametric $\bm{x}$ (solid line).
 Similarly, $\gamma$ determines the noise covariance matrix $\bm{\Sigma}$, which then describes the noise vector as $\eta \sim \mathcal{N}( \bm{0}| \gamma^{-1} \bm{I})$, where we assume independent and identically distributed normal noise with zero mean.
@@ -669,19 +665,7 @@ Here $\theta_{\gamma}, \theta_{\delta},\theta_{p_0},\theta_{b},\theta_{\bm{h}},\
 Note that we write the non-linear forward model, with which we generate the data as $\bm{A}_{NL}$, but denote the approximated forward model as $\bm{M} \bm{A}_L$, which we will ultimately use to determine the posterior distribution over the parameters.
 
 
-Since the noise is normally distributed, so is the likelihood function $\pi(\bm{y} | \bm{x}, \bm{p}, \bm{T})$.
-Then the joint posterior distribution
-\begin{align}
-	\pi(p_0,b,\bm{h_T},\bm{a},\delta, \gamma, \bm{x}| \bm{y}) \propto \pi(\bm{y} | \bm{x}, \bm{p}, \bm{T}) \pi(p_0,b,\bm{h_T},\bm{a},\delta, \gamma) 
-\end{align}
-over all 18 hyper-parameters and the parameter $\bm{x} \in \mathbb{R}^{45}$ is 63 dimensional.
-Instead of characterising the joint posterior, we factorise the posterior into
-\begin{align}
-	\pi(p_0,b,\bm{h_T},\bm{a},\delta, \gamma, \bm{x}| \bm{y}) = \pi(\delta, \gamma, \bm{x}| p_0,b,\bm{h_T},\bm{a},\bm{y}) \pi(p_0,b,\bm{h_T},\bm{a}|\delta, \gamma, \bm{x}, \bm{y}) \, , 
-\end{align}
-where we either condition on ozone $\bm{x}$ and the smoothness hyper-parameter $\delta$ as well as the noise hyper-parameter $\gamma$ or on the fraction $\bm{p}/\bm{T}$, pressure over temperature, and its hyper-parameters.
-Again, as in Sec. \ref{ch:formodel}, for brevity we write $\pi(\delta, \gamma, \bm{x}|\bm{y})$ for $\pi(\delta, \gamma, \bm{x}|p_0,b,\bm{h_T},\bm{a},\bm{y})$, which implies that we conditioned on $\bm{p}$ and $\bm{T}$. 
-Next, we need to make prior assumptions about the parameters and to specify the prior and hyper-prior distributions, which we summarise in Tab. \ref{tab:priors}, and to formulate the posterior distributions.
+
 \begin{table}
 	\centering
 	\begin{tabular}{ |c||c|c|c|c|c|   }
@@ -729,7 +713,10 @@ Similarly, the temperature as described in Eq. \ref{eq:tempFunc} can be parametr
 Then, we set up the hierarchical Bayesian framework
 \begin{subequations}
 	\begin{align}
-		\bm{y} |  \bm{p}, \bm{T}, \gamma &\sim \mathcal{N}(\bm{A} \, \bm{p}/\bm{T}, \gamma^{-1} \bm{I}) \label{eq:likelihoodPT} \\
+		\bm{y} |  \bm{x},\gamma,\delta  &\sim \mathcal{N}(\bm{A}(p_0,b,\bm{h}_{\bm{T}},T_0,\bm{a}) \, \bm{x}, \gamma^{-1} \bm{I}) \label{eq:likelihoodFull} \\
+		\bm{x}| \delta  &\sim \mathcal{N}(\bm{0}, (\delta \bm{L})^{-1} ) \label{eq:priorXFull} \\
+		\delta  &\sim \Gamma(\alpha_{\delta} = 1, \beta_{\delta} = 10^{-35})\label{eq:priorDelFull} \\
+		\gamma  &\sim \Gamma(\alpha_{\gamma} =1, \beta_{\gamma} = 10^{-35})\label{eq:priorGamFull} \\
 		\bm{a}  &\sim \mathcal{N}(\bm{\mu}_{\bm{a}}, \bm{\Sigma}_{\bm{a}})\\
 		\bm{h}_{\bm{T}}  &\sim \mathcal{N}(\bm{\mu}_{T}, \bm{\Sigma}_{\bm{h}_T}) \\
 		T_0  &\sim \mathcal{N}(\mu_{T_0}, \sigma_{T_0} )\\
@@ -740,7 +727,7 @@ Then, we set up the hierarchical Bayesian framework
 \end{subequations}
 and define a normally distributed likelihood (due to Gaussian noise) and normally distributed priors, where the hyper-prior means and variances are described through $\bm{\theta}_{\bm{a}} =(\bm{\mu}_{\bm{a}}, \bm{\Sigma}_{\bm{a}})$, $\bm{\theta}_{\bm{h}_T} = (\bm{\mu}_{\bm{T}}, \bm{\Sigma}_{\bm{h}_T}) $, 
 $\bm{\theta}_{T_0} = (\mu_{T_0}, \sigma_{T_0})$, $\bm{\theta}_{p_0} = (\mu_{p_0}, \sigma_{p_0})$, and $\bm{\theta}_{b} = (\mu_{b}, \sigma_{b})$, see DAG in Fig. \ref{fig:DAGComplete}.
-
+which we summarise in Tab. \ref{tab:priors}, and to formulate the posterior distributions.
 
 \subsection{Prior Modelling}
 To complete the model, we have to define a sensible hyper-prior distribution $\pi(\bm{h}_T, \bm{a}, T_0)$.
@@ -773,12 +760,10 @@ We summarise the hyper-prior means and variances in Tab. \ref{tab:priors}.
 	\caption[Prior Samples of $\bm{p}/\bm{T}$ according to the respective hyper-prior distribution.]{We draw samples from the hyper-prior distribution of $h_0, b, p_0, h_1, h_2,h_3,h_4,h_5,h_6, a_0, a_1, a_2,a_3,a_4$ and $T_0$ as defined in table \ref{tab:priors} and then calculate $\bm{p}/\bm{T}$ according to the functions in Eq. \ref{eq:pressFunc} and \ref{eq:tempFunc}.}
 	\label{fig:PriorPressOverTemp}
 \end{figure}
-
-
 We plot prior samples of the pressure $\bm{p}$ in Fig. \ref{fig:PriorPress}, the temperature $\bm{T}$ in Fig. \ref{fig:PriorTemp} and the ratio $\bm{p}/\bm{T}$ in Fig. \ref{fig:PriorPressOverTemp} against the ground truth profiles.
 Additionally, we plot prior samples of $1/\bm{T}$ in Fig. \ref{fig:OverTempPrior}.
 Here we already observe that $\bm{p}/\bm{T}$ inherits the structure of the pressure function and hence the data is uninformative about the temperature, and that is one of the reasons why we chose those hyper-prior distributions.
-
+\clearpage
 \subsection{Posterior Distribution}
 
 We either use the \texttt{t-walk} algorithm \cite{christen2010general} to draw samples from $\pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})$ or we utilise a TT approximation on a predefined grid to then use the SIRT method to draw samples from that posterior.
@@ -800,6 +785,7 @@ Since “conditioning on estimates gives poor predictive densities” \cite{tan2
 Note that we introduce a "normalisation constant" $c$ for the TT approximation, similar to Sec. \ref{subsec:firstMargTT}.
 (5000+100) * 500
 2550000
+\paragraph{Sampling from Marginal Posterior}
 The \texttt{t-walk} \cite{christen2010general} algorithm takes $N = 5 \time 10^6$ steps with a burn-in period of $N_{burn-in} = 100 \times 2500 $, since we expect a maximal IATC, through some pre-analysis, of around 2500, see Tab. \ref{tab:priors}, to generate around $1000$ independent samples from the posterior.
 We initialise the \texttt{t-walk} at the hyper-prior mean values and run the t-walk on the negative log of $\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) $ (with $c=0$) for $750000$ steps,
 This takes around $5$ mins using the \texttt{t-walk} implementation in Python \cite{christentwalkaccess}.
@@ -807,7 +793,8 @@ Through some pre-analysis we define hyper-parameters boundaries, which also defi
 We plot the resulting histograms in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}.
 Additionally, we plot the trace of the samples in Fig. \ref{fig:TraceTwalk}.
 
-\subsubsection{TT-approximation}
+\paragraph{TT Approximation of Marginal Posterior}
+%\subsubsection{TT-approximation}
 To approximate the square root of posterior $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$ we run the  \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} python package \cite{Oseledets2018ttpy} with constant ranks, which may differ in between each other.
 We adjust the constant $c$ for $\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})$ in Eq. \ref{eq:postPT} to the upper numerical limit of the computer, so that we avoid underflow as much as possible.
 More specifically, the upper numerical computer precision is roughly $e^(2*350) approx \infty$, so we evaluate the  $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$ on 10000 randomly choose grid points and conservatively set the constant so that the maximum values of those grid point is $\approx 325$.
@@ -825,6 +812,7 @@ We initialise the \texttt{cross}  with a random tensor and we run 5 sweeps it ta
 	\caption*{Correlation plot of samples from TT-approximation of $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$ via SIRT scheme.}
 \end{figure}
 \cleardoublepage
+\subparagraph{Correlation structure}
 The First thing we do is to arrange the order of parameters according to their correlation structure.
 This means we have highly correlated parameter pairs next each other, so that their TT-cores are direct neighbours and linked through their shared rank.
 See Fig.\ref{fig:CorrPlot}, where we scatter plot the samples from the TT-approximation od $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$ via SIRT scheme.
@@ -833,7 +821,7 @@ We observe that the hyper-parameters describing pressure and the hyper-parameter
 We try to arrange the parameters so that the correlation coefficient are increasing towards the diagonal, we do this iteratively by exploratory analysis.
 Next we aim to find the optimal rank and grid size to approximate $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$, so that the number of function evaluation are as low as possible but not 
 
-
+\subparagraph{Find optimal Rank and Grid Size}
 Next, we choose a relatively large number of grid points and calculate different error measures for deceasing number of ranks to find the optimal number of ranks.
 We set the number of grid point to $n = 150$ and calculate the 1-Wasserstein distance, see Sec. \ref{subsec:wasser}, between the samples from the t-walk and samples from the TT-approximation using the SIRT scheme, weighted according to their posterior distribution values.  
 To calculate the 1-Wasserstein distance, as in Eq. \ref{eq:applWasser}, we use the \texttt{SamplesLoss("sinkhorn", p=1, blur=0.05, scaling=0.8)} function with default settings from the python package \texttt{geomloss} \cite{Wassersteinaccess}.
@@ -933,6 +921,8 @@ We plot the posterior temperature and pressure profiles in Fig. \ref{fig:TempPos
 	\caption[Pressure posterior samples.]{We take samples from the posterior distribution, as plotted in Fig. \ref{fig:PostHistTT4} and plot the corresponding pressure function, see Eq: \ref{eq:pressFunc}.}
 	\label{fig:O3Post}
 \end{figure}
+We coudl fix that by choosing a more restirctve prio rfor rpessure but that pwould not be objective 
+INstead we should really work on a better mode kf or ozxone.
 
 \section{Error analysis}
 In this section, we estimate errors due to the function approximations of $f(\lambda)$ and $g(\lambda)$ and how these errors propagate to the marginal posterior.
@@ -944,7 +934,8 @@ When approximating the functions $f(\lambda)$ and $g(\lambda)$, we find that the
 The Taylor series truncation error of $f(\lambda)$ is bounded by the fourth order Taylor series $E_f = \underset{\lambda}{\text{arg max}\,} f^{(4)}(\lambda_0)/ 4! \, (\lambda - \lambda_{0} )^4$ and corresponds to an relative error bounded by $20\%$.
 Since the maximum absolute error of the approximation $\underset{\lambda}{\text{arg max}\,}|\tilde{g}(\lambda) - g(\lambda) | \approx 1$ corresponds to an relative error of approximately $0.3\%$ and is small compared to $E_f \approx 1e8$ we ignore the approximation error of $g(\lambda)$.
 Then the maximum relative propagation error $\underset{\lambda, \gamma}{\text{arg max}\,} 0.5 \gamma  E_f / \log{\pi{(\lambda ,\gamma | \bm{y})}} $ is bound by approximately $5\%$.
-\subsubsection{Tensor-train approximation error for the marginal posterior}
+\subsubsection{Tensor-train approximation error}
+%marginal Ozone
 We calculate the error of the TT approximation of the marginal posterior with the Wasserstein distance $||x||$.
 The wasserstein distance between the normalised true marginal posterior $\pi(\lambda,\gamma|\bm{y})$ and the TT approximation $\tilde{\pi}(\lambda,\gamma|\bm{y})$ is $0.1$.
 
@@ -955,7 +946,6 @@ The wasserstein distance between the normalised true marginal posterior $\pi(\la
 $\lVert \pi(\bm{x}_{MH}) - \tilde{\pi}(\bm{x}_{MH}) \rVert / \lVert \pi(\bm{x}_{MH}) \rVert$
 $\lVert \mathbb{E}\big[ \bm{x} \big]  -  \mathbb{E} \big[ \tilde{\bm{x}} \big] \rVert_{L^2}$
 $\lVert \mathbb{E}  \big[\bm{x}\big] -  \mathbb{E} \big[ \bm{x}_{MH}\big]  \rVert_{L^2}$
-\subsubsection{Error due to grid size}
 When we calculate the mean and covariance matrix of the full conditional $\pi(\bm{x}|\bm{y})$ we have to bin up the samples of the marginal posterior $\pi(\gamma, \delta |\bm{y})$ or use a TT approximation on a predefined grid with a certain number of grid points, we like to give an estimate for this error as well.
 In doing we bin up samples and use the height $\tilde{\pi}(\bm{\theta}^{(k)}_d)$ for a bin $k = 1, \dots, \text{N}_b$ to calculate the mean $\tilde{\mu}_d = \sum_{\text{N}_b} \tilde{\pi}(\bm{\theta}^{(k)}_d) $.
 We compare to the sample mean $\bm{\mu}_d = \sum_{k=1}^N \bm{\theta}^{(k)}_d/N$ and calculate the relative error $||\bm{\mu}_{\text{samp}} -\bm{\mu}_{\text{distr}} ||/ || \bm{\mu}_{\text{samp}} ||$
@@ -971,6 +961,10 @@ Note that we exclude the error due to $\tau_{\text{int}}$ the IACT and that we c
 	\caption[Assessment of Monte-Carlo error.]{Assessment of Monte-Carlo error, where we calculate the relative error of the mean due to binning up the samples compared to the sample mean $||\bm{\mu}_{\text{samp}} -\bm{\mu}_{\text{distr}} ||/ || \bm{\mu}_{\text{samp}}||$.}
 	\label{fig:MCError}
 \end{figure}
+%marginal Ozone Pressure Temperature
+The error of is influeced by rank and gridsize
+
+interploation error
 
 
 %\begin{figure}[thb!]
