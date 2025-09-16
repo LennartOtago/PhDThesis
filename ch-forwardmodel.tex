@@ -48,35 +48,37 @@ For fundamentals on the Radiative transfer equation we recommend \cite[Chapter 1
 To enable matrix-vector multiplication, we discretise the atmosphere in $n$ layers, where the $i^\text{th}$ layer is defined by two spheres of radii $h_{L,i-1} < h_{L,i}$, for $i = 1, \dots, n$, with $h_{L,0}$ and $h_{L,n} $.
 Then we can discretise the ozone, pressure and temperature profiles as a function of height; in between the heights $h_{L,i-1}$ and $h_{L,i}$, each of the ozone concentration $x_{i}$, the pressure $p_{i}$, the temperature $T_{i}$, as well as all other height dependent parameters are assumed to be constant.
 Above $h_{L, n}$ and below $h_{L,0} $, the ozone concentration is set to zero, so no signal can be obtained.
-Depending on the parameter of interest, which is either the ozone volume mixing ratio $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$ or the fraction of pressure and temperature $\bm{p/T}= \{p_1/T_1,p_2/T_2,\ldots,p_n/T_n\} \in \mathbb{R}^{n} $
-we rewrite the integral in Eq.~\eqref{eq:RTE} for one noise free measurement, using the trapezoidal rule, as a vector-vector multiplication $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{x} $ or $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \, \bm{p}/ \bm{T} $, where the non-linear absorption $\tau(r)$ is included in $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{n}$ which is the $j$-th row of the matrix $\bm{A}(\bm{x},  \bm{p},\bm{T})$.
-Then given a noise vector $\bm{\eta} \in \mathbb{R}^{m}$ the data vector
+We rewrite the integral in Eq.~\eqref{eq:RTE} for one noise free measurement, using the trapezoidal rule, as a vector-vector multiplication $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T})$, where the ozone volume mixing ratio $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$.
+Note that since we aim to provide estimates over pressure $\bm{p}$ and temperature $\bm{T}$, we explicitly include them as parameters in our forward model.
+Here, the non-linear absorption $\tau(r)$ is another vector-vector multiplication and included in each entry of $\bm{A_{j}}(\bm{x},  \bm{p},\bm{T}) \in \mathbb{R}^{n}$ which is the $j$-th row of the matrix $\bm{A}(\bm{x},  \bm{p},\bm{T})$.
+Then given a noise vector $\bm{\eta} \in \mathbb{R}^{m}$ the data vector is given as:
 \begin{align}
-	\bm{y} = \bm{A}_{NL} \, \bm{x} + \bm{\eta}= \bm{A}_{NL} \,
-	\frac{ \bm{p}}{\bm{T}} + \bm{\eta} \, 
+	\bm{y} = \bm{A}_{NL} + \bm{\eta}\, .
 \end{align}
-is based on a matrix-vector multiplication.
-Here we define the non-linear forward model matrix as $\bm{A}_{NL} \coloneqq \bm{A}(\bm{x},  \bm{p},\bm{T})   \in \mathbb{R}^{m \times n}$ for simplicity, so that $\bm{A}_{NL}\bm{x}$ or $\bm{A}_{NL}\bm{p}/\bm{T}$ implies the construction of $\bm{A}_{NL}$ and similarly for $\bm{A}_L$, which denotes the linear forward model matrix and neglects abortion (e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}).
+Here we define the non-linear forward model matrix as $\bm{A}_{NL} \coloneqq \bm{A}(\bm{x},  \bm{p},\bm{T})   \in \mathbb{R}^{m \times n}$ for simplicity.
+Similarly we define $\bm{A}_L$, which denotes the linear forward model matrix and neglects absorption (e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}).
+Then we can compute noise-free linear data as matrix-vector multiplication $\bm{A}_L \bm{x}$.
 Further, we classify the inverse problem as weakly non-linear, see e.g. Fig. \ref{fig:MapAsses}, as neglecting the absorption changes the measurements only slightly.
 
 
 
 \section{Singular Value Decomposition of the Forward Model}
 \label{sec:SVD}
-Before simulating some data, we provide a quick and intuitive way of assessing if the data collection is effective, how much information is passed through the forward model, depending on how we measure and how the signal-to-noise ratio affects that information.
+Before simulating some data, we provide a quick and intuitive way of assessing if the data collection is effective, how much information is passed through the forward model, depending on how we measure and how the signal to noise ratio (SNR) affects that information.
 One way of doing this is via a singular value decomposition (SVD) of the forward model matrix
 \begin{align}
-	\bm{A} = \sum_{i =1}^{r} \bm{u}_i  \sigma_i \bm{v}^T_i = \bm{U} \bm{\Sigma} \bm{V}^T
+	\bm{A}_L = \sum_{i =1}^{r} \bm{u}_i  \sigma_i \bm{v}^T_i = \bm{U} \bm{\Sigma} \bm{V}^T
 \end{align}
-where $r = \min\{m,n\}$ for a forward model $\bm{A} \in \mathbb{R}^{m \times n}$.
-Consider noise free measurements $\bm{A}\bm{x}$ for a satellite at a fixed height of $h_{\text{sat}} = 500$km above sea level, where $\bm{x}$ is the ozone VMR, then the SVD gives us information on how information is picked up from the parameter space by the forward model, described through the right singular values $\bm{v}_i$.
+where $r = \min\{m,n\}$ for a forward model $\bm{A}_L \in \mathbb{R}^{m \times n}$.
+Consider noise-free measurements $\bm{A}_L\bm{x}$ for a satellite at a fixed height of $h_{\text{sat}} = 500$km above sea level, where $\bm{x}$ is the ozone VMR.
+The SVD gives us information on how information is picked up from the parameter space by the forward model, described through the right singular values $\bm{v}_i$.
 The singular values $\sigma_i $, ordered in size from the largest $\sigma_1$ to the smallest $\sigma_{r}$, weight that information from the right singular values to the left singular values $\bm{u}_i$, which project onto the data space.
-If we have lots of high-valued singular values, we can say that the forward model is informative and vice versa.
-The right singular vectors indicate which structures of the parameter space are picked up by the model.
+For a large singular value, we can say that the forward model is informative about structures in the corresponding right singular vector and vice versa.
+Note that we obtain the same results using the non-linear forward model $\bm{A}(\bm{x})$ to do this analysis, where we would rewrite to the matrix-vector multiplication $\bm{A}_{NL} \bm{x}$, where $\bm{A}_{NL}$ is depend on $\bm{x}$.
 
 Further, for very small singular values $\sigma_i \ll \sigma_1/\text{SNR}$ below the RMS noise level or the noise standard deviation (STD), we can introduce an effective rank $r_{\text{eff}} \leq r$.
 Then information of parameter space spanned by $ \{\bm{v}_{r_{\text{eff}} +1}, \dots ,\bm{v}_r \}$ is not passed through the forward model and the data is noise dominated in the corresponding data space, see Figure \ref{fig:nullSpace}.
-This is based on the rough assumption that if we define the signal-to-noise ratio (SNR) as
+This is based on the rough assumption that if we define the SNR as
 \begin{align}
 	\text{SNR} \coloneqq \frac{\max(y)}{\text{STD noise}} = \frac{\text{peak signal}}{\text{RMS noise}} \text{\cite{fox2025BlokkLecNot}} \label{eq:SNR}
 \end{align}
