@@ -219,16 +219,16 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 \end{algorithm}
 
 
-\subsection{T-walk Sampler as a Black Box}
-If the parameters $\bm{x}$ are functionally dependent on the hyper-parameters $\bm{\theta}$, i.e., $\bm{x} = \bm{x}(\bm{\theta})$, we can sample directly from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the t-walk sampler as by Christen and Fox~\cite{christen2010general}. 
-The t-walk is employed as a black-box sampler, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
+\subsection{\texttt{T-walk}Sampler as a Black Box}
+If the parameters $\bm{x}$ are functionally dependent on the hyper-parameters $\bm{\theta}$, i.e., $\bm{x} = \bm{x}(\bm{\theta})$, we can sample directly from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the \texttt{t-walk} sampler as by Christen and Fox~\cite{christen2010general}. 
+The \textbf{t-walk} is employed as a black-box sampler, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
 Convergence to the target distribution is guaranteed by construction of the algorithm.
 
 
 \subsection{Randomise then Optimise}
 \label{subsec:RTO}
-If we can not evaluate the mean and variance of the full posterior through integration, e.g. if it is computationlly not feasibel to solve the integral in Eq. \ref{eq:fullCond} due to a large number of hyper-parameters, we need an atlernitve way to charcaterose $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
-For the linear-Gaussian Bayesian model we can draw sampes from the normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the randomise then optimise (RTO)~\cite{bardsley2012mcmc} scheme after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$.
+If we can not evaluate the mean and variance of the full posterior through integration, e.g. if it is computationally not feasible to solve the integral in Eq. \ref{eq:fullCond} due to a large number of hyper-parameters, we need an alternative way to characterise $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
+For the linear-Gaussian Bayesian model we can draw samples from the normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the randomise then optimise (RTO)~\cite{bardsley2012mcmc} scheme after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$.
 
 The full conditional distribution can be rewritten as
 \begin{align}
@@ -522,14 +522,14 @@ We repeat the procedure for each $u^{(s)}_k \in \bm{u}^{(s)}$ to gain samples $\
 	\end{algorithmic}
 	\label{alg:SIRT}
 \end{algorithm}
-Since the samples using the SIRT scheme are samples from an approximation it is sensible to correct those using a Metropolis-Hastings importance sampler.
+Since the samples using the SIRT scheme are samples from an approximation it is sensible to correct those using a Metropolis-Hastings (MH) importance sampler.
 In doing so we compute the acceptance probability $  \alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$, where 
 \begin{align}
 	w(x) = \frac{\pi(\bm{x})}{f_X(\bm{x})} = \frac{\pi(\bm{x})}{\gamma + \tilde{g}(\bm{x})^2} 
 \end{align}
 is the importance ratio.
 In practise we calculate the importance ratio in the log space, where $\log f_X(\bm{x})  =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ is given as in Eq. \ref{eq:CurrMarg}, see \cite{dolgov2020approximation}.
-In theory this leads to the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
+We refer to this as the SIRT-MH scheme, which provides the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
 
 
 \subsection{On the Error of a TT Approximation}

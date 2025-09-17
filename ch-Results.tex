@@ -31,20 +31,20 @@ Following \cite{atmosphere1976us} we form the temperature function
 \begin{equation}
 	\label{eq:tempFunc}
 	T(h) = \adjustbox{max width=0.825\textwidth}{$\begin{dcases*}
-			T_0 &, \, \text{$h  = 0$}\\
-			T_0 + a_0 h   &, \, \text{$0 \leq h < h_{T,1}$}\\
-			T_0 + a_0 h_{T,1} &, \, \text{$h_{T,1} \leq  h < h_{T,2}$}\\
-			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  + a_2 (h   - h_{T,2})  &,  \, \text{$h_{T,2} \leq h < h_{T,3}$}\\
+			T_0 &, \text{$h  = 0$}\\
+			T_0 + a_0 h   &, \text{$0 \leq h < h_{T,1}$}\\
+			T_0 + a_0 h_{T,1} &, \text{$h_{T,1} \leq  h < h_{T,2}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  + a_2 (h   - h_{T,2})  &, \text{$h_{T,2} \leq h < h_{T,3}$}\\
 			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})   & \\
-			\hphantom{{} T_0 } + a_2 (h_{T,3}   - h_{T,2}) + a_3 (h   - h_{T,3}) &, \, \text{$h_{T,3} \leq h < h_{T,4}$}\\
+			\hphantom{{} T_0 } + a_2 (h_{T,3}   - h_{T,2}) + a_3 (h   - h_{T,3}) &, \text{$h_{T,3} \leq h < h_{T,4}$}\\
 			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  & \\
-			\hphantom{{} T_0 }+ a_2 (h_{T,3}   - h_{T,2})  + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h   - h_{T,4}) &,  \, \text{$h_{T,4} \leq h < h_{T,5}$}\\
+			\hphantom{{} T_0 }+ a_2 (h_{T,3}   - h_{T,2})  + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h   - h_{T,4}) &, \text{$h_{T,4} \leq h < h_{T,5}$}\\
 			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})   & \\
 			\hphantom{{} T_0 } + a_2 (h_{T,3}   - h_{T,2}) + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h_{T,5}   - h_{T,4})& \\
-			\hphantom{{} T_0 }  + a_5 (h   - h_{T,5}) &,  \, \text{$h_{T,5} \leq h < h_{T,6}$}\\
+			\hphantom{{} T_0 }  + a_5 (h   - h_{T,5}) &, \text{$h_{T,5} \leq h < h_{T,6}$}\\
 			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})    &\\
 			\hphantom{{} T_0}  + a_2 (h_{T,3}   - h_{T,2}) + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h_{T,5}   - h_{T,4}) &\\ 
-			\hphantom{{} T_0} + a_5 (h_{T,6}   - h_{T,5}) + a_6 (h   - h_{T,6})   &,  \, \text{$h_{T,6} \leq h \lesssim  86$}
+			\hphantom{{} T_0} + a_5 (h_{T,6}   - h_{T,5}) + a_6 (h   - h_{T,6})   &, \text{$h_{T,6} \leq h \lesssim  86$}
 		\end{dcases*}$}\\
 \end{equation}
 
@@ -268,6 +268,20 @@ We plot the approximations
 \end{subequations} in Fig. \ref{fig:fandg} and elaborate on the approximation errors in Sec \ref{sec:fgErros}.
 Note that usually a Taylor series includes a factor $(r!)^{-1}$, in this case it cancels in $f^{(r)}(\lambda_0)$, see \cite{fox2016fast}.
 
+\paragraph{Error due to Approximation of f and g}
+\label{sec:fgErros}
+We report an maximum approximation error in between f and g
+For 2nd order taylor 3rd tayle and 4th order taylor
+
+then we neglect ther erro in g beacus ethabsolute in f and g are
+and propagtion error in marginal is due to f is realtive RMS and the maximum error is ...
+
+
+When approximating the functions $f(\lambda)$ and $g(\lambda)$, we find that the 3rd-order Taylor series of $f(\lambda)$ and a linear approximation of $g(\lambda)$ in log-space give the smallest error.
+The Taylor series truncation error of $f(\lambda)$ is bounded by the fourth order Taylor series $E_f = \underset{\lambda}{\text{arg max}\,} f^{(4)}(\lambda_0)/ 4! \, (\lambda - \lambda_{0} )^4$ and corresponds to an relative error bounded by $20\%$.
+Since the maximum absolute error of the approximation $\underset{\lambda}{\text{arg max}\,}|\tilde{g}(\lambda) - g(\lambda) | \approx 1$ corresponds to an relative error of approximately $0.3\%$ and is small compared to $E_f \approx 1e8$ we ignore the approximation error of $g(\lambda)$.
+Then the maximum relative propagation error $\underset{\lambda, \gamma}{\text{arg max}\,} 0.5 \gamma  E_f / \log{\pi{(\lambda ,\gamma | \bm{y})}} $ is bound by approximately $5\%$.
+
 \paragraph{Sample from Marginal Posterior}
 Using these approximation we can either utilise a TT approximation of the marginal posterior, see Sec. \ref{subsec:TTMarg}, over a predefined grid and calculate the marginals $\pi(\gamma|\bm{y})$ and $\pi(\lambda|\bm{y})$, or employ a Metropolis within Gibbs (MWG) sampler to sample from $\pi(\lambda,\gamma|\bm{y})$, see sec. \ref{subsec:MWG}.
 More specifically, we implement a Metropolis random walk on
@@ -335,6 +349,7 @@ This takes about $0.1s$ for $400$ function evaluations.
 Then we compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as described in Sec. \ref{subsec:TTMarg}.
 In doing so we calculate the coefficient tensor $\bm{B}$ and $\bm{B}_{\text{pre}}$ as in Prop. \ref{prob:backMarg} and \ref{prob:ForMarg}, where we set $\xi = 1 / \uplambda (\mathcal{X})$ and $\uplambda(x) = 1$, so that for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ in Eq. \ref{eq:MassMat}.
 We plot the TT approximation as a colour map on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
+We report a RMS error over the whole grid of ...
 \begin{figure}[h!]
 	\centering
 	\includegraphics{ScatterplusHistoPlusTT.png}
@@ -404,6 +419,21 @@ Note, that the posterior samples do not represent the ozone peak at around $80$k
 	\caption[Ozone samples of the full posterior.]{We draw ozone samples from the full posterior distribution $\pi(\bm{x}| \bm{y})$ after characterising mean and covariance of $\pi(\bm{x}| \bm{y})$ by weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$. we determine  $\pi(\lambda, \gamma | \bm{y})$ either through sampling or via TT approximation based on the linear forward map $\bm{A}_L$. Note that we set negative values ozone VMR values to zero. We will use those samples to find the affine map $\bm{M}$, see section \ref{sec:affineMap}}
 	\label{fig:O3Samp}
 \end{figure}
+
+\paragraph{Errors due to number of grid points}
+we plot RMS for mean and variance compared to a solutop with 200 grid points.
+The relative error behaves proportionally to $1/N$, see Fig. \ref{fig:MCError} and Eq. \ref{eq:MCerr}, and we consider a relative error less than $0.1\%$ good enough.
+This happens roughly at a bin size of 25, which is our TT grid size.
+Note that we exclude the error due to $\tau_{\text{int}}$ the IACT and that we choose the grid according to the sampled values so that the sampling region is the same as the region in which we approximate the posterior distributions.
+.\begin{figure}[ht!]
+	\centering
+	\includegraphics{MeanAssPT.png}
+	\caption[Assessment of Monte-Carlo error.]{Assessment of Monte-Carlo error, where we calculate the relative error of the mean due to binning up the samples compared to the sample mean $||\bm{\mu}_{\text{samp}} -\bm{\mu}_{\text{distr}} ||/ || \bm{\mu}_{\text{samp}}||$.}
+	\label{fig:MCError}
+\end{figure}
+%marginal Ozone Pressure Temperature
+The error of is influeced by rank and gridsize
+interploation error
 \clearpage
 %\subsubsection{Randomize then optimize -- RTO}
 %For the RTO method we start by drawing an independent hyper-parameter sample $ ( \delta, \gamma) \sim \pi(\delta, \gamma | \bm{y})$ from the samples of the MwG.
@@ -741,24 +771,22 @@ which we summarise in Tab. \ref{tab:priors}.
 Before we formulate the posterior distribution we carefully define $\bm{\theta}_{\gamma}, \bm{\theta}_{\delta},\bm{\theta}_{p_0},\bm{\theta}_{b},\bm{\theta}_{\bm{h}},\bm{\theta}_{T_0},\bm{\theta}_{\bm{a}}$.
 
 \subsection{Prior Modelling}
-Setting up a Bayesian model to determine the pressure and temperature posterior distribution, we observe that we can parametrise $\bm{p}$ and $\bm{T}$.
-In doing so, we describe the pressure values in between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$km with an exponential function
+The first we do, is to describe the pressure $\bm{p}$ in between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$km with an exponential function
 \begin{align}
 	p(h) =
-	\exp \left( -b \, h \right)   \,  p_0 \quad ,h_{L,0}  \leq h \leq h_{L,n}
+	\exp \left( -b \, h \right)   \,  p_0 \quad , \text{$h_{L,0}  \leq h \leq h_{L,n}$}
 	\label{eq:pressFunc}
 \end{align}
-so that the pressure $\bm{p}$ is described through two hyper-parameters $p_0,b$, see Fig. \ref{fig:PriorPress}.
-Similarly, the temperature as described in Eq. \ref{eq:tempFunc} can be parametrised with 14 hyper-parameters  $\bm{h}_T = \{ h_{T,1}, h_{T,2},h_{T,3},h_{T,4},h_{T,5},h_{T,6} \}$, $\bm{a} = \{a_0, a_1, a_2,a_3,a_4,a_5,a_6 \} $ and $T_0$, see Fig. \ref{fig:PriorTemp}.
+dependent on two hyper-parameters $p_0,b$, see Fig. \ref{fig:PriorPress}.
+Similarly, the temperature as described in Eq. \ref{eq:tempFunc} can be parametrised with 14 hyper-parameters  $\bm{h}_T = \{ h_{T,1}, h_{T,2},h_{T,3},h_{T,4},h_{T,5},h_{T,6} \}$, $\bm{a} = \{a_0, a_1, a_2,a_3,a_4,a_5,a_6 \} $ and $T_0$ (see Fig. \ref{fig:PriorTemp} and Eq. \ref{eq:tempFunc}).
 To complete the model, we have to define a sensible hyper-prior distribution $\pi(\bm{h}_T, \bm{a}, T_0)$.
-In doing so, we choose the variance and mean of the normally distributed hyper-prior distribution $\pi(\bm{h}_T)$ so that the temperature profile maintains its structure, $ h_{T, i} < h_{T, i+1}$ for $i = 1,\dots, 5$, see \ref{fig:HeightPriors}.
-Further, we define $\pi(\bm{a})$ as normally distributed, because we find, through exploratory and prior analysis, see Fig. \ref{fig:PriorPressOverTemp}, that the data is uninformative about the temperature profile.
+In doing so, we choose the variance and mean of the normally distributed hyper-prior distribution $\pi(\bm{h}_T)$ so that the temperature profile maintains its structure, $ h_{T, i} < h_{T, i+1}$ for $i = 1,\dots, 5$ (see Fig. \ref{fig:HeightPriors}).
+Further, we define $\pi(\bm{a})$ as normally distributed, because we find (see Fig. \ref{fig:PriorPressOverTemp}) that the data is uninformative about the temperature profile.
 Similarly, we set $\pi(T_0)$ to a normal distribution so that it mimics a daily temperature variability of roughly 30K.
 The hyper-prior distribution $\pi(p_0, b)$ for pressure-related hyper-parameters is also normally distributed.
 We choose the variance for $\pi(p_0)$ so that $p_0$ has a variability of around 80hPa, close to what we can observe when looking at weather data.
-Note that we fit one exponential function to ground truth pressure values between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$, so that the pressure values $p_0$ at sea level may be skewed due to that approximation.
-To describe pressure values from sea level to $h_{L,0}$, we recommend using another exponential function with a different gradient.
-We summarise the hyper-prior means and variances in Tab. \ref{tab:priors}.
+Note that we fit one exponential function to ground truth pressure values between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$, so that the pressure values $p_0$ at sea level may be different to true observed pressure values due to that approximation.
+We set means of the normal distribution of $\pi(\bm{h}_T,\bm{a}, T_0, p_0, b)$ to the ground truth values of $\bm{p}$ and $\bm{T}$, and summarise the hyper-prior means and variances in Tab. \ref{tab:priors}.
 \begin{figure}[ht!]
 	\centering
 	\input{TrueTemp.pdf_tex}
@@ -782,46 +810,62 @@ We summarise the hyper-prior means and variances in Tab. \ref{tab:priors}.
 \end{figure}
 We plot prior samples of the pressure $\bm{p}$ in Fig. \ref{fig:PriorPress}, the temperature $\bm{T}$ in Fig. \ref{fig:PriorTemp} and the ratio $\bm{p}/\bm{T}$ in Fig. \ref{fig:PriorPressOverTemp} against the ground truth profiles.
 Additionally, we plot prior samples of $1/\bm{T}$ in Fig. \ref{fig:OverTempPrior}.
-Here we already observe that $\bm{p}/\bm{T}$ inherits the structure of the pressure function and hence the data is uninformative about the temperature, and that is one of the reasons why we chose those hyper-prior distributions.
+Here we already observe that $\bm{p}/\bm{T}$ inherits the structure of the pressure function and hence the data is uninformative about the temperature, and that is one of the reasons why we chose those normally, rather informative, hyper-prior distributions.
 \clearpage
+
 \subsection{Posterior Distribution}
-
-We either use the \texttt{t-walk} algorithm \cite{christen2010general} to draw samples from $\pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})$ or we utilise a TT approximation on a predefined grid to then use the SIRT method to draw samples from that posterior.
-
+Here, we define the marginal and then conditional posterior distribution for the described Bayesian model.
+We either use the \texttt{t-walk} algorithm \cite{christen2010general} to draw samples from $\pi(p_0,b,\bm{h_T},\bm{c_T},\bm{a_T} ,\delta, \gamma| \bm{y})$ or we utilise a TT approximation on a predefined grid to draw samples via the SIRT method with an MH correction step from that marginal posterior.
+We define $\bm{\theta}_{\bm{p}, \bm{T}} \coloneqq \{p_0,b,\bm{h_T},\bm{c_T},\bm{a_T}\}$, which includes all hyper-parameters related to pressure and temperature, for brevity.
+Lastly, we use the RTO Method to draw samples from the conditional $\pi(\bm{x}|p_0,b,\bm{h_T},\bm{c_T},\bm{a_T} ,\delta, \gamma, \bm{y})$.
 
 \subsubsection{Marginal Posterior Distribution}
-
-
-
-The aim now is to characterise the posterior
+The marginal posterior is given as
 \begin{align}
-	\begin{split}
-		\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) \propto  \exp\Bigl\{ & -\frac{\gamma}{2} \left\Vert \bm{y}- \bm{A} \frac{\bm{p}}{\bm{T}}  \right\Vert^2 \\ &+ \ln{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T})  + c \Bigr\}  }
-	\end{split} \, ,
-	\label{eq:postPT}
+	\pi( \lambda,\bm{\theta}_{\bm{p}, \bm{T}},\gamma  | \bm{y}) \propto &  \lambda^{n/2} \gamma^{m/2}   \exp{ \Bigl\{ - \frac{1}{2} g ( \lambda,\bm{\theta}_{\bm{p}, \bm{T}}) - \frac{\gamma}{2} f ( \lambda,\bm{\theta}_{\bm{p}, \bm{T}}) \Bigr\}} \pi(\lambda,\bm{\theta}_{\bm{p}, \bm{T}},\gamma ) \, ,
+	\label{eq:MargPostFull}
 \end{align}
-using the approximated forward model $\bm{A} \coloneqq \bm{M}\bm{A}_L$, where $\pi(p_0,b,T_0,\bm{h_T},\bm{a_T})$ is normally distributed, see in Sec. \ref{subsec:PressTempSetup} and Tab. \ref{tab:priors}.
-Since “conditioning on estimates gives poor predictive densities” \cite{tan2016LecNot}, we condition on an ozone sample $\bm{x} \sim \pi(\bm{x}|\bm{y})$, see Fig. \ref{fig:O3SolplsReg} and a sample $\gamma \sim \pi(\gamma| \bm{y})$ from the marginal posterior, see Fig. \ref{fig:MargPostHistTT}.
-Note that we introduce a "normalisation constant" $c$ for the TT approximation, similar to Sec. \ref{subsec:firstMargTT}.
-(5000+100) * 500
-2550000
+with $\lambda= \delta / \gamma$,
+\begin{subequations}
+	\label{eq:fandg}
+	\begin{align}
+		&f ( \lambda,\bm{\theta}_{\bm{p}, \bm{T}}) = \bm{y}^T \bm{y} - \big(\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}})^T \bm{y}\big)^T \big(\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}})^T  \bm{A}(\bm{\theta}_{\bm{p}, \bm{T}}) + \lambda \bm{L}\big)^{-1} \big(\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}})^T \bm{y}\big)  \label{eq:fAppl} \, ,  \\
+		&\text{and } g(\lambda,\bm{\theta}_{\bm{p}, \bm{T}}) = \log \det \big(\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}})^T  \bm{A}(\bm{\theta}_{\bm{p}, \bm{T}}) + \lambda \bm{L}\big) \label{eq:gAppl} \, .
+	\end{align}
+\end{subequations}
+Here we use the approximated forward model $\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}}) \coloneqq \bm{M}\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}})_L$ and do not approximate $f$ and $g$ but calculate $\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}})$ for each function evaluation directly.
+
+
 \paragraph{Sampling from Marginal Posterior}
-The \texttt{t-walk} \cite{christen2010general} algorithm takes $N = 5 \time 10^6$ steps with a burn-in period of $N_{burn-in} = 100 \times 2500 $, since we expect a maximal IATC, through some pre-analysis, of around 2500, see Tab. \ref{tab:priors}, to generate around $1000$ independent samples from the posterior.
-We initialise the \texttt{t-walk} at the hyper-prior mean values and run the t-walk on the negative log of $\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x}) $ (with $c=0$) for $750000$ steps,
-This takes around $5$ mins using the \texttt{t-walk} implementation in Python \cite{christentwalkaccess}.
-Through some pre-analysis we define hyper-parameters boundaries, which also define the grid bounds for the TT-approximation, see Tab. \ref{tab:priors}.
-We plot the resulting histograms in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}.
-Additionally, we plot the trace of the samples in Fig. \ref{fig:TraceTwalk}.
+For a ground truth, we run the \texttt{t-walk} \cite{christen2010general} algorithm on $\pi( \lambda,\bm{\theta}_{\bm{p}, \bm{T}},\gamma  | \bm{y})$ for $N = 1000 \times 1000$ steps with a burn-in period of $N_{\text{burn-in}} = 100 \times 1000 $, since we expect a maximal IATC, through some pre-analysis, of around $\tau_{\text{int,max}} = 500$, see Tab. \ref{tab:priors}, to generate around $1000$ independent samples from the posterior.
+We initialise the Python implementation of the \texttt{t-walk}\cite{christentwalkaccess} around the hyper-prior mean values and take a total number of $N' =N + N_{\text{burn-in}} = 1100000$ steps around $5$ mins.
+We iteratively define the TT grid according to the results of the \texttt{t-walk}, and also use these boundaries for the hyper-parameters when running the \texttt{t-walk} (see Tab. \ref{tab:priors}).
+We plot the resulting histograms in Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4} and the trace of the samples in Fig. \ref{fig:TraceTwalk}.
 
 \paragraph{TT Approximation of Marginal Posterior}
-%\subsubsection{TT-approximation}
-To approximate the square root of posterior $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$ we run the  \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} python package \cite{Oseledets2018ttpy} with constant ranks, which may differ in between each other.
-We adjust the constant $c$ for $\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})$ in Eq. \ref{eq:postPT} to the upper numerical limit of the computer, so that we avoid underflow as much as possible.
-More specifically, the upper numerical computer precision is roughly $e^(2*350) approx \infty$, so we evaluate the  $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$ on 10000 randomly choose grid points and conservatively set the constant so that the maximum values of those grid point is $\approx 325$.
-This may change depending on the ozone and $\gamma$ sample we condition on, for the data set we choose to the pre-ananlysis this constant is $328$. 
-Then we can compute the marginal as in Sec. \ref{sec:tensortrain}, where we set $\xi = 1 / \uplambda (\mathcal{X})$ and $\uplambda(x) = 1$ so that for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$.
-We initialise the \texttt{cross}  with a random tensor and we run 5 sweeps it takes roughly $3$ to $4$min.
+The aim now is to approximate the square root of the marginal posterior
+\begin{align}
+	\begin{split}
+		\pi( \lambda,\bm{\theta}_{\bm{p}, \bm{T}},\gamma  | \bm{y}) \propto  \exp\Bigl\{\log{\pi( \lambda,\bm{\theta}_{\bm{p}, \bm{T}},\gamma  | \bm{y}) ) } + c \Bigr\}  
+	\end{split} \, ,
+	\label{eq:MargPostFullTT}
+\end{align}
+where we introduce a "normalisation constant" $c=-100$, similar to Sec. \ref{subsec:FirstMTC}, to avoid under or overflow.
+In doing so we run the \texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} python package \cite{Oseledets2018ttpy}.
+We compute the marginal as in Sec. \ref{sec:tensortrain}, where we set $\xi = 1 / \uplambda (\mathcal{X})$ and $\uplambda(x) = 1$ so that for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$.
+To draw samples from this TT approximation we use the SIRT-MH scheme as in Sec. \ref{}
 
+
+\subparagraph{Correlation structure}
+First, we arrange the order of hyper-parameters according to their correlation structure to make the TT approximation more efficient.
+In doing so, highly correlated hyper-parameter pairs are next each other, so that their TT cores are direct neighbours and linked through their shared rank.
+See Fig.\ref{fig:CorrPlot}, where we scatter plot the samples from the TT approximation of $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$ via SIRT-MH scheme and plot the Pearson correlation coefficient.
+A coefficient close to $1$ or $-1$ corresponds to high correlation, whereas low correlation between hyper-parameters has a coefficient close to zero.
+We observe that the $\lambda$ hyper-parameters is highly correlated with $b$ the hyper-parameter describing the pressure gradient and with $\gamma$.
+Additionally, $h_{T,1}$ and $T_0$ describing the temperature at low altitudes are correlated to $b$ as well, since those do very slightly influence "the smoothness" of $\bm{p}/\bm{T}$, hard to see in Fig. \ref{fig:PriorPressOverTemp}.
+The IACTs in Tab. \ref{tab:priors} agree with these results.
+Note that the correlation for parameters describing temperature in higher altitudes and surprisingly $p_0$ are very much uncorrelated.
+Next we aim to find the optimal rank and grid size to approximate $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$, so that the number of function evaluation is as low as possible without too much sacrifice in accuracy.
 \begin{figure}[h]% will be the left-side figure
 	\includegraphics[]{CorrPlot.png}
 	\caption[Correlation plot of samples from TT-approximation]{Scatter plot of samples from TT-approximation of $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$ via SIRT scheme. We plot the Pearson correlation coefficient ranging from $-1$ to $1$ for each hyper-parameter pair.}
@@ -832,51 +876,32 @@ We initialise the \texttt{cross}  with a random tensor and we run 5 sweeps it ta
 	\caption*{Correlation plot of samples from TT-approximation of $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$ via SIRT scheme.}
 \end{figure}
 \cleardoublepage
-\subparagraph{Correlation structure}
-The First thing we do is to arrange the order of parameters according to their correlation structure.
-This means we have highly correlated parameter pairs next each other, so that their TT-cores are direct neighbours and linked through their shared rank.
-See Fig.\ref{fig:CorrPlot}, where we scatter plot the samples from the TT-approximation od $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$ via SIRT scheme.
-Additionally, we calculate and plot the Pearson correlation, where a coefficient close to zero corresponds to low correlational and a coefficient close to $1$ or $-1$ corresponds to high correlation.
-We observe that the hyper-parameters describing pressure and the hyper-parameters describing the temperature function in low altitudes are far more correlated than hyper-parameters corresponding to higher altitudes, see also IATC in Tab. \ref{tab:priors}.
-We try to arrange the parameters so that the correlation coefficient are increasing towards the diagonal, we do this iteratively by exploratory analysis.
-Next we aim to find the optimal rank and grid size to approximate $\sqrt{\pi(p_0,b,T_0,\bm{h_T},\bm{a_T} | \bm{y}, \gamma, \bm{x})}$, so that the number of function evaluation are as low as possible but not 
+
 
 \subparagraph{Find optimal Rank and Grid Size}
-Next, we choose a relatively large number of grid points and calculate different error measures for deceasing number of ranks to find the optimal number of ranks.
-We set the number of grid point to $n = 150$ and calculate the 1-Wasserstein distance, see Sec. \ref{subsec:wasser}, between the samples from the t-walk and samples from the TT-approximation using the SIRT scheme, weighted according to their posterior distribution values.  
+Next, we choose a relatively large number of grid points of $n = 150$ and calculate different error measures for deceasing number of ranks to find the optimal number of ranks.
+Then we fix a small but tolerable rank and decrease the number of grid points until sufficient accuracy.
+
+We calculate the 1-Wasserstein distance, see Sec. \ref{subsec:wasser}, between $5000$ independent samples from the SIRT-MH scheme, weighted with the TT approximation of marginal posterior, and 4101 independent samples from the \texttt{t-walk}, weighted by the true posterior value.  
 To calculate the 1-Wasserstein distance, as in Eq. \ref{eq:applWasser}, we use the \texttt{SamplesLoss("sinkhorn", p=1, blur=0.05, scaling=0.8)} function with default settings from the python package \texttt{geomloss} \cite{Wassersteinaccess}.
 This provides the unbiased Sinkhorn divergence which converges towards the Wasserstein distance and can be understood as the generalised Quicksort algorithm \cite{feydy2020OT}.
 Here, p = 1 defines the distance measure $\lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2}$, the blur parameter can be understood as an entropic penalty and the  scaling parameter specifies the trade-off between speed (scaling < .4) and accuracy (scaling > .9) \cite{Wassersteinaccess}.
-Additionally we use the marginal functions to calculate the mean of each hyper-parameter and then the relative RMS error over all of those means, as well as the relative RMS error of the TT-approximation, evaluated at the samples from the SIRT scheme.
+Additionally we use the marginal functions of each TT approximation to calculate the weighted means $\bm{\mu}_{\text{TT}} \in \mathbb{R}^{18}$ of each hyper-parameter and then the relative RMS deffierence $\lVert\bm{\mu}_{\text{TT}} - \bm{\mu}_{\texttt{t-walk}} \rVert_{L^2} / \lVert \bm{\mu}_{\texttt{t-walk}} \rVert_{L^2}  $ compared to "true means"  $\bm{\mu}_{\texttt{t-walk}}$from the \texttt{t-walk}.
+Additionally, we compare the mean $\bm{\mu}_{\text{SIRT-MH}}$ based on the samples from the SIRT-MH scheme with the "true" \texttt{t-walk} mean.
+We plot all of these measures in Fig. \ref{fig:FindRankGrid} and decide that a rank $r = 10$ sufficient because the 1-Wasserstein distance is relatively stable for $r\geq10$.
+We decide that a grid size $n = 40$ is large enough based in the relative differences of the samples based and integrated mean compared to the \texttt{t-walk} mean, which also seem to be relatively stable for $n \geq 40$.
 
 \begin{figure}[ht!]% will be the left-side figure
-	\includegraphics[]{findRank.png}
-	\caption[Find Ranks]{}
-	\label{fig:FindRanks}
-\end{figure}
-In Fig. \ref{fig:FindRanks}, we see that the Wasserstein distance decreases rapidly as well as the rel. error of the means.
-The RMS error is constant around $10\%$, and does not decrease much after a rank of $r = 30$.
-Since we can also plot the marginal and compare to samples from the \texttt{t-walk} we can easily observe non smooth solutions for which the wasserstein distance and the rel. error of means is low.
-This indicates that we do not necessarily need a good approximation, with an MH correction step and integratin we find that this does not matter too much.
-To be on the safe side we choose a rank of $r = 40$ and then decrease the grid-size to find the minimum grid size which still gives good solutions.
-
-Given the choosen rank we want to decrease the gridsize, to $r =n$.
-And firthrte fot rcomputaionlas efficeny we decrease rank wjhere the corrlatino structire is low.
-\begin{figure}[h]% will be the left-side figure
-	\includegraphics[]{findRank.png}
-	\caption[Find Grid]{}
-	\label{fig:FindGrid}
+	\includegraphics[]{findGridRank.png}
+	\caption[Optimal rank and number of grid points for TT approximation.]{Given a TT approximation of $\sqrt{\pi( \lambda,\bm{\theta}_{\bm{p}, \bm{T}},\gamma  | \bm{y}) }$ we calculate the realtive RMS error and the 1-Wasserstein distance between approximated values at sample points provided by the SIRT-MH and the true function values. Further we use the marginal function from the TT approximation to calculate mean values of each hyper-parameter as weighted expectations and compare to the sample mean provided by the \texttt{t-walk}. Additionally we compare sample based mean from the SIRT-MH and the \texttt{t-walk}. We plot the relative RMS difference between those calculations. Note that the y-axis represents the recreative errors related to all measures but $W_1$. We do so since the each hyper-parameters has a different scale we are only interested in the trend of the $W_1$.}
+	\label{fig:FindRankGrid}
 \end{figure}
 \clearpage
 
-We push firther and defin ranks $r = [ 1, 35,  35, 35, 35, 20, 10, 10, 5, 3, 2, 2, 2, 2, 2, 2, 1]$
-Which reduces compuatalle time and number of function evaluation drastcailly.
-We compare that to our results of the T sampler and TT and see that they are prettry muich the dame
-We report an rms error and a realtive in error in experations as 
-Note that we can reduce the number of sweeps siginifantlc y of we us a pre tensor soutionm isnteda of arandom 
-then we need one sweep and are in bussinins.
-
-We can get rid of the pressure skew at a SNR of $\approx 10000$
+To decrease the number of functions evaluation and define ranks $r = [ 1,  10,  10, 10, 10, 10, 5, 5, 5, 5, 5, 3, 2, 2, 2, 2, 2, 2, 1]$ according to the correlation structure of $\pi( \lambda,\bm{\theta}_{\bm{p}, \bm{T}},\gamma  | \bm{y})$ (see Fig. \ref{fig:CorrPlot}).
+We need one sweep in \texttt{tt.cross.rectcross.rect\_cross.cross}, reducing the computation time to $\approx0.5$min and the number of functions evaluations to 48240.
+Note that we can initialise the \texttt{tt.cross.rectcross.rect\_cross.cross} algorithm at a previously calculated approximation.
+We plot the marginals for each hyper-parameter in Fig. \ref{fig:PostHistTT0} to Fig. \ref{fig:PostHistTT5} and samples in Fig. \ref{fig:CorrPlot} .
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{PHdPTPost0.png}
@@ -913,15 +938,19 @@ We can get rid of the pressure skew at a SNR of $\approx 10000$
 	\caption[Histograms and TT approximation of posterior distribution as well as hyper-prior distribution.]{We plot the TT approximation of marginal posterior in orange and the samples as a histogram as well as the prior distribution with a dotted line.}
 	\label{fig:PostHistTT5}
 \end{figure}
+
+
+We observe that the marginal do not differ significantly from the \texttt{t-walk} samples and report a relative RMS error between true and TT approximated function values at SIRT-MH samples of $\approx 7 \%$.
+We report IATC for the SIRT-MH around $2-4$ and the IATC given in Tab. \ref{tab:priors}.
+Additionally, we see when comparing the marginal posterior distributions to the prior distributions of the hyper-parameters that the hyper-parameter $b$ is the only hyper-parameter related to pressure and temperature which is affected by the data.
 \clearpage
 
 
-
-
-
 \subsubsection{Conditional Posterior Distribution}
-To obtain temperature and pressure profiles, we can either take samples from the output of the t-walk or generate random values between 0 and 1 and compare them to the cumulative distribution functions.
-We plot the posterior temperature and pressure profiles in Fig. \ref{fig:TempPost} and Fig. \ref{fig:PressPost}.
+We use the RTO method (see Sec. \ref{subsec:RTO}) to obtain ozone samples from the conditional posterior
+To obtain posterior pressure and temperature samples take hyper-parameter samples directly from the marginal posterior.
+Then we calculate pressure and temperature profile according to their respective function (see Eq. \ref{eq:pressFunc} and Eq. \ref{eq:tempFunc}). 
+We plot the posterior temperature and pressure profiles in Fig. \ref{fig:TempPost} and Fig. \ref{fig:PressPost} and posterior ozone in \ref{fig:O3Post}.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{TempPostMeanSigm.png} 
@@ -942,50 +971,31 @@ We plot the posterior temperature and pressure profiles in Fig. \ref{fig:TempPos
 	\caption[Pressure posterior samples.]{We take samples from the posterior distribution, as plotted in Fig. \ref{fig:PostHistTT4} and plot the corresponding pressure function, see Eq: \ref{eq:pressFunc}.}
 	\label{fig:O3Post}
 \end{figure}
-We coudl fix that by choosing a more restirctve prio rfor rpessure but that pwould not be objective 
-INstead we should really work on a better mode kf or ozxone.
-\clearpage
-\section{Error analysis}
-In this section, we estimate errors due to the function approximations of $f(\lambda)$ and $g(\lambda)$ and how these errors propagate to the marginal posterior.
-Additionally, we approximate errors of the TT approximation as well as Monte-Carlo errors when binning up the samples.
 
-\subsubsection{Error due to Approximation of f and g}
-\label{sec:fgErros}
-When approximating the functions $f(\lambda)$ and $g(\lambda)$, we find that the 3rd-order Taylor series of $f(\lambda)$ and a linear approximation of $g(\lambda)$ in log-space give the smallest error.
-The Taylor series truncation error of $f(\lambda)$ is bounded by the fourth order Taylor series $E_f = \underset{\lambda}{\text{arg max}\,} f^{(4)}(\lambda_0)/ 4! \, (\lambda - \lambda_{0} )^4$ and corresponds to an relative error bounded by $20\%$.
-Since the maximum absolute error of the approximation $\underset{\lambda}{\text{arg max}\,}|\tilde{g}(\lambda) - g(\lambda) | \approx 1$ corresponds to an relative error of approximately $0.3\%$ and is small compared to $E_f \approx 1e8$ we ignore the approximation error of $g(\lambda)$.
-Then the maximum relative propagation error $\underset{\lambda, \gamma}{\text{arg max}\,} 0.5 \gamma  E_f / \log{\pi{(\lambda ,\gamma | \bm{y})}} $ is bound by approximately $5\%$.
-\subsubsection{Tensor-train approximation error}
-%marginal Ozone
-We calculate the error of the TT approximation of the marginal posterior with the Wasserstein distance $||x||$.
-The wasserstein distance between the normalised true marginal posterior $\pi(\lambda,\gamma|\bm{y})$ and the TT approximation $\tilde{\pi}(\lambda,\gamma|\bm{y})$ is $0.1$.
+We observe that pressure and ozone are highly correlated.
+Since the hyper-parameter $b$ is smaller that the ground truth value the posterior pressure profile does not exponentially decrease as much compared the ground truth.
+This results in posterior pressure values which are slightly larger than the ground truth.
+In comparison, the corresponding posterior ozone profiles have much smaller individual ozone VMRs compared to the ground truth, but still a similar structure compared to the ground truth.
+Again we are not able to recover the peak at large altitude.
+\clearpage
+
+
+
 
 %When approximating the marginal posterior the maximum relative propagation error $\underset{\lambda , \gamma}{\text{arg max}\,}|\tilde{\pi}(\lambda,\gamma|\bm{y}) - \pi(\lambda,\gamma|\bm{y}) |/ |\pi(\lambda,\gamma|\bm{y})|$ is approximately $100\%$ at $\gamma_{\text{max}}$ and $\lambda_{\text{max}}$, which are the maximum values of the $\lambda$ and $\gamma$ samples and lay in regions with very low probability.
 %We consider this error negligible because the absolute error at $\gamma_{\text{max}}$ and $\lambda_{\text{max}}$ is smaller than $10^{-24} \approx 0$.
 %Note that one can reduce the maximum errors when approximation $f(\lambda)$ at the mean of $\pi(\lambda,\gamma|\bm{y})$ instead of the modes since $\pi(\lambda | \bm{y})$ is skewed, but we don't see noticeable differences in the conditional posterior $\pi(\bm{x}|\lambda,\gamma,\bm{y})$ when doing so.
 %We consider these errors as tolerable.
-$\lVert \pi(\bm{x}_{MH}) - \tilde{\pi}(\bm{x}_{MH}) \rVert / \lVert \pi(\bm{x}_{MH}) \rVert$
-$\lVert \mathbb{E}\big[ \bm{x} \big]  -  \mathbb{E} \big[ \tilde{\bm{x}} \big] \rVert_{L^2}$
-$\lVert \mathbb{E}  \big[\bm{x}\big] -  \mathbb{E} \big[ \bm{x}_{MH}\big]  \rVert_{L^2}$
-When we calculate the mean and covariance matrix of the full conditional $\pi(\bm{x}|\bm{y})$ we have to bin up the samples of the marginal posterior $\pi(\gamma, \delta |\bm{y})$ or use a TT approximation on a predefined grid with a certain number of grid points, we like to give an estimate for this error as well.
-In doing we bin up samples and use the height $\tilde{\pi}(\bm{\theta}^{(k)}_d)$ for a bin $k = 1, \dots, \text{N}_b$ to calculate the mean $\tilde{\mu}_d = \sum_{\text{N}_b} \tilde{\pi}(\bm{\theta}^{(k)}_d) $.
-We compare to the sample mean $\bm{\mu}_d = \sum_{k=1}^N \bm{\theta}^{(k)}_d/N$ and calculate the relative error $||\bm{\mu}_{\text{samp}} -\bm{\mu}_{\text{distr}} ||/ || \bm{\mu}_{\text{samp}} ||$
-where $\bm{\mu}_{\text{samp}} =(\tilde{\mu}_1, \dots , \tilde{\mu}_D) $ and equivalently $\bm{\mu}_{\text{distr}} =(\tilde{\mu}_1, \dots , \tilde{\mu}_D) $.
-Here $d$ refers to the $D = 16$ hyper-parameters $\gamma, \lambda, h_1, h_2, h_3, h_4, h_5, h_6, a_0, a_1, a_2, a_3, a_4, T_0, p_0, b$.
+%$\lVert \pi(\bm{x}_{MH}) - \tilde{\pi}(\bm{x}_{MH}) \rVert / \lVert \pi(\bm{x}_{MH}) \rVert$
+%$\lVert \mathbb{E}\big[ \bm{x} \big]  -  \mathbb{E} \big[ \tilde{\bm{x}} \big] \rVert_{L^2}$
+%$\lVert \mathbb{E}  \big[\bm{x}\big] -  \mathbb{E} \big[ \bm{x}_{MH}\big]  \rVert_{L^2}$
+%When we calculate the mean and covariance matrix of the full conditional $\pi(\bm{x}|\bm{y})$ we have to bin up the samples of the marginal posterior $\pi(\gamma, \delta |\bm{y})$ or use a TT approximation on a predefined grid with a certain number of grid points, we like to give an estimate for this error as well.
+%In doing we bin up samples and use the height $\tilde{\pi}(\bm{\theta}^{(k)}_d)$ for a bin $k = 1, \dots, \text{N}_b$ to calculate the mean $\tilde{\mu}_d = \sum_{\text{N}_b} \tilde{\pi}(\bm{\theta}^{(k)}_d) $.
+%We compare to the sample mean $\bm{\mu}_d = \sum_{k=1}^N \bm{\theta}^{(k)}_d/N$ and calculate the relative error $||\bm{\mu}_{\text{samp}} -\bm{\mu}_{\text{distr}} ||/ || \bm{\mu}_{\text{samp}} ||$
+%where $\bm{\mu}_{\text{samp}} =(\tilde{\mu}_1, \dots , \tilde{\mu}_D) $ and equivalently $\bm{\mu}_{\text{distr}} =(\tilde{\mu}_1, \dots , \tilde{\mu}_D) $.
+%Here $d$ refers to the $D = 16$ hyper-parameters $\gamma, \lambda, h_1, h_2, h_3, h_4, h_5, h_6, a_0, a_1, a_2, a_3, a_4, T_0, p_0, b$.
 
-The relative error behaves proportionally to $1/N$, see Fig. \ref{fig:MCError} and Eq. \ref{eq:MCerr}, and we consider a relative error less than $0.1\%$ good enough.
-This happens roughly at a bin size of 25, which is our TT grid size.
-Note that we exclude the error due to $\tau_{\text{int}}$ the IACT and that we choose the grid according to the sampled values so that the sampling region is the same as the region in which we approximate the posterior distributions.
-.\begin{figure}[ht!]
-	\centering
-	\includegraphics{MeanAssPT.png}
-	\caption[Assessment of Monte-Carlo error.]{Assessment of Monte-Carlo error, where we calculate the relative error of the mean due to binning up the samples compared to the sample mean $||\bm{\mu}_{\text{samp}} -\bm{\mu}_{\text{distr}} ||/ || \bm{\mu}_{\text{samp}}||$.}
-	\label{fig:MCError}
-\end{figure}
-%marginal Ozone Pressure Temperature
-The error of is influeced by rank and gridsize
 
-interploation error
 
 
 %\begin{figure}[thb!]
