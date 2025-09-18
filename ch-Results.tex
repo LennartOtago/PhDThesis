@@ -8,7 +8,6 @@ Then we calculate the mean and the covariance matrix of the full posterior for o
 In Sec. \ref{sec:ComparReg}, we repeat the MTC scheme to provide a posterior distribution of ozone based on the approximate forward model and compare to a regularisation approach and a ground truth.
 Additionally, in sec \ref{sec:FullBay}, we extend the hierarchical Bayesian model and MTC scheme to jointly provide conditional posterior distributions of ozone, temperature and pressure.
 Here we elaborate on some aspects of prior modelling and on our findings when using a TT to approximate the higher dimensional marginal posterior.
-Lastly, we evaluate some errors occurring during the process.
 All of programming and analysis is done in Python and the reported computation times correspond to a MacBook Pro from 2019 with a 2.4 GHz quad-core Intel Core i5 processor.
 \clearpage
 \section{Simulate Data based on a Ground Truth}
@@ -262,25 +261,22 @@ We plot the approximations
 \begin{subequations}
 	\label{eq:fandg}
 	\begin{align}
-		&\tilde{f} ( \lambda) = \sum^3_{r=0} 	f^{(r)}(\lambda_0) (\lambda-\lambda_0)^r  \label{eq:fAprox} \, ,  \\
+		&\tilde{f} ( \lambda) = \sum^1_{r=0} 	f^{(r)}(\lambda_0) (\lambda-\lambda_0)^r  \label{eq:fAprox} \, ,  \\
 		&\text{and } \tilde{g} (\lambda) = \exp \log{\tilde{g}(\lambda)}  \label{eq:gAprox} \, ,
 	\end{align}
 \end{subequations} in Fig. \ref{fig:fandg} and elaborate on the approximation errors in Sec \ref{sec:fgErros}.
 Note that usually a Taylor series includes a factor $(r!)^{-1}$, in this case it cancels in $f^{(r)}(\lambda_0)$, see \cite{fox2016fast}.
 
 \paragraph{Error due to Approximation of f and g}
-\label{sec:fgErros}
-We report an maximum approximation error in between f and g
-For 2nd order taylor 3rd tayle and 4th order taylor
+\label{par:fgErros}
+To asses we error we lay a 100 point grid over the sampling region in each dimension and compare the approximations of $f(\lambda)$, $g(\lambda)$ and $\pi(\lambda, \gamma | \bm{y})$ with their true functions.
 
-then we neglect ther erro in g beacus ethabsolute in f and g are
-and propagtion error in marginal is due to f is realtive RMS and the maximum error is ...
+Compared to a 2nd, 3rd or 4th order Taylor approximation, we find that the 1st order Taylor approximation of $f(\lambda)$ gives the smallest relative RMS error of $\approx 25 \%$ in the sampling region of $\lambda$.
+Additionally we find that a linear approximation of $g(\lambda)$ is sufficient with relative RMS $<0.1\%$.
 
-
-When approximating the functions $f(\lambda)$ and $g(\lambda)$, we find that the 3rd-order Taylor series of $f(\lambda)$ and a linear approximation of $g(\lambda)$ in log-space give the smallest error.
-The Taylor series truncation error of $f(\lambda)$ is bounded by the fourth order Taylor series $E_f = \underset{\lambda}{\text{arg max}\,} f^{(4)}(\lambda_0)/ 4! \, (\lambda - \lambda_{0} )^4$ and corresponds to an relative error bounded by $20\%$.
-Since the maximum absolute error of the approximation $\underset{\lambda}{\text{arg max}\,}|\tilde{g}(\lambda) - g(\lambda) | \approx 1$ corresponds to an relative error of approximately $0.3\%$ and is small compared to $E_f \approx 1e8$ we ignore the approximation error of $g(\lambda)$.
-Then the maximum relative propagation error $\underset{\lambda, \gamma}{\text{arg max}\,} 0.5 \gamma  E_f / \log{\pi{(\lambda ,\gamma | \bm{y})}} $ is bound by approximately $5\%$.
+These errors then propagate into the marginal posterior $\pi(\lambda , \gamma| \bm{y})$, so that the relative RMS error is $\approx 7 \%$ over the whole grid.
+But since, when sampling, we evaluate the acceptance ratio in the log-space we report a relative RMS error $< 1\%$ for $\log{\pi(\lambda| \gamma, \bm{y})}$, with a maximum relative pointwise error of $< 2\%$.
+We consider this good enough.
 
 \paragraph{Sample from Marginal Posterior}
 Using these approximation we can either utilise a TT approximation of the marginal posterior, see Sec. \ref{subsec:TTMarg}, over a predefined grid and calculate the marginals $\pi(\gamma|\bm{y})$ and $\pi(\lambda|\bm{y})$, or employ a Metropolis within Gibbs (MWG) sampler to sample from $\pi(\lambda,\gamma|\bm{y})$, see sec. \ref{subsec:MWG}.
@@ -342,20 +338,22 @@ We calculate the integrated autocorrelation time (IACT) with the Python implemen
 
 \paragraph{TT Approximation of Marginal Posterior}
 We approximate the square root of marginal posterior on a predefined univariate grid, where $\gamma = [ 0.25 \times 10^{15}, 5.5 \times 10^{15}]$ and $\lambda = [ 100, 5000]$.
-We set the number of grid points to $n = 20$ and the number of ranks $r = 5$, which we keep constant.
+We set the number of grid points to $n = 20$ (see Fig. \ref{fig:MeanVarError}) and the number of ranks $r = 5$, which we keep constant.
 Since we do not approximate $\sqrt{ \pi( \lambda, \gamma| \bm{y}) }$ in the log-space we introduce a "normalisation constant" $c = 340$. This avoids underflow so that the values $\sqrt{\pi( \lambda,\gamma| \bm{y})} = \exp \{ 0.5 \log  \pi(\lambda,\gamma | \bm{y}) + c \} $ are within computer precision.
 Then we initialise the \texttt{tt.cross.rectcross.rect\_cross.cross} function, based on the TT cross algorithm in \cite{OSELEDETS2010TTCross,Dolgov2018TTCross}, from the Python package \texttt{ttpy} \cite{Oseledets2018ttpy}, with a random tensor and do 1 sweep to obtain a TT approximation of $\pi( \lambda,\gamma| \bm{y})$.
 This takes about $0.1s$ for $400$ function evaluations.
 Then we compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ as described in Sec. \ref{subsec:TTMarg}.
 In doing so we calculate the coefficient tensor $\bm{B}$ and $\bm{B}_{\text{pre}}$ as in Prop. \ref{prob:backMarg} and \ref{prob:ForMarg}, where we set $\xi = 1 / \uplambda (\mathcal{X})$ and $\uplambda(x) = 1$, so that for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ in Eq. \ref{eq:MassMat}.
 We plot the TT approximation as a colour map on top of the obtained samples in the scatter plot in Fig. \ref{fig:ScatterPlotTT}.
-We report a RMS error over the whole grid of ...
+We report a relative RMS error over the whole grid of $7\%$, similar to the error due to approximations of $f(\lambda)$ and $g(\lambda)$ (see further up).
 \begin{figure}[h!]
 	\centering
 	\includegraphics{ScatterplusHistoPlusTT.png}
 	\caption[Scatter plot of samples from marginal posterior, including weighting from TT approximation; trace plot of the marginal posterior samples.]{We scatter plot the samples of $\lambda = \delta / \gamma $ and $\gamma$ from the marginal posterior $\pi(\lambda , \gamma  | \bm{y})$ and colour code the samples using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. The mode of $(\lambda_0 , \gamma_0)$ of $\pi(\lambda , \gamma  | \bm{y})$ is marked by the pink cross. To show ergodicity we plot the trace of the samples of the MWG sampler below.}
 	\label{fig:ScatterPlotTT}
 \end{figure}
+More precisely, the TT needs $n_{\text{tot}} = 2n_{\text{sweeps}}((d-2)r^2n+ 2nr) = 400$ function evaluations, with number of sweeps $n_{\text{sweeps}} =2$ and rank $r=10$ and grid size $n = 25$ compared to $10000$ samples.
+
 \clearpage
 
 %\subsubsection{Sample from Marginal Posterior Distribution}
@@ -382,9 +380,14 @@ We report a RMS error over the whole grid of ...
 %	\end{algorithmic}
 %	\label{alg:margPost}
 %\end{algorithm}
-
 \subsubsection{Full Posterior Ozone Mean and Variance}
 \label{subsec:firstCond}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{FirstTestRes.png}
+	\caption[Ozone samples of the full posterior.]{We draw ozone samples from the full posterior distribution $\pi(\bm{x}| \bm{y})$ after characterising mean and covariance of $\pi(\bm{x}| \bm{y})$ by weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$. we determine  $\pi(\lambda, \gamma | \bm{y})$ either through sampling or via TT approximation based on the linear forward map $\bm{A}_L$. Note that we set negative values ozone VMR values to zero. We will use those samples to find the affine map $\bm{M}$, see section \ref{sec:affineMap}}
+	\label{fig:O3Samp}
+\end{figure}
 Then we evaluate the normally distributed conditional posterior distribution
 \begin{align}
 	\bm{x}| \delta, \gamma, \bm{y}  \sim \mathcal{N}\big( \underbrace{ (\bm{A}^T \bm{A} + \delta / \gamma \bm{L} )^{-1} \bm{A}^T \bm{y}}_{\bm{x}_{\lambda}}, ( \underbrace{ \gamma \bm{A}^T \bm{A} + \delta \bm{L} }_{\gamma \bm{B}_{\lambda}}  )^{-1} \big) \, \label{eq:CondPost},
@@ -401,7 +404,6 @@ of $\pi(\bm{x}| \delta, \gamma, \bm{y})$ as weighted expectations, by quadrature
 The weights $\pi(\lambda_i| \bm{y})$ and $\pi(\gamma_i| \bm{y})$ are either given by the TT approximation or by the bins for the sample-based histograms.
 If calculating the variance is too costly, the RTO method (see Sec. \ref{subsec:RTO}) may be a feasible alternative to draw a sample from Eq. \ref{eq:CondPost}.
 
-
 Based on the marginal posterior distribution $\pi(\lambda, \gamma| \bm{y})$ we calculate the mean and covariance of the conditional posterior $\pi(\bm{x} |\lambda, \gamma, \bm{y})$ by quadrature as in Eq. \ref{eq:MeanInt} and Eq. \ref{eq:CovInt}.
 We can either use the sample based histogram bins as weights or the TT approximation to integrate over marginal approximations $\pi(\lambda| \bm{y})$ and $\pi( \gamma | \bm{y})$.
 More precisely, for the sample based evaluation, the height of the histogram bars act as quadrature weights, e.g. $\pi(\lambda_i| \bm{y})$ at the centre $\lambda_i$ of each bin.
@@ -413,27 +415,19 @@ The fact that we have to deal with negative ozone values is due to the poor prio
 Note, that the sample mean is slight larger than posterior mean at heights where the data is noise dominated, and the ozone values are determined by the prior, or where the ground truth is close to zero.
 This indicates that we should use a different more physical based prior or model to parametrise the ozone profile.
 Note, that the posterior samples do not represent the ozone peak at around $80$km.
+
+
+\paragraph{Errors in posterior mean and variance}
 \begin{figure}[ht!]
 	\centering
-	\includegraphics{FirstTestRes.png}
-	\caption[Ozone samples of the full posterior.]{We draw ozone samples from the full posterior distribution $\pi(\bm{x}| \bm{y})$ after characterising mean and covariance of $\pi(\bm{x}| \bm{y})$ by weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$. we determine  $\pi(\lambda, \gamma | \bm{y})$ either through sampling or via TT approximation based on the linear forward map $\bm{A}_L$. Note that we set negative values ozone VMR values to zero. We will use those samples to find the affine map $\bm{M}$, see section \ref{sec:affineMap}}
-	\label{fig:O3Samp}
+	\includegraphics{relErrO3MeanVar.png}
+	\caption[Relative Error of full posterior mean and covariance.]{Here, we plot the relative RMS error of the mean and variance based on normalised histograms with various number of bins, according to which we calculate weighted expectations of $\bm{\mu}_{\bm{x}|\bm{y}}$ and $\bm{\Sigma}_{\bm{x}|\bm{y}}$.}
+	\label{fig:MeanVarError}
 \end{figure}
-
-\paragraph{Errors due to number of grid points}
-we plot RMS for mean and variance compared to a solutop with 200 grid points.
-The relative error behaves proportionally to $1/N$, see Fig. \ref{fig:MCError} and Eq. \ref{eq:MCerr}, and we consider a relative error less than $0.1\%$ good enough.
-This happens roughly at a bin size of 25, which is our TT grid size.
-Note that we exclude the error due to $\tau_{\text{int}}$ the IACT and that we choose the grid according to the sampled values so that the sampling region is the same as the region in which we approximate the posterior distributions.
-.\begin{figure}[ht!]
-	\centering
-	\includegraphics{MeanAssPT.png}
-	\caption[Assessment of Monte-Carlo error.]{Assessment of Monte-Carlo error, where we calculate the relative error of the mean due to binning up the samples compared to the sample mean $||\bm{\mu}_{\text{samp}} -\bm{\mu}_{\text{distr}} ||/ || \bm{\mu}_{\text{samp}}||$.}
-	\label{fig:MCError}
-\end{figure}
+In Fig. \ref{fig:MeanVarError}, we plot the relative RMS error for the mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and covariance $\bm{\Sigma}_{\bm{x}|\bm{y}}$ of $\pi(\bm{x}|\bm{y})$.
+We obtain those results by obtained calculating the weighted expectation over normalised histograms with different number of bins and compare that to a solution based on a normalised histogram with 200 bins.
+The relative error behaves roughly proportional to $1/N$ in log-space and we consider a relative error less than $0.5\%$ good enough, which is reached at approximately at 20 bin, which we set the TT grid size to.
 %marginal Ozone Pressure Temperature
-The error of is influeced by rank and gridsize
-interploation error
 \clearpage
 %\subsubsection{Randomize then optimize -- RTO}
 %For the RTO method we start by drawing an independent hyper-parameter sample $ ( \delta, \gamma) \sim \pi(\delta, \gamma | \bm{y})$ from the samples of the MwG.
@@ -585,7 +579,8 @@ This is also roughly the region where we introduce a higher correlation structur
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{CovSing.png}
-	\caption[Singular values of the posterior covariance matrix]{Singular values of the covariance matrix of $\bm{\Sigma}^{-1}_{ \bm{x}|\bm{y}} = (\sum (\bm{A}^T \bm{A} + \bm{L})^{-1})^{-1}$ of the posterior distribution $\pi(\bm{x}|\bm{y})$ for ozone.}
+	\caption[Singular values of the posterior covariance matrix]{Singular values of the precision matrix of $\bm{Q}_{ \bm{x}|\bm{y}} = (\sum_{\gamma,\lambda} \gamma^{-1}(\bm{A}^T \bm{A} + \lambda \bm{L})^{-1})^{-1}$ of the posterior distribution $\pi(\bm{x}|\bm{y})$ for ozone. Since $\bm{Q}_{ \bm{x}|\bm{y}} $ is symmetric and positive definite the singular values are equal the absolute value of the eigenvalues, $\sigma_i = |\uplambda_i|$.
+	The square root of the eigenvalues of $\bm{A}^T\bm{A}$ are the singular values of $\bm{A}$; $\sigma_i =\sqrt{\uplambda_i}$.}
 	\label{fig:PostCov}
 \end{figure}
 \clearpage
@@ -889,7 +884,7 @@ Here, p = 1 defines the distance measure $\lVert \bm{x} -\tilde{\bm{x}} \rVert_{
 Additionally we use the marginal functions of each TT approximation to calculate the weighted means $\bm{\mu}_{\text{TT}} \in \mathbb{R}^{18}$ of each hyper-parameter and then the relative RMS deffierence $\lVert\bm{\mu}_{\text{TT}} - \bm{\mu}_{\texttt{t-walk}} \rVert_{L^2} / \lVert \bm{\mu}_{\texttt{t-walk}} \rVert_{L^2}  $ compared to "true means"  $\bm{\mu}_{\texttt{t-walk}}$from the \texttt{t-walk}.
 Additionally, we compare the mean $\bm{\mu}_{\text{SIRT-MH}}$ based on the samples from the SIRT-MH scheme with the "true" \texttt{t-walk} mean.
 We plot all of these measures in Fig. \ref{fig:FindRankGrid} and decide that a rank $r = 10$ sufficient because the 1-Wasserstein distance is relatively stable for $r\geq10$.
-We decide that a grid size $n = 40$ is large enough based in the relative differences of the samples based and integrated mean compared to the \texttt{t-walk} mean, which also seem to be relatively stable for $n \geq 40$.
+We decide that a grid size $n = 20$ is large enough based in the relative differences of the samples based and integrated mean compared to the \texttt{t-walk} mean, which also seem to be relatively stable for $n \geq 20$.
 
 \begin{figure}[ht!]% will be the left-side figure
 	\includegraphics[]{findGridRank.png}
@@ -898,8 +893,9 @@ We decide that a grid size $n = 40$ is large enough based in the relative differ
 \end{figure}
 \clearpage
 
-To decrease the number of functions evaluation and define ranks $r = [ 1,  10,  10, 10, 10, 10, 5, 5, 5, 5, 5, 3, 2, 2, 2, 2, 2, 2, 1]$ according to the correlation structure of $\pi( \lambda,\bm{\theta}_{\bm{p}, \bm{T}},\gamma  | \bm{y})$ (see Fig. \ref{fig:CorrPlot}).
-We need one sweep in \texttt{tt.cross.rectcross.rect\_cross.cross}, reducing the computation time to $\approx0.5$min and the number of functions evaluations to 48240.
+To decrease the number of functions evaluation and define ranks \linebreak$r = [ 1,  10,  10, 10, 10, 10, 5, 5, 5, 5, 5, 3, 2, 2, 2, 2, 2, 2, 1]$ according to the correlation structure of $\pi( \lambda,\bm{\theta}_{\bm{p}, \bm{T}},\gamma  | \bm{y})$ (see Fig. \ref{fig:CorrPlot}).
+We need one sweep in \linebreak\texttt{tt.cross.rectcross.rect\_cross.cross}, reducing the computation time to $\approx0.5$min and the number of functions evaluations to 24120.
+We report a relative RMS error of $\approx 25 \%$ evaluated over all samples from the SIRT-MH scheme.
 Note that we can initialise the \texttt{tt.cross.rectcross.rect\_cross.cross} algorithm at a previously calculated approximation.
 We plot the marginals for each hyper-parameter in Fig. \ref{fig:PostHistTT0} to Fig. \ref{fig:PostHistTT5} and samples in Fig. \ref{fig:CorrPlot} .
 \begin{figure}[ht!]

@@ -1,109 +1,75 @@
 \chapter{Summary and Outlook}
 \label{ch:Concl}
-In this chapter we draw conclusion based on the results from the previous chapter.
-We compare the regularised solution to the mean and to the samples from the full posterior.
-We elaborate on the occurring approximation errors.
-We compare the marginal posterior distributions based on the drawn samples and from the TT-decomposition.
-While elaboration about the different methods, we also elaborate on how informative the data and what the means in terms of ozone, pressure and temperature profile. 
+In this chapter we summarise our result and conclusion and provide an outlook for further work.
+We compare Bayesian model to the regularisation approach and elaborate on the differences between sampling based methods and the TT approximation.
+Lastly, we discuss what our results mean in the physical context of atmospheric modelling and for future deployment of an atmospheric sounder.
 
 
 \section{Regularisation Solution vs. Hierarchical Bayesian Approach}
-200 functino ecalution of $\bm{x}_{\lambda}$
-vs 10000 samples vs 600 funciton evalution  of marg plus 20 $\bm{x}_{\lambda}$ and 20 $\bm{B}^{-1}_{\lambda}$
-time similar within a second
-but no varicne
-As already mentioned the regularisation approach only provides on solution, see Fig. \ref{fig:O3SolplsReg}.
-In Fig. \ref{fig:LCurve} we plot samples from the full conditional, which lay above L-Curve and make sense in terms of the Lagrange multipliers as the point on the L-Curve can be seen as extreme values.
-So the regularised estimate does not correlate to posterior solutions of the inverse problem.
-We note that the mean of full conditional is very similar to the regularised solution but is also some sort of an extreme value.
-
-In comparison to the regularisation solution we can provide the mean and variance of the full conditional posterior distribution, as well as the sample mean.
+To obtain one solution of this inverse problem using a regularisation approach we need 200 of $\bm{x}_{\lambda}$.
+Comparing that to the sample based approach we need to draw 1000 samples from the marginal posterior or 400 function evaluations of $\pi(\lambda, \gamma | \bm{x})$.
+Then we need 20  evaluations of $\bm{x}_{\lambda}$ and $\bm{B}^{-1}_{\lambda}$ to characterise the full posterior.
+Either method takes a few seconds but we obtain a posterior distribution, from which we can generate multiple feasible solutions to the inverse problem instead of only one regularised solution.
+Using a Bayesian framework provides true errors, which regularised methods can not.
 
 
 \section{Sampling Methods vs. TT Approximation}
 
+Using the TT approximation we need far fewer function evaluations compared to sample based methods of the target distribution.
+For the 2D marginal the TT is similarly fast.
 
+But the TT approximation needs less function evaluations than the MWG sampler= $400$ to $10000$
+Once we obtain a good TT approximation we can either use the marginal of that distribution for quadrature or draw samples at the cost of 2 function evaluations per independent sample (MH correction step).
+Even thought there may be more efficient samplers than the \texttt{t-walk}.
+In high dimension we need roughly
+A good comparsin may be 1000 sample from the t-walk takes 2100000 function evaluation with a maximum IACT of 500.
+In comparison we need  24120 and then a 1000 samples take 2000 ficntion evalution.
 
-
-
-10000 samples
-vs 600 funciton evalution  of marg
-similair time due approxiamtions of f and g the recto corss semms to be optimised than my code
-
-We can conclude that the TT approximation is faster or as fast as sampling methods.
-For the marginal posterior $\pi(\gamma, \lambda | \bm{y})$ the calculation of the TT-cores takes $0.1$s, which we consider similar to the sampling time of $0.5$s.
-But the TT approximation needs less function evaluations than the MWG sampler.
-More precisely, the TT needs $n_{\text{tot}} = 2n_{\text{sweeps}}((d-2)r^2n+ 2nr) = 400$ function evaluations, with number of sweeps $n_{\text{sweeps}} =2$ and rank $r=10$ and grid size $n = 25$ compared to $10000$ samples.
-Error due to approcimation of f and g but also due TT
-
-
-
-for PT
-once trained signifincaly faster 
-but t walk is not the optimal sampler since it doesn consiger correaltopij structure
-Times
-
-When approximating the posterior distribution of the temperature pressure ratio we are much faster compared to sampling methods.
-Since the parameter space is $16$-dimensional we have to run the t-walk for about $2$ million steps.
-In addition of checking the trace of the samples, we also estimate the IATC with \cite{UwerrM} see Tab. \ref{tab:priors}.
-Since for shorter chains with a sample size of $10^6$ the error for the IATC estimate is much larger we decide to a sample size of $4 \cdot 10^6$ is sufficient.
-This comes with a sampling time of $20$mins, much larger compare to the $2.5$min.
-Which makes sense as we need $n_{\text{tot}} = 2n_{\text{sweeps}}((d-2)r^2n+ 2nr) = 384838438$ function evaluations.
-We also note that we do run into problems especially in higher dimensional functions as we have a large range of values and hence introduce the constant c as already mentioned.
-The t-walk is more robust but the TT approximation is faster.
-
-But both the samples and the TT approximation point towards the same results.
+The t-walk is a robust easy to implement sampling method, of course one could employ a more efficient sampler such as a gibbs sampler or something similar \cite{}.
+Within the TT approximation we can run into numerical problems and we have to predeinfe the grid.
 
 Reduce correlation structure by rotating coordinate system
-Errors
 
-Within the TT approximation we run into numerical problems.
+
+
 One way of solving this issue could be to use a different basis set such as Lagrange polynomials as these exactly fit to a Gaussian or Chebychev polynomial as basis functions.
 Another idea is to use different reference measure for integration, such as a Gaussian measure instead of the current Lebesgue measure.
 Or that the TT finds normalisation constants automatically.
 
 
+Low rank bound as in \cite{Rohrbach2022tterror}
 
-The t-walk is a robust easy to implement sampling method, of course one could employ a more efficient sampler such as a gibbs sampler or something similar \cite{}.
 %\subsection{Intuition of TT}
 %more correlation hiegher ranks and/or grid point few sweeps and order is important to correlation structure 
 %keep ranks as low as possible and increse number of sweeps
 %less correlation fewer rank and gridpoints maybe more cheaper sweeps
-
-We consider the approximation errors of the functions $f(\lambda)$, $g(\lambda)$ and propagation error into the marginal posterior for sampling of about $10\%$ good enough.
+\subsection{Approximations Errors}
+We consider the approximation errors of the functions $f(\lambda)$, $g(\lambda)$ and propagation error into the marginal posterior for sampling of about $7\%$ and $1\%$ negligible.
+We not the depending on the problem different approximations for $g$ and $f$ may be suitable.
 The TT approximation error from the marginal posterior is with about $10\%$ also good enough since we do not believe that our model is accurate enough to capture those differences.
+When approximation the affine map we get an relative error of about $0.4\%$, which is much smaller than the relative difference in between noise free and noisy data of approximately of $1 \%$.
+The posterior temperature profiles is similar to the prior profiles, as also seen in marginal posterior Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}.
 
-When approximation the affine map we get an relative error of about $0.4\%$, which is much smaller than the relative difference in between noise free and noisy data of approximately of $1.7 \%$.
-We like to note that the relative difference 
-The error linear to non-linear.
-Low rank bound as in \cite{Rohrbach2022tterror}
 
 \section{Atmospheric Physics}
 Here we want to say how informative the data is and what we can about the ozone pressure and temperature profiles.
 
 So all the samples as in Fig. \ref{fig:O3SolplsReg} and Fig. \ref{fig:O3Samp}, present valid solutions to the inverse problem.
 Hence, we can see that the variability of ozone in the upper atmosphere is large and that we do not capture the ozone peak around $80$km.
-The posterior temperature profiles is similar to the prior profiles, as also seen in marginal posterior Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}.
-We can already see that in the prior analys, as the pressure temperature ratio does inherit the exponential structure of the pressure profile.
+Measuring in noisy regions does not improve the results rather investing in a better measuring device with higher SNR is better.
+Better modelling parametrise the Ozone reaction taking place in the atmosphere. or use truncated/ positive priors
+
+Highly pressure correltated to ozoene.
+Temperature mostly uninformative.
+We can already see that in the prior analyse, as the pressure temperature ratio does inherit the exponential structure of the pressure profile.
 So the posterior pressure profile is much more informative, see marginal for $b$ in Fig. \ref{fig:PostHistTT4}. 
 So we can retrieve an informative pressure profile for the pressure but not for temperature.
 
-Ideally we should do this iteratively update ozone and then temperature and pressure until proven convergence.
 
-We coudl fix that by choosing a more restirctve prio rfor rpessure but that pwould not be objective 
-INstead we should really work on a better mode kf or ozxone.
+We could fix that by choosing a more restrictive priors for $b$ in pressure but that would not be objective 
+Instead we should really work on a better mode for ozone.
 We can get rid of the pressure skew at a SNR of $\approx 10000$
-\subsection{Measurement Device}
-%From the experience we can say that pointing accuracy is more important than the signal-to-noise ratio.
+
 Then we can include more measurement specific details such as the pointing accuracy.
-Then we could sample measurement $N_{\Gamma}$ geometries $\Gamma^{(k)}\sim \pi(\Gamma)$ so that the posterior $\pi(\bm{x}|\bm{y}) \approx 1/N_{\Gamma} \sum_{\Gamma} \pi(\bm{x}, \Gamma^{(k)}|\bm{y})$ and include other measurement device specific parameters.
 
-
-\subsection{Model}
-Since we have to truncate the full conditional at the end the model is not accurate enough to eliminate those values.
-This was to show that we can to a more comprehensive analysis compared to a regularised method.
-Ideally we like to use a more accurate model where we parametrise ozone, similar to the pressure and temperature profile.
-In doing so one would has to know much more about ozone in different altitudes.
-Then we possibly could employ a different graph Laplacian based on a different structure of ozone.
-And when we approximate the non-linear forward map with a affine map using a linear solver we could of course use other methods such as the machine learning methods.
 
