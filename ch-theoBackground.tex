@@ -60,7 +60,7 @@ which according to Bayes' theorem, gives us a distribution of $\bm{x}$ and $\bm{
 Note that here we include the hyper-parameters within the posterior distribution, which is the key idea of hierarchical Bayesian modelling, as we not only aim to quantify the posterior distribution over the parameters $\bm{x}$, but also the posterior distribution over the hyper-parameter $\bm{\theta}$.
 We can visualise this hierarchically-ordered correlation structure between parameters as well as how distributions progress through a measurement process, using a directed acyclic graph (DAG), see Figure~\ref{fig:FirstDAG}.
 
-The expectation of any function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}$ may depend on $\bm{\theta}$, is described as 
+The expectation of any function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}_{\bm{\theta}} \coloneqq \bm{x}(\bm{\theta})$ may depend on $\bm{\theta}$, is described as 
 \begin{align}
 	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] =  \underbrace{\int \int   h(\bm{x}_{\bm{\theta}}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \diff \bm{x}  \, \diff \bm{\theta}}_{\bm{\mu}_{\text{int}}}   \label{eq:expPos} \, .
 \end{align}
@@ -82,7 +82,7 @@ into the conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the lat
 	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) } \label{eq:margGen}\, ,
 \end{align}
 over the hyper-parameters $\bm{\theta}$ (see~\cite[Lemma 2]{fox2016fast}).
-In \cite{norton2018sampling}, they classify inverse problems into problems with known or unknown conditional posterior distributions, and conclude that if $\pi(\bm{x} | \bm{\theta} ,   \bm{y}) = \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta})  / \pi(   \bm{y}| \bm{\theta})$ has a known form, the normalising constant of $\pi(\bm{\theta} |   \bm{y})$ is available \newline $\int \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta}) \text{d} \bm{x} = \pi(   \bm{y}| \bm{\theta})  \propto \pi( \bm{\theta}|\bm{y}) / \pi(\bm{\theta})$ and one can almost surely determine the $\bm{\theta}$-dependence of the marginal posterior $\pi(\bm{\theta} |   \bm{y})$.
+%In \cite{norton2018sampling}, they classify inverse problems into problems with known or unknown conditional posterior distributions, and conclude that if $\pi(\bm{x} | \bm{\theta} ,   \bm{y}) = \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta})  / \pi(   \bm{y}| \bm{\theta})$ has a known form, the normalising constant of $\pi(\bm{\theta} |   \bm{y})$ is available \newline $\int \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta}) \text{d} \bm{x} = \pi(   \bm{y}| \bm{\theta})  \propto \pi( \bm{\theta}|\bm{y}) / \pi(\bm{\theta})$ and one can almost surely determine the $\bm{\theta}$-dependence of the marginal posterior $\pi(\bm{\theta} |   \bm{y})$.
 
 This approach, known as the marginal and then conditional (MTC) method, is particularly advantageous when $\bm{x}\in \mathbb{R}^n$ is high-dimensional, while $\bm{\theta}\in \mathbb{R}^{n_{\bm{\theta}}}$ is low-dimensional, so that $n_{\bm{\theta}} \ll n$ and evaluation of $\pi(\bm{\theta}| \bm{y})$ is cheap.
 Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovariance}, Eq.~\eqref{eq:expPos} becomes
@@ -154,7 +154,7 @@ To derive the marginal posterior and the conditional posterior distribution, we 
 where we provide the joint precision matrix as in \cite{SIMPSON201216}, see also \cite{rue2005gaussian, fox2016fast}.
 Immediately, we formulate the conditional posterior as 
 \begin{align}
-	\bm{x} | \bm{y}, \bm{\theta} \sim \mathcal{N}(\bm{\mu} + (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}(\bm{y} - \bm{A}\bm{\mu}),(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}) \, \label{eq:CondPostLin}.
+	\bm{x} | \bm{\theta} , \bm{y}\sim \mathcal{N}(\bm{\mu} + (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}(\bm{y} - \bm{A}\bm{\mu}),(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}) \, \label{eq:CondPostLin}.
 \end{align}
 Then the marginal posterior distribution over the hyper-parameters can be derived as in Eq. \ref{eq:margGen}, where, as noted in \cite{fox2016fast}, the parameter $\bm{x}$ cancels and we arrive at
 \begin{align}\begin{split}
@@ -220,9 +220,9 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 
 
 \subsection{\texttt{T-walk}Sampler as a Black Box}
-If the parameters $\bm{x}$ are functionally dependent on the hyper-parameters $\bm{\theta}$, i.e., $\bm{x} = \bm{x}(\bm{\theta})$, we can sample directly from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the \texttt{t-walk} sampler as by Christen and Fox~\cite{christen2010general}. 
-The \textbf{t-walk} is employed as a black-box sampler, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
-Convergence to the target distribution is guaranteed by construction of the algorithm.
+If a parameter $\bm{x}$ is  functionally dependent on the hyper-parameters $\bm{\theta}$, i.e., $\bm{x} = \bm{x}(\bm{\theta})$, so that the number of hyper-parameters is larger than e.g. 2, we sample from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the \texttt{t-walk} sampler as by Christen and Fox~\cite{christen2010general}. 
+The \textbf{t-walk} is employed as a black-box algorithm, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
+Convergence to the target distribution is guaranteed by construction of this algorithm.
 
 
 \subsection{Randomise then Optimise}
@@ -232,8 +232,7 @@ For the linear-Gaussian Bayesian model we can draw samples from the normal distr
 
 The full conditional distribution can be rewritten as
 \begin{align}
-	\pi(\bm{x} |  \bm{y}, \bm{\theta}) &\propto \pi(\bm{y} |  \bm{x}, \bm{\theta}) \, \pi(\bm{x} |  \bm{\theta}) \\
-	&= \exp \left( -\left\lVert \hat{\bm{A}} \bm{x} - \hat{\bm{y}} \right\rVert_{L^2}^2 \right),
+	\pi(\bm{x} | \bm{\theta},  \bm{y}) = \exp \left( -\left\lVert \hat{\bm{A}} \bm{x} - \hat{\bm{y}} \right\rVert_{L^2}^2 \right),
 \end{align}
 where we define
 \begin{align}
@@ -260,7 +259,8 @@ Similar to Section~\ref{sec:regularise}, this expression can be rewritten as
 	\label{eq:RTO}
 	\left( \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{A}_{\bm{\theta}} + \bm{Q}_{\bm{\theta}} \right) \bm{x}^{(k)} = \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{y} + \bm{Q}_{\bm{\theta}} \bm{\mu} + \bm{v}_1 + \bm{v}_2,
 \end{align}
-where the term $-\hat{\bm{A}}^T \bm{b}$ is decomposed as $\bm{v}_1 + \bm{v}_2$, with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{A}_{\bm{\theta}})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\bm{\theta}})$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
+%where the term $-\hat{\bm{A}}^T \bm{b}$ is decomposed as $\bm{v}_1 + \bm{v}_2$, 
+with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{A}_{\bm{\theta}})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\bm{\theta}})$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
 
 If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic, and the conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) =  \pi(\bm{x} |  \bm{\theta} , \bm{y}) \pi( \bm{\theta} | \bm{y})$ is also ergodic~\cite{acosta2022markov}.
 
@@ -729,8 +729,8 @@ is the second order derivative with Neumann boundary conditions, see \cite{wang2
 
 In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation semi-norm. The optimal value of $\lambda$ corresponds to the point of maximum curvature of the so-called L-curve~\cite{hansen1993use}, where the data misfit norm versus the regularisation semi-norm is plotted, see Fig.~\ref{fig:LCurve}.
 
-Additionally one can think about regularisation as a Lagrange multiplier $ \mathcal {L}(\bm{x}, \lambda) \coloneq\lambda \bm{x}^T \bm{L} \bm{x} + \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2} $, which minimises $ \bm{x}_\lambda = \text{arg min}_{\bm{x}} \bm{x}^T \bm{L} \bm{x} $ with respect to a constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2}$, see \cite[fn. 6]{fox2016fast} and \cite[Fig. 2.13]{SANTOSH202265}.
-So every solution $\bm{x}_{\lambda}$ is an extremum (the most regularised solution for a given data misfit norm) and almost every sample of the posterior, which represents a feasible solution given the data, has a higher $\bm{x}^T \bm{L} \bm{x}$ value and lays above the L-Curve.
+Additionally one can think about regularisation as a Lagrange multiplier $ \mathcal {L}(\bm{x}, \lambda) \coloneq\lambda \sqrt{ \bm{x}^T \bm{L} \bm{x}} + \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2} $, which minimises $ \sqrt{ \bm{x}^T \bm{L} \bm{x}} $ with respect to a constant $\lambda$ and $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2}$, see \cite[fn. 6]{fox2016fast} and \cite[Fig. 2.13]{SANTOSH202265}.
+So every solution $\bm{x}_{\lambda}$ is an extremum (the most regularised solution for a given data misfit norm) and almost every sample of the posterior, which represents a feasible solution given the data, has a higher $\sqrt{ \bm{x}^T \bm{L} \bm{x}}$ value and lays above the L-Curve.
 
 
 %We refer show that the filter factors as in \cite{tan2016LecNot} for a regularisation parameter as shown here affects the solution the generalised singular value decomposition is given in  of $A, T$ as in \cite{hansen1989GSVD}.
