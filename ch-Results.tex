@@ -395,10 +395,10 @@ Then we evaluate the normally distributed conditional posterior distribution
 as in Eq. \ref{eq:CondPostLin}, with $\lambda = \delta / \gamma $
 In this thesis, we compute the mean
 \begin{align}
-	\mu_{\bm{x}|\bm{y}} = \int \bm{x}_{\lambda} \pi(\lambda| \bm{y}) \text{d}\lambda \approx \sum \bm{x}_{\lambda_i} \pi(\lambda_i| \bm{y}) \, , \label{eq:MeanInt}
+	\mu_{\bm{x}|\bm{y}} = \int \bm{x}_{\lambda} \pi(\lambda| \bm{y}) \diff\lambda \approx \sum \bm{x}_{\lambda_i} \pi(\lambda_i| \bm{y}) \, , \label{eq:MeanInt}
 \end{align} and covariance
 \begin{align}
-	\Sigma_{\bm{x}|\bm{y}} = \int \gamma^{-1}  \pi(\gamma | \bm{y} ) \, \text{d} \gamma \, \int  \bm{B}_{\lambda}^{-1} \, \pi(\lambda | \bm{y} )  \, \text{d} \lambda  \approx \sum {\gamma_i}^{-1}\pi(\gamma_i| \bm{y}) \sum \bm{B}_{\lambda_i}^{-1}\pi(\lambda_i| \bm{y})\, \label{eq:CovInt}
+	\Sigma_{\bm{x}|\bm{y}} = \int \gamma^{-1}  \pi(\gamma | \bm{y} ) \, \diff \gamma \, \int  \bm{B}_{\lambda}^{-1} \, \pi(\lambda | \bm{y} )  \, \text{d} \lambda  \approx \sum {\gamma_i}^{-1}\pi(\gamma_i| \bm{y}) \sum \bm{B}_{\lambda_i}^{-1}\pi(\lambda_i| \bm{y})\, \label{eq:CovInt}
 \end{align}
 of $\pi(\bm{x}| \delta, \gamma, \bm{y})$ as weighted expectations, by quadrature \cite[Sec. 2.1]{Dick_Kuo_Sloan_2013}, with $\sum \pi(\lambda_i| \bm{y}) = \sum \pi(\gamma_i| \bm{y}) = 1$.
 The weights $\pi(\lambda_i| \bm{y})$ and $\pi(\gamma_i| \bm{y})$ are either given by the TT approximation or by the bins for the sample-based histograms.
@@ -573,14 +573,16 @@ This is expected since the difference between the linear and non-linear forward 
 	\label{fig:O3SolplsReg}
 \end{figure}
 
-Additionally in Fig. \ref{fig:PostCov}, we plot the singular values of the covariance matrix $\bm{\Sigma}_{ \bm{x}|\bm{y}}$, to visualise how many ozone values are informative.
-We observe that the last 10 singular values are very small and correspond to ozone values at the high altitudes $\gtrsim 45$km with a large variance, see Fig. \ref{fig:O3SolplsReg}.
-This is also roughly the region where we introduce a higher correlation structure due (see Eq. \ref{eq:GLapl} Sec. \ref{subsec:PriorModelO3}) and the samples are determined by the prior.
+Additionally in Fig. \ref{fig:PostCov}, we plot the eigenvalues of the precision matrix $\bm{Q}_{ \bm{x}|\bm{y}}= \big(\int \gamma^{-1}(\bm{A}^T \bm{A} + \lambda \bm{L})^{-1}\diff \pi(\lambda ,\gamma)\big)^{-1} $ and compare to the eigenvalues of $\bm{A}^T \bm{A}$ to visualise how the data and the prior effect the posterior ozone profiles.
+We observe that the last 10 eigenvalues of $\bm{A}^T \bm{A}$ are very small and prior significantly increases those eigenvalues.
+The corresponding to ozone values at the high altitudes $\gtrsim 45$km have a large variance, see Fig. \ref{fig:O3SolplsReg}.
+Larger eigenvalues of $\bm{A}^T \bm{A}$ are not influenced by the prior as much and the corresponding ozone values at lower altitudes are  primarily determined by the data (see \cite{fox2025BlokkLecNot}).
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{CovSing.png}
-	\caption[Singular values of the posterior covariance matrix]{Singular values of the precision matrix of $\bm{Q}_{ \bm{x}|\bm{y}} = (\sum_{\gamma,\lambda} \gamma^{-1}(\bm{A}^T \bm{A} + \lambda \bm{L})^{-1})^{-1}$ of the posterior distribution $\pi(\bm{x}|\bm{y})$ for ozone. Since $\bm{Q}_{ \bm{x}|\bm{y}} $ is symmetric and positive definite the singular values are equal the absolute value of the eigenvalues, $\sigma_i = |\uplambda_i|$.
-	The square root of the eigenvalues of $\bm{A}^T\bm{A}$ are the singular values of $\bm{A}$; $\sigma_i =\sqrt{\uplambda_i}$.}
+	\caption[Eigenvalues of the posterior precision matrix]{Eigenvalues of the precision matrix of $\bm{Q}_{ \bm{x}|\bm{y}}= \big(\int \gamma^{-1}(\bm{A}^T \bm{A} + \lambda \bm{L})^{-1}\diff \pi(\lambda ,\gamma)\big)^{-1}$ of the full posterior distribution $\pi(\bm{x}|\bm{y})$ for ozone. %Since $\bm{Q}_{ \bm{x}|\bm{y}} $ is symmetric and positive definite the singular values are equal the absolute value of the eigenvalues, $\sigma_i = |\uplambda_i|$.
+	%The square root of the eigenvalues of $\bm{A}^T\bm{A}$ are the singular values of $\bm{A}$; $\sigma_i =\sqrt{\uplambda_i}$.
+	We see that large eigenvalues of $\bm{A}^T \bm{A}$ are rather unaffected by the prior compared to small eigenvalues.}
 	\label{fig:PostCov}
 \end{figure}
 \clearpage
@@ -603,6 +605,7 @@ The regularised solution is typically calculated by solving the normal equations
 To find the best regularised solution, we use the L-curve method~\cite{hansen1993use}.
 Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $10^{0.5}$ to $10^{6.5}$ and plot the solution semi norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{x} \rVert$, see Figure \ref{fig:LCurve}. 
 The best regularised solution corresponding to the corner of the L-curve is located at the point of maximum curvature, see triangle in Fig. \ref{fig:LCurve}, which we find with the kneedle algorithm~\cite{satopaa2011kneedle} using the python function \texttt{kneed.KneeLocator} in less $0.1$s.
+We plot the corresponding regularisation parameter in Fig. \ref{fig:MargPostHistTT}.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{LCurvePhD.png}
@@ -610,7 +613,7 @@ The best regularised solution corresponding to the corner of the L-curve is loca
 	\label{fig:LCurve}
 \end{figure}
 
-We plot the regularised solution in Fig. \ref{fig:O3SolplsReg} and observe that it is very similar to the posterior mean.
+The regularised solution in Fig. \ref{fig:O3SolplsReg} is very similar to the posterior mean.
 It is pretty clear that the regularised solution accounts for only one possible solution and does not provide uncertainties. The regularised solution is not similar to the samples drawn from the posterior $\pi(\bm{x}| \bm{y})$, see also Fig. \ref{fig:O3Samp}.
 In Fig. \ref{fig:LCurve}, the samples of $\pi(\bm{x}| \bm{y})$ lie above the L-Curve where as the posterior mean and the regularised solution lie on the L-Curve.
 This does make sense, if one thinks about the mean (average over non-smooth samples) and the regularised solution as extremely smooth ozone profiles, see also Sec. \ref{sec:regularise}.

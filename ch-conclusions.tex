@@ -6,37 +6,35 @@ Lastly, we discuss what our results mean in the physical context of atmospheric 
 
 
 \section{Regularisation Solution vs. Hierarchical Bayesian Approach}
-To obtain one solution of this inverse problem using a regularisation approach we need 200 of $\bm{x}_{\lambda}$.
-Comparing that to the sample based approach we need to draw 1000 samples from the marginal posterior or 400 function evaluations of $\pi(\lambda, \gamma | \bm{x})$.
-Then we need 20  evaluations of $\bm{x}_{\lambda}$ and $\bm{B}^{-1}_{\lambda}$ to characterise the full posterior.
-Either method takes a few seconds but we obtain a posterior distribution, from which we can generate multiple feasible solutions to the inverse problem instead of only one regularised solution.
+To obtain one solution of this inverse problem using a regularisation approach we need 200 solves for $\bm{x}_{\lambda}$.
+Comparing that to the sample based approach we need to draw 1000 samples from the marginal posterior or 400 function evaluations to approximate $\pi(\lambda, \gamma | \bm{x})$ and then 20 evaluations of $\bm{x}_{\lambda}$ and $\bm{B}^{-1}_{\lambda}$ to characterise the full posterior.
+Either method takes a few seconds but we obtain a distribution ozone profiles, which are all feasible solutions to the inverse problem, instead of only one regularised solution.
 Using a Bayesian framework provides true errors, which regularised methods can not.
 
 
 \section{Sampling Methods vs. TT Approximation}
+Using the TT approximation we need far fewer function evaluations of the target distribution compared to sample based methods but have to predefine a grid and normalisation constant, which we find iteratively and by using sampling based method.
+Relying TT approximation alone may be difficult and can lead to lots of try and error and cause numerical issues, but we have shown the potential and advantages in computation cost of TT based methods.
 
-Using the TT approximation we need far fewer function evaluations compared to sample based methods of the target distribution.
-For the 2D marginal the TT is similarly fast.
 
-But the TT approximation needs less function evaluations than the MWG sampler= $400$ to $10000$
+More specifically the TT approximation for the 2D marginal is similar fast compared to the MWG sampler.
+The sampler takes  $10000$ steps but the TT approximation needs only function evaluations $400$, this is a factor of 25.
+In higher dimension re.g. the 18D marginal we need 
+In high dimension we need roughly
+A good comparison may be 1000 sample from the t-walk takes 2100000 function evaluation with a maximum IACT of 500.
+In comparison we need  24120 and then a 1000 samples take 2000 function evaluation.
+The t-walk is a robust easy to implement sampling method, of course one could employ a more efficient sampler such as a specifically designed block-Gibbs sampler \cite{}.
+
+For the 2D to obtain 100 independent samples we need ...
+For the 18 to obtain 18 independent samples we need 
+
 Once we obtain a good TT approximation we can either use the marginal of that distribution for quadrature or draw samples at the cost of 2 function evaluations per independent sample (MH correction step).
 Even thought there may be more efficient samplers than the \texttt{t-walk}.
-In high dimension we need roughly
-A good comparsin may be 1000 sample from the t-walk takes 2100000 function evaluation with a maximum IACT of 500.
-In comparison we need  24120 and then a 1000 samples take 2000 ficntion evalution.
-
-The t-walk is a robust easy to implement sampling method, of course one could employ a more efficient sampler such as a gibbs sampler or something similar \cite{}.
-Within the TT approximation we can run into numerical problems and we have to predeinfe the grid.
 
 Reduce correlation structure by rotating coordinate system
-
-
-
 One way of solving this issue could be to use a different basis set such as Lagrange polynomials as these exactly fit to a Gaussian or Chebychev polynomial as basis functions.
 Another idea is to use different reference measure for integration, such as a Gaussian measure instead of the current Lebesgue measure.
 Or that the TT finds normalisation constants automatically.
-
-
 Low rank bound as in \cite{Rohrbach2022tterror}
 
 %\subsection{Intuition of TT}
@@ -44,32 +42,30 @@ Low rank bound as in \cite{Rohrbach2022tterror}
 %keep ranks as low as possible and increse number of sweeps
 %less correlation fewer rank and gridpoints maybe more cheaper sweeps
 \subsection{Approximations Errors}
-We consider the approximation errors of the functions $f(\lambda)$, $g(\lambda)$ and propagation error into the marginal posterior for sampling of about $7\%$ and $1\%$ negligible.
-We not the depending on the problem different approximations for $g$ and $f$ may be suitable.
-The TT approximation error from the marginal posterior is with about $10\%$ also good enough since we do not believe that our model is accurate enough to capture those differences.
+The propagation errors into the marginal posterior due the approximation of $f(\lambda)$, $g(\lambda)$ are with relative RMS of $7\%$ and $1\%$ in log space negligible.
+Note, that the depending on the inverse problem different approximations for $g$ and $f$ to here used may be more suitable.
+The TT approximation error of the 2D marginal posterior is with $\approx 7\%$ is similar to the relative RMS propagation error.
 When approximation the affine map we get an relative error of about $0.4\%$, which is much smaller than the relative difference in between noise free and noisy data of approximately of $1 \%$.
-The posterior temperature profiles is similar to the prior profiles, as also seen in marginal posterior Fig. \ref{fig:PostHistTT0} to \ref{fig:PostHistTT4}.
+We consider relative RMS TT approximation error of the 18D marginal posterior of $\approx 7\%$ good enough.
 
 
 \section{Atmospheric Physics}
-Here we want to say how informative the data is and what we can about the ozone pressure and temperature profiles.
+Here we summarise results within the context of atmospheric physics.
 
-So all the samples as in Fig. \ref{fig:O3SolplsReg} and Fig. \ref{fig:O3Samp}, present valid solutions to the inverse problem.
-Hence, we can see that the variability of ozone in the upper atmosphere is large and that we do not capture the ozone peak around $80$km.
-Measuring in noisy regions does not improve the results rather investing in a better measuring device with higher SNR is better.
-Better modelling parametrise the Ozone reaction taking place in the atmosphere. or use truncated/ positive priors
+In Sec. \ref{sec:SVD}, we show that it is not beneficial to measure more in noise dominated regions.
+We also show we need a SNR of $\approx10^7$ to produce informative data for ozone at higher altitudes.
 
-Highly pressure correltated to ozoene.
-Temperature mostly uninformative.
-We can already see that in the prior analyse, as the pressure temperature ratio does inherit the exponential structure of the pressure profile.
-So the posterior pressure profile is much more informative, see marginal for $b$ in Fig. \ref{fig:PostHistTT4}. 
-So we can retrieve an informative pressure profile for the pressure but not for temperature.
-
-
+All the samples plotted in Fig. \ref{fig:O3SolplsReg} and Fig. \ref{fig:O3Samp} and \ref{} present valid solutions to the inverse problem and do not capture the ozone peak at higher altitude.
+The variability of ozone in the upper atmosphere is large and determined by the prior.
+In Fig. \ref{} and Fig. \ref{} we also show that pressure and ozone are highly correlated.
+A slight change in pressure does skew the ozone VMR quite significant.
+By explanatory analysis we find that with a SNR of $\approx 10000$ we can recover an ozone and pressure profile close to the ground truth.
 We could fix that by choosing a more restrictive priors for $b$ in pressure but that would not be objective 
-Instead we should really work on a better mode for ozone.
-We can get rid of the pressure skew at a SNR of $\approx 10000$
+The data is uninformative about temperature and we we can already see by some prior analysis in Fig. \ref{fig:PriorPressOverTemp} that the pressure temperature ratio inherits the exponential structure of the pressure profile.
 
-Then we can include more measurement specific details such as the pointing accuracy.
+The main objective for further research is to focus on a more accurate (prior) model for ozone in the atmosphere such as PDE including e.g. the chemical process within the atmosphere.
+Additionally, for real application we would wish to include more hyper-parameters in the forward model, e.g. pointing accuracy or a antenna response function.
+
+
 
 

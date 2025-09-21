@@ -60,14 +60,14 @@ which according to Bayes' theorem, gives us a distribution of $\bm{x}$ and $\bm{
 Note that here we include the hyper-parameters within the posterior distribution, which is the key idea of hierarchical Bayesian modelling, as we not only aim to quantify the posterior distribution over the parameters $\bm{x}$, but also the posterior distribution over the hyper-parameter $\bm{\theta}$.
 We can visualise this hierarchically-ordered correlation structure between parameters as well as how distributions progress through a measurement process, using a directed acyclic graph (DAG), see Figure~\ref{fig:FirstDAG}.
 
-The expectation of any function $h(\bm{x}_{\bm{\theta}})$, where $\bm{x}_{\bm{\theta}} \coloneqq \bm{x}(\bm{\theta})$ may depend on $\bm{\theta}$, is described as 
+The expectation of any function $h(\bm{x})$, is described as 
 \begin{align}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] =  \underbrace{\int \int   h(\bm{x}_{\bm{\theta}}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \diff \bm{x}  \, \diff \bm{\theta}}_{\bm{\mu}_{\text{int}}}   \label{eq:expPos} \, .
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})] =  \underbrace{\int \int   h(\bm{x}) \,  \pi(\bm{x}, \bm{\theta} | \bm{y} ) \, \diff \bm{x}  \, \diff \bm{\theta}}_{\bm{\mu}_{\text{int}}}   \label{eq:expPos} \, .
 \end{align}
 If that is a high-dimensional integral and computationally not feasible to solve, we approximate 
 \begin{align}
 	\label{eq:sampMean}
-	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x}_{\bm{\theta}})] \approx \underbrace{ \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}_{\bm{\theta}})  }_{\bm{\mu}_{\text{samp}}} \, ,
+	\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})] \approx \underbrace{ \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)})  }_{\bm{\mu}_{\text{samp}}} \, ,
 \end{align}
 with an the unbiased sample-based Monte Carlo estimate \cite{roberts2004general} for large enough $N$ (law of large numbers \cite[Chapter 17]{tweedie2009measprob}).
 Here, the samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
@@ -79,20 +79,20 @@ If $\bm{x}$ cannot be parametrised directly in terms of the hyper-parameters $\b
 \end{align}
 into the conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the latent field $\bm{x}$ and the marginal posterior 
 \begin{align}
-	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{\theta} ,\bm{x})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) } \label{eq:margGen}\, ,
+	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{x},\bm{\theta})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{x},\bm{\theta})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) } \label{eq:margGen}\, ,
 \end{align}
-over the hyper-parameters $\bm{\theta}$ (see~\cite[Lemma 2]{fox2016fast}).
+over the hyper-parameter $\bm{\theta}$ (see~\cite[Lemma 2]{fox2016fast}).
 %In \cite{norton2018sampling}, they classify inverse problems into problems with known or unknown conditional posterior distributions, and conclude that if $\pi(\bm{x} | \bm{\theta} ,   \bm{y}) = \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta})  / \pi(   \bm{y}| \bm{\theta})$ has a known form, the normalising constant of $\pi(\bm{\theta} |   \bm{y})$ is available \newline $\int \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta}) \text{d} \bm{x} = \pi(   \bm{y}| \bm{\theta})  \propto \pi( \bm{\theta}|\bm{y}) / \pi(\bm{\theta})$ and one can almost surely determine the $\bm{\theta}$-dependence of the marginal posterior $\pi(\bm{\theta} |   \bm{y})$.
 
 This approach, known as the marginal and then conditional (MTC) method, is particularly advantageous when $\bm{x}\in \mathbb{R}^n$ is high-dimensional, while $\bm{\theta}\in \mathbb{R}^{n_{\bm{\theta}}}$ is low-dimensional, so that $n_{\bm{\theta}} \ll n$ and evaluation of $\pi(\bm{\theta}| \bm{y})$ is cheap.
 Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovariance}, Eq.~\eqref{eq:expPos} becomes
 \begin{align}
-	\mathbb{E}_{\bm{x} |  \bm{y}} [h(\bm{x})] 
-	= \mathbb{E}_{\bm{\theta} |  \bm{y}} \left[ \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} [h(\bm{x}_{\bm{\theta}})] \right] 
-	= \int \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right] \, \pi(\bm{\theta} |  \bm{y}) \, \diff \bm{\theta},
+	\mathbb{E}_{\bm{x} ,\bm{\theta}  |\bm{y}} [h(\bm{x})] &= \int \int   h(\bm{x}) \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \diff \bm{x} \,  \pi(\bm{\theta} |   \bm{y}) \, \diff \bm{\theta} \\
+	&= \int \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}) \right] \, \pi(\bm{\theta} |  \bm{y}) \, \diff \bm{\theta}\\
+		&= \mathbb{E}_{\bm{\theta} |  \bm{y}} \left[ \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} [h(\bm{x})] \right] \, ,
 	\label{eq:fullCond}
 \end{align}
-where, in the case of a linear-Gaussian hierarchical Bayesian model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}_{\bm{\theta}}) \right]$ are well defined (see next subsection).
+where, in the case of a linear-Gaussian hierarchical Bayesian model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}) \right]$ are well defined (see next subsection).
 Furthermore, the central limit theorem states that the sample mean $ \bm{\mu}^{(i)}_{\text{samp}} $, of independent sample sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converges to be normally distributed, so that
 \begin{align}
 	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
@@ -154,18 +154,22 @@ To derive the marginal posterior and the conditional posterior distribution, we 
 where we provide the joint precision matrix as in \cite{SIMPSON201216}, see also \cite{rue2005gaussian, fox2016fast}.
 Immediately, we formulate the conditional posterior as 
 \begin{align}
-	\bm{x} | \bm{\theta} , \bm{y}\sim \mathcal{N}(\bm{\mu} + (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}(\bm{y} - \bm{A}\bm{\mu}),(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}) \, \label{eq:CondPostLin}.
+	\bm{x} | \bm{\theta} , \bm{y}\sim \mathcal{N}\big(\underbrace{ \bm{\mu} + (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}(\bm{y} - \bm{A}\bm{\mu})}_{\bm{\mu}_{\bm{x} | \bm{\theta} , \bm{y}}},\underbrace{ (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}}_{\bm{\Sigma}_{\bm{x} | \bm{\theta} , \bm{y}}} \big)\, \label{eq:CondPostLin}.
 \end{align}
 Then the marginal posterior distribution over the hyper-parameters can be derived as in Eq. \ref{eq:margGen}, where, as noted in \cite{fox2016fast}, the parameter $\bm{x}$ cancels and we arrive at
 \begin{align}\begin{split}
 		\pi(\bm{\theta} | \bm{y}) \propto & \sqrt{\frac{\det{(\bm{\Sigma}(\bm{\theta})^{-1})} \det{(\bm{Q}(\bm{\theta}))} }{\det{(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})} } }  \exp \Bigg\{  -\frac{1}{2} (\bm{y} - \bm{A} \bm{\mu})^T \\ &\big[ \bm{\Sigma}(\bm{\theta})^{-1} - \bm{\Sigma}(\bm{\theta})^{-1} \bm{A}  (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1} \bm{A}^T \bm{\Sigma} (\bm{\theta})^{-1} \big] (\bm{y} - \bm{A} \bm{\mu}) \Bigg\} \pi(\bm{\theta}) \, .
 	\end{split} 
 \end{align} 
-Having the marginal posterior distribution available breaks up the correlation structure between $\bm{x}$ and $\bm{\theta}$ (see Appendix \ref{ap:Correlation}), and makes the MTC approach very efficient \cite{fox2016fast}.
-This scheme evaluates the marginal posterior values first and then conditions on hyper-parameters to draw posterior samples $\bm{x} \sim \pi (\bm{x} | \bm{y}, \bm{\theta})$ or to evaluate expectation and variance of $\pi(\bm{x}| \bm{y})$ by integration over the marginal posterior.
-
-
-
+Having the marginal posterior distribution  $\pi (\bm{\theta}| \bm{y})$ (independent of $\bm{x}$) available breaks up the correlation structure between $\bm{x}$ and $\bm{\theta}$ (see Appendix \ref{ap:Correlation}), and makes the MTC approach very efficient \cite{fox2016fast}.
+Within this scheme we evaluate the marginal posterior first and then either condition on hyper-parameters to draw conditional posterior samples $\bm{x} \sim \pi (\bm{x} | \bm{\theta}, \bm{y})$ or evaluate mean
+\begin{align}
+	\mu_{\bm{x}|\bm{y}} = \int \bm{\mu}_{\bm{x} | \bm{\theta} , \bm{y}} \pi(\bm{\theta}| \bm{y}) \diff \bm{\theta} \label{eq:MeanGenInt}
+\end{align} and covariance matrix
+\begin{align}
+	\Sigma_{\bm{x}|\bm{y}} = \int \bm{\Sigma}_{\bm{x} | \bm{\theta} , \bm{y}} \pi(\bm{\theta}| \bm{y}) \diff \bm{\theta}\label{eq:CoVarGenInt}
+\end{align}
+of the full posterior $\pi(\bm{x}| \bm{y})$ by some quadrature rule.
 
 \section{Sampling Methods}
 \label{sec:sampling}
@@ -220,14 +224,14 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 
 
 \subsection{\texttt{T-walk}Sampler as a Black Box}
-If a parameter $\bm{x}$ is  functionally dependent on the hyper-parameters $\bm{\theta}$, i.e., $\bm{x} = \bm{x}(\bm{\theta})$, so that the number of hyper-parameters is larger than e.g. 2, we sample from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the \texttt{t-walk} sampler as by Christen and Fox~\cite{christen2010general}. 
-The \textbf{t-walk} is employed as a black-box algorithm, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
+If the number of hyper-parameters is large, we sample from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the \texttt{t-walk} sampler as by Christen and Fox~\cite{christen2010general}. 
+The \texttt{t-walk} is employed as a black-box algorithm, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
 Convergence to the target distribution is guaranteed by construction of this algorithm.
 
 
 \subsection{Randomise then Optimise}
 \label{subsec:RTO}
-If we can not evaluate the mean and variance of the full posterior through integration, e.g. if it is computationally not feasible to solve the integral in Eq. \ref{eq:fullCond} due to a large number of hyper-parameters, we need an alternative way to characterise $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
+If it is computationally not feasible to calculate the mean and the covariance matrix of the full posterior (see Eq. \ref{eq:MeanGenInt} and \ref{eq:CoVarGenInt}) via quadrature due to a larger number of hyper-parameters, e.g. $\bm{\theta} \in \mathbb{R}^{n_{\bm{\theta}}}$ and $n_{\bm{\theta}} \geq 4$, we need an alternative way to characterise $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
 For the linear-Gaussian Bayesian model we can draw samples from the normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the randomise then optimise (RTO)~\cite{bardsley2012mcmc} scheme after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$.
 
 The full conditional distribution can be rewritten as
@@ -248,7 +252,7 @@ where we define
 		\bm{Q}_{\bm{\theta}}^{1/2} \bm{\mu}
 	\end{bmatrix} \quad \text{\cite{bardsley2014randomize}}.
 \end{align}
-Here we write $\bm{A}(\bm{\theta}) = \bm{A}_{\bm{\theta}}$, $\bm{Q}(\bm{\theta}) = \bm{Q}_{\bm{\theta}} $ and $\bm{\Sigma}^{-1}(\bm{\theta}) = \bm{\Sigma}^{-1}_{\bm{\theta}}$, which are all dependent on the hyper-parameters $\bm{\theta}$.
+Here we define $\bm{A}(\bm{\theta}) \coloneqq \bm{A}_{\bm{\theta}}$, $\bm{Q}(\bm{\theta}) \coloneqq \bm{Q}_{\bm{\theta}} $ and $\bm{\Sigma}^{-1}(\bm{\theta})\coloneqq \bm{\Sigma}^{-1}_{\bm{\theta}}$, which are all dependent on the hyper-parameters $\bm{\theta}$.
 A sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}, \bm{y}) $ from the conditional posterior is obtained by minimising the following equation with respect to $\hat{\bm{x}}$ :
 \begin{align}
 	\bm{x}^{(k)} = \arg \min_{\hat{\bm{x}}} \lVert \hat{\bm{A}} \hat{\bm{x}} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
