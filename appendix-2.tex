@@ -37,11 +37,15 @@ With a simple MCMC algorithm targeting  $ \mu$ one can explore the sample space 
 
 \section{On the Monte-Carlo Error and Integrated Autocorrelation time}
 \label{ap:IATC}
-To assess the error $\sigma^2$ of chain $\mathcal{M}_i$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
-To derive the integrated autocorrelation time (IATC), we follow the lecture notes \cite{wolff2002LecNot}.
-In general, the error of a Monte-Carlo-based estimate from a sample set $\mathcal{M}_i = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\} \sim \pi(\bm{x}|\bm{y})$ is:
+To assess the error $\sigma^2$ of a samples-based estimate 
 \begin{align}
-	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
+	\bm{\mu}^{(i)} \coloneqq	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}),
+\end{align} 
+from the chain $\mathcal{M}^{(i)}$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
+To derive the integrated autocorrelation time (IATC), we follow the lecture notes \cite{wolff2002LecNot}.
+In general, the error of a Monte-Carlo-based estimate from a sample set $\mathcal{M}^{(i)} = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\} \sim \pi(\bm{x}|\bm{y})$ is:
+\begin{align}
+	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)}) =  \text{var}(\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
 \end{align}
 Expanding this summation, we see that
 \begin{align}
@@ -50,9 +54,9 @@ Expanding this summation, we see that
 with the auto correlation coefficient $\Gamma(k-s) =  \big( h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \big) \big(h(\bm{x}^{(s)}) - \bm{\mu}^{(i)} \big)$.
 Next we rewrite
 \begin{align}
-	\sum_{k,s=1}^{N} \Gamma(k-s) = \text{var}(\bm{\mu}^{(i)}_{\text{samp}})  \sum_{k,s=1}^{N} \frac{\Gamma(k-s)}{\Gamma(0)} =  \text{var}(\bm{\mu}^{(i)}_{\text{samp}}) \sum_{k,s=1}^{N}\rho(k-s)\, ,
+	\sum_{k,s=1}^{N} \Gamma(k-s) = \text{var}(h(\bm{x}))  \sum_{k,s=1}^{N} \frac{\Gamma(k-s)}{\Gamma(0)} =  \text{var}(h(\bm{x})) \sum_{k,s=1}^{N}\rho(k-s)\, ,
 \end{align}
-with the normalised auto correlation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$ and $\Gamma(0) = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} )$ for $k=s$.
+with the normalised auto correlation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$ and $\Gamma(0) = \text{var}(h(\bm{x}) )$ for $k=s$.
 Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) \overset{t \rightarrow \infty }{ \propto} \exp\{ - |t| / \tau \}  $ and we can approximate
 \begin{align}
 	\sum_{k,s=1}^{N}\rho(k-s)  = N \sum_{t = -(N-1) }^{N-1} \Bigg(1- \frac{t}{N} \Bigg) \rho(t)  \approx N  \sum_{t = - \infty }^{\infty} \rho(t) \coloneqq 2 N \tau_{\text{int}}\, ,
@@ -119,7 +123,7 @@ Finally, if a countable collection of sets $A_1, A_2, \dots \in \mathcal{F}$, th
 \section{Python Code}
 \the\baselineskip
 
-\begin{lstlisting}[language=Python, caption={Pyhton code to calculate Backward marginals, as in Prop. \ref{prob:backMarg} and \cite{cui2022deep}.}, escapeinside={"}{"}]
+\begin{lstlisting}[language=Python, columns=flexible, caption={Pyhton code to calculate Backward marginals, as in Prop. \ref{prob:backMarg} and \cite{cui2022deep}.}, escapeinside={"}{"}]
 def MargBack(TTCore, univarGrid):
 	''' Backward marginalisation (see "Prop. \ref{prob:backMarg}") as in SIRT from Cui et al. "\cite{cui2022deep}" '''
 	
@@ -131,26 +135,24 @@ def MargBack(TTCore, univarGrid):
 	
 	for k in range(dim - 1, 0, -1):
 		r_kmin1, n, r_k = np.shape(TTCore[k])
-		# "Eq. \label{eq:MassMat}, \cite[Eq. 22]{cui2022deep}" !! we set Lebesgue Measure to const = one
+		# "Eq. \ref{eq:MassMat}, \cite[Eq. 22]{cui2022deep}" !! we set Lebesgue Measure to const = one
 		M = np.identity(n) * (univarGrid[k][-1] - univarGrid[k][0])  # Mass matrix
 		L = scy.linalg.cholesky(M)
 		
-		# construct Tensor C Eq. (27)
+		# construct Tensor C  "Eq. \ref{eq:constrCBack}, \cite[Eq. 27]{cui2022deep}"
 		C[k] = np.zeros((r_kmin1, n, r_k))
 		for alpha in range(0, r_kmin1):
 			for l in range(0, r_k):
 				C[k][alpha, :, l] = B[k][alpha, :, l] @ L[:, :]
 		
 		# unfold along first coordinate and compute thin QR decomposition of C^T
-		# Eq. (28)
+		#  "Eq. \ref{eq:thinQRBack}, \cite[Eq. 28]{cui2022deep}"
 		Q, R[k] = np.linalg.qr(C[k].reshape((r_kmin1, n * r_k), order='C').transpose(), mode='reduced')
 		
-		# compute next coefficient tensor
-		# Eq. (29)
+		# compute next coefficient tensor "Eq. \ref{eq:nextCoeffTBack}, \cite[Eq. 29]{cui2022deep}"
 		r_kmin2, n, r_kmin1 = np.shape(TTCore[k - 1])
 		B[k - 1] = np.zeros(np.shape(TTCore[k - 1]))
 		for alpha_2 in range(0, r_kmin2):
-		#for i in range(0, n):
 			for l_1 in range(0, r_kmin1):
 				B[k - 1][alpha_2, :, l_1] = TTCore[k - 1][alpha_2, :, :] @ R[k][l_1, :]
 
@@ -158,7 +160,7 @@ return B
 
 \end{lstlisting}
 \clearpage
-\begin{lstlisting}[language=Python, caption={Pyhton code to calculate forward marginals, as in Prop. \ref{prob:ForMarg}.}, escapeinside={"}{"}]
+\begin{lstlisting}[language=Python, columns=flexible, caption={Pyhton code to calculate forward marginals, as in Prop. \ref{prob:ForMarg}.}, escapeinside={"}{"}]
 	def MargForw(TTCore, univarGrid):
 	''' Forward marginalisation (see "Prop. \ref{prob:ForMarg}") 
 		similar to backward marginalsiation as in  Cui et al. "\cite{cui2022deep}" '''
@@ -171,35 +173,36 @@ return B
 	CPre = [None] * dim
 	
 	for k in range(0, dim-1):
-	r_kmin1, n, r_k = np.shape(TTCore[k])
-	#  "Eq. \label{eq:MassMat}, \cite[Eq. 22]{cui2022deep}" !! we set Lebesgue Measure to const = one
-	M = np.identity(n) * (univarGrid[k][-1] - univarGrid[k][0])  # Mass matrix
-	L = scy.linalg.cholesky(M)
-	
-	# construct Tensor C "\cite[Eq. (27)]{cui2022deep}"
-	CPre[k] = np.zeros((r_kmin1, n, r_k))
-	for alpha in range(0, r_kmin1):
-	for l in range(0, r_k):
-	CPre[k][alpha, :, l] = BPre[k][alpha, :, l] @ L[:, :]
-	
-	# unfold along first coordinate and compute thin QR decomposition of C
-	# "\ref{eq:RTE} \cite[Eq. (28)]{cui2022deep}"
-	Q, RPre[k] = np.linalg.qr(CPre[k].reshape((r_kmin1 * n, r_k), order='C'), mode='reduced')
-	
-	# compute next coefficient tensor "\cite[Eq. (29)]{cui2022deep}"
-	r_k, n, r_kpls1 = np.shape(TTCore[k + 1])
-	BPre[k + 1] = np.zeros(np.shape(TTCore[k + 1]))
-	for alpha_1 in range(0, r_kpls1):
-	for l_1 in range(0, r_k):
-	BPre[k + 1][l_1, :, alpha_1] = RPre[k][l_1,:] @ TTCore[k + 1][:, :, alpha_1]
-	
+		r_kmin1, n, r_k = np.shape(TTCore[k])
+		#  "Eq. \ref{eq:MassMat}, \cite[Eq. 22]{cui2022deep}" !! we set Lebesgue Measure to const = one
+		M = np.identity(n) * (univarGrid[k][-1] - univarGrid[k][0])  # Mass matrix
+		L = scy.linalg.cholesky(M)
+		
+		# construct Tensor C  "Eq. \ref{eq:constrCForw}"
+		CPre[k] = np.zeros((r_kmin1, n, r_k))
+		for alpha in range(0, r_kmin1):
+			for l in range(0, r_k):
+				CPre[k][alpha, :, l] = BPre[k][alpha, :, l] @ L[:, :]
+		
+		# unfold along first coordinate and compute thin QR decomposition of C
+		# "Eq. \ref{eq:thinQRForw}"
+		Q, RPre[k] = np.linalg.qr(CPre[k].reshape((r_kmin1 * n, r_k), order='C'), mode='reduced')
+		
+		# compute next coefficient tensor  "Eq. \ref{eq:nextCoeffTForw}"
+		r_k, n, r_kpls1 = np.shape(TTCore[k + 1])
+		BPre[k + 1] = np.zeros(np.shape(TTCore[k + 1]))
+		for alpha_1 in range(0, r_kpls1):
+			for l_1 in range(0, r_k):
+				BPre[k + 1][l_1, :, alpha_1] = RPre[k][l_1,:] 
+					"\phantom{$BPre[k + 1][l_1, :, alpha_1] = RPre[k][l_1,:] $}"@ TTCore[k + 1][:, :, alpha_1]
+		
 	return BPre
 	
 \end{lstlisting}
 
 
 \clearpage
-\begin{lstlisting}[language=Python,	caption = {Pyhton code to draw samples via SIRT, as in Alg. Box \ref{alg:SIRT}.}, escapeinside={"}{"}]
+\begin{lstlisting}[language=Python,	columns=flexible, caption = {Pyhton code to draw samples via SIRT, as in Alg. Box \ref{alg:SIRT}.}, escapeinside={"}{"}]
 def SIRT(seeds, SQTT, univarGrid, BackMarg, absError):
 	''' do squared inverse rosenblatt transform (SIRT) as in Cui et al. "\cite{cui2022deep}" '''
 	
@@ -208,7 +211,7 @@ def SIRT(seeds, SQTT, univarGrid, BackMarg, absError):
 	probVal = np.zeros(seeds.shape) # PDF values, for MH-correction step
 	Approx = np.zeros(seeds.shape[1]) # TT-Approx., to compare to true function
 	
-	# lebesgue measure for qudrature "Eq. \ref{eq:lebesgueWeight}"
+	# Lebesgue measure for quadrature "Eq. \ref{eq:lebesgueWeight}"
 	WholeLebLam = np.zeros(dim)
 	for k in range(0, dim):
 		WholeLebLam[k] = (univarGrid[k][-1] - univarGrid[k][0])
@@ -229,10 +232,10 @@ def SIRT(seeds, SQTT, univarGrid, BackMarg, absError):
 	
 	# sample from other dimensions
 	for n in range(0, numbSampl):
-		# interpolate linear on grid in first dimension "Eq. \ref{eq:LinPol} \cite{dolgov2020approximation}"
+		# piecew. poly. interpol in first dimension "Eq. \ref{eq:LinPol} \cite{dolgov2020approximation}"
 		CurrApprCore = LinInterPolTT(SQTT[0], univarGrid[0], sampls[0][n])
 		for d in range(1, dim):
-			# marginal function condition on previous samples
+			# marginal function, conditioned on previous samples
 			rank_min, gridSize, rank_pls = BackMarg[d].shape
 			MargDep = np.zeros((BackMarg[d].shape))
 			for r in range(0, rank_min):

@@ -28,14 +28,14 @@ Lastly, we provide some background information on affine maps and the Tikhonov r
 		\node[align=center] at (2.4,1.5) (xt) {$\sim \pi_{\bm{x}}(\cdot|\bm{\theta}) $ parameters};
 		\node[align=center] at (2.5,0) (At) {$\{\bm{A}(\bm{x})\}$ "noise free data"};
 		\node[align=center] at (3,-1.5) (ut) {space of all measurables};
-		\node[align=center] at (2,-3.5) (yt) {$\sim \pi_{\bm{y}}(\cdot|\bm{\theta},\bm{x})$ data};
+		\node[align=center] at (2,-3.5) (yt) {$\sim \pi_{\bm{y}}(\cdot|\bm{x},\bm{\theta})$ data};
 		\node[align=center] at (-3,0) (nt) {noise};
 	\end{tikzpicture}
 	\caption[Hierarchical Bayesian Inference]{The directed acyclic graph (DAG) for an inverse problem visualises statistical dependencies as solid line arrows and deterministic dependencies as dotted arrows.
 		The hyper-parameters $\bm{\theta}$ are distributed as the hyper-prior distribution $\pi(\bm{\theta})$.
 		The prior distribution $ \pi_{\bm{x}}(\cdot|\bm{\theta})$ for the parameter $\bm{x}$ and the noise are statistically dependent on some of those hyper-parameters.
 		Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is mapped onto the space of all measurables $\bm{\Omega}=\bm{A}(\bm{x})$ deterministically through the forward model.
-		From the space of all measurable noise free data we observe a data set $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}$ with some random noise $ \bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$, which determines the likelihood function $\pi(\bm{y}|\bm{\theta}, \bm{x})$. }
+		From the space of all measurable noise free data we observe a data set $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}$ with some random noise $ \bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$, which determines the likelihood function $\pi(\bm{y}|\bm{x},\bm{\theta})$. }
 	\label{fig:FirstDAG}
 \end{figure}
 
@@ -71,7 +71,14 @@ If that is a high-dimensional integral and computationally not feasible to solve
 \end{align}
 with an the unbiased sample-based Monte Carlo estimate \cite{roberts2004general} for large enough $N$ (law of large numbers \cite[Chapter 17]{tweedie2009measprob}).
 Here, the samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
+The central limit theorem states that the sample mean $ \bm{\mu}^{(i)}_{\text{samp}} $, of independent sample sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converges to be normally distributed, so that
+\begin{align}
+	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
+\end{align}
+and if $\sigma^2 < \infty$ the Monte-Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bounded.
+We further asses this error in Sec. \ref{sec:sampling}.
 
+\subsubsection{Marginal and then Conditional Method}
 Generating a representative sample set quickly from the posterior distribution often presents a significant challenge. This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
 If $\bm{x}$ cannot be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, so that $\bm{x}(\bm{\theta})$ is function of $\bm{\theta}$, it is beneficial to factorise the posterior distribution as
 \begin{align}
@@ -88,40 +95,18 @@ This approach, known as the marginal and then conditional (MTC) method, is parti
 Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovariance}, Eq.~\eqref{eq:expPos} becomes
 \begin{align}
 	\mathbb{E}_{\bm{x} ,\bm{\theta}  |\bm{y}} [h(\bm{x})] &= \int \int   h(\bm{x}) \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \diff \bm{x} \,  \pi(\bm{\theta} |   \bm{y}) \, \diff \bm{\theta} \\
-	&= \int \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}) \right] \, \pi(\bm{\theta} |  \bm{y}) \, \diff \bm{\theta}\\
+	&= \int \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}) \right] \, \pi(\bm{\theta} |  \bm{y}) \, \diff \bm{\theta}\label{eq:2fullCond} \\
 		&= \mathbb{E}_{\bm{\theta} |  \bm{y}} \left[ \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} [h(\bm{x})] \right] \, ,
 	\label{eq:fullCond}
 \end{align}
 where, in the case of a linear-Gaussian hierarchical Bayesian model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}) \right]$ are well defined (see next subsection).
-Furthermore, the central limit theorem states that the sample mean $ \bm{\mu}^{(i)}_{\text{samp}} $, of independent sample sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converges to be normally distributed, so that
-\begin{align}
-	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
-\end{align}
-and if $\sigma^2 < \infty$ the Monte-Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bounded.
+If the integral in Eq. \ref{eq:2fullCond} is expensive to calculate, we use sample based methods to produce a Markov chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) $ and sample from $\pi(\bm{\theta} |  \bm{y})$ first and then draw samples the conditional $\pi(\bm{x} | \bm{\theta} , \bm{y})$. 
 
-\subsubsection{Integrated Autocorrelation time}
-To assess the error $\sigma^2$ of chain $\mathcal{M}_i$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
-To derive the integrated autocorrelation time (IATC), we follow the lecture notes \cite{wolff2002LecNot}.
-In general, the error of a Monte-Carlo-based estimate from a sample set $\mathcal{M}_i = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\} \sim \pi(\bm{x}|\bm{y})$ is:
-\begin{align}
-	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} ) =  \text{var}(\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
-\end{align}
-Expanding this summation, we see that
-\begin{align}
-	\Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \Bigg)^2  =  \frac{\text{var}(\bm{\mu}^{(i)}_{\text{samp}}) }{N^2} \sum_{k,s=1}^{N}\rho(k-s)\, ,
-\end{align}
-with the normalised auto correlation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$, where the auto correlation coefficient $\Gamma(k-s) =  \big( h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \big) \big(h(\bm{x}^{(s)}) - \bm{\mu}^{(i)} \big)$ and  $\Gamma(0) = \text{var}(\bm{\mu}^{(i)}_{\text{samp}} )$ for $k=s$.
-Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) \overset{t \rightarrow \infty }{ \propto} \exp\{ - | t| / \tau \}  $ and we can approximate
-\begin{align}
-	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
-\end{align}
-where we define the IATC as in \cite[pp. 103-105]{wolff2002LecNot}.
-See Appendix \ref{ap:IATC} and \cite{Sokal1997} for a more detailed derivation.
-The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample, accordingly we define the effective sample size as $\frac{ 2 \tau_{\text{int}} }{N}$.
-Since this is an estimate \cite{wolff2004monte} provides a way to not only calculate the IATC but also to quantify the errors of the estimate of the IATC.
 
-\subsubsection{Linear-Gaussian hierarchical Bayesian model}
-\label{subsec:LinBay}
+
+
+\paragraph{Linear-Gaussian hierarchical Bayesian model}
+%\label{subsec:LinBay}
 In case of normally distributed noise $\bm{\eta} \sim \mathcal{N}(0,\bm{\Sigma}(\bm{\theta}))$, with zero mean and covariance $\bm{\Sigma}(\bm{\theta})$, and a linear model $\bm{A}$, the data is given as 
 \begin{align}
 	\bm{y} = \bm{A} \bm{x} + \bm{\eta} \, ,
@@ -162,7 +147,7 @@ Then the marginal posterior distribution over the hyper-parameters can be derive
 	\end{split} 
 \end{align} 
 Having the marginal posterior distribution  $\pi (\bm{\theta}| \bm{y})$ (independent of $\bm{x}$) available breaks up the correlation structure between $\bm{x}$ and $\bm{\theta}$ (see Appendix \ref{ap:Correlation}), and makes the MTC approach very efficient \cite{fox2016fast}.
-Within this scheme we evaluate the marginal posterior first and then either condition on hyper-parameters to draw conditional posterior samples $\bm{x} \sim \pi (\bm{x} | \bm{\theta}, \bm{y})$ or evaluate mean
+Within this scheme we evaluate the marginal posterior first and then either condition on hyper-parameters to draw conditional posterior samples $\bm{x} \sim \pi (\bm{x} | \bm{\theta}, \bm{y})$ (see Sec. \ref{subsec:RTO}) or evaluate mean
 \begin{align}
 	\mu_{\bm{x}|\bm{y}} = \int \bm{\mu}_{\bm{x} | \bm{\theta} , \bm{y}} \pi(\bm{\theta}| \bm{y}) \diff \bm{\theta} \label{eq:MeanGenInt}
 \end{align} and covariance matrix
@@ -173,20 +158,53 @@ of the full posterior $\pi(\bm{x}| \bm{y})$ by some quadrature rule.
 
 \section{Sampling Methods}
 \label{sec:sampling}
-In this section we present the underlying methodology of the sampling methods used in this thesis and show how these methods draw samples \newline$ \mathcal{M} = \{ (\bm{x}, \bm{\theta} )^{(1)}, \dots, (\bm{x}, \bm{\theta} )^{(k)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y})$ from the desired target distribution, so that we can calculate sample-based estimates as in Eq.~\ref{eq:sampMean}.
-Here, $\mathcal{M}$ denotes a Markov chain, where each new sample $(\bm{x}, \bm{\theta})^{(k)}$ is only affected by the previous one, $(\bm{x}, \bm{\theta})^{(k-1)}$.
-Markov chain Monte Carlo (MCMC) methods generate such a chain $\mathcal{M}$ using random (Monte Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |  (\bm{x}, \bm{\theta})^{(k-1)})$ according to a proposal distribution conditioned on the previous sample (Markov), where ergodicity of the chain $\mathcal{M}$ is a sufficient criterion for using sample-based estimates~\cite{tan2016LecNot, roberts2004general}.
+In this section we present the methods that draw samples from the marginal posterior $ \mathcal{M} = \{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} \sim \pi(\bm{\theta} |  \bm{y})$ as well as the randomise then optimise (RTO) method to draw samples from a normally distributed conditional posterior $\pi(\bm{x}|\bm{\theta} , \bm{y})$.
+Here, $\mathcal{M}$ denotes a Markov chain, where each new sample $\bm{\theta}^{(k)}$ is only affected by the previous one, $\bm{\theta}^{(k-1)}$.
+Markov chain Monte Carlo (MCMC) methods generate such a chain $\mathcal{M}$ using random (Monte Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |  \bm{\theta}^{(k-1)})$ according to a proposal distribution conditioned on the previous sample (Markov), where ergodicity of the chain $\mathcal{M}$ is a sufficient criterion for using sample-based estimates~\cite{tan2016LecNot, roberts2004general}.
 
 The ergodicity theorem in~\cite{tan2016LecNot} states that, if a Markov chain $\mathcal{M}$ is aperiodic, irreducible, and reversible, then it converges to a unique stationary equilibrium distribution.
 In other words, if the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and is reversible (detailed balance condition~\cite{tan2016LecNot}).
-Then the chain converges to the desired target distribution  with $ \mathcal{M} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y})$.
-In practice, one can inspect the trace $\pi(\bm{x}^{(k)}, \bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence and mixing properties of the chain to evaluate ergodicity.
+Then the chain converges to the desired target distribution  with $ \mathcal{M} \sim \pi( \bm{\theta} |  \bm{y})$.
+In practice, one can inspect the trace $\pi(\bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence and mixing properties of the chain to evaluate ergodicity.
 The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details.
+
+If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic, and the conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, as described in Sec. \ref{subsec:RTO}, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) =  \pi(\bm{x} |  \bm{\theta} , \bm{y}) \pi( \bm{\theta} | \bm{y})$ is also ergodic~\cite{acosta2022markov}.
+
+\subsubsection{Integrated Autocorrelation time}
+Assume we have a sample set $\mathcal{M}^{(i)} = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\} \sim \pi(\bm{x}|\bm{y})$ and we calculate the Monte-Carlo estimate
+\begin{align}
+\bm{\mu}^{(i)} \coloneqq	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}),
+\end{align} 
+then we have to asses the error $(\sigma^{(i)})^2 =\text{var}(\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})])$ of that estimate.
+This is because, any chain $\mathcal{M}^{(i)}$ produced by a system or an algorithm contains correlated samples and one has to take that into account when calculating sample-based estimates.
+Here, we ignore systematic error due to initialisation bias (burn-in period), and derive the integrated autocorrelation time (IACT), following Ulli Wolff's lecture notes \cite{wolff2002LecNot}, with which we can express the error and which gives us a notion on how efficient our sampler is.
+
+In general, the error of a Monte-Carlo-based estimate can be written as
+\begin{align}
+	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)} ) =  \text{var}(\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
+\end{align}
+Expanding this summation, we see that
+\begin{align}
+	\Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) -\bm{\mu}^{(i)} \Bigg)^2  =  \frac{\text{var}(h(\bm{x})) }{N^2} \sum_{k,s=1}^{N}\rho(k-s)\, ,
+\end{align}
+with the normalised auto correlation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$, where the auto correlation coefficient $\Gamma(k-s) =  \big( h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \big) \big(h(\bm{x}^{(s)}) - \bm{\mu}^{(i)} \big)$ and  $\Gamma(0) = \text{var}(h(\bm{x}))$ for $k=s$.
+Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) \overset{t \rightarrow \infty }{ \propto} \exp\{ - | t| / \tau \}  $ and we can approximate
+\begin{align}
+	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
+\end{align}
+where we define the IACT as in \cite[pp. 103-105]{wolff2002LecNot}.
+We point out that if $2\tau_{\text{int}} = 1$ (uncorrelated samples) the error $(\sigma^{(i)})^2$ behaves similarly to a typical Monte-Carlo estimate.
+See Appendix \ref{ap:IATC} and \cite{Sokal1997} for a more detailed derivation.
+
+
+The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
+According to that we define the effective sample size as $\frac{ 2 \tau_{\text{int}} }{N}$.
+Since this is an estimate \cite{wolff2004monte} provides a way to not only an algorithm to calculate the IACT but also quantifies the errors of the estimate of the IACT.
 
 \subsection{Metropolis within Gibbs}
 \label{subsec:MWG}
-As in Eq. \ref{eq:MTC}, when using the MTC method we sample from $\pi(\bm{\theta} |  \bm{y})$ first and then determine the full conditional $\pi(\bm{x} | \bm{\theta} , \bm{y})$ as in Eq. \ref{eq:fullCond}. To sample from $\pi(\bm{\theta} |  \bm{y})$, we use a Metropolis-within-Gibbs (MWG) sampler as described in~\cite{fox2016fast}.
-We apply the MWG sample for the two-dimensional case only, with $\bm{\theta} = (\theta_1, \theta_2)$, where we perform a Metropolis step in the $\theta_1$ direction and a Gibbs step in the $\theta_2$ direction.
+If $\bm{\theta} \in \mathbb{R}^2$ we use a Metropolis-within-Gibbs (MWG) sampler as described in~\cite{fox2016fast} to sample from $\pi(\bm{\theta} |  \bm{y})$.
+With $\bm{\theta} = (\theta_1, \theta_2)$, we perform a Metropolis step in the $\theta_1$ direction and a Gibbs step in the $\theta_2$ direction.
 Ergodicity for this approach is proven in~\cite{roberts2006harris}.
 
 
@@ -223,7 +241,7 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 \end{algorithm}
 
 
-\subsection{\texttt{T-walk}Sampler as a Black Box}
+\subsection{\texttt{T-walk} Sampler as a Black Box}
 If the number of hyper-parameters is large, we sample from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the \texttt{t-walk} sampler as by Christen and Fox~\cite{christen2010general}. 
 The \texttt{t-walk} is employed as a black-box algorithm, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
 Convergence to the target distribution is guaranteed by construction of this algorithm.
@@ -232,7 +250,7 @@ Convergence to the target distribution is guaranteed by construction of this alg
 \subsection{Randomise then Optimise}
 \label{subsec:RTO}
 If it is computationally not feasible to calculate the mean and the covariance matrix of the full posterior (see Eq. \ref{eq:MeanGenInt} and \ref{eq:CoVarGenInt}) via quadrature due to a larger number of hyper-parameters, e.g. $\bm{\theta} \in \mathbb{R}^{n_{\bm{\theta}}}$ and $n_{\bm{\theta}} \geq 4$, we need an alternative way to characterise $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
-For the linear-Gaussian Bayesian model we can draw samples from the normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the randomise then optimise (RTO)~\cite{bardsley2012mcmc} scheme after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$.
+For the linear-Gaussian Bayesian model we can draw samples from the normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the RTO~\cite{bardsley2012mcmc} scheme after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$.
 
 The full conditional distribution can be rewritten as
 \begin{align}
@@ -266,7 +284,7 @@ Similar to Section~\ref{sec:regularise}, this expression can be rewritten as
 %where the term $-\hat{\bm{A}}^T \bm{b}$ is decomposed as $\bm{v}_1 + \bm{v}_2$, 
 with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{A}_{\bm{\theta}})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\bm{\theta}})$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
 
-If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic, and the conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) =  \pi(\bm{x} |  \bm{\theta} , \bm{y}) \pi( \bm{\theta} | \bm{y})$ is also ergodic~\cite{acosta2022markov}.
+
 
 \section{Numerical Approximation -- Tensor-Train (TT)}
 \label{sec:tensortrain}
@@ -400,15 +418,15 @@ The proposition used to compute $\bm{B}_k$, stated in Prop.\ref{prob:backMarg}, 
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
 		\begin{equation}
-			\bm{C}_k[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{B}_k[\alpha_{k-1}, i, l_k] \bm{L}_k[i, \tau] \text{\cite[Eq. (27)]{cui2022deep}}.
+			\bm{C}_k[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{B}_k[\alpha_{k-1}, i, l_k] \bm{L}_k[i, \tau] \text{\cite[Eq. (27)]{cui2022deep}}. \label{eq:constrCBack}
 		\end{equation}
 		\item Unfold $\bm{C}_k$ along the first coordinate and compute the thin QR decomposition, so that $\bm{C}_k^{(R)} \in \mathbb{R}^{r_{k-1} \times (n_k r_k)}$:
 		\begin{equation}
-			\bm{Q}_k \bm{R}_k = {(\bm{C}_k^{(R)})}^{\top} \, \,  \text{\cite[Eq. 28]{cui2022deep}}.
+			\bm{Q}_k \bm{R}_k = {(\bm{C}_k^{(R)})}^{\top} \, \,  \text{\cite[Eq. 28]{cui2022deep}}.\label{eq:thinQRBack}
 		\end{equation}
 		\item Compute the new coefficient tensor:
 		\begin{equation}
-			\bm{B}_{k-1}[\alpha_{k-2}, i, l_{k-1}] = \sum_{\alpha_{k-1}=1}^{r_{k-1}} \bm{A}_{k-1}[\alpha_{k-2}, i, \alpha_{k-1}] \bm{R}_k[l_{k-1}, \alpha_{k-1}]\, \,  \text{\cite[Eq. 29]{cui2022deep}}.
+			\bm{B}_{k-1}[\alpha_{k-2}, i, l_{k-1}] = \sum_{\alpha_{k-1}=1}^{r_{k-1}} \bm{A}_{k-1}[\alpha_{k-2}, i, \alpha_{k-1}] \bm{R}_k[l_{k-1}, \alpha_{k-1}]\, \,  \text{\cite[Eq. 29]{cui2022deep}}. \label{eq:nextCoeffTBack}
 		\end{equation}
 	\end{enumerate}
 \end{prop}
@@ -419,15 +437,15 @@ The proposition used to compute $\bm{B}_k$, stated in Prop.\ref{prob:backMarg}, 
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
 		\begin{equation}
-			\bm{C}_{\text{pre},k}[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{L}_k[i, \tau] \bm{B}_{\text{pre},k}[\alpha_{k-1}, i, l_k] .
+			\bm{C}_{\text{pre},k}[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{L}_k[i, \tau] \bm{B}_{\text{pre},k}[\alpha_{k-1}, i, l_k] .\label{eq:constrCForw}
 		\end{equation}
 		\item Unfold $\bm{C}_{\text{pre},k}$ along the first coordinate and compute the thin QR decomposition, so that $\bm{C}_{\text{pre},k}^{(R)} \in \mathbb{R}^{(r_{k-1} n_k ) \times r_k}$:
 		\begin{equation}
-			\bm{Q}_{pre,k}\bm{R}_{\text{pre},k} = {(\bm{C}_{\text{pre},k}^{(R)})}.
+			\bm{Q}_{pre,k}\bm{R}_{\text{pre},k} = {(\bm{C}_{\text{pre},k}^{(R)})}.\label{eq:thinQRForw}
 		\end{equation}
 		\item Compute the new coefficient tensor $\bm{B}_{\text{pre}, k+1} \in \mathbb{R}^{r_{k-1} \times n_k \times r_k} $:
 		\begin{equation}
-			\bm{B}_{\text{pre}, k+1}[l_{k+1}, i, \alpha_{k+1}] = \sum_{\alpha_{k}=1}^{r_{k}} \bm{R}_{\text{pre},k}[l_{k+1}, \alpha_{k}] \bm{A}_{k+1}[\alpha_{k}, i, \alpha_{k+1}] .
+			\bm{B}_{\text{pre}, k+1}[l_{k+1}, i, \alpha_{k+1}] = \sum_{\alpha_{k}=1}^{r_{k}} \bm{R}_{\text{pre},k}[l_{k+1}, \alpha_{k}] \bm{A}_{k+1}[\alpha_{k}, i, \alpha_{k+1}] .\label{eq:nextCoeffTForw}
 		\end{equation}
 	\end{enumerate}
 \end{prop}
