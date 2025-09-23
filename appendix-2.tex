@@ -37,13 +37,14 @@ With a simple MCMC algorithm targeting  $ \mu$ one can explore the sample space 
 
 \section{On the Monte-Carlo Error and Integrated Autocorrelation time}
 \label{ap:IATC}
-To assess the error $^(\sigma^{(i)})^2$ of a samples-based estimate 
+To assess the error $(\sigma^{(i)})^2$ of a samples-based estimate 
 \begin{align}
 	\bm{\mu}^{(i)} \coloneqq	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}),
 \end{align} 
-from the chain $\mathcal{M}^{(i)}$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
-To derive the integrated autocorrelation time (IATC), we follow the lecture notes \cite{wolff2002LecNot}.
-In general, the error of a Monte-Carlo-based estimate from a sample set $\mathcal{M}^{(i)} = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\} \sim \pi(\bm{x}|\bm{y})$ is:
+from the chain $\mathcal{M}^{(i)} = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\} \sim \pi(\bm{x}|\bm{y})$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
+To derive the IACT, we follow Ulli Wolff's lecture notes \cite{wolff2002LecNot} (or alternatively \cite{wolff2004monte}).
+
+In general, the error of a Monte-Carlo estimate is:
 \begin{align}
 	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)}) =  \text{var}(\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
 \end{align}
@@ -61,17 +62,18 @@ Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) 
 \begin{align}
 	\sum_{k,s=1}^{N}\rho(k-s)  = N \sum_{t = -(N-1) }^{N-1} \Bigg(1- \frac{t}{N} \Bigg) \rho(t)  \approx N  \sum_{t = - \infty }^{\infty} \rho(t) \coloneqq 2 N \tau_{\text{int}}\, ,
 \end{align}
-see \cite{Sokal1997}, and define the IATC as in \cite[pp. 103-105]{wolff2002LecNot}.
-If $\tau \gg 1$ one can show that $\tau_{\text{int}} \approx \tau$
+see \cite[p. 137]{Sokal1997}, and define the IACT as in \cite[pp. 103-105]{wolff2002LecNot}.
+If $\tau \gg 1$
 \begin{align}
-	\sum_{t = - \infty }^{\infty} \rho(t) =  1 + 2 \sum_{t = 1}^{\infty} \big(e^{-1/ \tau}\big)^t =  1 + 2 \frac{e^{-1/ \tau} }{1 - e^{-1/ \tau}} \approx  1 + 2 \frac{1 -1/ \tau }{1/ \tau} =  2 \tau -1 \approx 2 \tau_{int}
+	\sum_{t = - \infty }^{\infty} \rho(t) =  1 + 2 \sum_{t = 1}^{\infty} \big(e^{-1/ \tau}\big)^t =  1 + 2 \frac{e^{-1/ \tau} }{1 - e^{-1/ \tau}} \approx  1 + 2 \frac{1 -1/ \tau }{1/ \tau} =  2 \tau -1 \approx 2 \tau_{int}\, ,
 \end{align}
-where we use the geometric power series $\sum^{\infty}_{n=0} x^n= 1/ (1+x)$ and the Taylor series $ e^x \approx 1+x$ for small $x$.
+so that $\tau_{\text{int}} \approx \tau$.
+Here we use the geometric power series $\sum^{\infty}_{n=0} x^n= 1/ (1-x)$ and the Taylor series $ e^x \approx 1+x$ for small $x$.
 Consequently, the estimate for the Monte-Carlo error is:
 \begin{align}
-	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
+	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, .\label{eq:MCerr}
 \end{align}
-where we define the IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
+The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
 More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
 
 \section{Measure theory}

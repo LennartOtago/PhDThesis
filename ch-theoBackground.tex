@@ -1,12 +1,11 @@
 %\the\columnwidth
 \chapter{Theoretical and Technical Background}
 \label{ch:background}
-In this chapter, we provide introductions and brief derivations of the methods used in this thesis, as well as references for more details. We keep it as general as possible, as the expressions specifically tailored towards the forward map will be presented in the results Chapter~\ref{ch:res}.
-We begin by introducing a general hierarchical Bayesian approach to an inverse problem.
-Next, we provide the basics of Metropolis-Hastings sampling, more specifically, the essentials of Markov-Chain Monte Carlo (MCMC) methods.
-Further, we explain how we approximate functions using a Tensor-Train (TT) approach, which enables us to calculate marginals from the posterior distribution cheaply.
-Then, we elaborate on the Wasserstein distance for assessing upper error bounds.
-Lastly, we provide some background information on affine maps and the Tikhonov regularisation method.
+In this chapter, we introduce and briefly derive the methods used throughout this thesis, and provide references for further reading. We keep it as general as possible, as the expressions specifically tailored towards the forward map will be presented in the results Chapter~\ref{ch:res}.
+We begin by outlining a general hierarchical Bayesian approach to inverse problems.
+This is followed by some fundamentals of Markov Chain Monte Carlo (MCMC) methods, a specific example of a Metropolis-Hastings algorithm and the randomise then optimise (RTO) method. 
+Further, we present the TT format, which allows to approximate high-dimensional functions and calculate marginal probability distributions cheaply.
+Lastly, we provide some background information on the Wasserstein distance, affine maps and the Tikhonov regularisation method.
 
 
 \section{Hierarchical Bayesian Inference}
@@ -29,13 +28,13 @@ Lastly, we provide some background information on affine maps and the Tikhonov r
 		\node[align=center] at (2.5,0) (At) {$\{\bm{A}(\bm{x})\}$ "noise free data"};
 		\node[align=center] at (3,-1.5) (ut) {space of all measurables};
 		\node[align=center] at (2,-3.5) (yt) {$\sim \pi_{\bm{y}}(\cdot|\bm{x},\bm{\theta})$ data};
-		\node[align=center] at (-3,0) (nt) {noise};
+		\node[align=center] at (-3.25,0) (nt) {noise\\$\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$};
 	\end{tikzpicture}
-	\caption[Hierarchical Bayesian Inference]{The directed acyclic graph (DAG) for an inverse problem visualises statistical dependencies as solid line arrows and deterministic dependencies as dotted arrows.
+	\caption[Hierarchical Bayesian Model]{The directed acyclic graph (DAG) for an inverse problem visualises statistical dependencies as solid line arrows and deterministic dependencies as dotted arrows.
 		The hyper-parameters $\bm{\theta}$ are distributed as the hyper-prior distribution $\pi(\bm{\theta})$.
-		The prior distribution $ \pi_{\bm{x}}(\cdot|\bm{\theta})$ for the parameter $\bm{x}$ and the noise are statistically dependent on some of those hyper-parameters.
-		Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is mapped onto the space of all measurables $\bm{\Omega}=\bm{A}(\bm{x})$ deterministically through the forward model.
-		From the space of all measurable noise free data we observe a data set $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}$ with some random noise $ \bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$, which determines the likelihood function $\pi(\bm{y}|\bm{x},\bm{\theta})$. }
+		The prior distribution $ \pi_{\bm{x}}(\cdot|\bm{\theta})$ for the parameter $\bm{x}$ and the noise $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$ are statistically dependent on some of those hyper-parameters.
+		Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is mapped onto the space of all measurables $\Omega=\bm{A}(\bm{x})$ deterministically through the forward model.
+		From the space of all measurable noise free data we observe a data set $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}$ with some additive random noise, which determines the likelihood function $\pi(\bm{y}|\bm{x},\bm{\theta})$.}
 	\label{fig:FirstDAG}
 \end{figure}
 
@@ -47,18 +46,20 @@ Assume we observe some data
 	\label{eq:NonLinDat}
 \end{align}
 based on a forward model $\bm{A}(\bm{x})$, which may be non-linear, a unknown parameter $\bm{x}$ and some additive random noise $\bm{\eta}$.
-Naturally, due to the noise, which we classify through a hyper-parameter, we deal with a random process, and we wish to include that in our hierarchically ordered modelling.
+Naturally, due to the noise, which we classify through a hyper-parameter, we deal with a random process, and we wish to incorporate that in our hierarchically ordered modelling.
 Then define the likelihood function $\pi(\bm{y}|\bm{\theta},\bm{x})$ according to the nature of the noise as well as all relevant information about the measurement process, captured by the model $\bm{A}(\bm{x})$.
-We read $\pi(\bm{y}|\bm{\theta},\bm{x})$ as the distribution over $\bm{y}$ conditioned on $\bm{x}$ and $\bm{\theta}$, and $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$ as $\bm{\eta}$ is distributed as $\pi_{\bm{\eta}}(\cdot|\bm{\theta})$.
+We read $\pi(\bm{y}|\bm{\theta},\bm{x})$ as the distribution over $\bm{y}$ conditioned on $\bm{x}$ and $\bm{\theta}$.
+If we write $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$, $\sim$ reads as ``is distributed as''.
 Here $\bm{\theta}$ may account for multiple hyper-parameters, e.g. describing the distribution $\pi_{\bm{\eta}}(\cdot|\bm{\theta})$ over the noise vector $\bm{\eta}$, and describing physical properties or functional dependencies of $\bm{x}$, e.g. smoothness, trough the prior distribution $\pi(\bm{x}|\bm{\theta})$.
 Consequently we define a hyper-prior distribution $\pi(\bm{\theta})$, where $\pi(\bm{x}, \bm{\theta}) = \pi(\bm{x}|\bm{\theta}) \pi(\bm{\theta}) $.
 Choosing these prior distributions is ultimately a modeller's choice and crucial, as it shall not affect the posterior distribution 
 \begin{align}
 	\pi(\bm{x},\bm{\theta}|\bm{y}) = \frac{ \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta})}{\pi(\bm{y})} \propto \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}, \bm{\theta}) \, ,
 \end{align}
-which according to Bayes' theorem, gives us a distribution of $\bm{x}$ and $\bm{\theta}$ given (conditioned on) the data.
+which, according to Bayes' theorem, gives us a distribution of $\bm{x}$ and $\bm{\theta}$ given (conditioned on) the data, with finite $\pi(\bm{y})$.
 Note that here we include the hyper-parameters within the posterior distribution, which is the key idea of hierarchical Bayesian modelling, as we not only aim to quantify the posterior distribution over the parameters $\bm{x}$, but also the posterior distribution over the hyper-parameter $\bm{\theta}$.
 We can visualise this hierarchically-ordered correlation structure between parameters as well as how distributions progress through a measurement process, using a directed acyclic graph (DAG), see Figure~\ref{fig:FirstDAG}.
+
 
 The expectation of any function $h(\bm{x})$, is described as 
 \begin{align}
@@ -71,23 +72,24 @@ If that is a high-dimensional integral and computationally not feasible to solve
 \end{align}
 with an the unbiased sample-based Monte-Carlo estimate \cite{roberts2004general} for large enough $N$ (law of large numbers \cite[Chapter 17]{tweedie2009measprob}).
 Here, the samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
-The central limit theorem states that the sample mean $ \bm{\mu}^{(i)}_{\text{samp}} = \text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})]$ of independent sample sets $\mathcal{M}_i$ for $i = 1, \dots, n$ of any distribution, converges to be normally distributed, so that
+The central limit theorem states that the sample mean $ \bm{\mu}^{(i)}_{\text{samp}} = \text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})]$ of independent sample sets $\mathcal{M}^{(i)}$ for $i = 1, \dots, n$ of any distribution, converges to be normally distributed, so that
 \begin{align}
 	\sqrt{n} (\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
 \end{align}
 and if $\sigma^2 < \infty$ the Monte-Carlo error $\bm{\mu}^{(i)}_{\text{samp}} -  \bm{\mu}_{\text{int}} $ is bounded.
-
-The estimation error $(\sigma^{(i)})^2 =  \text{var}(\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})]) $ can be approximated by:
+We approximate the estimation error from a sample set $\mathcal{M}^{(i)}$ as
 \begin{align}
-	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, . \label{eq:MCerr}
+	(\sigma^{(i)})^2  =  \text{var}(\text{E}_{\bm{x},\bm{\theta}|\bm{y}} [h(\bm{x})]) \approx  \frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \frac{\Gamma(t)}{\Gamma(0)} }_{ \coloneqq 	2\tau_{\text{int}} } \coloneqq \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
 \end{align}
-Here $\rho(t) \longrightarrow 0$ for $t \rightarrow \infty$ is the normalised autoccoraltino coeffciten at lag $t$ and  $\tau_{\text{int}}$ is the integrated autocorrelation time (IACT) as in \cite[pp. 103-105]{wolff2002LecNot}.
-We have to consider the IACT within our error estimate since samples in a sample set generated by any system or algorithm are correlated.
-The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
-According to that we define the effective sample size as $ 2 \tau_{\text{int}} /N$.
-Since the IATC is an estimate itself \cite{wolff2004monte} provides a way to not only calculate the IACT but also quantifies the errors of the estimated IACT.
-We point out that for uncorrelated smaples $2\tau_{\text{int}} = 1$ and the error $(\sigma^{(i)})^2$ is a typical Monte-Carlo estimate.
-See Appendix \ref{ap:IATC} and \cite{Sokal1997, wolff2002LecNot} for a more detailed derivation.
+where we have to consider that the samples generated by any system or algorithm are correlated.
+Here the autocorrelation coefficient $\Gamma(t) \longrightarrow 0$ for $t \rightarrow \infty$ at lag $t$ decays exponentially and $\Gamma(0) =\text{var}(h(\bm{x}) ) $.
+We define the integrated autocorrelation time (IACT) $\tau_{\text{int}}$ as in \cite[pp. 103-105]{wolff2002LecNot}.
+
+The IACT provides a good estimate of the number of steps the sampling algorithm needs to take to produce one independent sample.
+According to that, we define the effective sample size as $ 2 \tau_{\text{int}} /N$.
+Since the IACT is an estimate itself, U. Wolff \cite{wolff2004monte} (and the Python implementation by D. Hesse \cite{drikHesse}) provides a way to not only calculate the IACT but also to quantify the errors of the estimated IACT.
+We point out that for uncorrelated samples $2\tau_{\text{int}} = 1$ the error $(\sigma^{(i)})^2$ is a typical Monte-Carlo estimate.
+See Appendix \ref{ap:IATC} and \cite{Sokal1997, wolff2004monte, wolff2002LecNot} for a more detailed derivation.
 
 \subsection{Marginal and then Conditional Method}
 Generating a representative sample set quickly from the posterior distribution often presents a significant challenge. This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in \cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
@@ -110,8 +112,8 @@ Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovarian
 		&= \mathbb{E}_{\bm{\theta} |  \bm{y}} \left[ \mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} [h(\bm{x})] \right] \, ,
 	\label{eq:fullCond}
 \end{align}
-where, in the case of a linear-Gaussian hierarchical Bayesian model, both the marginal distribution and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}) \right]$ are well defined (see next subsection).
-If the integral in Eq. \ref{eq:2fullCond} is expensive to calculate, we use sample based methods to produce a Markov chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) $ and sample from $\pi(\bm{\theta} |  \bm{y})$ first and then draw samples the conditional $\pi(\bm{x} | \bm{\theta} , \bm{y})$. 
+where, in the case of a linear-Gaussian hierarchical Bayesian model, both the marginal distribution $\pi (\bm{\theta}| \bm{y})$ and the inner expectation $\mathbb{E}_{\bm{x} |  \bm{\theta}, \bm{y}} \left[ h(\bm{x}) \right]$ are well defined (see next subsection).
+If the integral in Eq. \ref{eq:2fullCond} is expensive to calculate, we use sample based methods to produce a Markov chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) $ and sample from $\pi(\bm{\theta} |  \bm{y})$ first and then draw samples from the conditional $\pi(\bm{x} | \bm{\theta} , \bm{y})$. 
 
 
 
@@ -156,8 +158,8 @@ Then the marginal posterior distribution over the hyper-parameters can be derive
 		\pi(\bm{\theta} | \bm{y}) \propto & \sqrt{\frac{\det{(\bm{\Sigma}(\bm{\theta})^{-1})} \det{(\bm{Q}(\bm{\theta}))} }{\det{(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})} } }  \exp \Bigg\{  -\frac{1}{2} (\bm{y} - \bm{A} \bm{\mu})^T \\ &\big[ \bm{\Sigma}(\bm{\theta})^{-1} - \bm{\Sigma}(\bm{\theta})^{-1} \bm{A}  (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1} \bm{A}^T \bm{\Sigma} (\bm{\theta})^{-1} \big] (\bm{y} - \bm{A} \bm{\mu}) \Bigg\} \pi(\bm{\theta}) \, .
 	\end{split} 
 \end{align} 
-Having the marginal posterior distribution  $\pi (\bm{\theta}| \bm{y})$ (independent of $\bm{x}$) available breaks up the correlation structure between $\bm{x}$ and $\bm{\theta}$ (see Appendix \ref{ap:Correlation}), and makes the MTC approach very efficient \cite{fox2016fast}.
-Within this scheme we evaluate the marginal posterior first and then either condition on hyper-parameters to draw conditional posterior samples $\bm{x} \sim \pi (\bm{x} | \bm{\theta}, \bm{y})$ (see Sec. \ref{subsec:RTO}) or evaluate mean
+Having the marginal posterior distribution $\pi (\bm{\theta}| \bm{y})$ (independent of $\bm{x}$) available breaks up the correlation structure between $\bm{x}$ and $\bm{\theta}$ (see Appendix \ref{ap:Correlation}), and makes the MTC approach very efficient \cite{fox2016fast}.
+Within this scheme, we evaluate the marginal posterior first and then either condition on hyper-parameters to draw conditional posterior samples $\bm{x} \sim \pi (\bm{x} | \bm{\theta}, \bm{y})$ (see Sec. \ref{subsec:RTO}) or evaluate the mean
 \begin{align}
 	\mu_{\bm{x}|\bm{y}} = \int \bm{\mu}_{\bm{x} | \bm{\theta} , \bm{y}} \pi(\bm{\theta}| \bm{y}) \diff \bm{\theta} \label{eq:MeanGenInt}
 \end{align} and covariance matrix
@@ -168,13 +170,13 @@ of the full posterior $\pi(\bm{x}| \bm{y})$ by some quadrature rule.
 
 \section{Sampling Methods}
 \label{sec:sampling}
-In this section we present the methods that draw samples from the marginal posterior $ \mathcal{M} = \{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} \sim \pi(\bm{\theta} |  \bm{y})$ as well as the randomise then optimise (RTO) method to draw samples from a normally distributed conditional posterior $\pi(\bm{x}|\bm{\theta} , \bm{y})$.
+In this section we present the methods that draw samples from the marginal posterior $ \mathcal{M} = \{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} \sim \pi(\bm{\theta} |  \bm{y})$ as well as the RTO method to draw samples from a normally distributed conditional posterior $\pi(\bm{x}|\bm{\theta} , \bm{y})$.
 Here, $\mathcal{M}$ denotes a Markov chain, where each new sample $\bm{\theta}^{(k)}$ is only affected by the previous one, $\bm{\theta}^{(k-1)}$.
-Markov chain Monte Carlo (MCMC) methods generate such a chain $\mathcal{M}$ using random (Monte Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |  \bm{\theta}^{(k-1)})$ according to a proposal distribution conditioned on the previous sample (Markov), where ergodicity of the chain $\mathcal{M}$ is a sufficient criterion for using sample-based estimates~\cite{tan2016LecNot, roberts2004general}.
+MCMC methods generate such a chain $\mathcal{M}$ using random (Monte-Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |  \bm{\theta}^{(k-1)})$ according to a proposal distribution conditioned on the previous sample (Markov), where ergodicity of the chain $\mathcal{M}$ is a sufficient criterion for using sample-based estimates~\cite{tan2016LecNot, roberts2004general}.
 
 The ergodicity theorem in~\cite{tan2016LecNot} states that, if a Markov chain $\mathcal{M}$ is aperiodic, irreducible, and reversible, then it converges to a unique stationary equilibrium distribution.
-In other words, the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and satisfes the detailed balance condition~\cite{tan2016LecNot} (reversibility).
-Then the chain converges to the desired target distribution  with $ \mathcal{M} \sim \pi( \bm{\theta} |  \bm{y})$.
+In other words, the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and satisfies the detailed balance condition~\cite{tan2016LecNot} (reversibility).
+Then the samples in that chain $ \mathcal{M} \sim \pi( \bm{\theta} |  \bm{y})$ are samples from the desired target distribution.
 In practice, one can inspect the trace $\pi(\bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence and mixing properties of the chain to evaluate ergodicity.
 The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details.
 
@@ -188,7 +190,7 @@ With $\bm{\theta} = (\theta_1, \theta_2)$, we perform a Metropolis step in the $
 Ergodicity for this approach is proven in~\cite{roberts2006harris}.
 
 
-The Metropolis-within-Gibbs algorithm begins with an initial guess $\bm{\theta}^{(t)}$ at $t=0$. We then propose a new sample $\theta_1 \sim q(\theta_1 |  \theta_1^{(t-1)})$, conditioned on the previous state, using a symmetric proposal distribution $q(\theta_1 |  \theta_1^{(t-1)}) = q(\theta_1^{(t-1)} |  \theta_1)$, which is a special case of the Metropolis-Hastings algorithm~\cite{roberts2006harris}.
+The MWG algorithm starts at the initial guess $\bm{\theta}^{(t)}$ at $t=0$. We then propose a new sample $\theta_1 \sim q(\theta_1 |  \theta_1^{(t-1)})$, conditioned on the previous state, using a symmetric proposal distribution $q(\theta_1 |  \theta_1^{(t-1)}) = q(\theta_1^{(t-1)} |  \theta_1)$, which is a special case of the Metropolis-Hastings algorithm~\cite{roberts2006harris}.
 We accept and set $\theta_1^{(t)} = \theta_1$ with the acceptance probability
 \begin{align}
 	\alpha(\theta_1 |  \theta_1^{(t-1)}) = \min \left\{ 1, \frac{\pi(\theta_1 |  \theta_2^{(t-1)}, \bm{y}) \, \cancel{q(\theta_1^{(t-1)} |  \theta_1)}}{\pi(\theta_1^{(t-1)} |  \theta_2^{(t-1)}, \bm{y}) \, \cancel{q(\theta_1 |  \theta_1^{(t-1)})}} \right\}
@@ -197,7 +199,7 @@ or reject and keep $\theta_1^{(t)} = \theta_1^{(t-1)}$, which we do by comparing
 
 Next, we perform a Gibbs step in the $\theta_2$ direction, where Gibbs sampling is again a special case of the Metropolis-Hastings algorithm with acceptance probability equal to one, and draw the next sample $\theta_2^{(t)} \sim \pi(\cdot |  \theta_1^{(t)}, \bm{y})$, conditioned on the current value $\theta_1^{(t)}$. 
 
-We repeat this procedure $N^{\prime}$ times and ensure convergence independently of the initial sample (irreducibility) by discarding the initial $N_{\text{burn-in}}$ samples after a so-called burn-in period, resulting in a Markov chain of length $N = N^{\prime} - N_{\text{burn-in}}$.
+We repeat this procedure $N^{\prime}$ times and ensure convergence independently of the initial sample (irreducibility) by discarding $N_{\text{burn-in}}$ initial samples after a burn-in period, resulting in a Markov chain of length $N = N^{\prime} - N_{\text{burn-in}}$.
 
 \begin{algorithm}[!ht]
 	\caption{Metropolis within Gibbs}
@@ -222,19 +224,21 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 
 
 \subsection{\texttt{T-walk} Sampler as a Black Box}
-If the number of hyper-parameters is large, we sample from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the \texttt{t-walk} sampler as by Christen and Fox~\cite{christen2010general}. 
+If the number of hyper-parameters is large, we sample from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the \texttt{t-walk} sampler as by Christen and Fox~\cite{christen2010general}, because it is an easy-to-use and implement sampler.
 The \texttt{t-walk} is employed as a black-box algorithm in default settings, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
-Convergence to the target distribution is guaranteed by construction of this algorithm.
+Convergence to the target distribution is guaranteed by the construction of this algorithm.
 
 
 \subsection{Randomise then Optimise}
 \label{subsec:RTO}
-If it is computationally not feasible to calculate the mean and the covariance matrix of the full posterior (see Eq. \ref{eq:MeanGenInt} and \ref{eq:CoVarGenInt}) via quadrature due to a larger number of hyper-parameters, e.g. $\bm{\theta} \in \mathbb{R}^{n_{\bm{\theta}}}$ and $n_{\bm{\theta}} \geq 4$, we need an alternative way to characterise $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
-For the linear-Gaussian Bayesian model we can draw samples from the normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the RTO~\cite{bardsley2012mcmc} scheme after sampling from the marginal posterior $\pi(\bm{\theta} |  \bm{y})$.
+If it is computationally not feasible to calculate the mean and the covariance matrix of the full posterior (see Eq. \ref{eq:MeanGenInt} and \ref{eq:CoVarGenInt}) via quadrature due to a large number of hyper-parameters, e.g. $\bm{\theta} \in \mathbb{R}^{n_{\bm{\theta}}}$ and $n_{\bm{\theta}} \geq 4$, we need an alternative way to draw samples from $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
+For the linear-Gaussian Bayesian model, we can draw samples from the normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the RTO~\cite{bardsley2012mcmc}, conditioned on $\bm{\theta}$.
 
-The conditional distribution as in Eq. \ref{eq:CondPostLin} can be rewritten as
+The conditional distribution, as in Eq. \ref{eq:CondPostLin}, can be rewritten as
 \begin{align}
-	\pi(\bm{x} | \bm{\theta},  \bm{y}) = \exp \left( -\left\lVert \hat{\bm{A}} \bm{x} - \hat{\bm{y}} \right\rVert_{L^2}^2 \right),
+	\pi(\bm{x} | \bm{\theta},  \bm{y}) & \propto \pi(\bm{y}|\bm{x}, \bm{\theta}) \pi(\bm{x}| \bm{\theta})\\
+	&\propto \exp \left(-\frac{1}{2} (\bm{A}_{\bm{\theta}} \, \bm{x} - \bm{y})^T \bm{\Sigma}^{-1}_{\bm{\theta}} (\bm{A}_{\bm{\theta}} \,  \bm{x} - \bm{y})\right) \exp \left(-\frac{1}{2} (\bm{\mu} - \bm{x} )^T \bm{Q}_{\bm{\theta}}(\bm{\mu} - \bm{x} ) \right),\\
+	& = \exp \left( - \frac{1}{2}\left\lVert \hat{\bm{A}} \bm{x} - \hat{\bm{y}} \right\rVert_{L^2}^2 \right),
 \end{align}
 where we define
 \begin{align}
@@ -248,12 +252,12 @@ where we define
 	\begin{bmatrix}
 		\bm{\Sigma}_{\bm{\theta}}^{-1/2} \bm{y} \\
 		\bm{Q}_{\bm{\theta}}^{1/2} \bm{\mu}
-	\end{bmatrix} \quad \text{\cite{bardsley2014randomize}}.
+	\end{bmatrix} \quad \text{\cite{bardsley2014randomize,BardsleyTC2019RTO}}\, ,
 \end{align}
-Here we define $\bm{A}(\bm{\theta}) \coloneqq \bm{A}_{\bm{\theta}}$, $\bm{Q}(\bm{\theta}) \coloneqq \bm{Q}_{\bm{\theta}} $ and $\bm{\Sigma}^{-1}(\bm{\theta})\coloneqq \bm{\Sigma}^{-1}_{\bm{\theta}}$, which are all dependent on the hyper-parameters $\bm{\theta}$.
-A sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}, \bm{y}) $ from the conditional posterior is obtained by minimising the following equation with respect to $\hat{\bm{x}}$ :
+with $\bm{A}(\bm{\theta}) \coloneqq \bm{A}_{\bm{\theta}}$, $\bm{Q}(\bm{\theta}) \coloneqq \bm{Q}_{\bm{\theta}} $ and $\bm{\Sigma}^{-1}(\bm{\theta})\coloneqq \bm{\Sigma}^{-1}_{\bm{\theta}}$, which are all dependent on the hyper-parameters $\bm{\theta}$.
+A sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}, \bm{y}) $ from the conditional posterior is obtained by minimising the following equation with respect to $\bm{x}$ :
 \begin{align}
-	\bm{x}^{(k)} = \arg \min_{\hat{\bm{x}}} \lVert \hat{\bm{A}} \hat{\bm{x}} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
+	\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
 \end{align}
 where we add a randomised perturbation $\bm{b}$.
 Similar to Section~\ref{sec:regularise}, this expression can be rewritten as
@@ -269,13 +273,13 @@ with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_
 \section{Numerical Approximation -- Tensor-Train (TT)}
 \label{sec:tensortrain}
 %\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
-Instead of sampling from a target distribution $\pi(\bm{x})$ we can approximate that distribution on a d-dimensional grid with far fewer function evaluation compared to sampling methods using a tensor-train (TT) approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, with  $\bm{x}\in \mathbb{R}^d$.
 %First, we provide a short overview of probability spaces and their associated measures. 
 %I am not claiming this overview to be complete but consider it helpful to understand the notation in \cite{cui2022deep}, which we follow to approximate functions in the TT format.
-Here, we explain how to calculate marginal distribution from an approximated probaility density in the TT format and generate samples via the inverse Rosenblatt transform (IRT), following the notation of \cite{cui2022deep},
+Instead of relying on sampling-based methods to explore a target distribution $\pi(\bm{x})$, we can approximate this distribution on a $d$-dimensional grid using a TT approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, where $\bm{x} \in \mathbb{R}^d$,with far fewer function evaluation compared to conventional sampling methods.
+In the following, we describe how to compute marginal distributions from a probability density approximated in TT format and how to generate samples using the inverse Rosenblatt transform (IRT), following the notation and procedure introduced by Cui et al.~\cite{cui2022deep}.
 
 As in~\cite{cui2022deep}, we can define the parameter space as the product space $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$ and $\bm{x} = ( x_1,\dots ,x_k,\dots,x_d )$.
-Then marginal density function for the $k$-th component is then given by
+The marginal density function for the $k$-th component is then given by
 \begin{align}
 	f_{X_k}(x_k) = \frac{1}{z} \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_d} \uplambda(\bm{x}) \, \pi(\bm{x}) \, \diff x_1 \cdots \diff x_{k-1} \, \diff x_{k+1} \cdots \diff x_d, \label{eq:margInt}
 \end{align}
@@ -285,13 +289,13 @@ Here, we introduce a weight function $\uplambda(x)$, which can be useful for qua
 	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \diff x_i. \label{eq:lebesgueWeight}
 \end{align}
 
-In the TT format, the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost as $\pi(\bm{x})$ is approximated by
+In the TT format, the integral in Eq. \ref{eq:margInt} for the marginal probability can be computed at a low computational cost, as $\pi(\bm{x})$ is approximated by
 \begin{align*}
-	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d)  \in \mathbb{R},
+	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d),
 \end{align*}
 which is a sequence of matrix multiplications, with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$ for a fixed point $\bm{x} = (x_1, \dots, x_d)$ on a predefined $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$. 
-We call $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ a TT-core with ranks $ r_{k-1} = r_k= r$, where the outer ranks are $r_0 = r_d = 1$, representing each dimension on $n$ grid points and connecting to neighbouring dimensions through its ranks.
-This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d$ over the parameter space $\mathcal{X}$ using $2nr + (d-2)nr^2$ evaluation points, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluation.
+We call $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ a TT core with ranks $ r_{k-1}$ and $r_k$, where the outer ranks are $r_0 = r_d = 1$, representing each dimension on $n$ grid points and connecting to neighbouring dimensions through its ranks.
+This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d$ over a discrete parameter space $\mathcal{X}$ using $2nr + (d-2)nr^2$ evaluation points for fixed ranks $r =r_{k-1} = r_k $, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluation.
 Consequently, the marginal target distribution
 \begin{align}
 	\begin{split}
@@ -304,7 +308,7 @@ Consequently, the marginal target distribution
 		\Big| 
 	\end{split}
 \end{align}
-is computed by integrating over all TT cores except $\pi_k$, as in~\cite{dolgov2020approximation}, including a normalisation constant $z$~\cite{cui2022deep}.
+is computed by integrating over all TT cores except the $k$th core $\pi_k$, as in~\cite{dolgov2020approximation}, and normalised by the constant $z$~\cite{cui2022deep}.
 
 \begin{figure}[ht!]
 	\centering
@@ -329,28 +333,28 @@ is computed by integrating over all TT cores except $\pi_k$, as in~\cite{dolgov2
 \end{tikzpicture} 
 	\caption{}
 \end{subfigure}
-\caption[Visualisation of a tensor train]{Here, we visualise the tensor train cores as two- and three-dimensional matrices. 
-Each core has a length $n$, corresponding to the number of grid points in one dimension, and the cores are connected through ranks $r_k$. 
+\caption[Visualisation of a tensor train]{Here, we visualise the TT cores as a train of two- and three-dimensional matrices. 
+Each core has a length $n$, corresponding to the number of grid points in each dimension, and the cores are connected through ranks $r_k$. 
 More specifically, a core $\tilde{\pi}_k$ has dimensions $r_{k-1} \times n \times r_k$, with outer ranks $r_0 = r_d = 1$.
-Using the TT-format enables us to represent a $d$-dimensional grid with only $2nr + (d-2)nr^2$ evaluation points instead of $n^d$ grid points.
+Using the TT format enables us to represent a $d$-dimensional grid with only $2nr + (d-2)nr^2$ evaluation points instead of $n^d$ grid points.
 Figure~(a) is adapted from~\cite{fox2021grid}.}
 \label{fig:TTfig}
 \end{figure}
 
 
 %%%%%% Squared and Basis Function %%%%%
-In practice, tensor train approximations may suffer from numerical instability, in particular because it is not advantageous to approximate the target function $\pi(\bm{x})$ in e.g. the logarithmic space. 
+In practice, TT approximations may suffer from numerical instability, in particular because it is not advantageous yet to approximate the target function $\pi(\bm{x})$ in e.g. the logarithmic space. 
 Hence, Cui et al.~\cite{cui2022deep} approximate the square root of the probability density
 \begin{align}
 	\sqrt{\pi(\bm{x})} \approx \tilde{g}(\bm{x}) = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\, \,  \text{\cite[Eq. 18]{cui2022deep}},
 \end{align}
-which ensures positivity.
+which ensures positivity and intuitively ``reduces the range of numbers'' (excuse this unmathematical expression).
 Here, each TT-core is given by
 \begin{equation}
 	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, \dots, d,\, \,  \text{\cite[Eq. 21]{cui2022deep}},
 \end{equation}
 where $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the $k$-th coefficient tensor and $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ are the basis functions corresponding to the $k$-th coordinate.
-The approximated unnormalised density is written as:
+The approximated un-normalised density is written as:
 \begin{align}
 	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2\, \,  \text{\cite[Eq. 19]{cui2022deep}},
 \end{align}
@@ -362,7 +366,7 @@ This leads to the normalised target function
 \begin{align}
 	f_X(\bm{x})  \approx \frac{1}{z} \left( \uplambda(\bm{x}) \xi  + \uplambda(\bm{x}) \tilde{g}(\bm{x})^2 \right)\, \,  \text{\cite[Eq. 19]{cui2022deep}},
 \end{align}
-which is the normalisation constant $z = \int_{\mathcal{X}} f_X(\bm{x}) \diff \bm{x} $.
+with the normalisation constant $z = \int_{\mathcal{X}} f_X(\bm{x}) \diff \bm{x} $.
 Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{X_k}(x_k)$ can be expressed as
 \begin{align}
 	\begin{split}
@@ -378,10 +382,9 @@ Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{
 
 
 
-\subsection{Marginal Functions}
+\subsection{Marginal Probability Distributions}
 \label{subsec:TTMarg}
-TT-approximations are handy when approximating integrals, as marginal functions can be easily computed which may simplify the integration significantly.
-We compute those by a procedure, to which Cui et al. \cite{cui2022deep} refer to as backwards marginalisation, see Prop. \ref{prob:ForMarg}, and to which I add the forward marginalisation, see Prop. \ref{prob:backMarg}. 
+We compute the marginal probability distributions by a procedure, to which Cui et al. \cite{cui2022deep} refer to as backwards marginalisation, see Prop. \ref{prob:ForMarg}, and to which I add the forward marginalisation, see Prop. \ref{prob:backMarg}. 
 This is similar to the left and right orthogonalisation of TT-cores~\cite{oseledets2011tensor, Oseledets2011DMRG}.
 The backwards marginalisation provides us with the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{B}_{\text{pre}, k}$. 
 These matrices enable the efficient evaluation of marginal functions since they integrate over the coordinates either left or right of the $k$-th dimension, as in \cite{cui2022deep}.
@@ -394,7 +397,7 @@ The proposition used to compute $\bm{B}_k$, stated in Prop.\ref{prob:backMarg}, 
 
 \begin{prop}[Backwards Marginalisation as in~\cite{cui2022deep}]
 	\label{prob:backMarg}
-	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k-1} \in \mathbb{R}^{r_{k-2} \times n_{k-1} \times r_{k-1}}$, which we need for defining the marginal function $f_{X_k}(x_k)$:
+	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k} \in \mathbb{R}^{r_{k-1} \times n_{k} \times r_{k}}$, which we need for defining the marginal function $f_{X_k}(x_k)$ or to draw samples from $\tilde{\pi}(\bm{x})$ via the squared IRT scheme (see Alg. Box \ref{alg:SIRT}):
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
 		\begin{equation}
@@ -413,7 +416,7 @@ The proposition used to compute $\bm{B}_k$, stated in Prop.\ref{prob:backMarg}, 
 
 \begin{prop}[Forward Marginalisation]
 	\label{prob:ForMarg}
-	Starting with the first coordinate $k = 1$, we set $\bm{B}_{\text{pre},1} = \bm{A}_1$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{\text{pre},k+1} \in \mathbb{R}^{r_{k} \times n_{k+1} \times r_{k+1}}$ for defining the marginal function $f_{X_k}(x_k)$:
+	Starting with the first coordinate $k = 1$, we set $\bm{B}_{\text{pre},1} = \bm{A}_1$. The following procedure can be used to obtain $\bm{R}_{\text{pre},k-1} \in \mathbb{R}^{r_{k-1}  \times r_{k-1}}$ for defining the marginal function $f_{X_k}(x_k)$:
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
 		\begin{equation}
@@ -429,7 +432,7 @@ The proposition used to compute $\bm{B}_k$, stated in Prop.\ref{prob:backMarg}, 
 		\end{equation}
 	\end{enumerate}
 \end{prop}
-After computing the coefficient tensors $\bm{B}_{\text{pre}, k+1}$ as in Prop.~\ref{prob:ForMarg} and $\bm{B}_{k+1}$ from Prop.~\ref{prob:backMarg}, the marginal PDF of $k$-th dimension can be expressed as
+After computing the coefficient tensors $\bm{R}_{\text{pre},k-1}$ as in Prop.~\ref{prob:ForMarg} and $\bm{B}_{k}$ from Prop.~\ref{prob:backMarg}, the marginal PDF of $k$-th dimension can be expressed as
 \begin{equation}
 	f_{X_k}(x_k)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \uplambda_k(x_k), \label{eq:MargTT}
 \end{equation}
@@ -446,13 +449,13 @@ For the first dimension, $f_{X_1}(x_1)$ can be expressed as
 where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$,
 and similarly in the last dimension
 \begin{equation}
-	f_{X_d}(x_d)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{n-1}=1}^{r_{d-1}} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_d[l_{n-1},i] \right)^2 \right) \uplambda_d(x_d),
+	f_{X_d}(x_d)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{d-1}=1}^{r_{d-1}} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_d[l_{d-1},i] \right)^2 \right) \uplambda_d(x_d),
 \end{equation}
-where $\bm{D}_d[l_{n-1},i] = \bm{B}_{\text{pre},d}[l_{n-1}, i, \alpha_{n+1}]$ and $\alpha_{d+1} = 1$.
+where $\bm{D}_d[l_{d-1},i] = \bm{B}_{\text{pre},d}[l_{d-1}, i, \alpha_{d+1}]$ and $\alpha_{d+1} = 1$.
 Note that we calculate the normalisation numerically within the process of finding the marginals so that $\sum f_{X_k}(x_k) = 1$.
 
 \subsection{Sampling from a TT Approximation}
-If instead of evaluating integrals we like to draw samples from the approximated function we do this via the inverse Rosenblatt transform (IRT), as in \cite{dolgov2020approximation}, to preserve the correlation structure.
+Instead of evaluating marginal functions for quadrature, we can draw samples from the approximated function via the inverse Rosenblatt transform, as in \cite{dolgov2020approximation}, to preserve the correlation structure.
 Since we approximate the square root of the target function, Cui et. al. \cite{cui2022deep} call that the squared inverse Rosenblatt transform (SIRT).
 
 \begin{algorithm}[!th]
@@ -472,31 +475,32 @@ Since we approximate the square root of the target function, Cui et. al. \cite{c
 	\end{algorithmic}
 	\label{alg:SIRT}
 \end{algorithm}
-We start by calculating the Backward marginals $\bm{B}_1 , \dots,\bm{B}_d$ as in Prop. \ref{prob:backMarg} and draw $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is d-dimensional for $s = 1, \dots, N$.
+Given the Backward marginals $\bm{B}_1 , \dots,\bm{B}_d$ as in Prop. \ref{prob:backMarg}, we draw $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is d-dimensional for $s = 1, \dots, N$.
 Then we calculate the first marginal $f_{X_1}(x_1)$ as in Eq. \ref{eq:firstMarg} and normalise with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$.
-Next, we compute the cumulative distribution function (CDF)
+Next, we compute the cumulative distribution function (CDF) $F_{X_1}(x_k) = \int^{x_k}_{-\infty} f_{X_1}(\hat{x}_1) d \hat{x}_1$, which for the general case is given as:
 \begin{align}
-	F_{X_k|X_{<k}}(x_k) \approx \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\hat{x}_k|x_{k-1},\dots,x_1) \diff \hat{x}_k  \, \, \text{\cite[Eq. 17]{cui2022deep}}
+	F_{X_k|X_{<k}}(x_k) \approx \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\hat{x}_k|x_{k-1},\dots,x_1) \diff \hat{x}_k  \, \, \text{\cite[Eq. 17]{cui2022deep}} \, ;
 	\label{eq:CurrCDF}
 \end{align}
-for the first dimension $k = 1$ and then project the seed  on the parameter space $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$.
+and project the seed $u^{(s)}_k$ on the parameter space, so that $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$.
+The ``conditional marginal'' is given as:
+\begin{align}\begin{split} 
+		f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1) \approx \frac{1}{z}
+		\Bigg( 
+		\xi \prod_{i=k+1}^{d} \uplambda_i(X_i) +&  \\
+		\sum_{l_{k} = 1}^{r_{k}} \Bigg( \sum_{i = 1}^{n}  \phi^{(i)}_k(x^{(s)}_k) \bigg( \sum_{\alpha_{k-1} = 1}^{r_{k-1}} \bm{G}^{(\alpha_{k-1})}_{<k}(x^{(s)}_{<k}) &\bm{B}_k[\alpha_{k-1},i,l_k] \bigg) \Bigg)^2 \Bigg) \uplambda_k(x_k) \, \,  \text{\cite[Eq. 31]{cui2022deep}},
+	\end{split} 
+	\label{eq:CurrMarg} 
+\end{align}
+where we marginalise over the dimensions $k+1 , \dots, d$ via $\bm{B}_k$ and condition on the previous $k-1$ samples through the  product $\bm{G}_k(x^{(s)}_k)\in \mathbb{R}^{1 \times r_{k-1}}$ to preserve the correlation structure.
 Once that is done, we use a piecewise polynomial interpolation
 \begin{align}
 	\bm{G}_k(x^{(s)}_k) \approx   \frac{x^{(s)}_k - x^{(i)}_k }{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i+1)}_k) + \frac{ x^{(i+1)}_k - x^{(s)}_k}{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i)}_k) \, ,
 	\label{eq:LinPol}
 \end{align}
-for $x^{(i)}_k \leq x^{(s)}_k \leq x^{(i+1)}_k$ in between two grid points $i$ and $i+1$ as in \cite{dolgov2020approximation}.
-Through $\bm{G}_k(x^{(s)}_k)\in \mathbb{R}^{1 \times r_{k-1}}$ we condition on the previous samples, which denotes the product of all approximated tensors of the previous $k-1$ samples to preserve the correlation structure.
-Then we marginalise over the dimensions $k+1 , \dots, d$ via $\bm{B}_k$ so that the next "conditional marginal" is given as:
-\begin{align}\begin{split} 
-	 f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1) \approx \frac{1}{z}
-\Bigg( 
-\xi \prod_{i=k+1}^{d} \uplambda_i(X_i) +&  \\
-\sum_{l_{k} = 1}^{r_{k}} \Bigg( \sum_{i = 1}^{n}  \phi^{(i)}_k(x^{(s)}_k) \bigg( \sum_{\alpha_{k-1} = 1}^{r_{k-1}} \bm{G}^{(\alpha_{k-1})}_{<k}(x^{(s)}_{<k}) &\bm{B}_k[\alpha_{k-1},i,l_k] \bigg) \Bigg)^2 \Bigg) \uplambda_k(x_k) \, \,  \text{\cite[Eq. 31]{cui2022deep}}.
-	\end{split} 
-	\label{eq:CurrMarg} 
-\end{align}
-We repeat the procedure for each $u^{(s)}_k \in \bm{u}^{(s)}$ to gain samples $\bm{x}^{(s)} \sim f_{X}(\bm{x})$, see algorithmic box \ref{alg:SIRT} for a summarised version.
+for $x^{(i)}_k \leq x^{(s)}_k \leq x^{(i+1)}_k$ in between two grid points $i$ and $i+1$ as in \cite{dolgov2020approximation} for the next ``conditional marginal''.
+
+We repeat the procedure for each $u^{(s)}_k \in \bm{u}^{(s)}$ to produce samples $\bm{x}^{(s)} \sim f_{X}(\bm{x})$, as summarised in Alg. Box \ref{alg:SIRT}.
 
 
 
@@ -505,7 +509,8 @@ We repeat the procedure for each $u^{(s)}_k \in \bm{u}^{(s)}$ to gain samples $\
 %$  and $\bm{G}_{<k}(x^{(s)}_{<k}) = \bm{G}_{1}(x^{(s)}_{1}) \cdots \bm{G}_{k-1}(x^{(s)}_{k-1}) $ are simple matrix multiplications for each grid point $i$ or sample $\bm{x}^{(s)}$.
 
 
-\subsubsection{MH - correction step}
+\subsubsection{Metropolis-Hastings - correction step}
+Since the samples by the SIRT scheme are generated from an approximation, it is sensible to correct those using a Metropolis-Hastings (MH) importance step.
 \begin{algorithm}[!ht]
 	\caption{MH correction step}
 	\begin{algorithmic}[1]
@@ -524,14 +529,14 @@ We repeat the procedure for each $u^{(s)}_k \in \bm{u}^{(s)}$ to gain samples $\
 	\end{algorithmic}
 	\label{alg:SIRT}
 \end{algorithm}
-Since the samples using the SIRT scheme are samples from an approximation it is sensible to correct those using a Metropolis-Hastings (MH) importance sampler.
-In doing so we compute the acceptance probability $  \alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$, where 
+In doing so, we compute the acceptance probability $  \alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$, where 
 \begin{align}
 	w(x) = \frac{\pi(\bm{x})}{f_X(\bm{x})} = \frac{\pi(\bm{x})}{\gamma + \tilde{g}(\bm{x})^2} 
 \end{align}
 is the importance ratio.
+Note that since we calculate the ratio $w^{(s+1)}/w^{(s)}$ the normalising constants cancel.
 In practise we calculate the importance ratio in the log space, where $\log f_X(\bm{x})  =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ is given as in Eq. \ref{eq:CurrMarg}, see \cite{dolgov2020approximation}.
-We refer to this as the SIRT-MH scheme, which provides the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
+We refer to this as the SIRT-MH scheme, which in theory provides the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
 
 
 \subsection{On the Error of a TT Approximation}
@@ -541,14 +546,15 @@ A straightforward way to asses the error from the TT approximation is to calcula
 \end{align}
 We can approximate the this integral as 
 \begin{align}
-	\Bigg( \frac{1}{N} \sum^{N}_{i =1} \Big(\pi(\bm{x}^{(i)}) - \big(\gamma + \tilde{g}(\bm{x}^{(i)})^2\big)\Big)^2 \uplambda(\bm{x})\Bigg)^{1/2}    \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - \big(\gamma + \tilde{g}(\bm{x})^2\big)\Big)^2 \uplambda(x) \diff \bm{x} \Bigg)^{1/2} 
+	\Bigg( \frac{1}{N} \sum^{N}_{i =1} \Big(\pi(\bm{x}^{(i)}) - \big(\gamma + \tilde{g}(\bm{x}^{(i)})^2\big)\Big)^2 \uplambda(\bm{x}^{(i)})\Bigg)^{1/2}    \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - \big(\gamma + \tilde{g}(\bm{x})^2\big)\Big)^2 \uplambda(\bm{x}) \diff \bm{x} \Bigg)^{1/2} 
 \end{align}
 and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(\bm{x})  \diff \bm{x}$.
 
 
 \subsubsection{Absolute Error Bound}
 \label{subsec:wasser}
-One way to assess the error between two distributions is to calculate the Wasserstein distance, because the Kantorovich-Rubinstein duality, as in \cite{thickstun2019kantorovich, Ambrosio2024Kanta}, says that the 1-Wasserstein distance is equal to the upper bound of differences in expectations of a function $h$ between two probability distributions.
+One way to assess the error between two distributions is to calculate the Wasserstein distance.
+The Kantorovich-Rubinstein duality, as in \cite{thickstun2019kantorovich, Ambrosio2024Kanta}, says that the 1-Wasserstein distance is equal to the upper bound of differences in expectations of a function $h$ between two probability distributions.
 
 We define the 1-Wasserstein distance as
 \begin{align}
@@ -562,15 +568,16 @@ On the other hand (Kantorovich-Rubinstein duality), we can describe the 1-Wasser
 	W_1(\pi,\tilde{\pi})  =& \underset{ \lVert h(\bm{x})- h(\tilde{\bm{x}}) \rVert_{L^2} \leq   \lVert \bm{x} - \tilde{\bm{x}}  \rVert_{L^2} }{ \text{sup}} \Bigg\{  \int_{\mathcal{X}} h(\bm{x}) d \pi (\bm{x})  - \int_{\mathcal{X}} h(\tilde{\bm{x}}) d \tilde{\pi} (\tilde{\bm{x}}) \Bigg\} \\
 	=& \underset{ \lVert h(\bm{x})- h(\tilde{\bm{x}}) \rVert_{L^2} \leq \lVert \bm{x} -\tilde{\bm{x}}  \rVert_{L^2} }{ \text{sup}}  \Bigg\{  \underset{\bm{x} \sim  \pi }{\mathbb{E}} \big[ h(\bm{x}) \big]  -  \underset{\tilde{\bm{x}}\sim \tilde{\pi}}{\mathbb{E}} \big[ h(\tilde{\bm{x}}) \big] \Bigg\} .
 \end{align}
-as the lowest upper bound of differences in expecations of the 1-Lipschitz function $h$ in between the two distributions $\pi$ and $\tilde{\pi}$, with distance measure $c(\bm{x},\tilde{\bm{x}})= \lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2} $ for $\mathcal{X} \in \mathbb{R}^d$.
+as the lowest upper bound of differences in expectations of a 1-Lipschitz function $h$ in between the two distributions $\pi$ and $\tilde{\pi}$, with distance measure $c(\bm{x},\tilde{\bm{x}})= \lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2} $ for $\mathcal{X} \in \mathbb{R}^d$.
+
 For two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(N)}\} \sim \pi$ and $\{\tilde{ \bm{x}}^{(1)},\dots,\tilde{\bm{x}}^{(M)}\} \sim \tilde{\pi}$ the calculation of the Wasserstein distance becomes an optimisation problem, that is to find the best coupling of samples weighted by their distribution value according to an appropriate distance measure \cite{feydy2020OT}.
-More specifically the 1-Wasserstein distance becomes
+More specifically, the 1-Wasserstein distance becomes
 \begin{align}
-W_1(\pi,\tilde{\pi}) = 	\underset{\nu \in \Pi(\pi,\tilde{\pi}) }{\text{min}} \sum^M_{j = 1} \sum^N_{i =1}  \nu_{ij} \lVert\bm{x}^{(i)}  -  \tilde{\bm{x}}^{(j)} \rVert_{L^2} \, , \label{eq:applWasser}
+	W_1(\pi,\tilde{\pi}) = 	\underset{\nu \in \Pi(\pi,\tilde{\pi}) }{\text{min}} \sum^M_{j = 1} \sum^N_{i =1}  \nu_{ij} \lVert\bm{x}^{(i)}  -  \tilde{\bm{x}}^{(j)} \rVert_{L^2} \, , \label{eq:applWasser}
 \end{align}
-where the transport plan $\nu \in \mathbb{R}^{N \times M}_ {\geq 0}$ defines the copling $\nu_{ij} \in \nu $ as $ \nu_{ij} \coloneqq \pi(\bm{x}^{(i)}) \tilde{\pi}(\tilde{\bm{x}}^{(j)})$ similar to \cite[Eq. 3.166]{feydy2020OT}.
+where the transport plan $\nu \in \mathbb{R}^{N \times M}_ {\geq 0}$ defines the coupling $\nu_{ij} \in \nu $ as $ \nu_{ij} \coloneqq \pi(\bm{x}^{(i)}) \tilde{\pi}(\tilde{\bm{x}}^{(j)})$ similar to \cite[Eq. 3.166]{feydy2020OT}.
 Additionally we require that $\sum^N_{i =1} \pi(\bm{x}^{(i)}) = \sum^M_{j = 1} \tilde{\pi}(\tilde{\bm{x}}^{(j)})= 1 $.
-This gives us an upper bound of the absolute error in between the expected value of any 1-Lipschitz function $h$, e.g the upper bound of absolute differences in means related to the probaility measures $\pi$ and $\tilde{\pi}$. 
+This gives us an upper bound of the absolute error in between the expected value of any 1-Lipschitz function $h$, e.g the upper bound of absolute differences in means related to the probability measures $\pi$ and $\tilde{\pi}$. 
 
 %Now consider the 2-Wasserstein distance
 %\begin{align}
@@ -598,13 +605,14 @@ This gives us an upper bound of the absolute error in between the expected value
 \label{sec:affine}
 The forward map, which we introduce in Ch. \ref{ch:formodel}, poses a weakly non-linear forward problem, which we could tackle by treating the problem as a linear problem and then iteratively updating the non-linear part after each parameter sample.
 Instead, we approximate the non-linear model using an affine map $ \bm{M}:\bm{A}_L \rightarrow \bm{A}_{NL}$, which maps from the linear model to the non-linear model, so that we set $ \bm{A} = \bm{M} \bm{A}_{NL} \approx \bm{A}_{NL} $.
-Here, we give a brief introduction to affine maps and present our approach to calculating the affine map deterministically. 
+Here, we give a brief introduction to affine maps.
 Alternatively, one can also determine this map using other methods, e.g. machine learning methods or matrix inversion.
 
 
 An affine map is any linear map between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin, see~\cite[Def. 2.3.1]{berger2009geometry}.
-In other words, an affine map does not need to map to the origin of the associated vector space or be a linear map on vector spaces, including a translation, or, in the words of my supervisor, C. F., an affine map is a Taylor series of first order.
-For more information on affine spaces and maps, we refer to the books \cite{berger2009geometry, katsumi1994affine}
+In other words, an affine map does not need to map to the origin of the associated vector space.
+An affine map is a linear map on vector spaces, including a translation, or, in the words of my supervisor, C. F., a Taylor series of first order.
+For more information on affine spaces and maps, we refer to the books \cite{berger2009geometry, katsumi1994affine}.
 \begin{figure}[ht!]
 	\centering
 	\begin{tikzpicture}
@@ -613,11 +621,10 @@ For more information on affine spaces and maps, we refer to the books \cite{berg
 		\draw[<-, very thick] (NL.west) -- (L.east); 
 		\node[align=center] at (-5.5,-4) (f3) {linear forward model};
 		\node[align=center] at (5.5,-4) (f4) {non-linear forward model};
-		\node[align=center] at (0,-5) (f5) {$\bm{A}_{NL} \bm{x}  \approx \bm{M A}_L  \bm{x} = \bm{A x} $ };
+		\node[align=center] at (0,-5) (f5) {$\bm{A}_{NL} \bm{x}  \approx \bm{M A}_L  \bm{x} $ };
 		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
 	\end{tikzpicture}
-	\caption[Schematics of the affine map]{This Figure shows the schematic representation of the affine map $\bm{M}$, which approximates the non-linear forward model from the linear forward model. Here, $\bm{V}$ contains values produced by the linear forward model, and $\bm{W}$ contains the corresponding values from the non-linear forward model. Both $\bm{V}$ and $\bm{W}$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $\bm{V}$ onto their counterparts in the non-linear forward model space $\bm{W}$.
-	}
+	\caption[Schematics of the affine map]{This Figure shows the schematic representation of how the affine map $\bm{M}$ approximates the non-linear forward model. Here, $\bm{V}$ contains values produced by the linear forward model, and $\bm{W}$ contains the corresponding values from the non-linear forward model. Both $\bm{V}$ and $\bm{W}$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $\bm{V}$ onto their counterparts in the non-linear forward model space $\bm{W}$. More specifically, the non-linear noise-free data vector $\bm{A}_{NL} \bm{x} $ is approximated by the affine map and the linear forward model so that  $\bm{A}_{NL} \bm{x}  \approx  \bm{M A}_L  \bm{x}$.}
 \end{figure}
 \newcommand*{\vertbar}{\rule[-1ex]{0.5pt}{2.5ex}}
 \newcommand*{\horzbar}{\rule[.5ex]{2.5ex}{0.5pt}}
@@ -674,7 +681,7 @@ For more information on affine spaces and maps, we refer to the books \cite{berg
 \section{Regularisation}
 \label{sec:regularise}
 As mentioned in the introduction, the currently most used method to analyse data in atmospheric physics is regularisation-based.
-Since we want to show that our methods are computationally comparable if not faster, and provide more information than regularisation, we choose a linear-Gaussian Bayesian framework closest to our regulariser, see section \ref{sec:BayModel}.
+Since we want to show that Bayesian methods provide more information than regularisation at a similar computational cost, we choose a regularisation approach closest to the linear-Gaussian Bayesian framework in Sec. \ref{sec:BayModelO3}.
 
 The Tikhonov regularisation approach provides one solution $\bm{x}_{\lambda}$ that minimises both the data misfit norm
 \begin{align}
@@ -685,9 +692,9 @@ The Tikhonov regularisation approach provides one solution $\bm{x}_{\lambda}$ th
 \end{align}
 for a given regularisation parameter $\lambda > 0 $ as described in~\cite{fox2016fast}, with a linear forward model matrix $\bm{A}$, the data $\bm{y}$, a regularisation operator $\bm{T}$.
 The regularisation parameter weights the semi-norm and penalises $\bm{x}$ according to that.
-If $\lambda$ is large, then the effect of the data on the solution $\bm{x}_{\lambda}$ is small or negligible.
+If $\lambda$ is large, then the effect of the data on the solution $\bm{x}_{\lambda}$ is small or negligible and dominated by the regulariser.
 If $\lambda$ is small, the solution $\bm{x}_{\lambda}$ will be dominated by the noisy data, resulting in an overfitted $\bm{x}_{\lambda}$.
-We refer to  \cite{hansen1989GSVD} and \cite{tan2016LecNot} for a more comprehensive analysis of the effects of the regularisation parameter on the solution, e.g. due to small singular values of the forward model.
+We refer to  \cite{hansen1989GSVD} and \cite{tan2016LecNot} for a more comprehensive analysis on the effects of the regularisation parameter to the solution, e.g. due to small singular values of the forward model.
 
 For a fixed $\lambda$, the regularised solution
 \begin{align}
@@ -699,7 +706,7 @@ is obtained by taking the derivative with respect to $\bm{x}$:
 	&\iff & \nabla_{\bm{x}} \left\{ \bm{y}^T \bm{y} + \bm{x}^T \bm{A}^T \bm{A} \bm{x} - 2 \bm{y}^T \bm{A} \bm{x} + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
 	&\iff & 2 \bm{A}^T \bm{A} \bm{x} - 2 \bm{A}^T \bm{y} + 2 \lambda \bm{T}^T \bm{T} \bm{x} &= 0,
 \end{align}
-also know as the "regularised normal equations" $\bm{A}^T \bm{y} = \bm{A}^T \bm{A} \bm{x} + \lambda \bm{T}^T \bm{T} \bm{x}$ \cite{Hansen2001LCurve}.
+also know as the ``regularised normal equation'' $\bm{A}^T \bm{y} = \bm{A}^T \bm{A} \bm{x} + \lambda \bm{T}^T \bm{T} \bm{x}$ \cite{Hansen2001LCurve}.
 Solving this equation yields the regularised solution
 \begin{align}
 	\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L})^{-1} \bm{A}^T \bm{y} \, , \label{eq:regSol}
@@ -731,7 +738,7 @@ is the second order derivative with Neumann boundary conditions, see \cite{wang2
 
 In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and evaluated based on the trade-off between the data misfit and the regularisation semi-norm. The optimal value of $\lambda$ corresponds to the point of maximum curvature of the so-called L-curve~\cite{hansen1993use}, where the data misfit norm versus the regularisation semi-norm is plotted, see Fig.~\ref{fig:LCurve}.
 
-Additionally one can think about regularisation as a Lagrange multiplier $ \mathcal {L}(\bm{x}, \lambda) \coloneq\lambda \sqrt{ \bm{x}^T \bm{L} \bm{x}} + \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2} $, which minimises $ \sqrt{ \bm{x}^T \bm{L} \bm{x}} $ with respect to a constant $\lambda$ and $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2}$, see \cite[fn. 6]{fox2016fast} and \cite[Fig. 2.13]{SANTOSH202265}.
+Additionally one can think about regularisation as a Lagrange multiplier $ \mathcal {L}(\bm{x}, \lambda) \coloneqq\lambda \sqrt{ \bm{x}^T \bm{L} \bm{x}} + \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2} $, which minimises $ \sqrt{ \bm{x}^T \bm{L} \bm{x}} $ with respect to constant $\lambda$ and $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2}$, see \cite[fn. 6]{fox2016fast} and \cite[Fig. 2.13]{SANTOSH202265}.
 So every solution $\bm{x}_{\lambda}$ is an extremum (the most regularised solution for a given data misfit norm) and almost every sample of the posterior, which represents a feasible solution given the data, has a higher $\sqrt{ \bm{x}^T \bm{L} \bm{x}}$ value and lays above the L-Curve.
 
 
