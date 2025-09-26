@@ -34,7 +34,7 @@ Lastly, we provide some background information on the Wasserstein distance, affi
 		The hyper-parameters $\bm{\theta}$ are distributed as the hyper-prior distribution $\pi(\bm{\theta})$.
 		The prior distribution $ \pi_{\bm{x}}(\cdot|\bm{\theta})$ for the parameter $\bm{x}$ and the noise $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$ are statistically dependent on some of those hyper-parameters.
 		Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is mapped onto the space of all measurables $\Omega=\bm{A}(\bm{x})$ deterministically through the forward model.
-		From the space of all measurable noise free data we observe a data set $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}$ with some additive random noise, which determines the likelihood function $\pi(\bm{y}|\bm{x},\bm{\theta})$.}
+		From the space of all measurable noise-free data we observe a data set $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}$ with some additive random noise, which determines the likelihood function $\pi(\bm{y}|\bm{x},\bm{\theta})$.}
 	\label{fig:FirstDAG}
 \end{figure}
 
@@ -457,6 +457,7 @@ where $\bm{D}_d[l_{d-1},i] = \bm{B}_{\text{pre},d}[l_{d-1}, i, \alpha_{d+1}]$ an
 Note that we calculate the normalisation numerically within the process of finding the marginals so that $\sum f_{X_k}(x_k) = 1$.
 
 \subsection{Sampling from a TT Approximation}
+\label{subsec:SamplTT}
 Instead of evaluating marginal functions for quadrature, we can draw samples from the approximated function via the inverse Rosenblatt transform, as in \cite{dolgov2020approximation}, to preserve the correlation structure.
 Since we approximate the square root of the target function, Cui et. al.~\cite{cui2022deep} call that the squared inverse Rosenblatt transform (SIRT).
 
@@ -537,7 +538,7 @@ In doing so, we compute the acceptance probability $  \alpha = \text{min}(w^{(s+
 \end{align}
 is the importance ratio.
 Note that since we calculate the ratio $w^{(s+1)}/w^{(s)}$ the normalising constants cancel.
-In practise we calculate the importance ratio in the log space, where $\log f_X(\bm{x})  =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ is given as in Eq. \ref{eq:CurrMarg}, see \cite{dolgov2020approximation}.
+In practise we calculate the importance ratio in the log space, where $\log f_X(\bm{x})  =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ is given as in Eq.~\ref{eq:CurrMarg}, see \cite{dolgov2020approximation}.
 We refer to this as the SIRT-MH scheme, which in theory provides the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
 
 
@@ -548,7 +549,7 @@ A straightforward way to asses the error from the TT approximation is to calcula
 \end{align}
 We can approximate the this integral as 
 \begin{align}
-	\Bigg( \frac{1}{N} \sum^{N}_{i =1} \Big(\pi(\bm{x}^{(i)}) - \big(\gamma + \tilde{g}(\bm{x}^{(i)})^2\big)\Big)^2 \uplambda(\bm{x}^{(i)})\Bigg)^{1/2}    \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - \big(\gamma + \tilde{g}(\bm{x})^2\big)\Big)^2 \uplambda(\bm{x}) \diff \bm{x} \Bigg)^{1/2} 
+	\Bigg( \frac{1}{N} \sum^{N}_{i =1} \Big(\pi(\bm{x}^{(i)}) - \big(\gamma + \tilde{g}(\bm{x}^{(i)})^2\big)\Big)^2 \uplambda(\bm{x}^{(i)})\Bigg)^{1/2}    \approx \Bigg(  \int_{\mathcal{X}} (\pi(\bm{x}) - \big(\gamma + \tilde{g}(\bm{x})^2\big)\Big)^2 \uplambda(\bm{x}) \diff \bm{x} \Bigg)^{1/2} \label{eq:RMSTT}
 \end{align}
 and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(\bm{x})  \diff \bm{x}$.
 

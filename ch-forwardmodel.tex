@@ -7,9 +7,9 @@ We do not include any other instrument-specific details, such as sensor area or 
 	\centering
 	\input{LIMB.pdf_tex}
 	\caption[Schematic of measurement and analysis geometry.]{Schematic of measurement and analysis geometry, not to scale.
-		The stationary satellite, at a constant height $h_\text{sat}$ above Earth, takes $m = 30$ measurements along its line-of-sight defined by the line $\Gamma_j$.
+		The stationary satellite, at a constant height $h_\text{sat}$ above Earth, takes $m$ measurements along its line-of-sight defined by the line $\Gamma_j$.
 		Each measurement has a limb height $\ell_j$, $j=1,2,\dots,m$ defined as the closest distance of $\Gamma_j$ to the Earth's surface.
-		Between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$km, the stratosphere is discretised into $n =34$ layers as illustrated by the solid green lines.}
+		Between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$km, the atmosphere is discretised into $n$ layers as illustrated by the solid green lines.}
 	\label{fig:LIMB}
 \end{figure}
 
@@ -30,14 +30,14 @@ The absorption constant
 \begin{align}
 	k(\nu, T) = L(\nu, T_{\text{ref}}) \frac{Q(T_{\text{ref}})}{Q(T)} \frac{ \exp{\{ - c_2 E^{\prime \prime} / T\}} }{\exp{\{ - c_2 E^{\prime \prime} / T_{\text{ref}} \}}} \frac{ 1- \exp{\{ - c_2 \nu  / T \}} }{1 - \exp{\{ - c_2 \nu / T_{\text{ref}} \}}}
 \end{align}
-is dependent on the line intensity $L(\nu, T_{\text{ref}})$ at reference temperature $T_{\text{ref}} =296K $, the lower-state transition energy $ E^{\prime \prime} $, the second radiation constant $c2=1.4387769\text{cmK}$ all provided by the HITRAN database \cite{gordon2022hitran2020}.
+is dependent on the line intensity $L(\nu, T_{\text{ref}})$ at reference temperature $T_{\text{ref}} =296K $, the lower-state energy $ E^{\prime \prime} $ of the target transition, the second radiation constant $c2=1.4387769\text{cmK}$ all provided by the HITRAN database \cite{gordon2022hitran2020}.
 Since we assume that the measurement device has negligible frequency window we neglect line broadening around $\nu_0$ for the calculations of $L(\nu, T_{\text{ref}})$, which would normally be modelled as a convolution of the normalised Lorentz profile (collisional/pressure broadening) and the normalised Doppler (thermal broadening) profile~\cite{mipas2000handbook}.
 Additionally, we target one specific molecule and calculate $k(\nu, T)$ accordingly, which usually would involve summing the individual absorption constants for multiple radiating molecules weighted by their respective VMR~\cite{mipas2000handbook}.
 The total internal partition function for the lower-state energy is given as:
 \begin{align}
 	Q(T )= g^{\prime \prime} \exp{\{ - \frac{ c_2 E^{\prime \prime} }{T}\}} \, ,
 \end{align}
-with the statistical weight $ g^{\prime \prime}$ (also called the degeneracy factor) accounting for the molecule's non-rotational and rotational energy states(see~\cite{vsimevckova2006einstein}).
+with the statistical weight $ g^{\prime \prime}$ (also called the degeneracy factor) accounting for the molecule's non-rotational and rotational energy states (see~\cite{vsimevckova2006einstein}).
 Under the assumption of local thermodynamic equilibrium (LTE), the black body radiation acts as a source function
 \begin{align}
 	B(\nu,T)   = \frac{2 h c^2 \nu^3}{\exp{\{\frac{hc\nu}{k_B T}\}}-1}\, ,
@@ -88,13 +88,13 @@ See~\cite{tan2016LecNot} for a more comprehensive analysis.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{MeasTangHeight.png}
-	\caption[Tangent heights for different sequences of measurements.]{We plot the tangent heights for different cases of measurements.}
+	\caption[Tangent heights for different sequences of measurements.]{Tangent heights for five different sequences of measurements.}
 	\label{fig:TangHCases}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SingValA.png}
-	\caption[Singular values of linear forward model matrix for different sequences of measurements.]{We plot the singular values of the forward model matrix for different sequences of measurements.
+	\caption[Singular values of linear forward model matrix for different sequences of measurements.]{Singular values of the forward model matrix for different sequences of measurements.
 		The corresponding tangent heights of the test cases are plotted in Fig.~\ref{fig:TangHCases}. The dotted vertical line marks where the singular values are dominated by noise according to a specific SNR.}
 	\label{fig:SingA}
 \end{figure}
@@ -118,20 +118,20 @@ This contradicts the current measurement setup on the AURA MLS~\cite{livesey2006
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SingVecA.png}
-	\caption[First 10 right singular vectors of forward model.]{We plot the first 10 right singular vectors of the forward model matrix for case 5 sequence of measurements, see Fig.~\ref{fig:SingA}. These singular vectors correspond to high singular values of the forward model, see Fig. \ref{fig:SingA}.}
+	\caption[First 10 right singular vectors of forward model.]{First 10 right singular vectors of the forward model matrix for measurements case 5 in Fig.~\ref{fig:SingA}. These singular vectors correspond to high singular values of the forward model in Fig.~\ref{fig:SingA}.}
 	\label{fig:SingVecA}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{MiddleVecA.png}
-	\caption[Right singular vectors 11 to 19 of forward model.]{We plot the right singular vectors with index $i = 11,\dots, 19$ of the forward model matrix for case 5 sequence of measurements, see Fig.~\ref{fig:SingA}.
-		These singular vectors correspond to singular values around the noise level of the measurement, see Fig. \ref{fig:SingA}.}
+	\caption[Right singular vectors 11 to 19 of forward model.]{Right singular vectors with index $i = 11,\dots, 19$ of the forward model matrix for measurements case 5 in Fig.~\ref{fig:SingA}.
+		These singular vectors correspond to singular values around the noise level of the measurement in Fig.~\ref{fig:SingA}.}
 	\label{fig:middleSpace}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{NullVecA.png}
-	\caption[Last 10 right singular vectors of forward model.]{We plot the last 10 right singular vectors of the forward model matrix for the case 5 sequence of measurements, as displayed in Fig.~\ref{fig:TangHCases}. These singular vectors correspond to small singular values of the forward model, see Fig.~\ref{fig:SingA}.}
+	\caption[Last 10 right singular vectors of forward model.]{Last 10 right singular vectors of the forward model matrix for measurements case 5 in Fig.~\ref{fig:SingA}. These singular vectors correspond to small singular values of the forward model in Fig.~\ref{fig:SingA}.}
 	\label{fig:nullSpace}
 \end{figure}
 

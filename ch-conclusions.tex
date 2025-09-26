@@ -1,70 +1,61 @@
 \chapter{Summary and Outlook}
 \label{ch:Concl}
-In this chapter we summarise our result and conclusion and provide an outlook for further work.
-We compare Bayesian model to the regularisation approach and elaborate on the differences between sampling based methods and the TT approximation.
-Lastly, we discuss what our results mean in the physical context of atmospheric modelling and for future deployment of an atmospheric sounder.
+In this chapter, we summarise the key results and conclusions of our work and provide an outlook for future research.
+We compare the Bayesian approach to a regularisation approach and elaborate on the differences between sampling-based methods and the TT approximation.
+Lastly, we situate our results within the broader context of atmospheric modelling and discuss the implications for the future development of an atmospheric limb sounder.
+
 
 
 \section{Regularisation Solution vs. Hierarchical Bayesian Approach}
-To obtain one solution of this inverse problem using a regularisation approach we need 200 solves for $\bm{x}_{\lambda}$.
-Comparing that to the sample based approach we need to draw 1000 samples from the marginal posterior or 400 function evaluations to approximate $\pi(\lambda, \gamma | \bm{x})$ and then 20 evaluations of $\bm{x}_{\lambda}$ and $\bm{B}^{-1}_{\lambda}$ to characterise the full posterior.
-Either method takes a few seconds but we obtain a distribution ozone profiles, which are all feasible solutions to the inverse problem, instead of only one regularised solution.
-Using a Bayesian framework provides true errors, which regularised methods can not.
+Using a regularisation approach, we need 200 solves for $\bm{x}_{\lambda}$ to obtain one solution of this inverse problem.
+In contrast, the hierarchical Bayesian approach involves generating around 1000 samples from the marginal posterior or 400 function evaluations to approximate $\pi(\lambda, \gamma | \bm{x})$, followed by 20 evaluations of $\bm{x}_{\lambda}$ and $\bm{B}^{-1}_{\lambda}$ to characterise the full posterior.
+Regardless, either method has a runtime of less than a second on a basic laptop.
+
+While regularisation yields a single optimal solution, a Bayesian framework provides a distribution of ozone profiles, which are all feasible solutions to the inverse problem, and hence true errors.
+Moreover, within the hierarchical Bayesian approach, we can include prior knowledge about the noise, ozone profile and many more physical processes through hyper-parameters offering a flexible and informative inference framework.
 
 
 \section{Sampling Methods vs. TT Approximation}
-Using the TT approximation we need far fewer function evaluations of the target distribution compared to sample based methods but have to predefine a grid and normalisation constant, which we find iteratively and by using sampling based method.
-Relying TT approximation alone may be difficult and can lead to lots of try and error and cause numerical issues, but we have shown the potential and advantages in computation cost of TT based methods.
+Using the TT approximation, requires far fewer function evaluations of the target distribution compared to sample-based methods, but have to predefine a grid and a normalisation constant, which, for now, we have to find iteratively.
+Relying solely on TT approximations may lead to a substantial amount of trial and error, and dealing with numerical issues.
+Nevertheless, once properly configured, we have shown the potential and advantages in computational cost of TT methods.
 
+More specifically, the TT approximation of the 2D marginal is as fast as the MWG sampler.
+While the sampler takes $10000$ steps, the TT approximation only needs $400$ function evaluations; this is a factor of 25.
+Alternatively, for low-dimensional distributions, it may be preferable to approximate integrals directly using existing freely available quadrature libraries and packages such as \texttt{quadpy}.
 
-More specifically the TT approximation for the 2D marginal is similar fast compared to the MWG sampler.
-The sampler takes  $10000$ steps but the TT approximation needs only function evaluations $400$, this is a factor of 25.
-In higher dimension re.g. the 18D marginal we need 
-In high dimension we need roughly
-A good comparison may be 1000 sample from the t-walk takes 2100000 function evaluation with a maximum IACT of 500.
-In comparison we need  24120 and then a 1000 samples take 2000 function evaluation.
-The t-walk is a robust easy to implement sampling method, of course one could employ a more efficient sampler such as a specifically designed block-Gibbs sampler \cite{}.
+In higher dimensions, such as the 18D marginal posterior considered in this thesis, TT methods outperform samplers like the \texttt{t-walk}, once a grid and normalisation constant have been defined.
+Although the \texttt{t-walk} may not be the best sampler for this specific marginal posterior and the underlying correlation structure, it is robust and easy to implement.
+To illustrate the efficiency of TT approximations we compare the number of function evaluations per 1000 independent samples.
+For 1000 independent samples with a maximum IACT of 550 and a burn-in period of 100 independent samples, the \texttt{t-walk} needs 1210000 function evaluations. 
+In contrast, 24120 function evaluations are enough to approximate the marginal posterior in the TT format.
+Then drawing 1000 independent samples via the SIRT-MH scheme requires another 2000 function evaluations with an IACT of $\approx 0.6$.
+So the cost per independent sample for the \texttt{t-walk} is $1210$ and for the TT approach is $27$ (rounded up) function evaluations, including the burn-in period and TT approximation via \texttt{rect\_cross.cross}.
+In other words, after the burn-in phase, the \texttt{t-walk} requires around 1100 function evaluations per independent sample, while with an approximation of a probability density in the TT format, only 2 function evaluations are needed per independent sample.
 
-For the 2D to obtain 100 independent samples we need ...
-For the 18 to obtain 18 independent samples we need 
+For future application, we suggest improving the efficiency of the TT approximation by, e.g. reducing the correlation structure through a coordinate system rotation or using better interpolators in between grid points to reduce the approximation error.
+This may be particularly important when the CDF in the SIRT scheme is not smooth due to poor approximations of the target density at previous samples.  
+Moreover, using a different reference measure for integration as in~\cite{cui2022deep}, such as a Gaussian measure instead of the current Lebesgue measure, may increase numerical stability.
+Currently, we have to predefine a normalisation constant and lower ranks manually, bounding the ranks automatically would be helpful (see e.g.~\cite{Rohrbach2022tterror}).
 
-Once we obtain a good TT approximation we can either use the marginal of that distribution for quadrature or draw samples at the cost of 2 function evaluations per independent sample (MH correction step).
-Even thought there may be more efficient samplers than the \texttt{t-walk}.
-
-Reduce correlation structure by rotating coordinate system
-One way of solving this issue could be to use a different basis set such as Lagrange polynomials as these exactly fit to a Gaussian or Chebychev polynomial as basis functions.
-Another idea is to use different reference measure for integration, such as a Gaussian measure instead of the current Lebesgue measure.
-Or that the TT finds normalisation constants automatically.
-Low rank bound as in \cite{Rohrbach2022tterror}
-
-%\subsection{Intuition of TT}
-%more correlation hiegher ranks and/or grid point few sweeps and order is important to correlation structure 
-%keep ranks as low as possible and increse number of sweeps
-%less correlation fewer rank and gridpoints maybe more cheaper sweeps
-\subsection{Approximations Errors}
-The propagation errors into the marginal posterior due the approximation of $f(\lambda)$, $g(\lambda)$ are with relative RMS of $7\%$ and $1\%$ in log space negligible.
-Note, that the depending on the inverse problem different approximations for $g$ and $f$ to here used may be more suitable.
-The TT approximation error of the 2D marginal posterior is with $\approx 7\%$ is similar to the relative RMS propagation error.
-When approximation the affine map we get an relative error of about $0.4\%$, which is much smaller than the relative difference in between noise free and noisy data of approximately of $1 \%$.
-We consider relative RMS TT approximation error of the 18D marginal posterior of $\approx 7\%$ good enough.
 
 
 \section{Atmospheric Physics}
-Here we summarise results within the context of atmospheric physics.
+Here we summarise results within the context of our simplified physical atmospheric limb-sounding model.
+We demonstrated that the underlying non-linear forward model can be approximated with an affine map and the linear model, making this a linear inverse problem.
+For future application, we wish to include more measurement device-specific hyper-parameters in the forward model, e.g. uncertainty in pointing accuracy or an antenna response function.
 
-In Sec. \ref{sec:SVD}, we show that it is not beneficial to measure more in noise dominated regions.
-We also show we need a SNR of $\approx10^7$ to produce informative data for ozone at higher altitudes.
+In Sec.~\ref{sec:SVD}, we showed that we do not gain more information if we measure more frequently or collect more data in noise-dominated regions and that we need a SNR of $\approx10^7$ to produce data, which is informative about ozone at higher altitudes.
 
-All the samples plotted in Fig. \ref{fig:O3SolplsReg} and Fig. \ref{fig:O3Samp} and \ref{} present valid solutions to the inverse problem and do not capture the ozone peak at higher altitude.
-The variability of ozone in the upper atmosphere is large and determined by the prior.
-In Fig. \ref{} and Fig. \ref{} we also show that pressure and ozone are highly correlated.
-A slight change in pressure does skew the ozone VMR quite significant.
-By explanatory analysis we find that with a SNR of $\approx 10000$ we can recover an ozone and pressure profile close to the ground truth.
-We could fix that by choosing a more restrictive priors for $b$ in pressure but that would not be objective 
-The data is uninformative about temperature and we we can already see by some prior analysis in Fig. \ref{fig:PriorPressOverTemp} that the pressure temperature ratio inherits the exponential structure of the pressure profile.
+Fig.~\ref{fig:O3Post} and Fig.~\ref{fig:PressPost} illustrate that pressure and ozone are highly correlated.
+One has to consider that when conditioning on pressure or inferring ozone and pressure jointly, as a slight change in pressure does skew the ozone VMR significantly.
+We could fix that by choosing a more restrictive prior for the pressure-related hyper-parameter $b$, but that would not be objective.
+By explanatory analysis, we found that data with a SNR of $\approx 10000$ recovers an ozone (without a peak in higher altitudes) and pressure profile close to the ground truth.
+As previously mentioned in the prior analysis in Fig.~\ref{fig:PriorPressOverTemp}, the model as well as the data is uninformative about temperature and dominated by the exponentially decreasing pressure.
 
-The main objective for further research is to focus on a more accurate (prior) model for ozone in the atmosphere such as PDE including e.g. the chemical process within the atmosphere.
-Additionally, for real application we would wish to include more hyper-parameters in the forward model, e.g. pointing accuracy or a antenna response function.
+All the samples plotted in Fig.~\ref{fig:O3SolplsReg}, Fig.~\ref{fig:O3Samp}, and Fig.~\ref{fig:O3Post} present valid solutions to the inverse problem, but consistently fail to capture the ozone peak at higher altitudes.
+This is due to noise-dominated data (see Fig.~\ref{fig:DataPlot}) and low signal strength in upper atmospheric regions, where the variability of the posterior ozone is large and primarily determined by the prior.
+We conclude that the main objective for future research is to develop a more accurate (prior) model for ozone in the atmosphere, which captures physical properties and chemical processes of ozone.
 
 
 
