@@ -21,7 +21,7 @@ This probabilistic approach allows us to determine meaningful estimates and unce
 As already mentioned, currently the MLS retrieval algorithm \cite{livesey2006retrieval} is based on the ``optimal estimation'' method from \cite{rodgers1976retrieval}.
 This approach provides a point estimate by fitting parameters to some data and iteratively minimising a squared residual norm, penalised against a chosen regularisation.
 This does not provide comprehensive information about the parameters' underlying correlation structures, can lead to unphysical results, e.g. negative ozone concentration values \cite{MLSdata}, and biased solutions, where the bias is then removed based on empirical decisions \cite{livesey2008ozonecarbonmono, Froidevaux2008snrozone}.
-Errors are provided based on a local derivative of the forward map at one optimal solution, which is inherently highly sensitive to that specific point in the parameter space.
+Errors are provided by a local derivative of the forward map at the optimal solution, which is inherently highly sensitive to that specific point in the parameter space.
 Furthermore, these regularisation methods condition on external point estimates of other parameters, such as temperature or pressure \cite{livesey2006retrieval}.
 %Recent machine learning efforts do not include noise as a retrieval hyper-parameter condition on one single noise value (point estimate) in the developed model, which is trained for about one month, and .
 %Additionally they compare to a ``ground truth'' provided by the previously described optimal estimation approach \cite{werner2023machlearn, bojkov2008NeuralNet}.
