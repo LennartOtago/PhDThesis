@@ -10,7 +10,7 @@ In regions where the signal strength is low an the data is noise-dominated we ca
 When including pressure and temperature describing hyper-parameters within our hierarchical Bayesian model, we show that ozone and pressure are highly correlated, whereas the model and data are uninformative about temperature.
 For future work, we recommend developing a more physically based model for ozone within the atmosphere.
 
-Tensor-train methods require a predefined grid and function outputs within computer precision, but reduce the function evaluations per independent sample significantly compared to conventional samplers, once the grid and the "normalisation constant" are defined.
+Compared to conventional samplers tensor-train methods require a predefined grid and function outputs within computer precision, but reduce the function evaluations per independent sample significantly, once the grid and the "normalisation constant" are defined.
 Another advantage of the tensor-train format is that marginal distributions, useful for quadrature, can be calculated at a low computational cost.
 To further improve tensor-train methods, we think it is essential to be able to \textit{automatically} lower tensor ranks, calculate "normalisation constants" to avoid numerical issues and reduce correlation structures between parameters, all of which we currently have to do by exploratory analysis.
 Additionally, choosing accurate interpolation schemes between grid points may be crucial to improving the effectiveness of the approximation.
