@@ -1,3 +1,16 @@
-Your abstract text goes here.  Check your departmental regulations, but generally this should be less than 300 words.  See the beginning of Chapter~\ref{ch:2-litreview} for more.
+We are the first to our knowledge to develop a \textit{hierarchical} Bayesian model for an atmospheric limb-sounder targeting ozone, as in \cite{mipas2000handbook}.
+To measure most effectively, we briefly assess the informativity of the forward model for different measurement approaches and adjust the data collection accordingly.
+As in \cite{fox2016fast}, we provide posterior distributions of hyper-parameters and ozone profiles utilising the marginal and then conditional scheme, and compare to a Tikhonov regularisation approach.
+Furthermore, we extend our model and the marginal and then conditional scheme to infer posterior pressure, temperature and ozone jointly.
+The main contribution of this work is that we provide a novel approach \cite{cui2022deep} to approximate high-dimensional posterior distributions in the tensor-train format.
+This allows us to generate samples from the target distribution with far fewer function evaluations than the \texttt{t-walk} sampling algorithm \cite{christen2010general} and to quickly calculate marginals from the target distribution, which we use for quadrature to avoid sampling-based characterisation of functions.
 
+Our results show that a hierarchical Bayesian approach, which quantifies posterior mean and variance of the parameter (ozone), provides more information about the parameter than a regularisation approach within a similar computation time.
+In regions where the signal strength is low an the data is noise-dominated we can not recover ozone structures from the ground truth.
+When including pressure and temperature describing hyper-parameters within our hierarchical Bayesian model, we show that ozone and pressure are highly correlated, whereas the model and data are uninformative about temperature.
+For future work, we recommend developing a more physically based model for ozone within the atmosphere.
 
+Tensor-train methods require a predefined grid and function outputs within computer precision, but reduce the function evaluations per independent sample significantly compared to conventional samplers, once the grid and the "normalisation constant" are defined.
+Another advantage of the tensor-train format is that marginal distributions, useful for quadrature, can be calculated at a low computational cost.
+To further improve tensor-train methods, we think it is essential to be able to \textit{automatically} lower tensor ranks, calculate "normalisation constants" to avoid numerical issues and reduce correlation structures between parameters, all of which we currently have to do by exploratory analysis.
+Additionally, choosing accurate interpolation schemes between grid points may be crucial to improving the effectiveness of the approximation.

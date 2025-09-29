@@ -225,12 +225,12 @@ We repeat this procedure $N^{\prime}$ times and ensure convergence independently
 
 \subsection{\texttt{T-walk} Sampler as a Black Box}
 If the number of hyper-parameters is large, we sample from the marginal posterior $\pi(\bm{\theta} | \bm{y})$ using the~\texttt{t-walk} sampler as by Christen and Fox~\cite{christen2010general}, because it is an easy-to-use and implement sampler.
-The~\texttt{t-walk} is employed as a black-box algorithm in default settings, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
+The~\texttt{t-walk} chooses between four different types of steps on the target distribution and is employed as a black-box algorithm in default settings, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
 Convergence to the target distribution is guaranteed by the construction of this algorithm.
 
 
 \subsection{Randomise then Optimise}
-\label{subsec:RTO}
+\label{subsec:RTO} 
 If it is computationally not feasible to calculate the mean and the covariance matrix of the full posterior (see Eq.~\ref{eq:MeanGenInt} and~\ref{eq:CoVarGenInt}) via quadrature due to a large number of hyper-parameters, e.g. $\bm{\theta} \in \mathbb{R}^{n_{\bm{\theta}}}$ and $n_{\bm{\theta}} \geq 4$, we need an alternative way to draw samples from $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
 For the linear-Gaussian Bayesian model, we can draw samples from the normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the RTO~\cite{bardsley2012mcmc}, conditioned on $\bm{\theta}$.
 
