@@ -55,6 +55,9 @@ As previously mentioned in the prior analysis (see Fig.~\ref{fig:PriorPressOverT
 
 All the samples plotted in Fig.~\ref{fig:O3SolplsReg}, Fig.~\ref{fig:O3Samp}, and Fig.~\ref{fig:O3Post} present valid solutions to the inverse problem, but consistently fail to capture the ozone peak at higher altitudes.
 This is due to noise-dominated data (see Fig.~\ref{fig:DataPlot}) and low signal strength in upper atmospheric regions, where the variability of the posterior ozone is large and primarily determined by the prior.
+For a more physical-based prior, e.g. a truncated multivariate Gaussian $\bm{x} | \delta \sim \mathcal{N}(\bm{\mu}_{\text{Trunc}}, \bm{Q}^{-1}_{\text{Trunc}}(\delta))$ with $\bm{a}\leq \bm{x} \leq \bm{b}$ between some truncation bounds $\bm{a}$ and $\bm{b}$ the joint multivariate Gaussian in Eq. \ref{eq:GenBayMode} has the same form.
+In that case, one would have to replace the non-truncated mean and precision matrix with the truncated version as in \cite[pp. 204-205]{Kotz2000truncMulti}.
+Currently, we are not able to give analytic expression for the truncated mean and precision matrix, but \cite{ManjunathWilhel2021} provide that numerically and \cite{BotevTruncMulti} provides Python code to quickly sample from a truncated multivariate Gaussian.
 We conclude that the main objective for future research is to develop a more accurate (prior) model for ozone in the atmosphere, which captures physical properties and chemical processes of ozone.
 
 
