@@ -626,9 +626,9 @@ Neither the regularisation solution nor the posterior ozone profiles capture the
 		\node[align=center] at (-1,4) (A)    {$\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}}) \coloneqq \bm{M}\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}})_L$};
 		\node[roundnode2] at (-1,2.5) (u)    {$\Omega$};
 		\node[rectnode] at (-1,1) (y)    {$\bm{y}$};
-		\node[roundnode2] at (-2.5,2.5) (e)    {$\bm{\eta}$};
-		\node[roundnode2] at (-6.25,6.5) (S)    {$\bm{\Sigma}$};
-		\node[roundnode2] at (-7.75,8) (s)    {$\gamma$};
+		\node[roundnode2] at (-3,2.5) (e)    {$\bm{\eta}$};
+		\node[roundnode2] at (-7.5,6.5) (S)    {$\bm{\Sigma}$};
+		\node[roundnode2] at (-8.5,8) (s)    {$\gamma$};
 		\node[roundnode2] at (-6,8) (d)    {$\delta$};
 		\node[roundnode2] at (3,6.5) (t)     {$\bm{T}$};
 		\node[roundnode2] at (-1,6.5) (p)     {$\bm{p}$};
@@ -648,7 +648,7 @@ Neither the regularisation solution nor the posterior ozone profiles capture the
 		\node[roundnode2] at (3.25,10) (cthyp)    {$\bm{\theta}_{T_{0}}$};
 		\node[roundnode2] at (4.5,10) (athyp)    {$\bm{\theta}_{\bm{a}}$};
 		
-		\node[roundnode2] at (-7.75,10) (shyp)    {$\bm{\theta}_{\gamma}$};
+		\node[roundnode2] at (-8.5,10) (shyp)    {$\bm{\theta}_{\gamma}$};
 		\node[roundnode2] at (-6,10) (dhyp)    {$\bm{\theta}_{\delta}$};
 		
 		%Lines
@@ -686,6 +686,8 @@ Neither the regularisation solution nor the posterior ozone profiles capture the
 		
 		\node[fit=(s)(at),draw,dotted,black, rounded corners] {};
 		\node[align =center] at (-3.75,8) (T1) {hyper-parameters};
+		\node[align =center] at (-4.5,5) (T2) {parameter};
+		\node[fit=(x)(T2),draw,dotted,black, rounded corners] {};
 		
 	\end{tikzpicture} 
 	\caption[Directed acyclic graph of Bayesian model for ozone, pressure and temperature.]{DAG of Bayesian model for ozone, pressure and temperature. The hyper-parameters $\bm{h}_T= \{ h_{T,1}, h_{T,2},h_{T,3},h_{T,4},h_{T,5},h_{T,6}\}$, $\bm{a} = \{ a_0, a_1, a_2,a_3,a_4,a_5,a_6\}$, $T_0$, $b$ and $p_0$ deterministically (dotted line) describe pressure parameter $\bm{p}$ through the function in Eq.~\ref{eq:pressFunc}, and temperature parameter $\bm{T}$ through the function in Eq.~\ref{eq:tempFunc}.

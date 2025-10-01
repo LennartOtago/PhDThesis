@@ -558,7 +558,8 @@ and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(\bm{x})  \diff \bm{x}$
 \subsubsection{Absolute Error Bound}
 \label{subsec:wasser}
 Another way to assess the error between two distributions is to calculate the Wasserstein distance.
-The Kantorovich-Rubinstein duality, as in~\cite{thickstun2019kantorovich, Ambrosio2024Kanta}, says that the 1-Wasserstein distance is equal to the supremum of differences in expectations of a function $h$ between two probability distributions.
+The Kantorovich-Rubinstein duality, as in~\cite{thickstun2019kantorovich, Ambrosio2024Kanta}, says that the 1-Wasserstein distance is equal to the supremum of differences in expectations over all 1-Lipschitz functions $h$ between two probability distributions.
+So the 1-Wasserstein distance provides an upper error bound.
 
 We define the 1-Wasserstein distance as
 \begin{align}
@@ -569,10 +570,10 @@ where $\nu$ couples $\bm{x}$ and $\tilde{\bm{x}}$ so that the integral over the 
 Often $\nu$ is called a transport plan, where $c(\bm{x},\tilde{\bm{x}})$ is the (ground) cost function, and $\nu(\bm{x}, \tilde{\bm{x}})$ is related to the mass which has to be transported and the 1-Wasserstein distance is the earth mover distance.
 On the other hand (Kantorovich-Rubinstein duality), we can describe the 1-Wasserstein distance 
 \begin{align}
-	W_1(\pi,\tilde{\pi})  =& \underset{ \lVert h(\bm{x})- h(\tilde{\bm{x}}) \rVert_{L^2} \leq   \lVert \bm{x} - \tilde{\bm{x}}  \rVert_{L^2} }{ \text{sup}} \Bigg\{  \int_{\mathcal{X}} h(\bm{x}) d \pi (\bm{x})  - \int_{\mathcal{X}} h(\tilde{\bm{x}}) d \tilde{\pi} (\tilde{\bm{x}}) \Bigg\} \\
-	=& \underset{ \lVert h(\bm{x})- h(\tilde{\bm{x}}) \rVert_{L^2} \leq \lVert \bm{x} -\tilde{\bm{x}}  \rVert_{L^2} }{ \text{sup}}  \Bigg\{  \underset{\bm{x} \sim  \pi }{\mathbb{E}} \big[ h(\bm{x}) \big]  -  \underset{\tilde{\bm{x}}\sim \tilde{\pi}}{\mathbb{E}} \big[ h(\tilde{\bm{x}}) \big] \Bigg\} .
+	W_1(\pi,\tilde{\pi})  =& \underset{ h(\bm{x}); \, | h(\bm{x})- h(\tilde{\bm{x}}) | \leq  c(\bm{x},\tilde{\bm{x}}) }{ \text{sup}} \Bigg\{  \int_{\mathcal{X}} h(\bm{x}) d \pi (\bm{x})  - \int_{\mathcal{X}} h(\tilde{\bm{x}}) d \tilde{\pi} (\tilde{\bm{x}}) \Bigg\} \\
+	=& \underset{ h(\bm{x});  \,| h(\bm{x})- h(\tilde{\bm{x}})|  \leq  c(\bm{x},\tilde{\bm{x}}) }{ \text{sup}}  \Bigg\{  \underset{\bm{x} \sim  \pi }{\mathbb{E}} \big[ h(\bm{x}) \big]  -  \underset{\tilde{\bm{x}}\sim \tilde{\pi}}{\mathbb{E}} \big[ h(\tilde{\bm{x}}) \big] \Bigg\} .
 \end{align}
-as the lowest upper bound of differences in expectations of a 1-Lipschitz function $h$ in between the two distributions $\pi$ and $\tilde{\pi}$, with distance measure $c(\bm{x},\tilde{\bm{x}})= \lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2} $ for $\mathcal{X} \in \mathbb{R}^d$.
+as the lowest upper bound of differences in expectations over all 1-Lipschitz function $h(\bm{x}) \in \mathbb{R}$ in between the two distributions $\pi$ and $\tilde{\pi}$, with the distance measure $c(\bm{x},\tilde{\bm{x}})= \lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2} $ for $\mathcal{X} \in \mathbb{R}^d$.
 
 For two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(N)}\} \sim \pi$ and $\{\tilde{ \bm{x}}^{(1)},\dots,\tilde{\bm{x}}^{(M)}\} \sim \tilde{\pi}$ the calculation of the Wasserstein distance becomes an optimisation problem, that is to find the best coupling of samples weighted by their distribution value according to an appropriate distance measure~\cite{feydy2020OT}.
 More specifically, the 1-Wasserstein distance becomes

@@ -69,9 +69,10 @@ If $\tau \gg 1$
 \end{align}
 so that $\tau_{\text{int}} \approx \tau$.
 Here we use the geometric power series $\sum^{\infty}_{n=0} x^n= 1/ (1-x)$ and the Taylor series $ e^x \approx 1+x$ for small $x$.
-Consequently, the estimate for the Monte-Carlo error is:
+In practise, the estimate for the Monte-Carlo error is:
 \begin{align}
-	(\sigma^{(i)})^2   \approx  \frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, .\label{eq:MCerr}
+	(\sigma^{(i)})^2   \approx \sum_{t = - \infty }^{\infty} \rho(t) =  1 + 2 \sum_{t = 1}^{W} \rho(t) \\ 
+	\frac{\text{var}(h(\bm{x}) )}{N} \underbrace{\sum_{t = - \infty }^{\infty} \rho(t)}_{ \coloneqq 	2\tau_{\text{int}} } = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N} \, .\label{eq:MCerr}
 \end{align}
 The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
 More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
