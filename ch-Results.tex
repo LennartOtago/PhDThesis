@@ -243,7 +243,8 @@ Note that, when changing variables from $\delta = \lambda \gamma$ to $\lambda$ t
 	\caption[Functions $f(\lambda)$ and $g(\lambda)$ of 2D marginal posterior.]{Functions $f(\lambda)$ and $g(\lambda)$ from the marginal posterior in Eq.~\ref{eq:MargPostAppl} for a wide range of $\lambda = \delta / \gamma$. We plot the approximations (see Eq.~\ref{eq:fAprox} and Eq.~\ref{eq:gAprox}) in black around the mode of the marginal posterior (vertical line) for the sampling range of $\lambda$ within the MWG algorithm.}
 	\label{fig:fandg}
 \end{figure}
-For each evaluation of the marginal posterior most of the computational effort lies in the calculation of $f(\lambda)$ and $g(\lambda)$.
+For each evaluation of the marginal posterior most of the computational effort lies in the calculation of $f(\lambda)$ and $g(\lambda)$, which we evaluate using the Cholesky decomposition $\bm{A}^T  \bm{A} + \lambda \bm{L} = \bm{C}_{\lambda} \bm{C}_{\lambda}^T$.
+More specifically we solve for $(\bm{A}^T  \bm{A} + \lambda \bm{L})^{-1} (\bm{A}^T \bm{y})$ via \texttt{scipy.linalg.cho\_solve} and calculate the $g(\lambda) = 2 \sum \log \text{diag}(\bm{C}_{\lambda}) $ .
 In  Fig.~\ref{fig:fandg} we see that $f(\lambda)$ and $g(\lambda)$ are well behaved within the region of interest and approximate $f(\lambda) \approx \tilde{f}(\lambda)$ with a Taylor series around the mode $\lambda_0$ of $\pi(\lambda, \gamma | \bm{y})$.
 We also note that $\tilde{g}(\lambda) \approx g(\lambda)$ behaves linearly around $\lambda_0$ in the log-space.
 The approximations are implicitly given by
@@ -276,8 +277,7 @@ We consider this good enough.
 \paragraph{Sample from Marginal Posterior}
 Using these approximations, we employ a Metropolis within Gibbs (MWG) sampler (see Alg. Box \ref{alg:MwG}) to characterise $\pi(\lambda,\gamma|\bm{y})$ (see Sec.~\ref{subsec:MWG}).
 
-We approximate $f(\lambda)$  and $g(\lambda)$ around the mode $( \lambda_{0}, \gamma_0 )$ of $\pi(\lambda,\gamma| \bm{y})$ provided by the \texttt{scipy.optimize.fmin} function.
-In doing so, we compute the vector $\bm{B}_0^{-1}\bm{A}^T\bm{y} = (\bm{A}^T\bm{A} + \lambda_0 \bm{L})\bm{A}^T\bm{y} $, the matrix $\bm{B}_0^{-1}\bm{L}$ and the determinant in $g(\lambda)$ using Cholesky decomposition.
+We approximate $f(\lambda)$  and $g(\lambda)$ around the mode $( \lambda_{0}, \gamma_0 )$ of $\pi(\lambda,\gamma| \bm{y})$ provided by the \texttt{scipy.optimize.fmin} function, with a limit of 25 function evaluations.
 Then we approximate $f(\lambda)$ with a 1st order Taylor series and $g(\lambda)$ with a linear approximation in the log-space, where for the approximation in $g(\lambda)$ we set $\lambda_{\text{max}}$ to the maximum value of $\lambda$ on the TT grid (see next section).
 
 We initialised the MWG algorithm at the mode $(\lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps in $\approx 0.3$s.
@@ -399,7 +399,7 @@ In this thesis, we compute the mean
 of $\pi(\bm{x}| \bm{y})$ as weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$, by quadrature \cite[Sec. 2.1]{Dick_Kuo_Sloan_2013}, with $\sum \pi(\lambda_i| \bm{y}) = \sum \pi(\gamma_i| \bm{y}) = 1$.
 The weights $\pi(\lambda_i| \bm{y})$ and $\pi(\gamma_i| \bm{y})$ are either given by the TT approximation or by the bins for the sample-based histograms.
 More precisely, the heights of the sample-based histogram bars act as quadrature weights, where $\lambda_i$ is defined at the centre of each bin .
-We use Cholesky decomposition to invert $\bm{B}_{\lambda} = \bm{A}^T \bm{A} + \lambda \bm{L}$ and to calculate $\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y}$.
+We use Cholesky decomposition of $\bm{B}_{\lambda} = \bm{A}^T \bm{A} + \lambda \bm{L}$ to invert $\bm{B}_{\lambda}$ and to calculate $\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y}$ both via \texttt{scipy.linalg.cho\_solve}.
 It is sufficient, to evaluate $\bm{x}_{\lambda}$ and invert $\bm{B}_{\lambda}$ 20 times to obtain mean and covariance values of $\pi(\bm{x}|\bm{y})$ within a reasonable error (see Fig.~\ref{fig:MeanVarError}).
 This takes less than $0.2$s.
 We plot posterior samples of $\pi(\bm{x}|\bm{y})$ in Fig.~\ref{fig:O3Samp} and set negative ozone values to zero, which we observe in almost every sample.
@@ -567,18 +567,21 @@ We plot the results and one sample of $\pi(\bm{x}|\bm{y})$, which represents a f
 We can see that the ground truth lies within 3 times of the STD (accounting for $\approx 99 \%$ of all posterior samples) around the mean, except for the peak at around $80$km.
 Compared to the previously calculated mean and variance based on the linear forward model $\bm{A}_L$ (see \ref{fig:O3Samp}), the posterior distribution based on $\bm{M A}_L$ does not differ significantly.
 This is expected since the difference between the linear and non-linear forward map of $\approx 1 \%$ is small.
-%\begin{figure}[ht!]
-%	\centering
-%	\includegraphics{CovSing.png}
-%	\caption[Eigenvalues of the posterior precision matrix]{Eigenvalues of the precision matrix of $\bm{Q}_{ \bm{x}|\bm{y}}= \big(\int \gamma^{-1}(\bm{A}^T \bm{A} + \lambda \bm{L})^{-1}\diff \pi(\lambda ,\gamma)\big)^{-1}$ of the full posterior distribution $\pi(\bm{x}|\bm{y})$ for ozone. %Since $\bm{Q}_{ \bm{x}|\bm{y}} $ is symmetric and positive definite the singular values are equal the absolute value of the eigenvalues, $\sigma_i = |\uplambda_i|$.
-%		%The square root of the eigenvalues of $\bm{A}^T\bm{A}$ are the singular values of $\bm{A}$; $\sigma_i =\sqrt{\uplambda_i}$.
-%		We see that large eigenvalues of $\bm{A}^T \bm{A}$ are rather unaffected by the prior compared to small eigenvalues.}
-%	\label{fig:PostCov}
-%\end{figure}
-%Additionally in Fig.~\ref{fig:PostCov}, we plot the eigenvalues of the precision matrix $\bm{Q}_{ \bm{x}|\bm{y}}= \big(\int \gamma^{-1}(\bm{A}^T \bm{A} + \lambda \bm{L})^{-1}\diff \pi(\lambda ,\gamma)\big)^{-1} $ and compare to the eigenvalues of $\bm{A}^T \bm{A}$ to visualise how the data and the prior effect the posterior ozone profiles.
-%We observe that the last 10 eigenvalues of $\bm{A}^T \bm{A}$ are very small and prior significantly increases those eigenvalues.
-%The corresponding to ozone values at the high altitudes $\gtrsim 45$km have a large variance, see Fig. \ref{fig:O3SolplsReg}.
-%Larger eigenvalues of $\bm{A}^T \bm{A}$ are not influenced by the prior as much and the corresponding ozone values at lower altitudes are  primarily determined by the data (see~\cite{fox2025BlokkLecNot}).
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{CovSing.png}
+	\caption[Eigenvalues of the posterior precision matrix]{Eigenvalues of the precision matrix of $\bm{Q}_{ \bm{x}|\delta, \gamma, \bm{y}}= \gamma \bm{A}^T \bm{A} + \delta \bm{L}$ of the full posterior distribution $\pi(\bm{x}|\delta, \gamma, \bm{y})$ for ozone.
+	We see that large eigenvalues of $\gamma \bm{A}^T \bm{A}$ and $ \delta \bm{L}$ are rather unaffected by the prior compared to small eigenvalues.
+The eigenbasis may differ.}
+	\label{fig:PostCov}
+\end{figure}
+We can visualise how the posterior samples are affected through the prior $\delta \bm{L}$ and the data (forward model) $\gamma \bm{A}^T \bm{A}$ by comparing their eigenvalues to the eigenvalues of the precision matrix $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}=  \gamma \bm{A}^T \bm{A} + \delta \bm{L} $.
+We order the eigenvalues in size and plot those in Fig.~\ref{fig:PostCov}.
+We observe that the larger eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ are very much the same as the larger eigenvalues of $\bm{A}^T \bm{A}$.
+Once the eigenvalues of $\bm{A}^T \bm{A}$ are significantly smaller the structure of the eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ is dominated by the structure of the eigenvalues of $\delta \bm{L}$.
+Note that the eigenvalues correspond to different eigenspaces spanned by the corresponding eigenvectors which may differ.
+The largest 10 eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ to ozone profile structure in lower altitudes, where as the other eigenvalues correspond mainly to structures mainly in higher altitudes see \ref{fig:}.
 
 
 \subsection{Solution by Regularisation}
