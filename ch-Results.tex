@@ -22,7 +22,7 @@ with the acceleration due to gravity
 	g = g_0 \Bigg( \frac{r_0}{r_0 + h} \Bigg) \, ,
 \end{align}
 where the polar radius pf the earth is $r_0 \approx 6356 \, \text{km}$, the gravitation at sea level is $g_0 \approx 9.81 \text{m}/\text{s}^2$, $R^* = 8.31432 \times 10^{-3} \text{Nm} / \text{kmol} / \text{K}$ and the mean molecular weight of the air is $M = 28.97 \text{kg/kmol}$~\cite{atmosphere1976us}.
-This holds up to a geometric height of $86$km, where we ignore a $0.04\%$ non-linear change in $M$ from $80$km to $86$km in geometric altitude.
+This holds up to a geometric height of $86$km, where we ignore a $0.04\%$ non-linear change in $M$ from $80$km to $86$km.
 
 Following \cite{atmosphere1976us} we form the temperature function
 \begin{equation}
@@ -69,7 +69,7 @@ We assume an atmosphere between $h_{L,1}=7$km and $h_{L,n} = 83.3$km with $n = 4
 The height value $h_{L,i}$ for each layer $i = 1,\dots, n$ is defined by the pressure values from~\cite{MLSdata} and the hydrostatic equilibrium equation, see Eq.~\ref{eq:hydr}.
 We target Ozone at a frequency of 235.71 GHz, which lies within the region where the MLS observers ozone~\cite{livesey2008ozonecarbonmono, waters2006earth}.
 The corresponding wave number is $\nu = 7.86\text{cm}^{-1}$.
-We calculate the absorption constant $k(\nu,T)$ as in Eq. \ref{eq:absRTE}, following the \textit{HITRAN} database~\cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
+We calculate the absorption constant $k(\nu,T)$ as in Eq. \ref{eq:absRTE}, following the high resolution transmission (HITRAN) database~\cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
 %This gives us a non-linear forward model matrix $\bm{A}_{NL} = \bm{A}(\bm{x}, \bm{p}, \bm{T}) \in \mathbb{R}^{m \times n}$, where $\bm{x}\in \mathbb{R}^{n}$ is vector related to the ozone VMR, $\bm{p}\in \mathbb{R}^{n}$ is the vector describing the pressure values and $\bm{T}\in \mathbb{R}^{n}$ the temperature values.
 Lastly, we add independent and identically-distributed Gaussian noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ so that the $\text{SNR}=150$ (see Eq.~\ref{eq:SNR}) similar to~\cite{Froidevaux2008snrozone}, where a signal with a maximal spectral intensity of around $100\text{K}$ and a noise range of $0.4$ to $1.6\text{K}$ is reported.
 We note that the methods used in this thesis will work with different SNRs or other frequencies.
@@ -578,10 +578,10 @@ The eigenbasis may differ.}
 \end{figure}
 We can visualise how the posterior samples are affected through the prior $\delta \bm{L}$ and the data (forward model) $\gamma \bm{A}^T \bm{A}$ by comparing their eigenvalues to the eigenvalues of the precision matrix $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}=  \gamma \bm{A}^T \bm{A} + \delta \bm{L} $.
 We order the eigenvalues in size and plot those in Fig.~\ref{fig:PostCov}.
-We observe that the larger eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ are very much the same as the larger eigenvalues of $\bm{A}^T \bm{A}$.
-Once the eigenvalues of $\bm{A}^T \bm{A}$ are significantly smaller the structure of the eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ is dominated by the structure of the eigenvalues of $\delta \bm{L}$.
+We observe that the larger eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ are very much the same as the larger eigenvalues of $\gamma \bm{A}^T \bm{A}$.
+Once the eigenvalues of $\gamma \bm{A}^T \bm{A}$ are significantly smaller than the eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ the structure of the eigenvalues is dominated by the eigenvalues of $\delta \bm{L}$.
 Note that the eigenvalues correspond to different eigenspaces spanned by the corresponding eigenvectors which may differ.
-The largest 10 eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ to ozone profile structure in lower altitudes, where as the other eigenvalues correspond mainly to structures mainly in higher altitudes see \ref{fig:}.
+The largest 10 eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ include ozone profile structure at lower altitudes, where the other eigenvector mainly represent structures at higher altitudes (see Fig. \ref{fig:CovEigVec1} and Fig.\ref{fig:CovEigVec1}).
 
 
 \subsection{Solution by Regularisation}
@@ -720,28 +720,28 @@ Here we use the approximated forward model $\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}})
 		}&$\tau_{\text{int}}$&Context\\
 		\hhline{|=||=|=|=|=|=|}
 		$\bm{x}$ &$\mathcal{N}(0,\delta \bm{L})$ & -&-&-& $\bm{x}$\\ \hline
-		$\gamma$ & $\mathcal{T}(1,10^{-10})$ &$5 \, 10^{-8}$ &$4.5 \, 10^{-7}$&  $ 9\pm 0.1$ &$\bm{y}$\\ \hline
-		$\delta$ &$\mathcal{T}(1,10^{-10})$ & -&-& $1.5 \pm 0.1$ & $\bm{x}$\\ \hline
-		$\lambda  = \delta / \gamma$ &- & 500&$10^4$& $3.5 \pm 0.3$ &$\bm{x}$\\ \hline
-		$p_0$ &  $\mathcal{N}(1243,5)$&1229 &1259&$550 \pm 9$&$\bm{p}$\\ \hline
-		$T_{0}$ &  $\mathcal{N}(288.15,4.5)$& 275 &302&$2446 \pm 76$&$\bm{T}$\\ \hline
-		$h_{T,1}$ &  $\mathcal{N}(11,0.5)$&9.5 &12.5&$1820 \pm 49$ &$\bm{T}$\\ \hline
-		$b$ &  $\mathcal{N}(0.167,5\,10^{-4})$& 0.165& 0.171 &$2813 \pm 92$&$\bm{p}$\\ \hline
-		$h_{T,3}$ &  $\mathcal{N}(32.3,2.5)$&25.2&39.8&$394 \pm 5$&$\bm{T}$\\ \hline
-		$a_{0}$ &  $\mathcal{N}(-6.5,0.01)$&-6.53 &-6.47&$330 \pm 4$&$\bm{T}$\\ \hline
-		$h_{T,2}$ &  $\mathcal{N}(20.1,1.6)$&17.7 &22.3&$454 \pm 7$&$\bm{T}$\\ \hline
-		$a_{1}$ &  $\mathcal{N}(0,0.1)$&-0.3 &0.3&$508 \pm 8$&$\bm{T}$\\ \hline
-		$a_{2}$ &  $\mathcal{N}(1,0.01)$&0.97 &1.03&$341 \pm 5$&$\bm{T}$\\ \hline
-		$a_{3}$ &  $\mathcal{N}(2.8,0.1)$&2.5 &3.1&$316 \pm 4$&$\bm{T}$\\ \hline
-		$h_{T,4}$ &  $\mathcal{N}(47.4,5)$&45.9 &48.9&$324 \pm 4$&$\bm{T}$\\ \hline
-		$a_{4}$ &  $\mathcal{N}(0,0.1)$&-0.3 &0.3&$335 \pm 4$&$\bm{T}$\\ \hline
-		$h_{T,5}$ &  $\mathcal{N}(51.4,5)$&49.9 &52.9&$319 \pm 4$&$\bm{T}$\\ \hline
-		$a_{5}$ &  $\mathcal{N}(-2.8,0.1)$&-3.1 &-2.5&$335 \pm 4$&$\bm{T}$\\ \hline
-		$h_{T,6}$ &  $\mathcal{N}(71.8,3)$&62.5 &80.8&$347 \pm 5$&$\bm{T}$\\ \hline
-		$a_{6}$ & $\mathcal{N}(-2,0.01)$ &-2.03 &-1.97&$320 \pm 4$&$\bm{T}$\\
+		$\delta$ &$\mathcal{T}(1,10^{-35})$ & -&-&  & $\bm{x}$\\ \hline
+		$\gamma$ & $\mathcal{T}(1,10^{-35})$ &$2.5\,10^{14}$ &$6\,10^{15}$&  $ 256\pm 15$ &$\bm{y}$\\ \hline
+		$\lambda  = \delta / \gamma$ &- & 1&$2\,10^{4}$& $488 \pm 37$ &$\bm{x}$\\ \hline
+		$b$ &  $\mathcal{N}(0.174,(0.01)^2)$& 0.129& 0.214 &$432 \pm 31$&$\bm{p}$\\ \hline
+		$h_{T,1}$ &  $\mathcal{N}(11,(1.5)^2)$&5.4 &16.3&$135 \pm 6$ &$\bm{T}$\\ \hline
+		$T_{0}$ &  $\mathcal{N}(288.15,(10)^2)$& 247 &326&$152 \pm 7$&$\bm{T}$\\ \hline
+		$p_0$ &  $\mathcal{N}(1311,(20)^2)$&1237 &1387&$126 \pm 5$&$\bm{p}$\\ \hline
+		$h_{T,3}$ &  $\mathcal{N}(32.3,(2.5)^2)$&22.9&41.7&$136 \pm 6$&$\bm{T}$\\ \hline
+		$a_{1}$ &  $\mathcal{N}(0,(0.1)^2)$&-0.38 &0.38&$124 \pm 5$&$\bm{T}$\\ \hline
+		$h_{T,2}$ &  $\mathcal{N}(20.1,(0.7)^2)$&17.2 &22.7&$134 \pm 5$&$\bm{T}$\\ \hline
+		$a_{0}$ &  $\mathcal{N}(-6.5,(0.01)^2)$&-6.54 &-6.47&$125 \pm 5$&$\bm{T}$\\ \hline
+		$a_{2}$ &  $\mathcal{N}(1,(0.01)^2)$&0.97 &1.03&$129 \pm 5$&$\bm{T}$\\ \hline
+		$a_{3}$ &  $\mathcal{N}(2.8,(0.1)^2)$&2.5 &3.1&$127\pm 5$&$\bm{T}$\\ \hline
+		$h_{T,4}$ &  $\mathcal{N}(47.4,(0.5)^2)$&45.5 &49.3&$126 \pm 5$&$\bm{T}$\\ \hline
+		$a_{4}$ &  $\mathcal{N}(0,(0.1)^2)$&-0.38 &0.38&$137 \pm 6$&$\bm{T}$\\ \hline
+		$h_{T,5}$ &  $\mathcal{N}(51.4,(0.5)^2)$&49.5 &53.3&$137 \pm 6$&$\bm{T}$\\ \hline
+		$a_{5}$ &  $\mathcal{N}(-2.8,(0.1)^2)$&-3.18 &-2.43&$132 \pm 5$&$\bm{T}$\\ \hline
+		$h_{T,6}$ &  $\mathcal{N}(71.8,(3)^2)$&60.5 &83.1&$132\pm 5$&$\bm{T}$\\ \hline
+		$a_{6}$ & $\mathcal{N}(-2,(0.01)^2)$ &-2.04 &-1.96&$131\pm 5$&$\bm{T}$\\
 		\hline
 	\end{tabular}
-	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in~\cite{UwerrM} from posterior samples based on the approximated forward map.}
+	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma^2)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in~\cite{UwerrM} from posterior samples based on the approximated forward map.}
 	\label{tab:priors}
 \end{table}
 
