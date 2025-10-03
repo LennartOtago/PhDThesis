@@ -16,21 +16,21 @@ Moreover, within the hierarchical Bayesian approach, we can include prior knowle
 
 
 \section{Sampling Methods vs. TT Approximation}
-Using the TT approximation, requires far fewer function evaluations of the target distribution compared to sample-based methods, but requires to predefine a grid and a normalisation constant, which, for now, we have to find iteratively.
+Using the TT approximation, requires far fewer function evaluations of the target distribution compared to sample-based methods, but needs a predefined grid and a normalisation constant, which, for now, we have to find iteratively.
 Relying solely on TT approximations may lead to a substantial amount of trial and error, and dealing with numerical issues.
-Nevertheless, once properly configured, we have shown the potential and advantages in computational cost of TT methods.
+Nevertheless, once properly configured, we have shown the potential and advantages of TT methods.
 
-More specifically, the TT approximation of the 2 dimensional marginal is as fast as the MWG sampler (both within $1$s).
-While the sampler takes $10000$ steps, the TT approximation only needs $400$ function evaluations; this is a factor of 25.
+More specifically, the TT approximation of the 2-dimensional marginal posterior ($\approx0.02$s) is more than 20 times faster than the MWG sampler ($\approx0.5$s).
+Excluding the function evaluations for finding the mode of the marginal posterior, the MWG sampler takes $10100$ steps while the TT approximation only needs $400$ function evaluations; this is a factor of $\approx25$.
 Alternatively, for low-dimensional distributions, it may be preferable to approximate integrals directly using existing freely available quadrature libraries and packages such as \texttt{quadpy}.
 
-In higher dimensions, such as the 18 dimensional marginal posterior considered in this thesis, TT methods outperform samplers like the \texttt{t-walk}, once a grid and normalisation constant have been defined.
+In higher dimensions, such as the 18 dimensional marginal posterior considered in this thesis, TT methods ($\approx 0.5$min) outperform samplers like the \texttt{t-walk} ($\approx 10$min), once a grid and normalisation constant have been defined.
 Although the \texttt{t-walk} may not be the best sampler for this specific marginal posterior and the underlying correlation structure, it is robust and easy to implement.
 To illustrate the efficiency of TT approximations we compare the number of function evaluations per 1000 independent samples.
 For 1000 independent samples with a maximum IACT of 550 and a burn-in period of 100 independent samples, the \texttt{t-walk} needs 1210000 function evaluations. 
 In contrast, 24120 function evaluations are enough to approximate the marginal posterior in the TT format.
 Then drawing 1000 independent samples via the SIRT-MH scheme requires another 2000 function evaluations with an IACT of $\approx 0.6$.
-So the cost per independent sample for the \texttt{t-walk} is $1210$ and for the TT approach is $27$ (rounded up) function evaluations, including the burn-in period and TT approximation via \texttt{rect\_cross.cross}.
+So the cost per independent sample for the \texttt{t-walk} is $1210$ and for the TT approach is $\approx 27$ function evaluations, including the burn-in period and TT approximation via the \texttt{rect\_cross.cross} Python function.
 Or, after the burn-in phase, the \texttt{t-walk} requires around 1100 function evaluations per independent sample, while with an approximation of a probability density in the TT format, only 2 function evaluations are needed per independent sample.
 
 For future application, we suggest improving the efficiency of the TT approximation by, e.g. reducing the correlation structure through a coordinate system rotation or using better interpolators in between grid points to reduce the approximation error.
@@ -55,9 +55,9 @@ As previously mentioned in the prior analysis (see Fig.~\ref{fig:PriorPressOverT
 
 All the samples plotted in Fig.~\ref{fig:O3SolplsReg}, Fig.~\ref{fig:O3Samp}, and Fig.~\ref{fig:O3Post} present valid solutions to the inverse problem, but consistently fail to capture the ozone peak at higher altitudes.
 This is due to noise-dominated data (see Fig.~\ref{fig:DataPlot}) and low signal strength in upper atmospheric regions, where the variability of the posterior ozone is large and primarily determined by the prior.
-For a more physical-based prior, e.g. a truncated multivariate Gaussian $\bm{x} | \delta \sim \mathcal{N}(\bm{\mu}_{\text{Trunc}}, \bm{Q}^{-1}_{\text{Trunc}}(\delta))$ with $\bm{a}\leq \bm{x} \leq \bm{b}$ between some truncation bounds $\bm{a}$ and $\bm{b}$ the joint multivariate Gaussian in Eq. \ref{eq:jointMultiGaus} has the same form.
-In that case, one would have to replace the non-truncated mean and precision matrix with the truncated version as in \cite[pp. 204-205]{Kotz2000truncMulti}.
-Currently, we are not able to give analytic expression for the truncated mean and precision matrix, but \cite{ManjunathWilhel2021} provides that numerically and \cite{BotevTruncMulti} provides Python code to quickly sample from a truncated multivariate Gaussian.
+%For a more physical-based prior, e.g. a truncated multivariate Gaussian $\bm{x} | \delta \sim \mathcal{N}(\bm{\mu}_{\text{Trunc}}, \bm{Q}^{-1}_{\text{Trunc}}(\delta))$ with $\bm{a}\leq \bm{x} \leq \bm{b}$ between some truncation bounds $\bm{a}$ and $\bm{b}$ the joint multivariate Gaussian in Eq. \ref{eq:jointMultiGaus} has the same form.
+%In that case, one would have to replace the non-truncated mean and precision matrix with the truncated version as in \cite[pp. 204-205]{Kotz2000truncMulti}.
+%Currently, we are not able to give analytic expression for the truncated mean and precision matrix, but \cite{ManjunathWilhel2021} provides that numerically and \cite{BotevTruncMulti} provides Python code to quickly sample from a truncated multivariate Gaussian.
 We conclude that the main objective for future research is to develop a more accurate, potentially parametrised, (prior) model, which captures physical properties and chemical processes of ozone in the atmosphere.
 
 

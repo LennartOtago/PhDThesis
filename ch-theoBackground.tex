@@ -100,7 +100,7 @@ If $\bm{x}$ cannot be parametrised directly in terms of the hyper-parameters $\b
 \begin{align}
 	\pi(\bm{x}, \bm{\theta} |  \bm{y}) = \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \pi(\bm{\theta} |   \bm{y}), \label{eq:MTC}
 \end{align}
-into the conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the latent field $\bm{x}$ and the marginal posterior 
+into the full conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the latent field $\bm{x}$ and the marginal posterior 
 \begin{align}
 	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{x},\bm{\theta})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{x},\bm{\theta})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) } \label{eq:margGen}\, ,
 \end{align}
@@ -126,7 +126,7 @@ In case of normally distributed noise $\bm{\eta} \sim \mathcal{N}(0,\bm{\Sigma}(
 	\bm{y} = \bm{A} \bm{x} + \bm{\eta} \, ,
 	\label{eq:LinDat}
 \end{align}
-and we can derive the marginal and conditional posterior distribution explicitly.
+and we can derive the marginal and full conditional posterior distribution explicitly.
 We define our hierarchical Bayesian model as
 \begin{subequations}
 	\begin{align}
@@ -151,7 +151,7 @@ To derive the marginal posterior and the full conditional posterior distribution
 	\end{pmatrix}^{-1} \right] \, , 	\label{eq:jointMultiGaus}
 \end{align}
 where we provide the joint precision matrix as in~\cite{SIMPSON201216} (see also~\cite{rue2005gaussian, fox2016fast}).
-Immediately, we formulate the conditional posterior as 
+Immediately, we formulate the full conditional posterior as 
 \begin{align}
 	\bm{x} | \bm{\theta} , \bm{y}\sim \mathcal{N}\big(\underbrace{ \bm{\mu} + (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}(\bm{y} - \bm{A}\bm{\mu})}_{\bm{\mu}_{\bm{x} | \bm{\theta} , \bm{y}}},\underbrace{ (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}}_{\bm{\Sigma}_{\bm{x} | \bm{\theta} , \bm{y}}} \big)\, \label{eq:CondPostLin}.
 \end{align}
@@ -236,7 +236,7 @@ Convergence to the target distribution is guaranteed by the construction of this
 If it is computationally not feasible to calculate the mean and the covariance matrix of the full posterior (see Eq.~\ref{eq:MeanGenInt} and~\ref{eq:CoVarGenInt}) via quadrature due to a large number of hyper-parameters, e.g. $\bm{\theta} \in \mathbb{R}^{n_{\bm{\theta}}}$ and $n_{\bm{\theta}} \geq 4$, we need an alternative way to draw samples from $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
 For the linear-Gaussian Bayesian model, we can draw samples from the normal distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the RTO~\cite{bardsley2012mcmc}, conditioned on $\bm{\theta}$.
 
-The conditional distribution, as in Eq.~\ref{eq:CondPostLin}, can be rewritten as
+The full conditional distribution, as in Eq.~\ref{eq:CondPostLin}, can be rewritten as
 \begin{align}
 	\pi(\bm{x} | \bm{\theta},  \bm{y}) & \propto \pi(\bm{y}|\bm{x}, \bm{\theta}) \pi(\bm{x}| \bm{\theta})\\
 	&\propto \exp \left(-\frac{1}{2} (\bm{A}_{\bm{\theta}} \, \bm{x} - \bm{y})^T \bm{\Sigma}^{-1}_{\bm{\theta}} (\bm{A}_{\bm{\theta}} \,  \bm{x} - \bm{y})\right) \exp \left(-\frac{1}{2} (\bm{\mu} - \bm{x} )^T \bm{Q}_{\bm{\theta}}(\bm{\mu} - \bm{x} ) \right),\\
@@ -257,7 +257,7 @@ where we define
 	\end{bmatrix} \quad \text{\cite{bardsley2014randomize,BardsleyTC2019RTO}}\, ,
 \end{align}
 with $\bm{A}(\bm{\theta}) \coloneqq \bm{A}_{\bm{\theta}}$, $\bm{Q}(\bm{\theta}) \coloneqq \bm{Q}_{\bm{\theta}} $ and $\bm{\Sigma}^{-1}(\bm{\theta})\coloneqq \bm{\Sigma}^{-1}_{\bm{\theta}}$, which are all dependent on the hyper-parameters $\bm{\theta}$.
-A sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}, \bm{y}) $ from the conditional posterior is obtained by minimising the following equation with respect to $\bm{x}$ :
+A sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}, \bm{y}) $ from the full conditional posterior is obtained by minimising the following equation with respect to $\bm{x}$ :
 \begin{align}
 	\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
 \end{align}
@@ -533,7 +533,7 @@ Since the samples by the SIRT scheme are generated from an approximation, it is 
 		\ENDFOR
 		\STATE \textbf{Output:} corrected sample chain $\{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)} \} $, where each $\bm{x}_{\text{MH}}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N$
 	\end{algorithmic}
-	\label{alg:SIRT}
+	\label{alg:MHCorr}
 \end{algorithm}
 In doing so, we compute the acceptance probability $  \alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$, where 
 \begin{align}
@@ -565,26 +565,27 @@ So the 1-Wasserstein distance provides an upper error bound.
 
 We define the 1-Wasserstein distance as
 \begin{align}
-	W_1(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}\int_{\mathcal{X} \times \mathcal{X}} c(\bm{x},\tilde{\bm{x}}) \, \nu(\bm{x},\tilde{\bm{x}}) d\bm{x} d\tilde{\bm{x}}
+	W_1(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}\int_{\mathcal{X} \times \mathcal{X}} c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}}) \, \nu(\bm{x},\tilde{\bm{x}}) d\bm{x} d\tilde{\bm{x}}
 	\label{eq:wass} \, ,
 \end{align}
-where $\nu$ couples $\bm{x}$ and $\tilde{\bm{x}}$ so that the integral over the distance $ c(\bm{x},\tilde{\bm{x}}) $ weighted by the probability measures $\pi$ and $\tilde{\pi}$ is the greatest lower bound of all integrals with respect to a $\nu$ in the set of all couplings $ \Pi(\pi,\tilde{\pi})$.
-Often $\nu$ is called a transport plan, where $c(\bm{x},\tilde{\bm{x}})$ is the (ground) cost function, and $\nu(\bm{x}, \tilde{\bm{x}})$ is related to the mass which has to be transported and the 1-Wasserstein distance is the earth mover distance.
+where $\nu$ couples $\bm{x}$ and $\tilde{\bm{x}}$ so that the integral over the distance $c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}}) $ weighted by the probability measures $\pi$ and $\tilde{\pi}$ is the greatest lower bound of all integrals with respect to $\nu$ in the set of all couplings $ \Pi(\pi,\tilde{\pi})$.
+Often $\nu$ is called a transport plan, where $c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}})$ is the (ground) cost function, and $\nu(\bm{x}, \tilde{\bm{x}})$ is related to the mass which has to be transported and the 1-Wasserstein distance is the earth mover distance.
 On the other hand (Kantorovich-Rubinstein duality), we can describe the 1-Wasserstein distance 
 \begin{align}
-	W_1(\pi,\tilde{\pi})  =& \underset{ h(\bm{x}); \, | h(\bm{x})- h(\tilde{\bm{x}}) | \leq  c(\bm{x},\tilde{\bm{x}}) }{ \text{sup}} \Bigg\{  \int_{\mathcal{X}} h(\bm{x}) d \pi (\bm{x})  - \int_{\mathcal{X}} h(\tilde{\bm{x}}) d \tilde{\pi} (\tilde{\bm{x}}) \Bigg\} \\
-	=& \underset{ h(\bm{x});  \,| h(\bm{x})- h(\tilde{\bm{x}})|  \leq  c(\bm{x},\tilde{\bm{x}}) }{ \text{sup}}  \Bigg\{  \underset{\bm{x} \sim  \pi }{\mathbb{E}} \big[ h(\bm{x}) \big]  -  \underset{\tilde{\bm{x}}\sim \tilde{\pi}}{\mathbb{E}} \big[ h(\tilde{\bm{x}}) \big] \Bigg\} .
+	W_1(\pi,\tilde{\pi})  =& \underset{ h(\bm{x}); \, c_{\mathcal{Y}}(h(\bm{x}), h(\tilde{\bm{x}}) ) \leq  c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}}) }{ \text{sup}} \Bigg\{  \int_{\mathcal{X}} h(\bm{x}) d \pi (\bm{x})  - \int_{\mathcal{X}} h(\tilde{\bm{x}}) d \tilde{\pi} (\tilde{\bm{x}}) \Bigg\} \\
+	=& \underset{ h(\bm{x});  \, c_{\mathcal{Y}}(h(\bm{x}), h(\tilde{\bm{x}}) )  \leq  c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}}) }{ \text{sup}}  \Bigg\{  \underset{\bm{x} \sim  \pi }{\mathbb{E}} \big[ h(\bm{x}) \big]  -  \underset{\tilde{\bm{x}}\sim \tilde{\pi}}{\mathbb{E}} \big[ h(\tilde{\bm{x}}) \big] \Bigg\} .
 \end{align}
-as the lowest upper bound of differences in expectations over all 1-Lipschitz function $h(\bm{x}) \in \mathbb{R}$ in between the two distributions $\pi$ and $\tilde{\pi}$, with the distance measure $c(\bm{x},\tilde{\bm{x}})= \lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2} $ for $\mathcal{X} \in \mathbb{R}^d$.
+as the lowest upper bound of differences in expectations over all 1-Lipschitz function $h(\bm{x}) : \mathcal{X} \rightarrow \mathcal{Y}$ in between the two distributions $\pi$ and $\tilde{\pi}$, with the distance measure $c_{\mathcal{X}}$ on the set $\mathcal{X}$ forming the metric space $( \mathcal{X}, c_{\mathcal{X}} )$ and similarly the metric space $(\mathcal{Y}, c_{\mathcal{Y}})$.
 
-For two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(N)}\} \sim \pi$ and $\{\tilde{ \bm{x}}^{(1)},\dots,\tilde{\bm{x}}^{(M)}\} \sim \tilde{\pi}$ the calculation of the Wasserstein distance becomes an optimisation problem, that is to find the best coupling of samples weighted by their distribution value according to an appropriate distance measure~\cite{feydy2020OT}.
+For two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(N)}\} \sim \pi$ and $\{\tilde{ \bm{x}}^{(1)},\dots,\tilde{\bm{x}}^{(M)}\} \sim \tilde{\pi}$ the calculation of the Wasserstein distance becomes an optimisation problem, that is to find the best coupling of samples weighted by their distribution value according to an appropriate distance measure~\cite{feydy2020OT}, which we set to $c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}})= \lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2} $.
 More specifically, the 1-Wasserstein distance becomes
 \begin{align}
 	W_1(\pi,\tilde{\pi}) = 	\underset{\nu \in \Pi(\pi,\tilde{\pi}) }{\text{min}} \sum^M_{j = 1} \sum^N_{i =1}  \nu_{ij} \lVert\bm{x}^{(i)}  -  \tilde{\bm{x}}^{(j)} \rVert_{L^2} \, , \label{eq:applWasser}
 \end{align}
 where the transport plan $\nu \in \mathbb{R}^{N \times M}_ {\geq 0}$ defines the coupling $\nu_{ij} \in \nu $ as $ \nu_{ij} \coloneqq \pi(\bm{x}^{(i)}) \tilde{\pi}(\tilde{\bm{x}}^{(j)})$ similar to~\cite[Eq. 3.166]{feydy2020OT}.
 Additionally we require that $\sum^N_{i =1} \pi(\bm{x}^{(i)}) = \sum^M_{j = 1} \tilde{\pi}(\tilde{\bm{x}}^{(j)})= 1 $.
-This gives us an upper bound of the absolute error in between the expected value of any 1-Lipschitz function $h$, e.g the upper bound of absolute differences in means related to the probability measures $\pi$ and $\tilde{\pi}$. 
+This gives us an upper bound of the absolute error in between the expected value of any 1-Lipschitz function $h$.
+%, e.g the upper bound of absolute differences in means related to the probability measures $\pi$ and $\tilde{\pi}$. 
 
 %Now consider the 2-Wasserstein distance
 %\begin{align}
@@ -611,7 +612,7 @@ This gives us an upper bound of the absolute error in between the expected value
 \section{Affine Map}
 \label{sec:affine}
 The forward map, which we introduce in Ch.~\ref{ch:formodel}, poses a weakly non-linear forward problem, which we could tackle by treating the problem as a linear problem and then iteratively updating the non-linear part after each parameter sample.
-Instead, we approximate the non-linear model using an affine map $ \bm{M}:\bm{A}_L\bm{x} \rightarrow \bm{A}_{NL}(\bm{x})$, which maps from the linear model $\bm{A}_{L}$ to the non-linear model $\bm{A}_{NL}$, so that we define linear $ \bm{A} = \bm{M} \bm{A}_{L}$, which approximates the non-linear model.
+Instead, we approximate the non-linear model using an affine map $ \bm{M}:\bm{A}_L\bm{x} \rightarrow \bm{A}(\bm{x})$, which maps from the linear model $\bm{A}_{L}$ to the non-linear model $\bm{A}(\bm{x})$, so that we define a linear model $ \bm{A} \coloneqq \bm{M} \bm{A}_{L}$, which approximates the non-linear model.
 Here, we give a brief introduction to affine maps.
 
 An affine map is any linear map between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin (see~\cite[Def. 2.3.1]{berger2009geometry}).
@@ -626,10 +627,10 @@ For more information on affine spaces and maps, we refer to the books~\cite{berg
 		\draw[<-, very thick] (NL.west) -- (L.east); 
 		\node[align=center] at (-5.5,-4) (f3) {linear forward model};
 		\node[align=center] at (5.5,-4) (f4) {non-linear forward model};
-		\node[align=center] at (0,-5) (f5) {$\bm{A}_{NL}(\bm{x})  \approx \bm{M A}_L  \bm{x} $ };
+		\node[align=center] at (0,-5) (f5) {$\bm{A}(\bm{x})  \approx \bm{M A}_L  \bm{x} $ };
 		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
 	\end{tikzpicture}
-	\caption[Schematics of the affine map]{This Figure shows the schematic representation of how the affine map $\bm{M}$ approximates the non-linear forward model. Here, $\bm{V}$ contains values produced by the linear forward model, and $\bm{W}$ contains the corresponding values from the non-linear forward model. Both $\bm{V}$ and $\bm{W}$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $\bm{V}$ onto their counterparts in the non-linear forward model space $\bm{W}$. More specifically, the non-linear noise-free data vector $\bm{A}_{NL} \bm{x} $ is approximated by the affine map and the linear forward model so that  $\bm{A}_{NL} (\bm{x})  \approx  \bm{M A}_L  \bm{x}$.}
+	\caption[Schematics of the affine map]{This Figure shows the schematic representation of how the affine map $\bm{M}$ approximates the non-linear forward model. Here, $\bm{V}$ contains values produced by the linear forward model, and $\bm{W}$ contains the corresponding values from the non-linear forward model. Both $\bm{V}$ and $\bm{W}$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $\bm{V}$ onto their counterparts in the non-linear forward model space $\bm{W}$. More specifically, the non-linear noise-free data vector $\bm{A} (\bm{x}) $ is approximated by the affine map and the linear forward model so that  $\bm{A} (\bm{x})  \approx  \bm{M A}_L  \bm{x}$.}
 \end{figure}
 \newcommand*{\vertbar}{\rule[-1ex]{0.5pt}{2.5ex}}
 \newcommand*{\horzbar}{\rule[.5ex]{2.5ex}{0.5pt}}
