@@ -1,16 +1,17 @@
-In this thesis, we develop a hierarchical Bayesian model for an atmospheric limb-sounder targeting ozone, as in \cite{mipas2000handbook}.
-To measure most effectively, we briefly assess the informativity of the forward model for different measurement approaches and adjust the data collection accordingly.
-Following \cite{fox2016fast}, we provide posterior distributions of hyper-parameters and ozone profiles utilising the marginal and then conditional scheme, and compare to a Tikhonov regularisation approach.
-Furthermore, we extend our model and the marginal and then conditional scheme to infer posterior pressure, temperature and ozone jointly.
-The main contribution of this work is that we provide a novel approach to approximate high-dimensional posterior distributions in the tensor-train format \cite{cui2022deep}.
-This allows us to generate samples from the target distribution with far fewer function evaluations than the \texttt{t-walk} sampling algorithm \cite{christen2010general} and to quickly calculate marginals from the target distribution, which we use for quadrature to avoid sampling-based characterisation of integrals.
+In this thesis, we develop a hierarchical Bayesian model for an atmospheric limb-sounder targeting ozone, as described in~\cite{mipas2000handbook}.
+To ensure effective measurements, we briefly assess the informativity of the forward model for different measurement approaches and adapt the data collection accordingly.
 
-Compared to conventional samplers tensor-train methods require a predefined grid and a ``normalisation constant''  for function outputs to be within computer precision, but once defined reduce the function evaluations per independent sample significantly.
-Another advantage of the tensor-train format is that marginal distributions, useful for quadrature, can be calculated at a low computational cost.
-To further improve tensor-train methods, we think it is essential to be able to automatically lower tensor ranks, calculate "normalisation constants" to avoid numerical issues and reduce correlation structures between parameters, all of which we currently have to do by exploratory analysis.
+Following~\cite{fox2016fast}, we utilise the marginal and then conditional scheme to provide posterior distributions of hyper-parameters and ozone profiles, and compare with a Tikhonov regularisation approach.
+Further, we extend our model and the marginal and then conditional scheme to jointly infer posterior pressure, temperature and ozone.
+
+The main contribution of this work is that we introduce a novel approach to approximate high-dimensional posterior distributions in the tensor-train format~\cite{cui2022deep}.
+This enables us to generate samples from the target distribution with far fewer function evaluations compared to the \texttt{t-walk} sampling algorithm~\cite{christen2010general}.
+Tensor-train methods require a predefined grid and a ``normalisation constant'' so that function outputs are within computer precision, but once defined, they reduce the function evaluations per independent sample significantly.
+Another advantage of the tensor-train format is that marginal distributions, useful for characterisation of integrals via quadrature, can be calculated at a low computational cost, without any sampling.
+To further improve tensor-train methods, we suggest future work should focus on lowering tensor ranks, calculating "normalisation constants" to avoid numerical issues and reducing correlation structures between parameters automatically, all of which we currently have to do by exploratory analysis.
 Additionally, choosing accurate interpolation schemes between grid points may be crucial to improving the effectiveness of the approximation.
 
-Our results show that a hierarchical Bayesian approach, which quantifies posterior mean and variance of the parameter (ozone), provides more information about the parameter than a regularisation approach within a similar computation time.
-In regions where the signal strength is low an the data is noise-dominated we can not recover ozone structures from the ground truth.
-When including pressure and temperature describing hyper-parameters within our hierarchical Bayesian model, we show that ozone and pressure are highly correlated, whereas the model and data are uninformative about temperature.
-For future work, we recommend developing a more physically based model for ozone within the atmosphere.
+Our results show that a hierarchical Bayesian approach, which quantifies posterior mean and variance of the parameter (ozone), provides more information than a regularisation approach at comparable computational time.
+In regions where the signal strength is low and the data is noise-dominated, we can not recover ozone structures from the ground truth.
+When including pressure and temperature describing hyper-parameters within our hierarchical Bayesian model, we find a strong correlation between ozone and pressure, whereas the model and data are uninformative about temperature.
+For future work, we recommend developing a more physically informed parametrised model for ozone within the atmosphere, incorporating atmospheric chemistry and other important processes.
