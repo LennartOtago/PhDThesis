@@ -321,11 +321,11 @@ to generate marginal posterior samples $(\lambda, \gamma)^{(1)}, \dots, (\lambda
 %\end{align}
 %is normal distribution and we compute weighted expectations, as in Eq.~\ref{eq:MargExpPos}, of the conditional mean and covariance matrix, where the weights are given by $\pi(\bm{\theta} | \bm{y})$. 
 %Note that both the noise covariance $\bm{\Sigma} = \bm{\Sigma}(\bm{\theta})$ and the prior precision matrix $\bm{Q} = \bm{Q}(\bm{\theta})$ depend on the hyper-parameters $\bm{\theta}$.
-We calculate the IACT with the Python implementation of~\cite{wolff2004monte}, provided by~\cite{drikHesse}, which gives us $\tau_{\text{int}, \gamma} \approx 2.2 \pm 0.1$ and $\tau_{\text{int}, \lambda} = 5.2 \pm 0.5 $, see Fig. \ref{fig:IATCLamLin} and Fig.~\ref{fig:IATCGamLin}.
+We calculate the IACT with the Python implementation of~\cite{wolff2004monte}, provided by~\cite{drikHesse}, which gives us $\tau_{\text{int}, \gamma} \approx 2.2 \pm 0.1$ and $\tau_{\text{int}, \lambda} = 5.2 \pm 0.5 $ (see Fig. \ref{fig:IATCLamLin} and Fig.~\ref{fig:IATCGamLin}).
 \begin{figure}[h!]
 	\centering
 	\includegraphics{UwerrTauIntFirstO3lam.png}
-	\caption[IACT of $\lambda$ samples from $\pi(\gamma, \lambda| \bm{y})$, for linear model.]{Provided by \cite{drikHesse}, the IACT $\tau_{\text{int},\lambda}$ at summation windows W as well as the estimated autocorrelation function $\Gamma_{\lambda}$ at lag $t$ of the samples $\lambda \sim \pi(\gamma, \lambda| \bm{y})$.}
+	\caption[IACT of $\lambda \sim \pi( \cdot| \bm{y})$, for linear model.]{Provided by \cite{drikHesse}, the IACT $\tau_{\text{int},\lambda}$ at summation windows W as well as the estimated autocorrelation function $\Gamma_{\lambda}$ at lag $t$ of the samples $\lambda \sim \pi( \cdot| \bm{y})$.}
 	\label{fig:IATCLamLin}
 \end{figure}
 
@@ -347,7 +347,7 @@ The relative RMS TT approximation error over the whole grid is $\approx 3\%$ and
 \begin{figure}[h!]
 	\centering
 	\includegraphics{ScatterplusHistoPlusTT.png}
-	\caption[Samples from marginal posterior and TT approximation; trace plot of the MWG for $\pi(\lambda, \gamma| \bm{y})$]{Samples from the marginal posterior $\pi(\lambda , \gamma  | \bm{y})$ colour coded using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. The mode of $(\lambda_0 , \gamma_0)$ of $\pi(\lambda , \gamma  | \bm{y})$ is marked with the pink cross. To show ergodicity, we plot the trace of the samples of the MWG algorithm.}
+	\caption[Samples from marginal posterior and TT approximation; trace plot of the MWG for $\pi(\lambda, \gamma| \bm{y})$]{Samples from the marginal posterior colour coded using the TT approximation of $\pi(\lambda , \gamma  | \bm{y})$. The mode of $(\lambda_0 , \gamma_0)$ of $\pi(\lambda , \gamma  | \bm{y})$ is marked with the pink cross. To show ergodicity, we plot the trace of the samples of the MWG algorithm.}
 	\label{fig:ScatterPlotTT}
 \end{figure}
 %\subsubsection{Sample from Marginal Posterior Distribution}
@@ -409,7 +409,7 @@ Note that the posterior samples do not represent the ozone peak at around $80$km
 
 If calculating the variance is too costly, the RTO method (see Sec.~\ref{subsec:RTO}) may be a feasible alternative to draw a sample from Eq.~\ref{eq:CondPost}.
 
-\paragraph{Errors of Posterior Mean and Covariance}
+\paragraph{Errors of Full Posterior Mean and Covariance}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{relErrO3MeanVar.png}
@@ -831,7 +831,7 @@ For each evaluation of $\pi( \bm{\theta}_{\bm{p}, \bm{T}},\lambda,\gamma  | \bm{
 
 \paragraph{Sampling from Marginal Posterior}
 For a ground truth, we run the \texttt{t-walk}~\cite{christen2010general} algorithm on $\pi( \bm{\theta}_{\bm{p}, \bm{T}},\lambda,\gamma  | \bm{y})$, where we set our objective to generate $1000$ independent samples from the marginal posterior.
-We bound the maximum IACT (see Tab. \ref{tab:priors}) by  550, so we run the \texttt{t-walk} for $N = 1000 \times 1100$ steps with a burn-in period of $N_{\text{burn-in}} = 100 \times 1100 $.
+We bound the maximum IACT (see Tab.~\ref{tab:priors} and Fig.~\ref{fig:TWalkIATC1} to Fig.~\ref{fig:TWalkIATC18}) by  550, so we run the \texttt{t-walk} for $N = 1000 \times 1100$ steps with a burn-in period of $N_{\text{burn-in}} = 100 \times 1100 $.
 We initialise the Python implementation of the \texttt{t-walk}~\cite{christentwalkaccess} around the hyper-prior mean values and the mode of $\pi(\lambda ,\gamma|\bm{y})$.
 We take a total number of $N' =N + N_{\text{burn-in}} = 1210000$ steps in $\approx 10$ mins within bounds given by the iteratively defined TT grid (see Tab.~\ref{tab:priors}).
 We plot the resulting histograms in Fig.~\ref{fig:PostHistTT0} to Fig.~\ref{fig:PostHistTT4} and the trace of the samples in Fig.~\ref{fig:TraceTwalk}.

@@ -29,7 +29,7 @@ Furthermore, these regularisation methods condition on external point estimates 
 
 Naturally, noise (hyper-parameter) is a random process and follows a probability distribution, which we assume to know.
 According to that noise, as well as some other probability distributions, we can formulate explicit functions over hyper-parameters and parameters (e.g. ozone concentrations).
-By incorporating hyper-parameters, e.g. measurement noise and smoothness of the ozone profile, and parameters in the modelling and inversion process, we are able to provide errors and a range of feasible solutions (posterior distribution) given some data, instead of one "optimal" solution.
+By incorporating hyper-parameters, e.g. measurement noise and smoothness of the ozone profile, in the modelling and inversion process, we are able to provide errors and a range of feasible paramters (posterior distribution) given some data, instead of one "optimal" solution.
 This approach is known as \textit{hierarchical} Bayesian modelling.
 Livesey et al.~\cite{livesey2006retrieval} report "unexpected spectrally correlated noise" on the MLS aura, so here is another real reason why one should include noise in the model.
 
@@ -37,8 +37,9 @@ To solve this inverse problem we employ a linear-Gaussian hierarchical Bayesian 
 Within seconds we can evaluate the marginal posterior distribution over the hyper-parameters and the conditional posterior distribution over the parameters.
 This is a relatively new method within the Bayesian community, and we are the first to apply it to a forward model based on the radiative transfer equation (RTE).
 
-Moreover, instead of using sample-based methods to characterise those posterior distributions, we are the first, to our knowledge, to approximate posterior distributions directly utilising the tensor-train (TT) format.
-This enables us to provide estimates and uncertainties via quadrature or the inverse Rosenblatt transform (IRT), with far fewer function evaluations compared to conventional samplers.
+Moreover, instead of using sampling algorithms to characterise those posterior distributions, we are the first, to our knowledge, to approximate posterior distributions directly utilising the tensor-train (TT) format.
+This enables us to provide estimates and uncertainties via the inverse Rosenblatt transform (IRT), with far fewer function evaluations compared to conventional samplers.
+Alternatively, we can calcualte marginal distributions of each hyper-parameter and evalute intergals via quadrature without any sampling.
 
 Since the RTE is weakly non-linear, we approximate the RTE with an affine map, which seems to be another novelty in the field of atmospheric remote sensing.
 
