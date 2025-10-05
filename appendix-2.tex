@@ -2,7 +2,7 @@
 
 \section{Correlation Structure}
 \label{ap:Correlation}
-In the book Gaussian Markov Random Fields~\cite{rue2005gaussian}, Rue and Held demonstrate that a strong correlation between the hyper-parameter $\mu$ and the latent field $\bm{x}$ can significantly slow down convergence in particularly when using Gibbs samplers.  
+In the book Gaussian Markov Random Fields~\cite{rue2005gaussian}, Rue and Held demonstrate that a strong correlation between the hyper-parameter $\mu$ and the latent field $\bm{x}$ can significantly slow down convergence particularly when using Gibbs samplers.  
 They consider the hierarchical model
 
 \begin{subequations}
@@ -19,23 +19,23 @@ and apply a Gibbs sampler based on the full conditional distributions
 	\bm{x}^{(k)} | \mu^{(k)} &\sim \mathcal{N}(\mu^{(k)} \bm{1}, \bm{Q}^{-1})\label{eq:gibbsx}.
 \end{align}
 As illustrated in Figure~\ref{fig:RueHeld}, when the sampler is restricted to steps only in the $\mu$-direction (horizontal axis) or the $\bm{x}$-direction (vertical axis), it requires many iterations to adequately explore the parameter space. 
-This inefficiency arises from the high correlation between $\mu$ and $\bm{x}$, visible in Figure~\ref{fig:RueHeld} as a 'squeeze' of the distribution.
+This inefficiency arises from the high correlation between $\mu$ and $\bm{x}$, visible in Figure~\ref{fig:RueHeld} as a ``squeeze'' of the distribution.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width = \textwidth]{Figures/RueHeldBookFig.png}
-	\caption[Correlation structure in between parameters and hyper-parameters]{The figure taken from~\cite[Figure 4.1 (b)]{rue2005gaussian}, shows samples from the chain of $\mu$ (x-axis) and $\bm{1}^T \bm{Q} \bm{x}^{(k)}$ (y-axis) for over 1000 iterations, based on the hierarchical model in Eq.~\ref{eq:rueMod}, with an autoregressive process encoded in $\bm{Q}$. The algorithm updates $\mu$ and $\bm{x}$ successively from their conditional distributions (see Eq.~\ref{eq:gibbsMu} and Eq.~\ref{eq:gibbsx}). The plot displays $(\mu^{(k)}, \bm{1}^T \bm{Q} \bm{x}^{(k)})$, with $\mu^{(k)}$ on the horizontal axis and $\bm{1}^T \bm{Q} \bm{x}^{(k)}$ on the vertical axis. The slow mixing and convergence of $\mu$ result from its strong dependence on $\bm{1}^T \bm{Q} \bm{x}^{(k)}$, while the sampler permits only axis-aligned (horizontal and vertical) and does not allow diagonal moves, as illustrated by the arrows.}
+	\caption[Correlation structure in between parameters and hyper-parameters]{The figure taken from~\cite[Figure 4.1 (b)]{rue2005gaussian} shows samples from the chain of $\mu$ (x-axis) and $\bm{1}^T \bm{Q} \bm{x}^{(k)}$ (y-axis) for over 1000 iterations, based on the hierarchical model in Eq.~\ref{eq:rueMod}, with an autoregressive process encoded in $\bm{Q}$. The algorithm updates $\mu$ and $\bm{x}$ successively from their conditional distributions (see Eq.~\ref{eq:gibbsMu} and Eq.~\ref{eq:gibbsx}). The plot displays $(\mu^{(k)}, \bm{1}^T \bm{Q} \bm{x}^{(k)})$, with $\mu^{(k)}$ on the horizontal axis and $\bm{1}^T \bm{Q} \bm{x}^{(k)}$ on the vertical axis. The slow mixing and convergence of $\mu$ result from its strong dependence on $\bm{1}^T \bm{Q} \bm{x}^{(k)}$, while the sampler permits only axis-aligned (horizontal and vertical) and does not allow diagonal moves, as illustrated by the arrows.}
 	\label{fig:RueHeld}
 \end{figure}
 
 A solution to the slow mixing problem is to update $(\mu, \bm{x})$ jointly.
-Since $\mu$ is one dimensional, effectively only the marginal density of $\mu$ is needed.
+Since $\mu$ is one-dimensional, effectively only the marginal density of $\mu$ is needed.
 \begin{align}
 	\mu^{\star}  &\sim q (\mu^{\star}|	\mu^{(k-1)} ) \\
 	\bm{x}^{(k)} | \mu^{\star} &\sim \mathcal{N} (	\mu^{\star}\bm{1}, \bm{Q}^{-1}) 
 \end{align}
-With a simple MCMC algorithm targeting  $ \mu$ one can explore the sample space efficiently and only draw a corresponding sample for $\bm{x}$ from its full conditional once, for instance, the proposal $\mu^{\star}$ has been accepted.
+With a simple MCMC algorithm targeting $ \mu$, one can explore the sample space efficiently and only draw a corresponding sample for $\bm{x}$ from its full conditional once, for instance, the proposal $\mu^{\star}$ has been accepted.
 
-\section{On the Monte-Carlo Error and Integrated Autocorrelation time}
+\section{Monte-Carlo Error and Integrated Autocorrelation Time}
 \label{ap:IATC}
 To assess the error $(\sigma^{(i)})^2$ of a samples-based estimate 
 \begin{align}
@@ -52,12 +52,12 @@ Expanding this summation, we see that
 \begin{align}
 	(\sigma^{(i)})^2 = \frac{1}{N^2} \sum_{k,s=1}^{N} \Gamma(k-s)
 \end{align}
-with the auto correlation coefficient $\Gamma(k-s) =  \big( h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \big) \big(h(\bm{x}^{(s)}) - \bm{\mu}^{(i)} \big)$.
+with the autocorrelation coefficient $\Gamma(k-s) =  \big( h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \big) \big(h(\bm{x}^{(s)}) - \bm{\mu}^{(i)} \big)$.
 Next we rewrite
 \begin{align}
 	\sum_{k,s=1}^{N} \Gamma(k-s) = \text{var}(h(\bm{x}))  \sum_{k,s=1}^{N} \frac{\Gamma(k-s)}{\Gamma(0)} =  \text{var}(h(\bm{x})) \sum_{k,s=1}^{N}\rho(k-s)\, ,
 \end{align}
-with the normalised auto correlation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$ and $\Gamma(0) = \text{var}(h(\bm{x}) )$ for $k=s$.
+with the normalised autocorrelation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$ and $\Gamma(0) = \text{var}(h(\bm{x}) )$ for $k=s$.
 Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) \overset{t \rightarrow \infty }{ \propto} \exp\{ - |t| / \tau \}  $ and we can approximate
 \begin{align}
 	\sum_{k,s=1}^{N}\rho(k-s)  = N \sum_{t = -(N-1) }^{N-1} \Bigg(1- \frac{t}{N} \Bigg) \rho(t)  \approx N  \sum_{t = - \infty }^{\infty} \rho(t) \, ,
@@ -124,9 +124,9 @@ More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ g
 %Finally, if a countable collection of sets $A_1, A_2, \dots \in \mathcal{F}$, then their union $\bigcup_{j \in \mathbb{N}} A_j$ must also be in $\mathcal{F}$. These three properties define the requirements for $\mathcal{F}$ to be a $\sigma$-algebra.
 \clearpage
 \section{Python Code}
-\the\baselineskip
+%\the\baselineskip
 
-\begin{lstlisting}[language=Python, columns=flexible, caption={Pyhton code to calculate Backward marginals, as in Prop. \ref{prob:backMarg} and \cite{cui2022deep}.}, escapeinside={"}{"}]
+\begin{lstlisting}[language=Python, columns=flexible, caption={Python code to calculate Backward marginals, as in Prop. \ref{prob:backMarg} and \cite{cui2022deep}.}, escapeinside={"}{"}]
 def MargBack(TTCore, univarGrid):
 	''' Backward marginalisation (see "Prop. \ref{prob:backMarg}") as in SIRT from Cui et al. "\cite{cui2022deep}" '''
 	
@@ -163,7 +163,7 @@ return B
 
 \end{lstlisting}
 \clearpage
-\begin{lstlisting}[language=Python, columns=flexible, caption={Pyhton code to calculate forward marginals, as in Prop. \ref{prob:ForMarg}.}, escapeinside={"}{"}]
+\begin{lstlisting}[language=Python, columns=flexible, caption={Python code to calculate forward marginals, as in Prop. \ref{prob:ForMarg}.}, escapeinside={"}{"}]
 	def MargForw(TTCore, univarGrid):
 	''' Forward marginalisation (see "Prop. \ref{prob:ForMarg}") 
 		similar to backward marginalsiation as in  Cui et al. "\cite{cui2022deep}" '''
@@ -205,7 +205,7 @@ return B
 
 
 \clearpage
-\begin{lstlisting}[language=Python,	columns=flexible, caption = {Pyhton code to draw samples via SIRT, as in Alg. Box \ref{alg:SIRT}.}, escapeinside={"}{"}]
+\begin{lstlisting}[language=Python,	columns=flexible, caption = {Python code to draw samples via SIRT, as in Alg. Box \ref{alg:SIRT}.}, escapeinside={"}{"}]
 def SIRT(seeds, SQTT, univarGrid, BackMarg, absError):
 	''' do squared inverse rosenblatt transform (SIRT) as in Cui et al. "\cite{cui2022deep}" '''
 	
