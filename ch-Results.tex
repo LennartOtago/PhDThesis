@@ -292,7 +292,11 @@ More specifically, we implement a Metropolis random walk on
 	\label{eq:margApplCondGam}
 	\pi(\lambda | \gamma, \bm{y}) &\propto \lambda^{n/2 +\alpha_{\delta}-1} \exp{\Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_\delta \gamma \lambda \Bigr\}}.
 \end{align} 
-In doing so, we accept $\lambda^{k+1} = \lambda^{\prime} $ or reject $\lambda^{k+1} = \lambda^{k} $  a proposal $\lambda^{\prime} \sim \mathcal{N}(0, \sigma^2_{\lambda})$ according to the acceptance ratio in log space
+In doing so, we accept $\lambda^{k+1} = \lambda^{\prime} $ or reject $\lambda^{k+1} = \lambda^{k}$ a proposal $\lambda^{\prime} \sim \mathcal{N}(0, \sigma^2_{\lambda})$ according to the acceptance ratio
+\begin{align}
+	\alpha(\lambda^{\prime} |  \lambda^{k} ) = \min \left\{ 1, \frac{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y})  }{\pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y})} \right\} \, .
+\end{align}
+In practice, we calculate the acceptance ratio in log space, so that
 \begin{align} 
 	\log \left\{ \frac{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y})  }{\pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y})}  \right\} 
 	= \log  \{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y} ) \}  -\log  \{ \pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y}) \} \\
