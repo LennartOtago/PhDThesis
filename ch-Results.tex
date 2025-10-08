@@ -272,8 +272,8 @@ Usually a Taylor series includes a factor $(r!)^{-1}$, which in this case cancel
 \paragraph{Error due to approximation of f and g}
 To assess the approximation error, we lay a 100-point grid over the sampling region in each dimension and compare the approximations of $f(\lambda)$, $g(\lambda)$ and $\pi(\lambda, \gamma | \bm{y})$ with their true function values.
 
-Compared to a 1-st, 3-rd or 4-th order Taylor approximation, we find that the 2-nd order Taylor approximation of $f(\lambda)$ gives the smallest relative RMS error of $\approx 10 \%$ in the sampling region of $\lambda$.
-Additionally, we find that a linear approximation of $g(\lambda)$ is sufficient with relative RMS $<0.1\%$.
+\textcolor{red}{Compared to a 1-st, 3-rd or 4-th order Taylor approximation, we find that the 2-nd order Taylor approximation of $f(\lambda)$ gives the smallest relative RMS error of $\approx 10 \%$ in the sampling region of $\lambda$.
+Additionally, we find that a linear approximation of $g(\lambda)$ is sufficient with relative RMS $<0.1\%$.}
 
 These errors then propagate into the marginal posterior $\pi(\lambda , \gamma| \bm{y})$ so that the relative RMS error is $\approx 3 \%$ over the whole grid.
 When sampling, we evaluate the acceptance ratio in the log-space, so we report a relative RMS error of $< 0.01\%$ for $\log{\pi(\lambda| \gamma, \bm{y})}$, with a maximum relative pointwise error of $< 0.5\%$.
@@ -343,7 +343,7 @@ We calculate the IACT with the Python implementation of~\cite{wolff2004monte} pr
 \paragraph{TT approximation of marginal posterior}
 Alternatively, we can utilise a TT approximation of the square root of the marginal posterior over a predefined grid and calculate the marginals $\pi(\gamma|\bm{y})$ and $\pi(\lambda|\bm{y})$ (see Sec. \ref{subsec:TTMarg}).
 
-We predefined the univariate grid with $n = 20$ grid points (see Fig. \ref{fig:MeanVarError}) over $\gamma = [ 0.25 \times 10^{15}, 6 \times 10^{15}]$ and $\lambda = [ 1, 5000]$.
+\textcolor{red}{We predefined the univariate grid with $n = 20$ grid points (see Fig. \ref{fig:MeanVarError}) over $\gamma = [ 0.25 \times 10^{15}, 6 \times 10^{15}]$ and $\lambda = [ 1, 5000]$.}
 We introduce a ``normalisation constant'' $c = - 340/2$ to avoid underflow so that the values of $\sqrt{\pi( \lambda,\gamma| \bm{y})} = \exp \{ 0.5 \log  \pi(\lambda,\gamma | \bm{y}) + c \} $ are within computer precision.
 Then we initialise the~\texttt{tt.cross.rectcross.rect\_cross.cross} function based on the TT cross algorithm in \cite{OSELEDETS2010TTCross,Dolgov2018TTCross} from the Python package \texttt{ttpy}~\cite{Oseledets2018ttpy} with a random tensor.
 The number of ranks is set to constant $r = 4$, we do 1 sweep with $2n_{\text{sweeps}}2nr =400$ function evaluations and obtain a TT approximation of $\pi( \lambda,\gamma| \bm{y})$ in about $0.02$s.
@@ -751,7 +751,7 @@ We use the approximated forward model $\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}}) \col
 		$a_{6}$ & $\mathcal{N}(-2,(0.01)^2)$ &-2.04 &-1.96&$131\pm 5$&$\bm{T}$\\
 		\hline
 	\end{tabular}
-	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma^2)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in~\cite{UwerrM} from posterior samples based on the approximated forward map.}
+	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{\textcolor{red}{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma^2)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in~\cite{UwerrM} from posterior samples based on the approximated forward map.}}
 	\label{tab:priors}
 \end{table}
 
@@ -890,7 +890,8 @@ Next we aim to determine the optimal rank and grid size to accurately approximat
 We set the number of grid points to $n = 150$ and calculate different error measures for deceasing number of ranks to find the optimal number of ranks, where we compare to true marginal posterior function values and $1000$ independent t-walk samples from that distribution.
 Then we fix a small but tolerable rank and decrease the number of grid points until sufficient accuracy.
 
-\begin{figure}[ht!]% will be the left-side figure
+\begin{figure}[ht!]
+	\centering% will be the left-side figure
 	\includegraphics[]{findGridRank.png}
 	\caption[Optimal rank and number of grid points for TT approximation.]{Given a TT approximation of $\sqrt{\pi( \lambda,\bm{\theta}_{\bm{p}, \bm{T}},\gamma  | \bm{y}) }$, we calculate the relative RMS error (orange squares) and the 1-Wasserstein distance (blue cross) between approximated values at sample points provided by the SIRT-MH and the true function values. We calculate the relative RMS error between the sample mean provided by the t-walk and mean values for the hyper-parameters calculated by quadrature (black dots), where we use the marginal function from the TT approximation as weights. Additionally, we plot the relative RMS error between the sample-based mean from the SIRT-MH and the t-walk (red circles).}
 	\label{fig:FindRankGrid}
@@ -953,8 +954,8 @@ The 1-Wasserstein distance is quite fluctuant but decreases with increasing rank
 Further, we decrease the number of functions evaluations and define ranks \linebreak$r = [ 1,  10,  10, 10, 10, 10, 5, 5, 5, 5, 5, 3, 2, 2, 2, 2, 2, 2, 1]$ harvesting the correlation structure of $\pi(\bm{\theta}_{\bm{p}, \bm{T}},\lambda,\gamma  | \bm{y})$ even more.
 We do one sweep in \linebreak the~\texttt{tt.cross.rectcross.rect\_cross.cross}, reducing the computation time to $\approx 7$s and the number of function evaluations to 24120, where we initialise at a previously calculated approximation.
 We report an average IACT (provided by~\cite{wolff2004monte, drikHesse}) of $\approx 0.6 \pm 0.1$ for the samples drawn via the SIRT-MH scheme, which means that we need two function evaluations per independent sample, once the TT approximation is available.
-To draw 1000 independent samples, including generating a TT approximation, takes $\approx30$s, and we report a relative RMS error of $\approx 25 \%$ evaluated over those 1000 independent samples.
-Additionally, we report a relative RMS error of $\leq 1\%$ on 1000 randomly chosen grid points, indicating that the linear interpolation causes most of the approximation error. 
+\textcolor{red}{To draw 1000 independent samples, including generating a TT approximation, takes $\approx30$s, and we report a relative RMS error of $\approx 25 \%$ evaluated over those 1000 independent samples.
+Additionally, we report a relative RMS error of $\leq 1\%$ on 1000 randomly chosen grid points, indicating that the linear interpolation causes most of the approximation error.}
 We plot the marginals for each hyper-parameter in Fig.~\ref{fig:PostHistTT0} to Fig.~\ref{fig:PostHistTT5} and samples in Fig.~\ref{fig:CorrPlot}.
 We observe that, besides $\lambda$ and $\gamma$, only the marginal posterior of the $b$ hyper-parameter is seriously affected by the data and has significantly changed compared to the hyper-prior distribution.
 \clearpage

@@ -62,7 +62,7 @@ Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) 
 \begin{align}
 	\sum_{k,s=1}^{N}\rho(k-s)  = N \sum_{t = -(N-1) }^{N-1} \Bigg(1- \frac{t}{N} \Bigg) \rho(t)  \approx N  \sum_{t = - \infty }^{\infty} \rho(t) \, ,
 \end{align}
-see \cite[p. 137]{Sokal1997}, and define the IACT as in \cite[pp. 103-105]{wolff2002LecNot}.
+see \cite[p. 137]{Sokal1997}.
 If $\tau \gg 1$
 \begin{align}
 	\sum_{t = - \infty }^{\infty} \rho(t) =  1 + 2 \sum_{t = 1}^{\infty} \big(e^{-1/ \tau}\big)^t =  1 + 2 \frac{e^{-1/ \tau} }{1 - e^{-1/ \tau}} \approx  1 + 2 \frac{1 -1/ \tau }{1/ \tau} =  2 \tau -1 \approx 2 \tau_{int}\, ,
@@ -74,7 +74,7 @@ In practise, the estimate for the Monte-Carlo error is:
 	(\sigma^{(i)})^2   \approx \frac{\text{var}(h(\bm{x}) )}{N} \sum_{t = - \infty }^{\infty} \rho(t)
 	\approx \frac{\text{var}(h(\bm{x}) )}{N} \Bigg( \underbrace{  1 + 2 \sum_{t = 1}^{W} \rho(t)  }_{ \coloneqq 	2\tau_{\text{int}} }\Bigg) = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N}\, ,
 \end{align}
-where $W$ is the summation window.
+where $W$ is the summation window and we define the IACT as in \cite[pp. 103-105]{wolff2002LecNot}.
 The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
 More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
 
