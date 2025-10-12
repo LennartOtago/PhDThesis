@@ -30,7 +30,7 @@ Although the t-walk may not be the best sampler for this specific marginal poste
 To illustrate the efficiency of TT approximations, we compare the number of function evaluations per 1000 independent samples.
 For 1000 independent samples with a maximum IACT of 550 and a burn-in period of 100 independent samples, the t-walk needs 1210000 function evaluations. 
 In contrast, 24120 function evaluations are enough to approximate the marginal posterior in the TT format.
-Then drawing 1000 independent samples via the SIRT-MH scheme requires another 2000 function evaluations with an IACT of $\approx 0.6$.
+Then drawing 1000 independent samples via the SIRT-MH scheme requires another 2000 function evaluations with an IACT of $\approx 1.2$.
 So the cost per independent sample for the t-walk is $1210$ and for the TT approach is $\approx 27$ function evaluations, including the burn-in period and the TT approximation via the \texttt{rect\_cross.cross} Python function.
 Or, after the burn-in phase, the t-walk requires around 1100 function evaluations per independent sample, while with an approximation of a probability density in the TT format available, only two function evaluations per independent sample are needed.
 

@@ -39,25 +39,25 @@ With a simple MCMC algorithm targeting $ \mu$, one can explore the sample space 
 \label{ap:IATC}
 To assess the error $(\sigma^{(i)})^2$ of a samples-based estimate 
 \begin{align}
-	\bm{\mu}^{(i)} \coloneqq	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}),
+\bar{h}_N^{(i)} \coloneqq	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}),
 \end{align} 
 from the chain $\mathcal{M}^{(i)} = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\} \sim \pi(\bm{x}|\bm{y})$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
 To derive the IACT, we follow Ulli Wolff's lecture notes \cite{wolff2002LecNot} (or alternatively \cite{wolff2004monte}).
 
 In general, the error of a Monte-Carlo estimate is:
 \begin{align}
-	(\sigma^{(i)})^2 = \text{var}(\bm{\mu}^{(i)}) =  \text{var}(\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \Bigg)^2 \, .
+	(\sigma^{(i)})^2 = \text{Var}(\bar{h}_N^{(i)}) =  \text{Var}(\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})]) = \Bigg( \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}) - \bar{h}_N^{(i)} \Bigg)^2 \, .
 \end{align}
 Expanding this summation, we see that
 \begin{align}
 	(\sigma^{(i)})^2 = \frac{1}{N^2} \sum_{k,s=1}^{N} \Gamma(k-s)
 \end{align}
-with the autocorrelation coefficient $\Gamma(k-s) =  \big( h(\bm{x}^{(k)}) - \bm{\mu}^{(i)} \big) \big(h(\bm{x}^{(s)}) - \bm{\mu}^{(i)} \big)$.
+with the autocorrelation coefficient $\Gamma(k-s) =  \big( h(\bm{x}^{(k)}) -\bar{h}_N^{(i)} \big) \big(h(\bm{x}^{(s)}) - \bar{h}_N^{(i)}\big)$.
 Next we rewrite
 \begin{align}
-	\sum_{k,s=1}^{N} \Gamma(k-s) = \text{var}(h(\bm{x}))  \sum_{k,s=1}^{N} \frac{\Gamma(k-s)}{\Gamma(0)} =  \text{var}(h(\bm{x})) \sum_{k,s=1}^{N}\rho(k-s)\, ,
+	\sum_{k,s=1}^{N} \Gamma(k-s) = \text{Var}(h(\bm{x}))  \sum_{k,s=1}^{N} \frac{\Gamma(k-s)}{\Gamma(0)} =  \text{Var}(h(\bm{x})) \sum_{k,s=1}^{N}\rho(k-s)\, ,
 \end{align}
-with the normalised autocorrelation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$ and $\Gamma(0) = \text{var}(h(\bm{x}) )$ for $k=s$.
+with the normalised autocorrelation coefficient $\rho(k-s) =  \Gamma(k-s)/ \Gamma(0)$ at lag $k-s$ and $\Gamma(0) = \text{Var}(h(\bm{x}) )$ for $k=s$.
 Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) \overset{t \rightarrow \infty }{ \propto} \exp\{ - |t| / \tau \}  $ and we can approximate
 \begin{align}
 	\sum_{k,s=1}^{N}\rho(k-s)  = N \sum_{t = -(N-1) }^{N-1} \Bigg(1- \frac{t}{N} \Bigg) \rho(t)  \approx N  \sum_{t = - \infty }^{\infty} \rho(t) \, ,
@@ -65,18 +65,18 @@ Typically $\Gamma(t)$ decays exponentially so that, for $N\gg \tau$, $\Gamma(t) 
 see \cite[p. 137]{Sokal1997}.
 If $\tau \gg 1$
 \begin{align}
-	\sum_{t = - \infty }^{\infty} \rho(t) =  1 + 2 \sum_{t = 1}^{\infty} \big(e^{-1/ \tau}\big)^t =  1 + 2 \frac{e^{-1/ \tau} }{1 - e^{-1/ \tau}} \approx  1 + 2 \frac{1 -1/ \tau }{1/ \tau} =  2 \tau -1 \approx 2 \tau_{int}\, ,
+	\sum_{t = - \infty }^{\infty} \rho(t) =  1 + 2 \sum_{t = 1}^{\infty} \big(e^{-1/ \tau}\big)^t =  1 + 2 \frac{e^{-1/ \tau} }{1 - e^{-1/ \tau}} \approx  1 + 2 \frac{1 -1/ \tau }{1/ \tau} =  2 \tau -1 \, .%\approx 2 \tau_{int}\, ,
 \end{align}
-so that $\tau_{\text{int}} \approx \tau$.
+%so that $\tau_{\text{int}} \approx \tau$.
 Here we use the geometric power series $\sum^{\infty}_{n=0} x^n= 1/ (1-x)$ and the Taylor series $ e^x \approx 1+x$ for small $x$.
-In practise, the estimate for the Monte-Carlo error is:
+In practice, the estimate for the Monte-Carlo error is:
 \begin{align}
-	(\sigma^{(i)})^2   \approx \frac{\text{var}(h(\bm{x}) )}{N} \sum_{t = - \infty }^{\infty} \rho(t)
-	\approx \frac{\text{var}(h(\bm{x}) )}{N} \Bigg( \underbrace{  1 + 2 \sum_{t = 1}^{W} \rho(t)  }_{ \coloneqq 	2\tau_{\text{int}} }\Bigg) = \text{var}(h(\bm{x})) \frac{ 2 \tau_{\text{int}} }{N}\, ,
+	(\sigma^{(i)})^2   \approx \frac{\text{Var}(h(\bm{x}) )}{N} \sum_{t = - \infty }^{\infty} \rho(t)
+	\approx \frac{\text{Var}(h(\bm{x}) )}{N} \Bigg( \underbrace{  1 + 2 \sum_{t = 1}^{W} \rho(t)  }_{ \coloneqq 	\tau_{\text{int}} }\Bigg) = \text{Var}(h(\bm{x})) \frac{ \tau_{\text{int}} }{N}\, ,
 \end{align}
-where $W$ is the summation window and we define the IACT as in \cite[pp. 103-105]{wolff2002LecNot}.
+where $W$ is the summation window and we define the IACT as twice the value as in \cite[pp. 103-105]{wolff2002LecNot}.
 The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
-More specifically, the effective sample size $\frac{ 2 \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
+More specifically, the effective sample size $\frac{ \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
 
 %\section{Measure Theory}
 %\label{ch:Mesure}
