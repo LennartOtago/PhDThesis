@@ -402,8 +402,8 @@ Note that in practice we calculate $z$ numerically within the process of computi
 
 \subsection{Sampling from a TT Approximation}
 \label{subsec:SamplTT}
-Instead of evaluating marginal functions for quadrature, we can draw samples from the approximated function in the TT format via the inverse Rosenblatt transform, as in \cite{dolgov2020approximation}, to preserve the correlation structure of the parameters. \textcolor{red}{what does this mean? If you draw from a distribution, it automatically has the right correlation structure. or are you trying to say something else, the I can't work out. }
-Since we approximate the square root of the target function, Cui et. al.~\cite{cui2022deep} call that the squared inverse Rosenblatt transform (SIRT). \textcolor{red}{the 'we' seems quite inappropriate here, as it's Cui et al that call it SIRT.}
+Instead of evaluating marginal functions for quadrature, we can draw samples from the approximated function in the TT format via the inverse Rosenblatt transform, as in \cite{dolgov2020approximation}.
+Since the square root of the target function is approximated, Cui and Dolgov~\cite{cui2022deep} call that the squared inverse Rosenblatt transform (SIRT).
 
 \begin{algorithm}[!th]
 	\caption{Squared Inverse Rosenblatt Transform (SIRT)}
@@ -487,7 +487,7 @@ We refer to this as the SIRT-MH scheme, which in theory provides the corrected c
 
 
 \subsection{Error of the TT Approximation}
-A straightforward way to assess the average relative error from the TT approximation is to calculate the relative root mean squared (RMS) error 
+A straightforward way to assess an average relative error from the TT approximation is to calculate the relative root mean squared (RMS) error 
 %\textcolor{red}{explain why this is a sensible thing to do.}
 \begin{align}
 	\Bigg( \frac{ \int_{\mathcal{X}} (\pi(\bm{x}) - (\xi + \tilde{g}(\bm{x})^2))^2 \uplambda(\bm{x}) \diff \bm{x}}{ \int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(x)  \diff \bm{x} } \Bigg)^{1/2} =	\frac{\lVert 	\pi(\bm{x}) - (\xi + \tilde{g}(\bm{x})^2)  \rVert_{L^2_{\uplambda}(\mathcal{X})}}{\lVert 	\pi(\bm{x}) \rVert_{L^2_{\uplambda}(\mathcal{X})}  } \, .
