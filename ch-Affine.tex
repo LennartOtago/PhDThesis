@@ -129,6 +129,34 @@ In Fig.~\ref{fig:MapAsses}, we show the mapping for one posterior ozone sample, 
 In other words, this is an unseen event not occuring in the training data.
 The relative RMS error for this approximation is roughly $0.07\%$ and much smaller than the relative difference between noise-free linear data and non-linear data.
 Consequently, from here onwards, we use the approximated forward map.
+\section{Marginal and Then Conditional Posterior of Ozone}
+
+Again, we use the MTC scheme and the exact same setup and procedure as in Sec. \ref{sec:FirstO3Post} to evaluate the marginal posterior and then the full conditional posterior of ozone with similar computational time.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{secMargO3Res.png}
+	\caption[Marginal posterior histograms and TT approximation as well as hyper-prior distribution.]{The TT approximation of the marginal posterior in orange and the samples as a histogram, as well as the prior distribution with a dotted line. We sample $\lambda$ and $\gamma$ using the MWG algorithm and then calculate $\delta$ for every sample of the marginal posterior. The regularised parameter corresponding to the best regularised solution (see Fig.~\ref{fig:O3SolplsReg} and Fig.~\ref{fig:LCurve}) is marked with the red vertical line. We mark the ground truth noise precision with the back vertical line.}
+	\label{fig:MargPostHistTT}
+\end{figure}
+The marginal posterior is defined as in Eq.~\ref{eq:MargPostAppl}, but with the approximated forward model.
+We initialise the MWG at and approximate $f(\lambda)$ and $g(\lambda)$ around the mode of $\pi(\lambda,\gamma| \bm{y})$ (see Eq.~\ref{eq:fAprox} and Eq.~\ref{eq:gAprox}), and take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps.
+The IACTs provided by~\cite{drikHesse} are $\tau_{\text{int}, \gamma} \approx 4.0 \pm 0.2$ and $\tau_{\text{int}, \lambda} = 8.6 \pm 0.8 $ (see Fig. \ref{fig:IATCSecO3gam} and Fig.~\ref{fig:IATCSecO3lam}) and similar to the previously calculated values.
+We plot the samples in Fig. \ref{fig:MargPostHistTT} as well as TT approximation of the marginal posterior using 400 function evaluations (same grid; same number of ranks; see Sec.~\ref{subsec:FirstMargPost}).
+The approximation error of the TT is $\approx 3 \%$ and similar to the error due approximations of $f(\lambda)$ and $g(\lambda)$.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics{SecRecResinclRegandSampl.png}
+	%\includegraphics{SecRecResinclReg.png}
+	\caption[Full posterior mean and variance of ozone and the regularised solution compared to the ground truth.]{Full  posterior mean and variance and one ozone sample from the full posterior. We plot the regularised solution on top of the ground truth ozone profile in green. The results are based on the approximated forward model $\bm{M}\bm{A}_L$.}
+	\label{fig:O3SolplsReg}
+\end{figure} 
+Again, we calculate the full posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$, see Eq.~\ref{eq:MeanInt}, and covariance matrix $\bm{\Sigma}_{ \bm{x}|\bm{y}}$~\ref{eq:CovInt} as weighted expectation.
+We plot the results and one sample of $\pi(\bm{x}|\bm{y})$, which represents a feasible solution to this inverse problem, in Fig.~\ref{fig:O3SolplsReg}, as well as the regularised solution (see next section), and one sample from the posterior.
+We can see that the ground truth lies within three times of the STD (accounting for $\approx 99 \%$ of all posterior samples) around the mean, except for the peak at around $80$km.
+Compared to the previously calculated mean and variance based on the linear forward model $\bm{A}_L$ (see \ref{fig:O3Samp}), the posterior distribution based on $\bm{M A}_L$ does not differ significantly.
+This is expected since the difference between the linear and non-linear forward map of $\approx 1 \%$ is small.
 \clearpage
 
 

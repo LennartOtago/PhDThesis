@@ -60,7 +60,74 @@ Similarly, we define $\bm{A}_L$, which denotes the linear forward model matrix a
 
 Further, we classify the inverse problem as a weakly non-linear inverse problem, because neglecting the absorption changes the measurements only slightly (about $1\%$, see Sec.~\ref{sec:affineMap}).
 
-\section{Understanding the Forward Model}
+\section{Simulate Data based on a Ground Truth}
+As the ground truth for our methodology, we consider an ozone profile at distinct pressure values generated from some data~\cite{MLSdata} of the MLS on the Aura satellite within the Antarctic region.
+This ozone profile has a peak in the middle atmosphere and a second peak at higher altitudes, see Fig.~\ref{fig:O3Samp}, which seems to be a typical nighttime profile~\cite{Lee2020NightOzone}.
+
+We recursively relate pressure $p$ to geometric height $h$ with the hydrostatic equilibrium equation
+\begin{align}
+	\frac{\text{d}p}{p} = \frac{- g M}{R^* T} \text{d} h \, ,\label{eq:hydr}
+\end{align}
+starting with a pressure of $1013.25$hPa at sea level.
+The acceleration due to gravity
+\begin{align}
+	g = g_0 \Bigg( \frac{r_0}{r_0 + h} \Bigg) \, ,
+\end{align}
+where the polar radius of the earth is $r_0 \approx 6356 \, \text{km}$, the gravitation at sea level is $g_0 \approx 9.81 \text{m}/\text{s}^2$, $R^* = 8.31432 \times 10^{-3} \text{Nm} / \text{kmol} / \text{K}$ and the mean molecular weight of the air is $M = 28.97 \text{kg/kmol}$~\cite{atmosphere1976us}.
+This holds up to a geometric height of $86$km, where we ignore a $0.04\%$ non-linear change in $M$ from $80$km to $86$km.
+
+Following \cite{atmosphere1976us} we form the temperature function
+\begin{equation}
+	\label{eq:tempFunc}
+	T(h) = \adjustbox{max width=0.825\textwidth}{$\begin{dcases*}
+			T_0 &, \text{$h  = 0$}\\
+			T_0 + a_0 h   &, \text{$0 \leq h < h_{T,1}$}\\
+			T_0 + a_0 h_{T,1} &, \text{$h_{T,1} \leq  h < h_{T,2}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  + a_2 (h   - h_{T,2})  &, \text{$h_{T,2} \leq h < h_{T,3}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})   & \\
+			\hphantom{{} T_0 } + a_2 (h_{T,3}   - h_{T,2}) + a_3 (h   - h_{T,3}) &, \text{$h_{T,3} \leq h < h_{T,4}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  & \\
+			\hphantom{{} T_0 }+ a_2 (h_{T,3}   - h_{T,2})  + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h   - h_{T,4}) &, \text{$h_{T,4} \leq h < h_{T,5}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})   & \\
+			\hphantom{{} T_0 } + a_2 (h_{T,3}   - h_{T,2}) + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h_{T,5}   - h_{T,4})& \\
+			\hphantom{{} T_0 }  + a_5 (h   - h_{T,5}) &, \text{$h_{T,5} \leq h < h_{T,6}$}\\
+			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})    &\\
+			\hphantom{{} T_0}  + a_2 (h_{T,3}   - h_{T,2}) + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h_{T,5}   - h_{T,4}) &\\ 
+			\hphantom{{} T_0} + a_5 (h_{T,6}   - h_{T,5}) + a_6 (h   - h_{T,6})   &, \text{$h_{T,6} \leq h \lesssim  86$}
+		\end{dcases*}$}\\
+\end{equation}
+with gradient and height values provided by~\cite{atmosphere1976us} (see Tab.~\ref{tab:tempGrad}) which acts as the ground truth temperature profile (see Fig.~\ref{fig:PriorTemp}).
+\begin{table}
+	\centering
+	\begin{tabular}{ |c||c|c|  }
+		\hline
+		subscript $i$ & geometric height $h_{T,i}$ in km&gradient $a_i$\\
+		\hhline{|=||=|=|}
+		0& 0 & -6.5\\
+		1& 11 & 0\\
+		2& 20.1& 1\\
+		3& 32.2& 2.8\\
+		4& 47.4& 0\\
+		5& 51.4& -2.8\\
+		6& 71.8& -2\\
+		\hline
+	\end{tabular}
+	\caption[Height depending temperature gradients]{Definition of height depending temperature gradients.}
+	\label{tab:tempGrad}
+\end{table}
+
+
+Then we can compute a data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $, with $m = 30$ measurements determined by the satellite pointing accuracy of $175\text{arc sec}$ (see case 5 in Fig.~\ref{fig:TangHCases}), according to the RTE as in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE} using the trapezoidal integration rule.
+We assume an atmosphere between $h_{L,1}=7$km and $h_{L,n} = 83.3$km with $n = 45$ equidistant layers (see Fig.~\ref{fig:LIMB}).
+The height value $h_{L,i}$ for each layer $i = 1,\dots, n$ is defined by the pressure values from~\cite{MLSdata} and the hydrostatic equilibrium equation, see Eq.~\ref{eq:hydr}.
+We target ozone at a frequency of 235.71GHz, which lies within the region where the MLS observes ozone~\cite{livesey2008ozonecarbonmono, waters2006earth}.
+The corresponding wave number is $\nu = 7.86\text{cm}^{-1}$.
+We calculate the absorption constant $k(\nu,T)$ as in Eq.~\ref{eq:absRTE}, following the high resolution transmission (HITRAN) database~\cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
+%This gives us a non-linear forward model matrix $\bm{A}_{NL} = \bm{A}(\bm{x}, \bm{p}, \bm{T}) \in \mathbb{R}^{m \times n}$, where $\bm{x}\in \mathbb{R}^{n}$ is vector related to the ozone VMR, $\bm{p}\in \mathbb{R}^{n}$ is the vector describing the pressure values and $\bm{T}\in \mathbb{R}^{n}$ the temperature values.
+Lastly, we add independent and identically-distributed Gaussian noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ so that the $\text{SNR}=150$ (see Eq.~\ref{eq:SNR}) similar to~\cite{Froidevaux2008snrozone}, where a signal with a maximal spectral intensity of around $100\text{K}$ and a noise range of $0.4$ to $1.6\text{K}$ is reported.
+We note that the methods used in this thesis will work with different SNRs or other frequencies.
+
+\subsection{Understanding the Forward Model}
 \textcolor{red}{understanding the forward map}
 \label{sec:SVD}
 Before simulating some data, we provide a quick and intuitive way of assessing if the data collection is effective, how much information is passed through the forward model, and how the signal-to-noise ratio (SNR) and the measurement strategy affects that information.
@@ -73,6 +140,15 @@ Consider noise-free measurements $\bm{A}_L\bm{x}$ for a satellite at a fixed hei
 Our main objective is to measure ozone $\bm{x}$, so our forward model $\bm{A}_L$ includes temperature and pressure, the latter is dominant, see Fig.~\ref{fig:PriorPressOverTemp}, decreases exponentially in height and hence does affect the information passed through the model.
 If the pressure is high, the signal is large.
 If the pressure is low, the signal is low and the data is noise-dominated.
+
+\begin{itemize}
+	\item \textbf{case 1} equidistance measurements between $h_{L,1} = 7$km and $h_{L,1} = 35$km with pointing accuracy 0.18
+	\item \textbf{case 2} equidistance measurements pointing accuracy
+	\item \textbf{case 3} equidistance measurements pointing accuracy
+	\item \textbf{case 4} equidistance measurements pointing accuracy
+	\item \textbf{case 5} equidistance measurements pointing accuracy
+\end{itemize} 
+
 
 The SVD gives us information on how information is picked up from the parameter space by the forward model, described through the right singular values $\bm{v}_i$.
 The singular values $\sigma_i $, ordered in size from the largest $\sigma_1$ to the smallest $\sigma_{r}$, weigh that information from the right singular values to the left singular values $\bm{u}_i$, which project onto the data space.
@@ -151,71 +227,6 @@ Consequently, we expect a higher uncertainty of reconstructed parameter values i
 The singular vectors corresponding to the last 10 singular values pick up parameter structures in higher altitudes, but since the singular values are very small, we will not be able to retrieve those structures.
 More specifically, the retrieved parameter values at higher altitudes will be mostly determined by the prior or, in the case of regularisation, by the regulariser~\cite{tan2016LecNot}.
 
-\section{Simulate Data based on a Ground Truth}
-As the ground truth for our methodology, we consider an ozone profile at distinct pressure values generated from some data~\cite{MLSdata} of the MLS on the Aura satellite within the Antarctic region.
-This ozone profile has a peak in the middle atmosphere and a second peak at higher altitudes, see Fig.~\ref{fig:O3Samp}, which seems to be a typical nighttime profile~\cite{Lee2020NightOzone}.
-
-We recursively relate pressure $p$ to geometric height $h$ with the hydrostatic equilibrium equation
-\begin{align}
-	\frac{\text{d}p}{p} = \frac{- g M}{R^* T} \text{d} h \, ,\label{eq:hydr}
-\end{align}
-starting with a pressure of $1013.25$hPa at sea level.
-The acceleration due to gravity
-\begin{align}
-	g = g_0 \Bigg( \frac{r_0}{r_0 + h} \Bigg) \, ,
-\end{align}
-where the polar radius of the earth is $r_0 \approx 6356 \, \text{km}$, the gravitation at sea level is $g_0 \approx 9.81 \text{m}/\text{s}^2$, $R^* = 8.31432 \times 10^{-3} \text{Nm} / \text{kmol} / \text{K}$ and the mean molecular weight of the air is $M = 28.97 \text{kg/kmol}$~\cite{atmosphere1976us}.
-This holds up to a geometric height of $86$km, where we ignore a $0.04\%$ non-linear change in $M$ from $80$km to $86$km.
-
-Following \cite{atmosphere1976us} we form the temperature function
-\begin{equation}
-	\label{eq:tempFunc}
-	T(h) = \adjustbox{max width=0.825\textwidth}{$\begin{dcases*}
-			T_0 &, \text{$h  = 0$}\\
-			T_0 + a_0 h   &, \text{$0 \leq h < h_{T,1}$}\\
-			T_0 + a_0 h_{T,1} &, \text{$h_{T,1} \leq  h < h_{T,2}$}\\
-			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  + a_2 (h   - h_{T,2})  &, \text{$h_{T,2} \leq h < h_{T,3}$}\\
-			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})   & \\
-			\hphantom{{} T_0 } + a_2 (h_{T,3}   - h_{T,2}) + a_3 (h   - h_{T,3}) &, \text{$h_{T,3} \leq h < h_{T,4}$}\\
-			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})  & \\
-			\hphantom{{} T_0 }+ a_2 (h_{T,3}   - h_{T,2})  + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h   - h_{T,4}) &, \text{$h_{T,4} \leq h < h_{T,5}$}\\
-			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})   & \\
-			\hphantom{{} T_0 } + a_2 (h_{T,3}   - h_{T,2}) + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h_{T,5}   - h_{T,4})& \\
-			\hphantom{{} T_0 }  + a_5 (h   - h_{T,5}) &, \text{$h_{T,5} \leq h < h_{T,6}$}\\
-			T_0 + a_0 h_{T,1} + a_1 (h_{T,2}   - h_{T,1})    &\\
-			\hphantom{{} T_0}  + a_2 (h_{T,3}   - h_{T,2}) + a_3 (h_{T,4}   - h_{T,3}) + a_4 (h_{T,5}   - h_{T,4}) &\\ 
-			\hphantom{{} T_0} + a_5 (h_{T,6}   - h_{T,5}) + a_6 (h   - h_{T,6})   &, \text{$h_{T,6} \leq h \lesssim  86$}
-		\end{dcases*}$}\\
-\end{equation}
-with gradient and height values provided by~\cite{atmosphere1976us} (see Tab.~\ref{tab:tempGrad}) which acts as the ground truth temperature profile (see Fig.~\ref{fig:PriorTemp}).
-\begin{table}
-	\centering
-	\begin{tabular}{ |c||c|c|  }
-		\hline
-		subscript $i$ & geometric height $h_{T,i}$ in km&gradient $a_i$\\
-		\hhline{|=||=|=|}
-		0& 0 & -6.5\\
-		1& 11 & 0\\
-		2& 20.1& 1\\
-		3& 32.2& 2.8\\
-		4& 47.4& 0\\
-		5& 51.4& -2.8\\
-		6& 71.8& -2\\
-		\hline
-	\end{tabular}
-	\caption[Height depending temperature gradients]{Definition of height depending temperature gradients.}
-	\label{tab:tempGrad}
-\end{table}
-
-Then we can compute a data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $, with $m = 30$ measurements determined by the satellite pointing accuracy of $175\text{arc sec}$ (see case 5 in Fig.~\ref{fig:TangHCases}), according to the RTE as in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE} using the trapezoidal integration rule.
-We assume an atmosphere between $h_{L,1}=7$km and $h_{L,n} = 83.3$km with $n = 45$ equidistant layers (see Fig.~\ref{fig:LIMB}).
-The height value $h_{L,i}$ for each layer $i = 1,\dots, n$ is defined by the pressure values from~\cite{MLSdata} and the hydrostatic equilibrium equation, see Eq.~\ref{eq:hydr}.
-We target ozone at a frequency of 235.71GHz, which lies within the region where the MLS observes ozone~\cite{livesey2008ozonecarbonmono, waters2006earth}.
-The corresponding wave number is $\nu = 7.86\text{cm}^{-1}$.
-We calculate the absorption constant $k(\nu,T)$ as in Eq.~\ref{eq:absRTE}, following the high resolution transmission (HITRAN) database~\cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
-%This gives us a non-linear forward model matrix $\bm{A}_{NL} = \bm{A}(\bm{x}, \bm{p}, \bm{T}) \in \mathbb{R}^{m \times n}$, where $\bm{x}\in \mathbb{R}^{n}$ is vector related to the ozone VMR, $\bm{p}\in \mathbb{R}^{n}$ is the vector describing the pressure values and $\bm{T}\in \mathbb{R}^{n}$ the temperature values.
-Lastly, we add independent and identically-distributed Gaussian noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ so that the $\text{SNR}=150$ (see Eq.~\ref{eq:SNR}) similar to~\cite{Froidevaux2008snrozone}, where a signal with a maximal spectral intensity of around $100\text{K}$ and a noise range of $0.4$ to $1.6\text{K}$ is reported.
-We note that the methods used in this thesis will work with different SNRs or other frequencies.
 
 \begin{figure}[th!]
 	\centering
