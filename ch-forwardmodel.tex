@@ -142,11 +142,17 @@ If the pressure is high, the signal is large.
 If the pressure is low, the signal is low and the data is noise-dominated.
 
 \begin{itemize}
-	\item \textbf{case 1} equidistance measurements between $h_{L,1} = 7$km and $h_{L,1} = 35$km with pointing accuracy 0.18
-	\item \textbf{case 2} equidistance measurements pointing accuracy
-	\item \textbf{case 3} equidistance measurements pointing accuracy
-	\item \textbf{case 4} equidistance measurements pointing accuracy
-	\item \textbf{case 5} equidistance measurements pointing accuracy
+	\item \textbf{case 1} measurements between $h_{L,1} = 7$km and $h_{L,1} = 35$km with pointing accuracy  $ \Delta \phi  =  \phi_{\text{max}} -  \phi_{\text{min}}$
+	\begin{align*} 
+		 \phi_j  = \frac{-1}{1.25^{j-1}} \Delta \phi + \phi_{\text{max}} , \qquad  \text{for } j = 1, \dots, m
+	\end{align*}
+	\item \textbf{case 2} measurements pointing accuracy
+		\begin{align*} 
+		 \phi_j  = \frac{1.25 ^{j-1}}{ 1.25 ^{m-1}} 0.99 \Delta \phi + \phi_{\text{min}},  \qquad  \text{for } j = 1, \dots, m
+	\end{align*}
+	\item \textbf{case 3} equidistance measurements pointing accuracy 150arc sec
+	\item \textbf{case 4} equidistance measurements pointing accuracy 77.5 arc sec
+	\item \textbf{case 5} equidistance measurements pointing accuracy 175arc sec
 \end{itemize} 
 
 

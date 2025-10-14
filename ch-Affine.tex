@@ -41,8 +41,13 @@ Given the posterior distribution for ozone $ \pi(\bm{x}|\bm{y})$, we can now app
 \begin{align}
 	\bm{A}(\bm{x}) \approx \bm{M A}_L \bm{x} \, ,
 \end{align}
-with an affine map $\bm{M}$ (see Fig.~\ref{fig:affinStrat} for the summarised strategy).
+where the affine map $\bm{M}$ describes the mapping in bewtween the linear and the non-lineaer model for $\bm{x} = \bm{\mu}_{\bm{x}|\bm{y}} + \Delta \bm{x}$  around the prevously caclulated posterior mean $\bm{\mu}_{\bm{x}|\bm{y}} $ (see Fig.~\ref{fig:affinStrat} for the summarised strategy).
 Here $\bm{A}(\bm{x})$ is non-linear noise-free data and $\bm{A}_L\bm{x}$ is linear noise-free data, both with ground truth pressure and temperature.
+For  $\bm{x} = \bm{\mu}_{\bm{x}|\bm{y}} + \Delta \bm{x}$ with an affine map $\bm{A}\bm{x} + \bm{b}$ which is a linear map $\bm{A}$ with a constant $\bm{b}$.
+\begin{align}
+	\bm{A}(\bm{x})  \approx \underbrace{  \bm{M A}_L  \bm{\mu}_{\bm{x}|\bm{y}} }_{= \bm{A}( \bm{\mu}_{\bm{x}|\bm{y}} )  }+  \underbrace{\bm{M A}_L  \Delta \bm{x} }_{= \bm{A}^{\prime}( \bm{\mu}_{\bm{x}|\bm{y}} )  \Delta \bm{x} }\, \\
+	=    \underbrace{ \bm{A}^{\prime}( \bm{\mu}_{\bm{x}|\bm{y}} ) \bm{x}}_{ \coloneqq \bm{A}\bm{x}}  +  \underbrace{ \bm{A}( \bm{\mu}_{\bm{x}|\bm{y}} )  - \bm{A}^{\prime}( \bm{\mu}_{\bm{x}|\bm{y}} ) \bm{\mu}_{\bm{x}|\bm{y}}}_{ \coloneqq \bm{b}}
+\end{align}
 \begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}
@@ -63,7 +68,7 @@ Here $\bm{A}(\bm{x})$ is non-linear noise-free data and $\bm{A}_L\bm{x}$ is line
 		\node[align=center] at (4.75,-4) (f4) {non-linear forward model};
 		\node[align=center] at (0,-5) (f5) {$\bm{A}(\bm{x}) \approx \bm{M A}_L \bm{x}$ };
 		
-		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
+		\node[align=center] at (0,-4) (f5) {affine map \\ $\bm{M}$};
 		
 	\end{tikzpicture}
 	\caption[Strategy to find affine map.]{The strategy to find the affine map consists of first evaluating the marginal posterior for ozone $\pi(\lambda , \gamma  | \bm{y})$ based on the linear forward model. Then we draw ozone samples from the full posterior. Based on those ozone samples, we find an affine map which approximates between noise-free data from the linear and the non-linear forward model.}
@@ -72,22 +77,22 @@ Here $\bm{A}(\bm{x})$ is non-linear noise-free data and $\bm{A}_L\bm{x}$ is line
 
 
 Using posterior ozone samples, we generate two affine subspaces and then find the mapping between those.
-The subspace $\bm{W}$ is created by noise-free data based on the linear model and $\bm{V}$ by noise-free data based on the non-linear model, given $m$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$ for $j = 1, \dots,m$.
+The subspace $\bm{W}$ is created by noise-free data based on the linear model and $\bm{V}$ by noise-free data based on the non-linear model, given $m-1$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$ for $j = 2, \dots,m$.
 We report a relative RMS difference between $\bm{W}$ and $\bm{V}$ of about $1\%$, which we aim to reduce through the affine map $\bm{M}$.
 More specifically, the affine subspace associated with the linear forward model is 
 \begin{align}
 	\bm{W} = \begin{bmatrix}
-		\vert&   &  \vert & & \vert \\
-		\bm{A}_{L} \bm{x}^{(1)} &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
-		\vert&   &  \vert & & \vert 
+		\vert& \vert&   &  \vert & & \vert \\
+		\bm{A}_{L}  \bm{\mu}_{\bm{x}|\bm{y}} & \bm{A}_{L}  \bm{x}^{(2)}   &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
+		\vert& \vert&   &  \vert & & \vert 
 	\end{bmatrix}
 	\in \mathbb{R}^{m \times m}
 \end{align}\clearpage \noindent and with the non-linear forward model is 
 \begin{align}
 	\bm{V} = \begin{bmatrix}
-		\vert&   &  \vert & & \vert \\
-		\bm{A}(\bm{x}^{(1)}) &  \cdots& \bm{A}(\bm{x}^{(j)}) &  \cdots & \bm{A} (\bm{x}^{(m)})  \\
-		\vert&   &  \vert & & \vert 
+			\vert& \vert&   &  \vert & & \vert \\
+		\bm{A}(\bm{\mu}_{\bm{x}|\bm{y}} ) & \bm{A}(\bm{x}^{(2)}) &  \cdots& \bm{A}(\bm{x}^{(j)}) &  \cdots & \bm{A} (\bm{x}^{(m)})  \\
+	\vert&\vert&   &  \vert & & \vert 
 	\end{bmatrix} = 
 	\begin{bmatrix}
 		\begin{array}{ccc}
