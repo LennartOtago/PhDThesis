@@ -165,45 +165,6 @@ Following the MTC scheme, we characterise the marginal posterior first and then 
 \label{subsec:FirstMargPost}
 
 
-\subsubsection{Sample from marginal posterior -- Metropolis within Gibbs}
-\label{subsec:MWG}
-If $\bm{\theta} \in \mathbb{R}^2$, \textcolor{red}{really? Cut the opaque speak and say it has two components.} we use a Metropolis-within-Gibbs (MWG) sampler as described in~\cite{fox2016fast} to sample from $\pi(\bm{\theta} |  \bm{y})$.
-With $\bm{\theta} = (\theta_1, \theta_2)$, we perform a Metropolis step \textcolor{red}{MwG is the standard abbreviation. Anyway, we could use a Gibbs sampler if there are 5 components. What is this trying to say?} in the $\theta_1$ direction and a Gibbs step in the $\theta_2$ direction.
-Ergodicity for this approach is proven in~\cite{roberts2006harris}.
-
-
-The MWG algorithm starts at the initial guess $\bm{\theta}^{(t)}$ at $t=0$. We then propose a new sample $\theta_1 \sim q(\theta_1 |  \theta_1^{(t-1)})$, conditioned on the previous state, using a symmetric proposal distribution $q(\theta_1 |  \theta_1^{(t-1)}) = q(\theta_1^{(t-1)} |  \theta_1)$, which is a Metropolis step and a special case of the Metropolis-Hastings algorithm~\cite{roberts2006harris}.
-We accept and set $\theta_1^{(t)} = \theta_1$ with the acceptance probability
-\begin{align}
-	\alpha(\theta_1 |  \theta_1^{(t-1)}) = \min \left\{ 1, \frac{\pi(\theta_1 |  \theta_2^{(t-1)}, \bm{y}) \, \cancel{q(\theta_1^{(t-1)} |  \theta_1)}}{\pi(\theta_1^{(t-1)} |  \theta_2^{(t-1)}, \bm{y}) \, \cancel{q(\theta_1 |  \theta_1^{(t-1)})}} \right\}
-\end{align}
-or reject \textcolor{red}{, otherwise reject} and keep $\theta_1^{(t)} = \theta_1^{(t-1)}$, which we do by comparing $\alpha$ to a uniform random number $u \sim \mathcal{U}(0,1)$. \textcolor{red}{If you want to say you calculate to accept by this method, it's a separate sentence, Mr wandering sentence man.} 
-
-Next, we perform a Gibbs step in the $\theta_2$ direction, where Gibbs sampling is again a special case of the Metropolis-Hastings algorithm with \textcolor{red}{this seems a very specific algorithm for a Chapter that you said would be general. You must have a specific distribution inmind, or are you saying that this is a thing that you could do? I have no idea why you are writing this.} acceptance probability equal to one, and draw the next sample $\theta_2^{(t)} \sim \pi(\cdot |  \theta_1^{(t)}, \bm{y})$, conditioned on the current value $\theta_1^{(t)}$. 
-
-We repeat this procedure $N^{\prime}$ times and ensure convergence independently of the initial sample (irreducibility) by discarding $N_{\text{burn-in}}$ initial samples after a burn-in period, resulting in a Markov chain of length $N = N^{\prime} - N_{\text{burn-in}}$. \textcolor{red}{what is N'? Have you defined any of these things? What is this all doing here?}
-
-\begin{algorithm}[!ht]
-	\caption{Metropolis within Gibbs}
-	\begin{algorithmic}[1]
-		\STATE Initialise two-dimensional vector \( \bm{\theta}^{(0)}  =( \theta_1^{(0)} , \theta_2^{(0)}  ) \)
-		\FOR{ \( k = 1, \dots, N^{\prime} \)}
-		\STATE Propose \( \theta_1 \sim q(\cdot   | \theta_1 ^{(t-1)}) = q(\theta_1 ^{(t-1)} |\cdot  ) \)
-		\STATE Compute
-		\[ \alpha( \theta_1  | \theta_1^{(t-1)}) = \min \left\{ 1, \frac{\pi(\theta_1  | \theta^{(t-1)}_2, \bm{y}) \cancel{q(\theta_1^{(t-1)} | \theta_1 ) } }{\pi(\theta_1^{(t-1)}| \theta_2^{(t-1)}, \bm{y}) \cancel{q(\theta_1 | \theta_1^{(t-1)})} } \right\} \]
-		\STATE Draw $u \sim \mathcal{U}(0,1)$
-		\IF{$\alpha \geq u$ }
-		\STATE Accept and set \( \theta_1^{(t)} = \theta_1 \)
-		\ELSE  
-		\STATE Reject and keep \(\theta_1^{(t)} = \theta_1^{(t-1)} \)
-		\ENDIF
-		\STATE Draw \(\theta_2^{(t)} \sim  \pi( \cdot | \theta_1^{(t)} , \bm{y} )\) 
-		\ENDFOR
-		\STATE Output: $ \bm{\theta}^{(0)}, \dots,  \bm{\theta}^{(k)} , \dots,   \bm{\theta}^{(N)} \sim \pi(\bm{\theta}| \bm{y}) $
-	\end{algorithmic}
-	\label{alg:MwG}
-\end{algorithm}
-
 
 
 Consequently, for the hierarchical model specified in Eq.~\ref{eq:O3BayMode}, the marginal posterior distribution over the hyper-parameters is given by
@@ -246,22 +207,61 @@ We plot the approximations
 \end{subequations} in Fig.~\ref{fig:fandg} and elaborate on the approximation errors in the section below.
 Usually a Taylor series includes a factor $(r!)^{-1}$, which in this case cancels in $f^{(r)}(\lambda_0)$, and $g(\lambda)$ can be approximated with a Taylor series as well (see~\cite{fox2016fast}).
 
+\subsubsection{Error due to approximation of f and g}
+To assess the approximation error, we lay a 100-point grid over the sampling region in each dimension and compare the approximations of $f(\lambda)$, $g(\lambda)$ and $\pi(\lambda, \gamma | \bm{y})$ with their true function values.
+
+\textcolor{red}{Compared to a 1-st, 3-rd or 4-th order Taylor approximation, we find that the 2-nd order Taylor approximation of $f(\lambda)$ gives the smallest relative RMS error of $\approx 10 \%$ in the sampling region of $\lambda$.
+	Additionally, we find that a linear approximation of $g(\lambda)$ is sufficient with relative RMS $<0.1\%$.}
+
+These errors then propagate into the marginal posterior $\pi(\lambda , \gamma| \bm{y})$ so that the relative RMS error is $\approx 3 \%$ over the whole grid.
+When sampling, we evaluate the acceptance ratio in the log-space, so we report a relative RMS error of $< 0.01\%$ for $\log{\pi(\lambda| \gamma, \bm{y})}$, with a maximum relative pointwise error of $< 0.5\%$.
+We consider this good enough.
 
 
-We approximate $f(\lambda)$  and $g(\lambda)$ around the mode $( \lambda_{0}, \gamma_0 )$ of $\pi(\lambda,\gamma| \bm{y})$ provided by the \texttt{scipy.optimize.fmin} function, with a limit of 25 function evaluations.
-Then we approximate $f(\lambda)$ with a 2-nd order Taylor series and $g(\lambda)$ with a linear approximation in the log-space, where for the approximation in $g(\lambda)$ we set $\lambda_{\text{max}}$ to the maximum value of $\lambda$ on the TT grid (see next section).
 
-We initialised the MWG algorithm at the mode $(\lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps in $\approx 0.5$s.
-The standard deviation of the normal proposal distribution is empirically set to $\sigma_{\lambda} = 0.8 \lambda_0$, so that the acceptance rate is $\approx 0.5$ as suggested in~\cite{robertsLecNot}.
+
+\subsubsection{Sample from marginal posterior -- Metropolis within Gibbs}
+\label{subsec:MWG}
+Using these approximations, we employ a Metropolis within Gibbs (MWG) sampler summarised in Alg. Box \ref{alg:MwG} to characterise $\pi(\lambda,\gamma|\bm{y})$ as in~\cite{fox2016fast}.
 More specifically, we implement a Metropolis random walk on
 \begin{align}
 	\label{eq:margApplCondGam}
-	\pi(\lambda | \gamma, \bm{y}) &\propto \lambda^{n/2 +\alpha_{\delta}-1} \exp{\Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_\delta \gamma \lambda \Bigr\}}.
+	\pi(\lambda | \gamma, \bm{y}) &\propto \lambda^{n/2 +\alpha_{\delta}-1} \exp{\Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_\delta \gamma \lambda \Bigr\}}
 \end{align} 
-In doing so, we accept $\lambda^{k+1} = \lambda^{\prime} $ or reject $\lambda^{k+1} = \lambda^{k}$ a proposal $\lambda^{\prime} \sim \mathcal{N}(0, \sigma^2_{\lambda})$ according to the acceptance ratio
+and do a Gibbs step on
 \begin{align}
-	\alpha(\lambda^{\prime} |  \lambda^{k} ) = \min \left\{ 1, \frac{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y})  }{\pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y})} \right\} \, .
+	\gamma^{(k+1)} |  \lambda^{(k+1)}, \bm{y} &\sim \Gamma \bigg( \frac{m}{2} + \alpha_\delta + \alpha_\gamma, \frac{1}{2} f (\lambda^{(k+1)}) + \beta_\gamma + \beta_\delta \lambda^{(k+1)} \bigg)\label{eq:GibbsStep} \ .
+\end{align} 
+Ergodicity for this approach is proven in~\cite{roberts2006harris}.
+
+\begin{algorithm}[!ht]
+	\caption{Metropolis within Gibbs}
+	\begin{algorithmic}[1]
+		\STATE Initialise \( ( \lambda_1^{(0)} , \gamma_2^{(0)}  )= ( \lambda_{0} , \gamma_{0}  )  \)
+		\FOR{ \( k = 0, \dots, N-1 \)}
+		\STATE Propose \( \lambda^{\prime} \sim q(\cdot   | \lambda^{(k)}) = q(\lambda^{(k)} |\cdot  ) \)
+		\STATE Compute
+		\[ \alpha( \lambda^{\prime} | \lambda^{(k)}) = \min \left\{ 1, \frac{\pi(\lambda^{\prime}  | \gamma^{(k)}, \bm{y}) \cancel{q(\lambda^{(k)} | \lambda^{\prime} ) } }{\pi(\lambda^{(k)} | \gamma^{(k)}, \bm{y}) \cancel{q(\lambda^{\prime} | \lambda^{(k)})} } \right\} \]
+		\STATE Draw $u \sim \mathcal{U}(0,1)$
+		\IF{$\alpha \geq u$ }
+		\STATE Accept and set \( \lambda^{(k+1)} = \lambda^{\prime} \)
+		\ELSE  
+		\STATE Reject and keep \(\lambda^{(k+1)} = \lambda^{(k)} \)
+		\ENDIF
+		\STATE Draw \(\gamma^{(k+1)} \sim  \pi( \cdot | \lambda^{(k+1)} , \bm{y} )\) 
+		\ENDFOR
+		\STATE Output: $ (\lambda,\gamma)^{(0)}, \dots,  (\lambda,\gamma)^{(k)} , \dots,   (\lambda,\gamma)^{(N)} \sim \pi(\bm{\theta}| \bm{y}) $
+	\end{algorithmic}
+	\label{alg:MwG}
+\end{algorithm}
+
+
+The MWG algorithm starts at the initial guess $( \lambda^{(0)} , \gamma^{(0)}  )$ at $k=0$. We then propose a new sample $\lambda^{\prime} \sim q(\cdot |  \lambda^{(k)})$, conditioned on the previous state, using a symmetric proposal distribution $q(\lambda^{\prime} |  \lambda^{(k)}) = q(\lambda^{(k)} |  \lambda^{\prime})$, which is a Metropolis step and a special case of the Metropolis-Hastings algorithm~\cite{roberts2006harris}.
+We accept and set $\lambda^{(k+1)} = \lambda^{\prime}$ with the acceptance probability
+\begin{align}
+\alpha( \lambda^{\prime} | \lambda^{(k)}) = \min \left\{ 1, \frac{\pi(\lambda^{\prime}  | \gamma^{(k)}, \bm{y}) \cancel{q(\lambda^{(k)} | \lambda^{\prime} ) } }{\pi(\lambda^{(k)} | \gamma^{(k)}, \bm{y}) \cancel{q(\lambda^{\prime} | \lambda^{(k)})} } \right\} \, ,
 \end{align}
+otherwise reject and keep $\lambda^{(k+1)} = \lambda^{(k)}$.
 In practice, we calculate the acceptance ratio in log space, so that
 \begin{align} 
 	\log \left\{ \frac{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y})  }{\pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y})}  \right\} 
@@ -270,33 +270,18 @@ In practice, we calculate the acceptance ratio in log space, so that
 \end{align}
 where $\Delta \lambda = \lambda^{\prime} - \lambda^{(k)} $ and  $\Delta f \approx \tilde{f}(\lambda^\prime) - \tilde{f}(\lambda^{(k)}) =  \sum^2_1 f^{(r)} (\lambda_0) [(\Delta \lambda^\prime)^r - (\Delta \lambda^{(k)})^r] $, with  $\Delta \lambda^{\prime} = \lambda^\prime - \lambda_0 $ and $\Delta \lambda^{(k)} =  \lambda^{(k)} - \lambda_0$.
 Similarly we approximate $\Delta g \approx \tilde{g}(\lambda^{\prime}) -\tilde{g}(\lambda^{(k)})$.
-Lastly, we do a Gibbs step on
-\begin{align}
-	\gamma^{(k+1)} |  \lambda^{(k+1)}, \bm{y} &\sim \Gamma \bigg( \frac{m}{2} + \alpha_\delta + \alpha_\gamma, \frac{1}{2} f (\lambda^{(k+1)}) + \beta_\gamma + \beta_\delta \lambda^{(k+1)} \bigg)\label{eq:GibbsStep}
-\end{align} 
-to generate marginal posterior samples $(\lambda, \gamma)^{(1)}, \dots, (\lambda, \gamma)^{(N)} \sim  \pi(\lambda, \gamma| \bm{y})$, which we plot in Fig.~\ref{fig:ScatterPlotTT} as well as the trace of the MWG to show ergodicity.
-%
-%We find the mode at the minimum of  $-\log\{ \pi(\lambda, \gamma | \bm{y}) \}$  using \texttt{scipy.optimize.fmin} function and limit the number of function evaluation to 25 and use Cholesky back and forward substitution to calculate values of $g(\lambda)$ and $f(\lambda)$.
-%Additionally, we calculate $\bm{B}_0^{-1} \bm{L} $ and  $\bm{B}_0^{-1}  \bm{A}_L^T \bm{y}$ once more at $\lambda_0$ and plot the Taylor approximation within the sampling region in Fig. \ref{fig:fandg}.
-%\subsection{Posterior distributions with Linear model for Ozone -- MTC}
-%\label{sec:firstMTC}
-%In this section we calculate the posterior marginal and then conditional (MTC) posterior distribution for ozone conditioned on the ground truth temperature and pressure profiles using the linear forward model $\bm{A}_L$.
-%This is faster then the other way round (finding temperature over pressure conditioning on ozone) and temperature and pressure are well defined within the atmosphere so it is easier to just condition on a temperature and pressure profile out of a text book.
-%We employ a so-called Metropolis within Gibbs (MWG) algorithm on the marginal posterior as summarised in the algorithmic Box \ref{alg:margPost} or use a Tensor-Train (TT) approximation to calculate marginal posterior values.
-%Then we can either sample from the conditional posterior using the randomise then optimise (RTO) method or calculate conditional mean and variance using quadrature.
-%The DAG in Fig. \ref{fig:DAGO3} visualises that process and we can show explicitly that we group the hyper-parameters $\delta, \gamma$ together to determine the marginal posterior $\pi(\gamma, \delta | \bm{y})$.
-%Here $\gamma$ , the noise parameter, determines the noise precision $\bm{\Sigma} = \gamma ^{-1} \bm{I}$ and $\delta$, the smoothness parameter, the precision matrix $\bm{Q} = \delta \bm{L}$ of the prior distribution for $\bm{x}$.
-%Then conditioned on the hyper-parameters the conditional posterior $\pi( \bm{x} |\gamma, \delta, \bm{y})$ gives the distribution of posterior ozone profiles.
-%Note that we use the linear model $A_L$ here as we do not have an approximation to the non-linear model yet and all prior distributions are defined in Table \ref{tab:priors}.
-%The full posterior $\pi(\bm{x},\gamma, \delta | \bm{y}) =  \pi(\bm{x}|\gamma, \delta ,\bm{y}) \pi(\gamma, \delta | \bm{y}) $ is given by multiplication of the marginal and conditional posterior densities. 
-%\begin{align}
-%	\bm{x} |  \bm{\theta}, \bm{y} \sim \mathcal{N} \Big(
-%	\underbrace{\bm{\mu} + \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} \bm{A}^T \bm{\Sigma}^{-1} (\bm{y} - \bm{A} \bm{\mu})}_{\bm{\mu}_{\bm{x} |  \bm{\theta}, \bm{y}}},
-%	\underbrace{ \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} }_{\bm{\Sigma}_{\bm{x} |  \bm{y}, \bm{\theta}}}
-%	\Big) \, ,
-%\end{align}
-%is normal distribution and we compute weighted expectations, as in Eq.~\ref{eq:MargExpPos}, of the conditional mean and covariance matrix, where the weights are given by $\pi(\bm{\theta} | \bm{y})$. 
-%Note that both the noise covariance $\bm{\Sigma} = \bm{\Sigma}(\bm{\theta})$ and the prior precision matrix $\bm{Q} = \bm{Q}(\bm{\theta})$ depend on the hyper-parameters $\bm{\theta}$.
+
+Next, we perform a Gibbs step on $\pi(	\gamma^{(k+1)} |  \lambda^{(k+1)}, \bm{y}) $ conditioned on the prevously drawn $ \lambda^{(k+1}$.
+Gibbs sampling is again a special case of the Metropolis-Hastings algorithm with  acceptance probability equal to one.
+Repeating this N time give us marginal posterior samples $(\lambda, \gamma)^{(1)}, \dots, (\lambda, \gamma)^{(N)} \sim  \pi(\lambda, \gamma| \bm{y})$.
+For we discard the first $N_{\text{burn-in}}$ samples.
+
+
+We approximate $f(\lambda)$  and $g(\lambda)$ around the mode $( \lambda_{0}, \gamma_0 )$ of $\pi(\lambda,\gamma| \bm{y})$ provided by the \texttt{scipy.optimize.fmin} function, with a limit of 25 function evaluations.
+Then we approximate $f(\lambda)$ with a 2-nd order Taylor series and $g(\lambda)$ with a linear approximation in the log-space, where for the approximation in $g(\lambda)$ we set $\lambda_{\text{max}}$ to the maximum value of $\lambda$ on the TT grid (see next section).
+We initialised the MWG algorithm at the mode $(\lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take $N = 10100$ , which inlcudes burn in period of $N_{\text{burn-in}} = 100$ steps.
+The standard deviation of the normal proposal distribution $\lambda^{\prime} \sim \mathcal{N}(\lambda^{(k)} , \sigma^2_{\lambda})$ is empirically set to $\sigma_{\lambda} = 0.8 \lambda_0$, so that the acceptance rate is $\approx 0.5$ as suggested in~\cite{robertsLecNot}.
+This takes  $\approx 0.5$s and we plot in Fig.~\ref{fig:ScatterPlotTT} as well as the trace of the MWG to show ergodicity.
 We calculate the IACT with the Python implementation of~\cite{wolff2004monte} provided by~\cite{drikHesse}, which gives us $\tau_{\text{int}, \gamma} \approx 4.4 \pm 0.2$ and $\tau_{\text{int}, \lambda} = 10.4 \pm 1.0 $ (see Fig.~\ref{fig:IATCLamLin} and Fig.~\ref{fig:IATCGamLin}).
 \begin{figure}[h!]
 	\centering
@@ -309,7 +294,7 @@ We calculate the IACT with the Python implementation of~\cite{wolff2004monte} pr
 \subsubsection{TT approximation of marginal posterior}
 Alternatively, we can utilise a TT approximation of the square root of the marginal posterior over a predefined grid and calculate the marginals $\pi(\gamma|\bm{y})$ and $\pi(\lambda|\bm{y})$ (see Sec. \ref{subsec:TTMarg}).
 
-\textcolor{red}{We predefined the univariate grid with $n = 20$ grid points (see Fig. \ref{fig:MeanVarError}) over $\gamma = [ 0.25 \times 10^{15}, 6 \times 10^{15}]$ and $\lambda = [ 1, 5000]$.}
+\textcolor{red}{We predefined the univariate grid with $n = 20$ grid points (see Fig. \ref{fig:MeanVarError}) over $\gamma = [ 0.8 \times 10^{15},1.2 \times 10^{16}]$ and $\lambda = [ 10^{-5}, 8 \times 10^{-4}]$.}
 We introduce a ``normalisation constant'' $c = - 340/2$ to avoid underflow so that the values of $\sqrt{\pi( \lambda,\gamma| \bm{y})} = \exp \{ 0.5 \log  \pi(\lambda,\gamma | \bm{y}) + c \} $ are within computer precision.
 Then we initialise the~\texttt{tt.cross.rectcross.rect\_cross.cross} function based on the TT cross algorithm in \cite{OSELEDETS2010TTCross,Dolgov2018TTCross} from the Python package \texttt{ttpy}~\cite{Oseledets2018ttpy} with a random tensor.
 The number of ranks is set to constant $r = 4$, we do 1 sweep with $2n_{\text{sweeps}}2nr =400$ function evaluations and obtain a TT approximation of $\pi( \lambda,\gamma| \bm{y})$ in about $0.02$s.
@@ -351,20 +336,30 @@ The relative RMS TT approximation error over the whole grid is $\approx 3\%$ and
 %	\label{alg:margPost}
 %\end{algorithm}
 
-\subsubsection{Error due to approximation of f and g}
-To assess the approximation error, we lay a 100-point grid over the sampling region in each dimension and compare the approximations of $f(\lambda)$, $g(\lambda)$ and $\pi(\lambda, \gamma | \bm{y})$ with their true function values.
-
-\textcolor{red}{Compared to a 1-st, 3-rd or 4-th order Taylor approximation, we find that the 2-nd order Taylor approximation of $f(\lambda)$ gives the smallest relative RMS error of $\approx 10 \%$ in the sampling region of $\lambda$.
-	Additionally, we find that a linear approximation of $g(\lambda)$ is sufficient with relative RMS $<0.1\%$.}
-
-These errors then propagate into the marginal posterior $\pi(\lambda , \gamma| \bm{y})$ so that the relative RMS error is $\approx 3 \%$ over the whole grid.
-When sampling, we evaluate the acceptance ratio in the log-space, so we report a relative RMS error of $< 0.01\%$ for $\log{\pi(\lambda| \gamma, \bm{y})}$, with a maximum relative pointwise error of $< 0.5\%$.
-We consider this good enough.
 
 
-Using these approximations, we employ a Metropolis within Gibbs (MWG) sampler (see Alg. Box \ref{alg:MwG}) to characterise $\pi(\lambda,\gamma|\bm{y})$ (see Sec.~\ref{subsec:MWG}).
-
-
+%
+%We find the mode at the minimum of  $-\log\{ \pi(\lambda, \gamma | \bm{y}) \}$  using \texttt{scipy.optimize.fmin} function and limit the number of function evaluation to 25 and use Cholesky back and forward substitution to calculate values of $g(\lambda)$ and $f(\lambda)$.
+%Additionally, we calculate $\bm{B}_0^{-1} \bm{L} $ and  $\bm{B}_0^{-1}  \bm{A}_L^T \bm{y}$ once more at $\lambda_0$ and plot the Taylor approximation within the sampling region in Fig. \ref{fig:fandg}.
+%\subsection{Posterior distributions with Linear model for Ozone -- MTC}
+%\label{sec:firstMTC}
+%In this section we calculate the posterior marginal and then conditional (MTC) posterior distribution for ozone conditioned on the ground truth temperature and pressure profiles using the linear forward model $\bm{A}_L$.
+%This is faster then the other way round (finding temperature over pressure conditioning on ozone) and temperature and pressure are well defined within the atmosphere so it is easier to just condition on a temperature and pressure profile out of a text book.
+%We employ a so-called Metropolis within Gibbs (MWG) algorithm on the marginal posterior as summarised in the algorithmic Box \ref{alg:margPost} or use a Tensor-Train (TT) approximation to calculate marginal posterior values.
+%Then we can either sample from the conditional posterior using the randomise then optimise (RTO) method or calculate conditional mean and variance using quadrature.
+%The DAG in Fig. \ref{fig:DAGO3} visualises that process and we can show explicitly that we group the hyper-parameters $\delta, \gamma$ together to determine the marginal posterior $\pi(\gamma, \delta | \bm{y})$.
+%Here $\gamma$ , the noise parameter, determines the noise precision $\bm{\Sigma} = \gamma ^{-1} \bm{I}$ and $\delta$, the smoothness parameter, the precision matrix $\bm{Q} = \delta \bm{L}$ of the prior distribution for $\bm{x}$.
+%Then conditioned on the hyper-parameters the conditional posterior $\pi( \bm{x} |\gamma, \delta, \bm{y})$ gives the distribution of posterior ozone profiles.
+%Note that we use the linear model $A_L$ here as we do not have an approximation to the non-linear model yet and all prior distributions are defined in Table \ref{tab:priors}.
+%The full posterior $\pi(\bm{x},\gamma, \delta | \bm{y}) =  \pi(\bm{x}|\gamma, \delta ,\bm{y}) \pi(\gamma, \delta | \bm{y}) $ is given by multiplication of the marginal and conditional posterior densities. 
+%\begin{align}
+%	\bm{x} |  \bm{\theta}, \bm{y} \sim \mathcal{N} \Big(
+%	\underbrace{\bm{\mu} + \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} \bm{A}^T \bm{\Sigma}^{-1} (\bm{y} - \bm{A} \bm{\mu})}_{\bm{\mu}_{\bm{x} |  \bm{\theta}, \bm{y}}},
+%	\underbrace{ \left( \bm{A}^T \bm{\Sigma}^{-1} \bm{A} + \bm{Q} \right)^{-1} }_{\bm{\Sigma}_{\bm{x} |  \bm{y}, \bm{\theta}}}
+%	\Big) \, ,
+%\end{align}
+%is normal distribution and we compute weighted expectations, as in Eq.~\ref{eq:MargExpPos}, of the conditional mean and covariance matrix, where the weights are given by $\pi(\bm{\theta} | \bm{y})$. 
+%Note that both the noise covariance $\bm{\Sigma} = \bm{\Sigma}(\bm{\theta})$ and the prior precision matrix $\bm{Q} = \bm{Q}(\bm{\theta})$ depend on the hyper-parameters $\bm{\theta}$.
 \subsection{Full posterior ozone mean and variance}
 \label{subsec:firstCond}
 \begin{figure}[ht!]
@@ -417,19 +412,9 @@ If calculating the variance is too costly, the RTO method (see Sec.~\ref{subsec:
 
 
 
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{secMargO3Res.png}
-	\caption[Marginal posterior histograms and TT approximation as well as hyper-prior distribution.]{The TT approximation of the marginal posterior in orange and the samples as a histogram, as well as the prior distribution with a dotted line. We sample $\lambda$ and $\gamma$ using the MWG algorithm and then calculate $\delta$ for every sample of the marginal posterior. The regularised parameter corresponding to the best regularised solution (see Fig.~\ref{fig:O3SolplsReg} and Fig.~\ref{fig:LCurve}) is marked with the red vertical line. We mark the ground truth noise precision with the back vertical line.}
-	\label{fig:MargPostHistTT}
-\end{figure}
-The marginal posterior is defined as in Eq.~\ref{eq:MargPostAppl}, but with the approximated forward model.
-We initialise the MWG at and approximate $f(\lambda)$ and $g(\lambda)$ around the mode of $\pi(\lambda,\gamma| \bm{y})$ (see Eq.~\ref{eq:fAprox} and Eq.~\ref{eq:gAprox}), and take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps.
-The IACTs provided by~\cite{drikHesse} are $\tau_{\text{int}, \gamma} \approx 4.0 \pm 0.2$ and $\tau_{\text{int}, \lambda} = 8.6 \pm 0.8 $ (see Fig. \ref{fig:IATCSecO3gam} and Fig.~\ref{fig:IATCSecO3lam}) and similar to the previously calculated values.
-We plot the samples in Fig. \ref{fig:MargPostHistTT} as well as TT approximation of the marginal posterior using 400 function evaluations (same grid; same number of ranks; see Sec.~\ref{subsec:FirstMargPost}).
-The approximation error of the TT is $\approx 3 \%$ and similar to the error due approximations of $f(\lambda)$ and $g(\lambda)$.
 
-\paragraph{Eigenvalues full conditional posterior covariance}
+
+\subsubsection{Eigenvalues full conditional posterior covariance}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{CovSing.png}
@@ -445,7 +430,7 @@ Once the eigenvalues of $\gamma \bm{A}^T \bm{A}$ are significantly smaller than 
 The largest 10 eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ include ozone profile structure at lower altitudes, where the other eigenvector mainly represent structures at higher altitudes (see Fig.~\ref{fig:CovEigVec1} and Fig.~\ref{fig:CovEigVec1}).
 Note that the eigenvalues of each matrix may correspond to different eigenvectors even if the eigenvalues of two matrices are the same.
 
-\paragraph{Errors of Full Posterior Mean and Covariance}
+\subsubsection{Errors of Full Posterior Mean and Covariance}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{relErrO3MeanVar.png}
@@ -457,7 +442,7 @@ We obtain those results by calculating the weighted expectation over normalised 
 The relative error behaves roughly proportional to $1/N$, and we consider a relative error less than $0.5\%$ good enough, which we easily meet at 20 bins.
 This sets the TT grid size and the number of evaluations of $\bm{x}_{\lambda}$ in Eq.~\ref{eq:MeanInt} and $(\gamma \bm{B}_{\lambda})^{-1}$ in Eq.~\ref{eq:CovInt}.
 %marginal Ozone Pressure Temperature
-\clearpage
+%\clearpage
 
 
 \section{Solution by Regularisation}

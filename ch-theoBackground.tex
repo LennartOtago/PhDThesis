@@ -3,6 +3,7 @@
 \label{ch:background}
 In this Chapter, we give an introduction into the hierarchical Bayesian approach to inverse problems, some fundamentals of Markov chain Monte Carlo (MCMC) methods, and tensor-trains approximations of high-dimensional probability distributions.
 We keep it as general as possible and will not introduce specific sampling algorithms, as those are tailored towards the forward map and the applied problem and hence will be presented when used.
+%We will introduce the Metropolis-within Gibbs in Sec.~\ref{subsec:MWG} and the radnommise then optimse in Sec.~\ref{subsec:RTO}.
 
 
 \section{Hierarchical Bayesian Inference}
@@ -110,24 +111,6 @@ According The IACT, we define the effective sample size as $ \tau_{\text{int}} /
 We point out that for uncorrelated samples $\tau_{\text{int}} = 1$ the error $(\sigma^{(i)})^2$ is a typical Monte-Carlo estimate.
 See Appendix~\ref{ap:IATC} and~\cite{Sokal1997, wolff2004monte, wolff2002LecNot} for a more detailed derivation.
 
-\subsubsection{Ergodicity}
-
-In this section we present the methods that draw samples from the marginal posterior $ \mathcal{M} = \{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} \sim \pi(\bm{\theta} |  \bm{y})$ \textcolor{red}{this reads as if M is the marginal posterior. Rewrite.} as well as the RTO method to draw samples from a normally distributed full conditional posterior $\pi(\bm{x}|\bm{\theta} , \bm{y})$. \textcolor{red}{what is the "full posterior" as opposed to the "posterior"?}
-Here, $\mathcal{M}$ denotes a Markov chain, where each new sample $\bm{\theta}^{(k)}$ is only affected by the previous one $\bm{\theta}^{(k-1)}$.
-MCMC methods generate such a chain $\mathcal{M}$ using random (Monte-Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |  \bm{\theta}^{(k-1)})$ \textcolor{red}{This is defining "Markov". . Be more explicit.} according to a proposal distribution conditioned on the previous sample (Markov), where ergodicity of the chain $\mathcal{M}$ is a sufficient criterion for using sample-based estimates~\cite{tan2016LecNot, roberts2004general}. \textcolor{red}{you are a little unclear about a chain of random variables, and an instance of such a chain.}
-
-The ergodicity theorem in~\cite{tan2016LecNot} states that, if a Markov chain $\mathcal{M}$ is aperiodic, irreducible, and reversible, then it converges to a unique stationary equilibrium distribution.
-In other words, the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and satisfies the detailed balance condition~\cite{tan2016LecNot} (reversibility).
-Then the samples in that chain $ \mathcal{M} \sim \pi( \bm{\theta} |  \bm{y})$ are samples from the desired target distribution.
-In practice, one can inspect the trace $\pi(\bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence and mixing properties of the chain to evaluate ergodicity. \textcolor{red}{converge to, so after 'burn in'}
-The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details. \textcolor{red}{this is a bit loose. really, one evaluates if the behaviour is consistent with ergodicity.}
-
-If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic \textcolor{red}{reference Jun Liu, or something.}, and the full conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, as e.g. in Sec.~\ref{subsec:RTO}, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) =  \pi(\bm{x} |  \bm{\theta} , \bm{y}) \pi( \bm{\theta} | \bm{y})$ is also ergodic \textcolor{red}{for the posterior}~\cite{acosta2022markov}. \textcolor{red}{strictly, ergodic for [theta|y] -- ergodicity is with respect to a particular distribution.}
-
-
-
-
-
 \subsection{Marginal and then Conditional Method}
 \label{subsec:TheoMTC}
 Quickly generating a representative sample set from the posterior distribution often presents a significant challenge. This is mainly \textcolor{red}{this word is misplaced (for English). Better is Quickly generating (it's an adverb)} due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in~\cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
@@ -205,6 +188,25 @@ Within this scheme, we evaluate the marginal posterior first and then either con
 	\Sigma_{\bm{x}|\bm{y}} = \int \bm{\Sigma}_{\bm{x} | \bm{\theta} , \bm{y}} \pi(\bm{\theta}| \bm{y}) \diff \bm{\theta}\label{eq:CoVarGenInt}
 \end{align}
 of the posterior $\pi(\bm{x}| \bm{y})$ by some quadrature rule.
+
+\section{Ergodicity of MCMC chains}
+Because we are using the mTC method we draw sampples from the marginal posterio ifrat using MCMC methods ant hen from  to gernatea marhkov chain from the marginal distributon
+
+
+Ergditcy is imoprtatn to show that we dar sample from the dsitribution
+In this section we present the methods that draw samples from the marginal posterior $ \mathcal{M} = \{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} \sim \pi(\bm{\theta} |  \bm{y})$ \textcolor{red}{this reads as if M is the marginal posterior. Rewrite.} as well as the RTO method to draw samples from a normally distributed full conditional posterior $\pi(\bm{x}|\bm{\theta} , \bm{y})$. \textcolor{red}{what is the "full posterior" as opposed to the "posterior"?}
+Here, $\mathcal{M}$ denotes a Markov chain, where each new sample $\bm{\theta}^{(k)}$ is only affected by the previous one $\bm{\theta}^{(k-1)}$.
+MCMC methods generate such a chain $\mathcal{M}$ using random (Monte-Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |  \bm{\theta}^{(k-1)})$ \textcolor{red}{This is defining "Markov". . Be more explicit.} according to a proposal distribution conditioned on the previous sample (Markov), where ergodicity of the chain $\mathcal{M}$ is a sufficient criterion for using sample-based estimates~\cite{tan2016LecNot, roberts2004general}. \textcolor{red}{you are a little unclear about a chain of random variables, and an instance of such a chain.}
+
+The ergodicity theorem in~\cite{tan2016LecNot} states that, if a Markov chain $\mathcal{M}$ is aperiodic, irreducible, and reversible, then it converges to a unique stationary equilibrium distribution.
+In other words, the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and satisfies the detailed balance condition~\cite{tan2016LecNot} (reversibility).
+Then the samples in that chain $ \mathcal{M} \sim \pi( \bm{\theta} |  \bm{y})$ are samples from the desired target distribution.
+In practice, one can inspect the trace $\pi(\bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence  \textcolor{red}{converge to, so after 'burn in'}  period.
+and mixing properties of the chain to evaluate if the behavours is consistent with ergodicty.
+\textcolor{red}{this is a bit loose. really, one evaluates if the behaviour is consistent with ergodicity.}
+The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details. 
+
+If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic \textcolor{red}{reference Jun Liu, or something.}, and the full conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, as e.g. in Sec.~\ref{subsec:RTO}, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) =  \pi(\bm{x} |  \bm{\theta} , \bm{y}) \pi( \bm{\theta} | \bm{y})$ is also ergodic \textcolor{red}{for the posterior}~\cite{acosta2022markov}. \textcolor{red}{strictly, ergodic for [theta|y] -- ergodicity is with respect to a particular distribution.}
 
 
 \section{Numerical Approximation -- Tensor-Train (TT)}

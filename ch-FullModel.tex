@@ -101,31 +101,31 @@ We use the approximated forward model $\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}}) \col
 	\centering
 	\begin{tabular}{ |c||c|c|c|c|c|   }
 		\hline
-		& &\multicolumn{2}{|c|}{TT bounds}& &\\
+		& &\multicolumn{2}{|c|}{TT bounds}& t-walk&\\
 		\hline
 		model parameters& priors&\makecell{lower}& \makecell{upper\\
 		}&$\tau_{\text{int}}$&Context\\
 		\hhline{|=||=|=|=|=|=|}
 		$\bm{x}$ &$\mathcal{N}(0,(\delta \bm{L})^{-1})$ & -&-&-& $\bm{x}$\\ \hline
 		$\delta$ &$\mathcal{T}(1,10^{-35})$ & -&-&  & $\bm{x}$\\ \hline
-		$\gamma$ & $\mathcal{T}(1,10^{-35})$ &$2.5\,10^{14}$ &$6\,10^{15}$&  $ 512\pm 30$ &$\bm{y}$\\ \hline
-		$\lambda  = \delta / \gamma$ &- & 1&$2\,10^{4}$& $976 \pm 74$ &$\bm{x}$\\ \hline
-		$b$ &  $\mathcal{N}(0.174,(0.01)^2)$& 0.129& 0.214 &$864\pm 62$&$\bm{p}$\\ \hline
-		$h_{T,1}$ &  $\mathcal{N}(11,(1.5)^2)$&5.4 &16.3&$270\pm 12$ &$\bm{T}$\\ \hline
-		$T_{0}$ &  $\mathcal{N}(288.15,(10)^2)$& 247 &326&$304 \pm 14$&$\bm{T}$\\ \hline
-		$p_0$ &  $\mathcal{N}(1311,(20)^2)$&1237 &1387&$252\pm 10$&$\bm{p}$\\ \hline
-		$h_{T,3}$ &  $\mathcal{N}(32.3,(2.5)^2)$&22.9&41.7&$272 \pm 12$&$\bm{T}$\\ \hline
-		$a_{1}$ &  $\mathcal{N}(0,(0.1)^2)$&-0.38 &0.38&$248 \pm 10$&$\bm{T}$\\ \hline
-		$h_{T,2}$ &  $\mathcal{N}(20.1,(0.7)^2)$&17.2 &22.7&$268\pm 10$&$\bm{T}$\\ \hline
-		$a_{0}$ &  $\mathcal{N}(-6.5,(0.01)^2)$&-6.54 &-6.47&$250 \pm 10$&$\bm{T}$\\ \hline
-		$a_{2}$ &  $\mathcal{N}(1,(0.01)^2)$&0.97 &1.03&$258 \pm 10$&$\bm{T}$\\ \hline
-		$a_{3}$ &  $\mathcal{N}(2.8,(0.1)^2)$&2.5 &3.1&$254\pm 10$&$\bm{T}$\\ \hline
-		$h_{T,4}$ &  $\mathcal{N}(47.4,(0.5)^2)$&45.5 &49.3&$252 \pm 10$&$\bm{T}$\\ \hline
-		$a_{4}$ &  $\mathcal{N}(0,(0.1)^2)$&-0.38 &0.38&$274 \pm 12$&$\bm{T}$\\ \hline
-		$h_{T,5}$ &  $\mathcal{N}(51.4,(0.5)^2)$&49.5 &53.3&$274 \pm 12$&$\bm{T}$\\ \hline
-		$a_{5}$ &  $\mathcal{N}(-2.8,(0.1)^2)$&-3.18 &-2.43&$264 \pm 10$&$\bm{T}$\\ \hline
-		$h_{T,6}$ &  $\mathcal{N}(71.8,(3)^2)$&60.5 &83.1&$264\pm 10$&$\bm{T}$\\ \hline
-		$a_{6}$ & $\mathcal{N}(-2,(0.01)^2)$ &-2.04 &-1.96&$262\pm 10$&$\bm{T}$\\
+		$\gamma$ & $\mathcal{T}(1,10^{-35})$ &$8\times10^{14}$ &$1.2\times10^{16}$&  $ 507\pm 29$ &$\bm{y}$\\ \hline
+		$\lambda  = \delta / \gamma$ &- & $1\times10^{-5}$&$2.5\times10^{-3}$& $979 \pm 75$ &$\bm{x}$\\ \hline
+		$b$ &  $\mathcal{N}(0.174,(0.01)^2)$& 0.129& 0.214 &$830\pm 60$&$\bm{p}$\\ \hline
+		$h_{T,1}$ &  $\mathcal{N}(11,(1.5)^2)$&5.4 &16.3&$286\pm 13$ &$\bm{T}$\\ \hline
+		$T_{0}$ &  $\mathcal{N}(288.15,(10)^2)$& 247 &326&$279 \pm 12$&$\bm{T}$\\ \hline
+		$p_0$ &  $\mathcal{N}(1311,(20)^2)$&1237 &1387&$279\pm 12$&$\bm{p}$\\ \hline
+		$h_{T,3}$ &  $\mathcal{N}(32.3,(2.5)^2)$&22.9&41.7&$254\pm 11$&$\bm{T}$\\ \hline
+		$a_{1}$ &  $\mathcal{N}(0,(0.1)^2)$&-0.38 &0.38&$295 \pm 13$&$\bm{T}$\\ \hline
+		$h_{T,2}$ &  $\mathcal{N}(20.1,(0.7)^2)$&17.2 &22.7&$296\pm 13$&$\bm{T}$\\ \hline
+		$a_{0}$ &  $\mathcal{N}(-6.5,(0.01)^2)$&-6.54 &-6.47&$252 \pm 10$&$\bm{T}$\\ \hline
+		$a_{2}$ &  $\mathcal{N}(1,(0.01)^2)$&0.97 &1.03&$267 \pm 11$&$\bm{T}$\\ \hline
+		$a_{3}$ &  $\mathcal{N}(2.8,(0.1)^2)$&2.5 &3.1&$267\pm 11$&$\bm{T}$\\ \hline
+		$h_{T,4}$ &  $\mathcal{N}(47.4,(0.5)^2)$&45.5 &49.3&$270 \pm 12$&$\bm{T}$\\ \hline
+		$a_{4}$ &  $\mathcal{N}(0,(0.1)^2)$&-0.38 &0.38&$254 \pm 11$&$\bm{T}$\\ \hline
+		$h_{T,5}$ &  $\mathcal{N}(51.4,(0.5)^2)$&49.5 &53.3&$280 \pm 12$&$\bm{T}$\\ \hline
+		$a_{5}$ &  $\mathcal{N}(-2.8,(0.1)^2)$&-3.18 &-2.43&$278 \pm 12$&$\bm{T}$\\ \hline
+		$h_{T,6}$ &  $\mathcal{N}(71.8,(3)^2)$&60.5 &83.1&$250\pm 10$&$\bm{T}$\\ \hline
+		$a_{6}$ & $\mathcal{N}(-2,(0.01)^2)$ &-2.04 &-1.96&$272\pm 12$&$\bm{T}$\\
 		\hline
 	\end{tabular}
 	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{\textcolor{red}{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma^2)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in~\cite{UwerrM} from posterior samples based on the approximated forward map.}}
