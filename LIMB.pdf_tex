@@ -54,31 +54,34 @@
     \lineheight{1}%
     \setlength\tabcolsep{0pt}%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{LIMB.pdf}}%
-    \put(0.82212824,0.12102016){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,n}\approx 83$km\end{tabular}}}}%
-    \put(0.71421526,0.07059122){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,i}$\end{tabular}}}}%
-    \put(0.70306414,0.01769629){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,1}\approx7$km\end{tabular}}}}%
+    \put(0.42690846,0.13808244){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\phi_j$\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{LIMB.pdf}}%
+    \put(0.82212824,0.12102016){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,n}\approx83$km\end{tabular}}}}%
+    \put(0.71421526,0.07059122){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,i}$\end{tabular}}}}%
+    \put(0.70306414,0.01769629){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{L,0}\approx7$km\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{LIMB.pdf}}%
     \put(0.89183462,0.20018385){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$h_{\text{sat}}=500$km\end{tabular}}}}%
-    \put(0.6288998,0.12693188){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Gamma_j$\end{tabular}}}}%
+    \put(0.62898641,0.13204137){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\Gamma_j$\end{tabular}}}}%
     \put(0.73031697,0.0964654){\color[rgb]{0,0,0}\rotatebox{44.665751}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\cdots$\end{tabular}}}}}%
     \put(0.67630688,0.04831459){\color[rgb]{0,0,0}\rotatebox{44.988095}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\cdots$\end{tabular}}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=3]{LIMB.pdf}}%
-    \put(0.1849475,0.1635572){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Satellite\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=4]{LIMB.pdf}}%
-    \put(0.37383159,0.01645802){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}0\end{tabular}}}}%
+    \put(0.1849475,0.1635572){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Satellite\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=5]{LIMB.pdf}}%
-    \put(0.23962403,0.06898776){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}n\end{tabular}}}}%
+    \put(0.37383159,0.01645802){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}0\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=6]{LIMB.pdf}}%
-    \put(0.30284077,0.04073868){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}i\end{tabular}}}}%
+    \put(0.23962403,0.06898776){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}n\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=7]{LIMB.pdf}}%
-    \put(0.45270646,0.0084668){\color[rgb]{0.72156863,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}{\color{white}EARTH}\end{tabular}}}}%
+    \put(0.30284077,0.04073868){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}i\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=8]{LIMB.pdf}}%
-    \put(0.463359,0.18591127){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}m\end{tabular}}}}%
+    \put(0.45270646,0.0084668){\color[rgb]{0.72156863,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}{\color{white}EARTH}\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=9]{LIMB.pdf}}%
-    \put(0.48101179,0.13556938){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}j\end{tabular}}}}%
+    \put(0.47131607,0.19216801){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}m\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=10]{LIMB.pdf}}%
-    \put(0.49856133,0.07621397){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}1\end{tabular}}}}%
+    \put(0.49852211,0.14296276){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}j\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=11]{LIMB.pdf}}%
+    \put(0.52751071,0.09156038){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}1\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=12]{LIMB.pdf}}%
     \put(0.09078824,0.11096367){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=13]{LIMB.pdf}}%
   \end{picture}%
 \endgroup%

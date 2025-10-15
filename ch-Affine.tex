@@ -3,51 +3,12 @@
 \newcommand*{\vertbar}{\rule[-1ex]{0.5pt}{2.5ex}}
 \newcommand*{\horzbar}{\rule[.5ex]{2.5ex}{0.5pt}}
 
+The forward map, introduced in Chapter~\ref{ch:formodel}, poses a weakly non-linear forward problem.
+One could tackle the non-linearity by treating the inverse problem as a linear inverse problem and then iteratively updating the non-linear part after each parameter sample.
+Instead, as in Fig.~\ref{fig:affinStrat} illustrated, we approximate the non-linear model using an affine map, which maps from the linear model $\bm{A}_L$ to the non-linear model $\bm{A}(\bm{x})$.
+An affine map is a linear map with a translation, e.g. $\bm{A}\bm{x} + \bm{b}$, and maps Gaussians onto Gaussians.
 
-The forward map, which we introduce in Chapter~\ref{ch:formodel}, poses a weakly non-linear forward problem.
-We could tackle the non-lin earity by treating the inverse problem as a linear inverse problem and then iteratively updating the non-linear part after each parameter sample.
-Instead, as in Fig.~\ref{fig:AffSchem} illustrated, we approximate the non-linear model using an affine map $ \bm{M}:\bm{A}_L\bm{x} \rightarrow \bm{A}(\bm{x})$, which maps from the linear model $\bm{A}_{L}$ to the non-linear model $\bm{A}(\bm{x})$. \textcolor{red}{It is very unclear why you are introducing this here.}
-Then we are able to define a linear model $ \bm{A} \coloneqq \bm{M} \bm{A}_{L}$, which approximates the non-linear model.
-Here, we give a brief introduction to affine maps.
 
-An affine map is any linear map between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin (see~\cite[Def. 2.3.1]{berger2009geometry}). \textcolor{red}{no it's not}
-In other words, an affine map does not need to map to the origin of the associated vector space.
-An affine map is a linear map on vector spaces, including a translation, or, in the words of my supervisor, C. F., a Taylor series of first order. \textcolor{red}{it is not a linear map , the origin of the domain to the origin of the range, fix this sentence - -it makes no sense.}
-For more information on affine spaces and maps, we refer to the books~\cite{berger2009geometry, katsumi1994affine}. \textcolor{red}{don't say that, say that it is a linear map plus a constant.}
-%\begin{figure}[ht!]
-%	\centering
-%	\begin{tikzpicture}
-%		\node[rectnode] at (2,-4) (NL)    {$\bm{V}$};
-%		\node[rectnode] at (-2,-4) (L)    {$\bm{W}$};
-%		\draw[<-, very thick] (NL.west) -- (L.east); 
-%		\node[align=center] at (-5.5,-4) (f3) {linear forward model};
-%		\node[align=center] at (5.5,-4) (f4) {non-linear forward model};
-%		\node[align=center] at (0,-5) (f5) {$\bm{A}(\bm{x})  \approx \bm{M A}_L  \bm{x} $ };
-%		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
-%	\end{tikzpicture}
-%	\caption[Schematics of the affine map]{This figure shows the schematic representation of how the affine map $\bm{M}$ approximates the non-linear forward model. Here, $\bm{V}$ contains values produced by the linear forward model, and $\bm{W}$ contains the corresponding values from the non-linear forward model. Both $\bm{V}$ and $\bm{W}$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $\bm{V}$ onto their counterparts in the non-linear forward model space $\bm{W}$. More specifically, the non-linear noise-free data vector $\bm{A} (\bm{x}) $ is approximated by the affine map and the linear forward model so that  $\bm{A} (\bm{x})  \approx  \bm{M A}_L  \bm{x}$.}
-%	\label{fig:AffSchem}
-%\end{figure}
-\textcolor{red}{these are horrible books. No wonder you have a garbled idea and description. All affine maps look like y = Ax+b where A is linear and b is a constant. What's so difficult about that?
-	I asked a LLM:
-	Please give a simple definition of an affine map (between two vector spaces)
-	Sure! A simple definition of an affine map between two vector spaces is:
-	An affine map is a function between vector spaces that preserves straight lines and has the form
-	$>f(x)=Ax+b>$
-	where A is a linear transformation and b is a fixed vector.
-	So it’s like a linear map, but with a shift. }
-
-Given the posterior distribution for ozone $ \pi(\bm{x}|\bm{y})$, we can now approximate the non-linear forward model 
-\begin{align}
-	\bm{A}(\bm{x}) \approx \bm{M A}_L \bm{x} \, ,
-\end{align}
-where the affine map $\bm{M}$ describes the mapping in bewtween the linear and the non-lineaer model for $\bm{x} = \bm{\mu}_{\bm{x}|\bm{y}} + \Delta \bm{x}$  around the prevously caclulated posterior mean $\bm{\mu}_{\bm{x}|\bm{y}} $ (see Fig.~\ref{fig:affinStrat} for the summarised strategy).
-Here $\bm{A}(\bm{x})$ is non-linear noise-free data and $\bm{A}_L\bm{x}$ is linear noise-free data, both with ground truth pressure and temperature.
-For  $\bm{x} = \bm{\mu}_{\bm{x}|\bm{y}} + \Delta \bm{x}$ with an affine map $\bm{A}\bm{x} + \bm{b}$ which is a linear map $\bm{A}$ with a constant $\bm{b}$.
-\begin{align}
-	\bm{A}(\bm{x})  \approx \underbrace{  \bm{M A}_L  \bm{\mu}_{\bm{x}|\bm{y}} }_{= \bm{A}( \bm{\mu}_{\bm{x}|\bm{y}} )  }+  \underbrace{\bm{M A}_L  \Delta \bm{x} }_{= \bm{A}^{\prime}( \bm{\mu}_{\bm{x}|\bm{y}} )  \Delta \bm{x} }\, \\
-	=    \underbrace{ \bm{A}^{\prime}( \bm{\mu}_{\bm{x}|\bm{y}} ) \bm{x}}_{ \coloneqq \bm{A}\bm{x}}  +  \underbrace{ \bm{A}( \bm{\mu}_{\bm{x}|\bm{y}} )  - \bm{A}^{\prime}( \bm{\mu}_{\bm{x}|\bm{y}} ) \bm{\mu}_{\bm{x}|\bm{y}}}_{ \coloneqq \bm{b}}
-\end{align}
 \begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}
@@ -71,15 +32,11 @@ For  $\bm{x} = \bm{\mu}_{\bm{x}|\bm{y}} + \Delta \bm{x}$ with an affine map $\bm
 		\node[align=center] at (0,-4) (f5) {affine map \\ $\bm{M}$};
 		
 	\end{tikzpicture}
-	\caption[Strategy to find affine map.]{The strategy to find the affine map consists of first evaluating the marginal posterior for ozone $\pi(\lambda , \gamma  | \bm{y})$ based on the linear forward model. Then we draw ozone samples from the full posterior. Based on those ozone samples, we find an affine map which approximates between noise-free data from the linear and the non-linear forward model.}
+	\caption[Strategy to find affine map.]{The strategy to find the affine map consists of first evaluating the marginal posterior for ozone $\pi(\lambda , \gamma  | \bm{y})$ based on the linear forward model. Then we draw ozone samples from the full posterior. Using those ozone samples, we find an affine map which approximates between noise-free data from the linear and the non-linear forward model.}
 	\label{fig:affinStrat}
 \end{figure}
-
-
-Using posterior ozone samples, we generate two affine subspaces and then find the mapping between those.
-The subspace $\bm{W}$ is created by noise-free data based on the linear model and $\bm{V}$ by noise-free data based on the non-linear model, given $m-1$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$ for $j = 2, \dots,m$.
-We report a relative RMS difference between $\bm{W}$ and $\bm{V}$ of about $1\%$, which we aim to reduce through the affine map $\bm{M}$.
-More specifically, the affine subspace associated with the linear forward model is 
+We find the affine map by creating the vector spaces $\bm{W}$ based on the linear forward model and $\bm{V}$ based on the non-linear forward model with ground truth pressure and temperature.
+More specifically $m-1$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$ for $j = 2, \dots,m$ from the posterior and the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ generate,
 \begin{align}
 	\bm{W} = \begin{bmatrix}
 		\vert& \vert&   &  \vert & & \vert \\
@@ -87,12 +44,12 @@ More specifically, the affine subspace associated with the linear forward model 
 		\vert& \vert&   &  \vert & & \vert 
 	\end{bmatrix}
 	\in \mathbb{R}^{m \times m}
-\end{align}\clearpage \noindent and with the non-linear forward model is 
+\end{align}\noindent and
 \begin{align}
 	\bm{V} = \begin{bmatrix}
-			\vert& \vert&   &  \vert & & \vert \\
+		\vert& \vert&   &  \vert & & \vert \\
 		\bm{A}(\bm{\mu}_{\bm{x}|\bm{y}} ) & \bm{A}(\bm{x}^{(2)}) &  \cdots& \bm{A}(\bm{x}^{(j)}) &  \cdots & \bm{A} (\bm{x}^{(m)})  \\
-	\vert&\vert&   &  \vert & & \vert 
+		\vert&\vert&   &  \vert & & \vert 
 	\end{bmatrix} = 
 	\begin{bmatrix}
 		\begin{array}{ccc}
@@ -104,7 +61,11 @@ More specifically, the affine subspace associated with the linear forward model 
 		\end{array}
 	\end{bmatrix}\in \mathbb{R}^{m \times m} \, .
 \end{align}
-Then we calculate the affine map 
+Then the non-linear forward model is approximated as 
+\begin{align}
+	\bm{A}(\bm{x}) \approx \bm{M A}_L \bm{x} \, , \label{eq:AffineM}
+\end{align}
+where we solve $v_j =r_j \bm{W}$ for each row $r_j$ in
 \begin{align}
 	\bm{V}\bm{W}^{-1} = \bm{M} =
 	\begin{bmatrix}
@@ -117,11 +78,43 @@ Then we calculate the affine map
 		\end{array}
 	\end{bmatrix}\, \in \mathbb{R}^{m \times m} .
 \end{align}
-by solving $v_j =r_j \bm{W}$ for each row $r_j$ in $\bm{M}$, where $j = 1, \dots, m$, using the Python function \texttt{numpy.linalg.solve}.
-We can do that because every measurement in the data vector $\bm{y}$ is independent of each other, and then every row $v_j$ of $\bm{V} \in \mathbb{R}^{m \times m}$ is independent of each other as well.
+using the Python function \texttt{numpy.linalg.solve}.
+This is feasible since every noise-free measurement is independent of each other, and then every row $v_j$ of $\bm{V} \in \mathbb{R}^{m \times m}$ is independent of each other as well.
+For an $\bm{x} = \bm{\mu}_{\bm{x}|\bm{y}} + \Delta \bm{x}$ we rewrite Eq.~\ref{eq:AffineM} to
+\begin{align}
+	\bm{A}(\bm{x})  \approx \underbrace{  \bm{M A}_L  \bm{\mu}_{\bm{x}|\bm{y}} }_{= \bm{A}( \bm{\mu}_{\bm{x}|\bm{y}} )  }+  \underbrace{\bm{M A}_L  \Delta \bm{x} }_{= \bm{A}^{\prime}( \bm{\mu}_{\bm{x}|\bm{y}} )  \Delta \bm{x} }\, \\
+	=    \underbrace{ \bm{A}^{\prime}( \bm{\mu}_{\bm{x}|\bm{y}} ) \bm{x}}_{ \bm{A}\bm{x}}  +  \underbrace{ \bm{A}( \bm{\mu}_{\bm{x}|\bm{y}} )  - \bm{A}^{\prime}( \bm{\mu}_{\bm{x}|\bm{y}} ) \bm{\mu}_{\bm{x}|\bm{y}}}_{  \bm{b}}
+\end{align}
+to show that $ \bm{M}:\bm{A}_L\bm{x} \rightarrow \bm{A}(\bm{x})$ is an affine map.
+
+
+
+
+
+
+
+%	\centering
+%	\begin{tikzpicture}
+%		\node[rectnode] at (2,-4) (NL)    {$\bm{V}$};
+%		\node[rectnode] at (-2,-4) (L)    {$\bm{W}$};
+%		\draw[<-, very thick] (NL.west) -- (L.east); 
+%		\node[align=center] at (-5.5,-4) (f3) {linear forward model};
+%		\node[align=center] at (5.5,-4) (f4) {non-linear forward model};
+%		\node[align=center] at (0,-5) (f5) {$\bm{A}(\bm{x})  \approx \bm{M A}_L  \bm{x} $ };
+%		\node[align=center] at (0,-4) (f5) {affine Map \\ $\bm{M}$};
+%	\end{tikzpicture}
+%	\caption[Schematics of the affine map]{This figure shows the schematic representation of how the affine map $\bm{M}$ approximates the non-linear forward model. Here, $\bm{V}$ contains values produced by the linear forward model, and $\bm{W}$ contains the corresponding values from the non-linear forward model. Both $\bm{V}$ and $\bm{W}$ are affine subspaces over the same field. The affine map $\bm{M}$ projects elements from the linear forward model space $\bm{V}$ onto their counterparts in the non-linear forward model space $\bm{W}$. More specifically, the non-linear noise-free data vector $\bm{A} (\bm{x}) $ is approximated by the affine map and the linear forward model so that  $\bm{A} (\bm{x})  \approx  \bm{M A}_L  \bm{x}$.}
+%	\label{fig:AffSchem}
+%\end{figure}
+
+
+
+
+
 %Alternatively, one can also determine this map using other methods, e.g. machine learning methods or matrix inversion, which in our case did not give better results.
 
-We assess the affine map by calculating the relative RMS difference $\lVert \text{vec}(\bm{M}\bm{W}) - \text{vec}(\bm{V})  \rVert_{L^2} / \lVert \text{vec}(\bm{M}\bm{W}) \rVert_{L^2} $ between the mapped linear noise-free data and the non-linear noise-free data, which is approximately $0.001\%$.
+The relative RMS difference $\lVert \text{vec}(\bm{M}\bm{W}) - \text{vec}(\bm{V})  \rVert_{L^2} / \lVert \text{vec}(\bm{M}\bm{W}) \rVert_{L^2} $ between the mapped linear noise-free data and the non-linear noise-free data is approximately $0.001\%$.
+This is much smaller than the relative RMS difference between $\bm{W}$ and $\bm{V}$ of about $1\%$.
 \begin{figure}[t!]
 	\centering
 	%\includegraphics{SampMapAssesment.png}
@@ -130,9 +123,8 @@ We assess the affine map by calculating the relative RMS difference $\lVert \tex
 		The ozone sample to generate this noise-free data has not been used to create the affine map.}
 	\label{fig:MapAsses}
 \end{figure}
-In Fig.~\ref{fig:MapAsses}, we show the mapping for one posterior ozone sample, which has not been used to create this mapping.
-In other words, this is an unseen event not occuring in the training data.
-The relative RMS error for this approximation is roughly $0.07\%$ and much smaller than the relative difference between noise-free linear data and non-linear data.
+Fig.~\ref{fig:MapAsses} shows the mapping for one posterior ozone sample with a relative RMS error $\approx0.07\%$.
+This posterior ozone sample has not been used to create this mapping, in other words, this is an unseen event not occurring in the training data.
 Consequently, from here onwards, we use the approximated forward map.
 \section{Marginal and Then Conditional Posterior of Ozone}
 
@@ -165,3 +157,19 @@ This is expected since the difference between the linear and non-linear forward 
 \clearpage
 
 
+%Then we are able to define a linear model $ \bm{A} \coloneqq \bm{M} \bm{A}_{L}$, which approximates the non-linear model.
+%Here, we give a brief introduction to affine maps.
+%
+%An affine map is any linear map between two vector spaces or affine spaces, where an affine space does not need to preserve a zero origin (see~\cite[Def. 2.3.1]{berger2009geometry}). \textcolor{red}{no it's not}
+%In other words, an affine map does not need to map to the origin of the associated vector space.
+%An affine map is a linear map on vector spaces, including a translation, or, in the words of my supervisor, C. F., a Taylor series of first order. \textcolor{red}{it is not a linear map , the origin of the domain to the origin of the range, fix this sentence - -it makes no sense.}
+%For more information on affine spaces and maps, we refer to the books~\cite{berger2009geometry, katsumi1994affine}. \textcolor{red}{don't say that, say that it is a linear map plus a constant.}
+%
+%\textcolor{red}{these are horrible books. No wonder you have a garbled idea and description. All affine maps look like y = Ax+b where A is linear and b is a constant. What's so difficult about that?
+%	I asked a LLM:
+%	Please give a simple definition of an affine map (between two vector spaces)
+%	Sure! A simple definition of an affine map between two vector spaces is:
+%	An affine map is a function between vector spaces that preserves straight lines and has the form
+%	$>f(x)=Ax+b>$
+%	where A is a linear transformation and b is a fixed vector.
+%	So it’s like a linear map, but with a shift. }
