@@ -163,10 +163,6 @@ Following the MTC scheme, we characterise the marginal posterior first and then 
 
 \subsection{Marginal posterior}
 \label{subsec:FirstMargPost}
-
-
-
-
 Consequently, for the hierarchical model specified in Eq.~\ref{eq:O3BayMode}, the marginal posterior distribution over the hyper-parameters is given by
 \begin{align}
 	\pi( \lambda,\gamma  | \bm{y}) \propto &  \lambda^{n/2 + \alpha_{\delta}-1} \gamma^{m/2 + \alpha_{\delta} + \alpha_{\gamma}-1}   \exp{ \Bigl\{ - \frac{1}{2} g ( \lambda) - \frac{\gamma}{2} f ( \lambda) - \beta_{\delta} \lambda  \gamma - \beta_{\gamma} \gamma \Bigr\}},
@@ -189,32 +185,31 @@ Note that when changing variables from $\delta = \lambda \gamma$ to $\lambda$ th
 For each evaluation of the marginal posterior most of the computational effort lies in the calculation of $f(\lambda)$ and $g(\lambda)$, which we evaluate using the Cholesky decomposition $\bm{A}^T  \bm{A} + \lambda \bm{L} = \bm{C}_{\lambda} \bm{C}_{\lambda}^T$.
 More specifically we solve for $(\bm{A}^T  \bm{A} + \lambda \bm{L})^{-1} (\bm{A}^T \bm{y})$ via \texttt{scipy.linalg.cho\_solve} and calculate the $g(\lambda) = 2 \sum \log \text{diag}(\bm{C}_{\lambda}) $.
 In  Fig.~\ref{fig:fandg} we see that $f(\lambda)$ and $g(\lambda)$ are well behaved within the region of interest.
-Because of this, we approximate $f(\lambda) \approx \tilde{f}(\lambda)$ with a Taylor series and $\tilde{g}(\lambda) \approx g(\lambda)$ with a linear approximation in log-space around the mode $\lambda_0$ of $\pi(\lambda, \gamma | \bm{y})$.
-The approximations are implicitly given by
+Because of this, we approximate $f(\lambda) \approx \tilde{f}(\lambda)$ with a Taylor series and $\tilde{g}(\lambda) \approx g(\lambda)$ with a linear approximation in $\lambda$ log-space around the mode $\lambda_0$ of $\pi(\lambda, \gamma | \bm{y})$.
+The Taylor series coefficient of $f(\lambda)$ is given by
 \begin{align}
 	f^{(r)}& (\lambda_0)= (-1)^{r+1} (\bm{A}^T \bm{y})^T (\bm{B}_0^{-1} \bm{L})^r \bm{B}_0^{-1} \bm{A}_L^T \bm{y} \label{eq:ftay}  \\
-	\text{and } & \log{ \tilde{g}(\lambda)} = \log{ g(\lambda_{0})} + (\log{\lambda} - \log{\lambda_{0}})  \frac{ \log{g(\lambda_{\text{max}})} - \log{g(\lambda_{0})} }{\log{\lambda_{\text{max}}} - \log{\lambda_{0}} } 
-	\label{eq:gtay}
 \end{align} 
 with $\bm{B}_0 = \bm{A}^T  \bm{A} + \lambda_0 \bm{L}$.
-We plot the approximations
+Note that usually a Taylor series includes a factor $(r!)^{-1}$, which in this case cancels in $f^{(r)}(\lambda_0)$, and $g(\lambda)$ can be approximated with a Taylor series as well (see~\cite{fox2016fast}).
+We plot the approximations 
 \begin{subequations}
 	\label{eq:fandgapprox}
 	\begin{align}
 		&\tilde{f} ( \lambda) = \sum^2_{r=0} 	f^{(r)}(\lambda_0) (\lambda-\lambda_0)^r  \label{eq:fAprox} \, ,  \\
-		&\text{and } \tilde{g} (\lambda) = \exp \log{\tilde{g}(\lambda)}  \label{eq:gAprox} \, ,
+		&\text{and } \tilde{g}(\lambda)=  g(\lambda_{0}) + (\log{\lambda} - \log{\lambda_{0}})  \frac{ g(\lambda_{\text{max}}) - g(\lambda_{\text{min}}) }{\log{\lambda_{\text{max}}} - \log{\lambda_{\text{min}}} }  \label{eq:gAprox} \, ,
 	\end{align}
 \end{subequations} in Fig.~\ref{fig:fandg} and elaborate on the approximation errors in the section below.
-Usually a Taylor series includes a factor $(r!)^{-1}$, which in this case cancels in $f^{(r)}(\lambda_0)$, and $g(\lambda)$ can be approximated with a Taylor series as well (see~\cite{fox2016fast}).
+
 
 \subsubsection{Error due to approximation of f and g}
 To assess the approximation error, we lay a 100-point grid over the sampling region in each dimension and compare the approximations of $f(\lambda)$, $g(\lambda)$ and $\pi(\lambda, \gamma | \bm{y})$ with their true function values.
 
-\textcolor{red}{Compared to a 1-st, 3-rd or 4-th order Taylor approximation, we find that the 2-nd order Taylor approximation of $f(\lambda)$ gives the smallest relative RMS error of $\approx 10 \%$ in the sampling region of $\lambda$.
-	Additionally, we find that a linear approximation of $g(\lambda)$ is sufficient with relative RMS $<0.1\%$.}
+Compared to a 1-st, 3-rd or 4-th order Taylor approximation, we find that the 1-st order Taylor approximation of $f(\lambda)$ gives the smallest relative RMS error of $\approx 15 \%$ in the sampling region of $\lambda$ and a absolute RMS error of $1.8\times 10^{-16}$.
+Additionally, we find that a linear approximation of $g(\lambda)$ is sufficient with relative RMS $\approx 4\%$ and an absolute error of $0.74$.
 
-These errors then propagate into the marginal posterior $\pi(\lambda , \gamma| \bm{y})$ so that the relative RMS error is $\approx 3 \%$ over the whole grid.
-When sampling, we evaluate the acceptance ratio in the log-space, so we report a relative RMS error of $< 0.01\%$ for $\log{\pi(\lambda| \gamma, \bm{y})}$, with a maximum relative pointwise error of $< 0.5\%$.
+These errors then propagate into the marginal posterior $\pi(\lambda , \gamma| \bm{y})$ so that the relative RMS error is $\approx 5 \%$ over the whole grid.
+When sampling, we evaluate the acceptance ratio in the log-space, so we report a relative RMS error of $ \approx0.06\%$ for $\log{\pi(\lambda| \gamma, \bm{y})}$, with a maximum relative pointwise error of $\approx 0.3\%$.
 We consider this good enough.
 
 
@@ -268,7 +263,7 @@ In practice, we calculate the acceptance ratio in log space, so that
 	= \log  \{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y} ) \}  -\log  \{ \pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y}) \} \\
 	= \frac{n}{2} (\log\{\lambda^{\prime}\} - \log\{\lambda^{(k)}\} ) + \frac{1}{2} \Delta g + \frac{\gamma^{(k)}}{2} \Delta f  + \beta_\delta \gamma^{(k)} \Delta \lambda  \, ,
 \end{align}
-where $\Delta \lambda = \lambda^{\prime} - \lambda^{(k)} $ and  $\Delta f \approx \tilde{f}(\lambda^\prime) - \tilde{f}(\lambda^{(k)}) =  \sum^2_1 f^{(r)} (\lambda_0) [(\Delta \lambda^\prime)^r - (\Delta \lambda^{(k)})^r] $, with  $\Delta \lambda^{\prime} = \lambda^\prime - \lambda_0 $ and $\Delta \lambda^{(k)} =  \lambda^{(k)} - \lambda_0$.
+where $\Delta \lambda = \lambda^{\prime} - \lambda^{(k)} $ and  $\Delta f \approx \tilde{f}(\lambda^\prime) - \tilde{f}(\lambda^{(k)}) =   (\Delta \lambda^\prime)- (\Delta \lambda^{(k)}) $, with  $\Delta \lambda^{\prime} = \lambda^\prime - \lambda_0 $ and $\Delta \lambda^{(k)} =  \lambda^{(k)} - \lambda_0$.
 Similarly we approximate $\Delta g \approx \tilde{g}(\lambda^{\prime}) -\tilde{g}(\lambda^{(k)})$.
 
 Next, we perform a Gibbs step on $\pi(	\gamma^{(k+1)} |  \lambda^{(k+1)}, \bm{y}) $ conditioned on the prevously drawn $ \lambda^{(k+1}$.
@@ -278,7 +273,7 @@ For we discard the first $N_{\text{burn-in}}$ samples.
 
 
 We approximate $f(\lambda)$  and $g(\lambda)$ around the mode $( \lambda_{0}, \gamma_0 )$ of $\pi(\lambda,\gamma| \bm{y})$ provided by the \texttt{scipy.optimize.fmin} function, with a limit of 25 function evaluations.
-Then we approximate $f(\lambda)$ with a 2-nd order Taylor series and $g(\lambda)$ with a linear approximation in the log-space, where for the approximation in $g(\lambda)$ we set $\lambda_{\text{max}}$ to the maximum value of $\lambda$ on the TT grid (see next section).
+Then we approximate $f(\lambda)$ with a 1-st order Taylor series and $g(\lambda)$ with a linear approximation in the log-space, where for the approximation in $g(\lambda)$ we set $\lambda_{\text{max}}$ to the maximum value of $\lambda$ on the TT grid (see next section).
 We initialised the MWG algorithm at the mode $(\lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ and take $N = 10100$ , which inlcudes burn in period of $N_{\text{burn-in}} = 100$ steps.
 The standard deviation of the normal proposal distribution $\lambda^{\prime} \sim \mathcal{N}(\lambda^{(k)} , \sigma^2_{\lambda})$ is empirically set to $\sigma_{\lambda} = 0.8 \lambda_0$, so that the acceptance rate is $\approx 0.5$ as suggested in~\cite{robertsLecNot}.
 This takes  $\approx 0.5$s and we plot in Fig.~\ref{fig:ScatterPlotTT} as well as the trace of the MWG to show ergodicity.
@@ -304,7 +299,7 @@ To compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ we set
 We calculate the coefficient tensor $\bm{B}$ and $\bm{R}_{\text{pre}}$ as in Prop.~\ref{prob:backMarg} and Prop.~\ref{prob:ForMarg} (see Sec.~\ref{subsec:TTMarg}).
 
 We plot the TT approximation as a colour map on top of the obtained samples in Fig.~\ref{fig:ScatterPlotTT}.
-The relative RMS TT approximation error over the whole grid is $\approx 3\%$ and similar to the propagation error in $\pi(\lambda, \gamma| \bm{y})$ due to the approximations of $f(\lambda)$ and $g(\lambda)$ (see further up).
+The relative RMS TT approximation error over the whole grid is $\approx 5\%$ and similar to the propagation error in $\pi(\lambda, \gamma| \bm{y})$ due to the approximations of $f(\lambda)$ and $g(\lambda)$ (see further up).
 \begin{figure}[h!]
 	\centering
 	\includegraphics{ScatterplusHistoPlusTT.png}
@@ -478,11 +473,3 @@ The samples of $\pi(\bm{x}| \bm{y})$ plotted in Fig.~\ref{fig:LCurve} lie above 
 This does make sense, if one thinks about the mean as the (smooth) average over less-smooth samples and the regularised solution as an extremely smooth ozone profile (see Lagrange multiplier in Sec. \ref{sec:regularise}).
 In contrast, the samples are less regularised and hence lie above the L-Curve, but have a similar data misfit norm, and as already mentioned, are all feasible solutions to the data.
 Neither the regularisation solution nor the posterior ozone profiles capture the second ozone peak of the ground truth at high altitudes.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics{SecRecResinclRegandSampl.png}
-	%\includegraphics{SecRecResinclReg.png}
-	\caption[Full posterior mean and variance of ozone and the regularised solution compared to the ground truth.]{Full  posterior mean and variance and one ozone sample from the full posterior. We plot the regularised solution on top of the ground truth ozone profile in green. The results are based on the approximated forward model $\bm{M}\bm{A}_L$.}
-	\label{fig:O3SolplsReg}
-\end{figure} 

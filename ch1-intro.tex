@@ -27,7 +27,9 @@ Furthermore, these regularisation methods condition on external point estimates 
 %Additionally they compare to a ``ground truth'' provided by the previously described optimal estimation approach \cite{werner2023machlearn, bojkov2008NeuralNet}.
 %Recent machine learning approaches suffer from related limitations. These models are typically trained over short periods (e.g., one month), condition on a single fixed noise value, and do not treat noise as a retrieval hyper-parameter. Moreover, they are benchmarked against a “ground truth” derived from the same optimal estimation method described above~\cite{werner2023machlearn, bojkov2008NeuralNet}.
 
-
+In Bayesian hierarchial modelling inknown parameter are treated as random variables and are included if computatinlly feasinel within the incersion prcess.
+This means that noise is controlled by a hyperparameter and included in the model as well as other hypeparaemntes and ozone as a paramtere.
+Since we deal with random varaibel described by distributions we provide posterior distribution of variabel which all present feasible solution to the data instead of on ``optimal'' solution.
 
 Naturally, noise (hyper-parameter) is a random process and follows a probability distribution, which we assume to know.
 According to that noise, as well as some other probability distributions, we can formulate explicit functions over hyper-parameters and parameters (e.g. ozone concentrations).\textcolor{red}{why is this here -- not clear to me}
@@ -35,19 +37,27 @@ By incorporating hyper-parameters, e.g. measurement noise and smoothness of the 
 This approach is known as hierarchical Bayesian modelling.\textcolor{red}{  OH, your trying to say that a hyperparametr controls something about the distribution of the noise, not that the noise is a hyperparameter, which is how this sentence reads.}
 Livesey et al.~\cite{livesey2006retrieval} report ``unexpected spectrally correlate noise'' on the MLS aura, so here is another real reason why one should include noise in the model.
 
-We utilise the marginal and then conditional (MTC) method~\cite{fox2016fast} to solve this inverse problem and employ a linear-Gaussian hierarchical Bayesian framework.
+We utilise the marginal and then conditional (MTC) method~\cite{fox2016fast} 
+and set up a hierarchical Bayesian model based on the radiative transfer equation (RTE).
+This is a relatively new method within the Bayesian community, and is the first application to a forward model based on the radiative transfer equation (RTE), to the best of our knowledge.
+We simulate some data after given a brief assesment of one can measure most effectivley.
+First we neglet the non-linearity in the RTE and employ a linear-Gaussian hierarchical Bayesian, which we compare to a regularisation approach.
+Within seconds we can evaluate the marginal posterior distribution over the hyper-parameters and the conditional posterior distribution over the parameters.
+Since the RTE is weakly non-linear, we use these resuts to find an affine map that approximates the non-linear forward model, which seems to be another novelty in the field of atmospheric remote sensing.
+Finally we extend our model to jointly provide posterior pressure, temperaure and ozone samples.
+Additionally, we extend the MTC method to tackle this inverse problem by jointly inferring pressure, temperature and ozone profiles given one set of measurements.
+
+Moreover, instead of using sampling algorithms to characterise those posterior distributions the approximate posterior distributions directly utilising the tensor-train (TT) format. 
+This allows to generate independent samples from a TT approximation via the inverse Rosenblatt transform (IRT) with far fewer function evaluations compared to conventional samplers.
+Moreover, the TT format allows us to calculate marginal distributions of each hyper-parameter and evaluate integrals via quadrature without any sampling.
+
+
+and first the treat the 
+to solve this inverse problem and employ a linear-Gaussian hierarchical Bayesian framework.
 Within seconds we can evaluate the marginal posterior distribution over the hyper-parameters and the conditional posterior distribution over the parameters. \textcolor{red}{this does not clearly say that you treat a nonliner problem later.}
 This is a relatively new method within the Bayesian community, and is the first application to a forward model based on the radiative transfer equation (RTE), to the best of our knowledge. \textcolor{red}{already too many "we". Try something like : the sthe application in this thesis is ... the fist, to the besy of our knowledge.}
 
-Moreover, instead of using sampling algorithms to characterise those posterior distributions we approximate posterior distributions directly utilising the tensor-train (TT) format. \textcolor{red}{likewise. Besides, this sentence is not true. You know about the Approximation and Sampling paper.}
-This enables us to generate independent samples from a TT approximation via the inverse Rosenblatt transform (IRT) with far fewer function evaluations compared to conventional samplers.
-Moreover, we can calculate marginal distributions of each hyper-parameter and evaluate integrals via quadrature without any sampling.
-
-Since the RTE is weakly non-linear, we approximate the RTE with an affine map, which seems to be another novelty in the field of atmospheric remote sensing.
-
-Additionally, we extend the MTC method to tackle this inverse problem by jointly inferring pressure, temperature and ozone profiles given one set of measurements.
-
-
+\textcolor{red}{likewise. Besides, this sentence is not true. You know about the Approximation and Sampling paper.}
 \section{Thesis Structure}
 In Chapter~\ref{ch:background}, we give a brief overview of the key methods used along with references for further reading.
 Chapter~\ref{ch:formodel} introduces the simplified forward model based on the RTE, and discusses strategies for measuring effectively.

@@ -199,7 +199,7 @@ For large enough $N$ this chain of random variables can be used to calculate Mon
 The ergodicity theorem in~\cite{tan2016LecNot} states that, if a Markov chain $\mathcal{M}$ is aperiodic, irreducible, and reversible, then it converges to a unique stationary equilibrium distribution.
 In other words, the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and satisfies the detailed balance condition~\cite{tan2016LecNot} (reversibility).
 Then the samples in that chain $ \mathcal{M} \sim \pi( \bm{\theta} |  \bm{y})$ are samples from the desired target distribution.
-In practice, one can inspect the trace $\pi(\bm{\theta}^{(k)} |  \bm{y})$ for $k = N_{\text{burn-in}}, \dots, N$ after a ``burn-in'' period $N_{\text{burn-in}}$ (to remove initialisation bias) and visually assess if the chain is consistent with ergodicity.
+In practice, one can inspect the trace $\pi(\bm{\theta}^{(k)} |  \bm{y})$ for $k = N_{\text{burn-in}}, \dots, N$ after a ``burn-in'' period $N_{\text{burn-in}}$ which removes initialisation bias and visually assess if the chain is consistent with ergodicity.
 The specific sampling methods in this thesis possess proven ergodic properties, and we therefore provide the reader with corresponding literature for further details when the methods are introduced.
 
 
@@ -249,13 +249,13 @@ This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\p
 Consequently, the marginal target distribution
 \begin{align}
 	\begin{split}
-		f_{X_k}(x_k) \approx \frac{1}{z} \Big|\, 
+		f_{X_k}(x_k) \approx \frac{1}{z} \Bigg|\, 
 		&\left( \int_{\mathcal{X}_1} \uplambda_1(x_1) \tilde{\pi}_1(x_1) \, \diff x_1 \right) \cdots 
 		\left( \int_{\mathcal{X}_{k-1}} \uplambda_{k-1}(x_{k-1}) \tilde{\pi}_{k-1}(x_{k-1}) \, \diff x_{k-1} \right) \\
 		&\quad \uplambda_k(x_k) \tilde{\pi}_k(x_k) \\
 		& \left( \int_{\mathcal{X}_{k+1}} \uplambda_{k+1}(x_{k+1}) \tilde{\pi}_{k+1}(x_{k+1}) \,\diff x_{k+1} \right) \cdots 
 		\left( \int_{\mathcal{X}_{d}} \uplambda_d(x_d) \tilde{\pi}_d(x_d) \, \diff x_d \right)
-		\Big| 
+		\Bigg| 
 	\end{split}
 \end{align}
 is computed by integrating over all TT cores except the $k$-th core $\pi_k$, as in~\cite{dolgov2020approximation}, and normalised by the constant $z$~\cite{cui2022deep}.
@@ -296,27 +296,29 @@ Figure~(a) is adapted from~\cite{fox2021grid}.}
 In practice, TT approximations may suffer from numerical instability, in particular because it is not advantageous yet to approximate the target function $\pi(\bm{x})$ in e.g. the logarithmic space. 
 Hence, Cui et al.~\cite{cui2022deep} approximate the square root of the probability density \textcolor{red}{Thsi sentence needs rewriting - -it's a jumble of ideas.
 	Hence implies an implication -- is it that or just one possible resolution?}
+Define the approximation as in \cite[Eq. 18]{cui2022deep}
 \begin{align}
-	\sqrt{\pi(\bm{x})} \approx \tilde{g}(\bm{x}) = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\, \,  \text{\cite[Eq. 18]{cui2022deep}},
+	\sqrt{\pi(\bm{x})} \approx \tilde{g}(\bm{x}) = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\,
 \end{align}
-which ensures positivity.
+to ensure positivity.
 %and intuitively ``reduces the range of numbers'' (excuse this unmathematical expression).
-Here, each TT core is given by
+Here, as in each TT core is given by \cite[Eq. 21]{cui2022deep}
 \begin{equation}
-	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, \dots, d,\, \,  \text{\cite[Eq. 21]{cui2022deep}},
+	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, \dots, d,\, \,  ,
 \end{equation}
 where $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the $k$-th coefficient tensor and $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ are the basis functions corresponding to the $k$-th coordinate.
-The approximated unnormalised density is written as: \textcolor{red}{put the reference in the text. Immediately prior is probably best.}
+The approximated unnormalised density is written as  \cite[Eq. 19]{cui2022deep}:
 \begin{align}
-	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2\, \,  \text{\cite[Eq. 19]{cui2022deep}},
+	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2\,  ,
 \end{align}
-where $\xi$ is a positive constant added according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting (see Eq.~\ref{eq:lebesgueWeight}) such that
+where $\xi$ is a positive constant added according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting (see Eq.~\ref{eq:lebesgueWeight} and \cite[Eq. 35]{cui2022deep}) such that 
 \begin{align}
-	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(\mathcal{X})}^2\, \,  \text{\cite[Eq. 35]{cui2022deep}}. \label{eq:gamErr}
+	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(\mathcal{X})}^2\,  \label{eq:gamErr}.
 \end{align}
-This leads to the normalised target function
+
+This leads to the normalised target function \cite[Eq. 19]{cui2022deep}
 \begin{align}
-	f_X(\bm{x})  \approx \frac{1}{z} \left( \uplambda(\bm{x}) \xi  + \uplambda(\bm{x}) \tilde{g}(\bm{x})^2 \right)\, \,  \text{\cite[Eq. 19]{cui2022deep}},
+	f_X(\bm{x})  \approx \frac{1}{z} \left( \uplambda(\bm{x}) \xi  + \uplambda(\bm{x}) \tilde{g}(\bm{x})^2 \right)\, \, ,
 \end{align}
 with the normalisation constant $z = \int_{\mathcal{X}} f_X(\bm{x}) \diff \bm{x} $.
 Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{X_k}(x_k)$ can be expressed as
@@ -340,9 +342,9 @@ We compute the marginal probability distributions by a procedure to which Cui et
 This is similar to the left and right orthogonalisation of TT \textcolor{red}{why abbreviate?} cores~\cite{oseledets2011tensor, Oseledets2011DMRG}.
 The backwards marginalisation provides us with the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{R}_{\text{pre}, k}$. 
 These matrices enable the efficient evaluation of marginal functions since they integrate over the coordinates either left or right of the $k$-th dimension, as in~\cite{cui2022deep}. \textcolor{red}{are they marginal functions or marginal distributions. Pick a language and stick to it.}
-In doing so, the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ is defined as
+In doing so, the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ is defined as in \cite[Eq. 22]{cui2022deep}
 \begin{equation}
-	\bm{M}_k[i, j] = \int_{\mathcal{X}_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \uplambda(x_k) \, \diff x_k, \quad i, j = 1, \dots, n_k, \, \,  \text{\cite[Eq. 22]{cui2022deep}} \label{eq:MassMat},
+	\bm{M}_k[i, j] = \int_{\mathcal{X}_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \uplambda(x_k) \, \diff x_k, \quad i, j = 1, \dots, n_k, \, \,   \label{eq:MassMat},
 \end{equation}
 where $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ denotes the set of basis functions for the $k$-th coordinate.
 The proposition used to compute $\bm{B}_k$, stated in Prop.~\ref{prob:backMarg}, is adapted directly from~\cite{cui2022deep}.
@@ -357,9 +359,9 @@ where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ and given as
 \end{equation}
 with $\bm{R}_{\text{pre},k-1}\in \mathbb{R}^{r_{k-1} \times r_{k-1}}$ and $\bm{B}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$.
 
-For the first dimension, $f_{X_1}(x_1)$ can be expressed as
+For the first dimension, $f_{X_1}(x_1)$ can be expressed as \cite[Eq. 30]{cui2022deep}
 \begin{equation}
-	f_{X_1}(x_1)  \approx \frac{1}{z} \left(\xi \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1)\, \,  \text{\cite[Eq. 30]{cui2022deep}},
+	f_{X_1}(x_1)  \approx \frac{1}{z} \left(\xi \prod_{i=2}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_1=1}^{r_1} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_1[i, l_1] \right)^2 \right) \uplambda_1(x_1)\, \, ,
 	\label{eq:firstMarg}
 \end{equation}
 where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$,
@@ -374,17 +376,17 @@ Note that in practice we calculate $z$ numerically within the process of computi
 	\label{prob:backMarg}
 	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k} \in \mathbb{R}^{r_{k-1} \times n_{k} \times r_{k}}$, which we need for defining the marginal function $f_{X_k}(x_k)$ or to draw samples from $\tilde{\pi}(\bm{x})$ via the squared IRT scheme (see Alg. Box~\ref{alg:SIRT}):
 	\begin{enumerate}
-		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$:
+		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ \cite[Eq. (27)]{cui2022deep}:
 		\begin{equation}
-			\bm{C}_k[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{B}_k[\alpha_{k-1}, i, l_k] \bm{L}_k[i, \tau] \text{\cite[Eq. (27)]{cui2022deep}}. \label{eq:constrCBack}
+			\bm{C}_k[\alpha_{k-1}, \tau, l_k] = \sum_{i=1}^{n_k} \bm{B}_k[\alpha_{k-1}, i, l_k] \bm{L}_k[i, \tau]  \label{eq:constrCBack}.
 		\end{equation}
-		\item Unfold $\bm{C}_k$ along the first coordinate and compute the thin QR decomposition, so that $\bm{C}_k^{(R)} \in \mathbb{R}^{r_{k-1} \times (n_k r_k)}$:
+		\item Unfold $\bm{C}_k$ along the first coordinate and compute the thin QR decomposition, so that $\bm{C}_k^{(R)} \in \mathbb{R}^{r_{k-1} \times (n_k r_k)}$  \cite[Eq. 28]{cui2022deep}:
 		\begin{equation}
-			\bm{Q}_k \bm{R}_k = {(\bm{C}_k^{(R)})}^{\top} \, \,  \text{\cite[Eq. 28]{cui2022deep}}.\label{eq:thinQRBack}
+			\bm{Q}_k \bm{R}_k = {(\bm{C}_k^{(R)})}^{\top} \, \, .\label{eq:thinQRBack}
 		\end{equation}
-		\item Compute the new coefficient tensor:
+		\item Compute the new coefficient tensor \cite[Eq. 29]{cui2022deep}:
 		\begin{equation}
-			\bm{B}_{k-1}[\alpha_{k-2}, i, l_{k-1}] = \sum_{\alpha_{k-1}=1}^{r_{k-1}} \bm{A}_{k-1}[\alpha_{k-2}, i, \alpha_{k-1}] \bm{R}_k[l_{k-1}, \alpha_{k-1}]\, \,  \text{\cite[Eq. 29]{cui2022deep}}. \label{eq:nextCoeffTBack}
+			\bm{B}_{k-1}[\alpha_{k-2}, i, l_{k-1}] = \sum_{\alpha_{k-1}=1}^{r_{k-1}} \bm{A}_{k-1}[\alpha_{k-2}, i, \alpha_{k-1}] \bm{R}_k[l_{k-1}, \alpha_{k-1}]\, \,   \label{eq:nextCoeffTBack}.
 		\end{equation}
 	\end{enumerate}
 \end{prop}
@@ -433,18 +435,18 @@ Since the square root of the target function is approximated, Cui and Dolgov~\ci
 \end{algorithm}
 Given the Backward marginals $\bm{B}_1 , \dots,\bm{B}_d$ as in Prop.~\ref{prob:backMarg}, draw $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is $d$-dimensional for $s = 1, \dots, N$.
 Then calculate the first marginal $f_{X_1}(x_1)$ as in Eq.~\ref{eq:firstMarg} and normalise with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$. \textcolor{red}{OK, another task -- remove all but one 'we' per page, and even then you will have 100, which is too many. FYI, I counted 397 occurrences of 'we' in this text -- so you only have to rewrite 297 sentences! Holy Toledo, here's one to zap. and another. Is this a novel about Lennart's adventures in MCMC for 10 year olds?}
-Next, compute the cumulative distribution function (CDF) $F_{X_1}(x_k) = \int^{x_k}_{-\infty} f_{X_1}(\hat{x}_1) d \hat{x}_1$, which for the general case is given as:
+Next, compute the cumulative distribution function (CDF) $F_{X_1}(x_k) = \int^{x_k}_{-\infty} f_{X_1}(\hat{x}_1) d \hat{x}_1$, which for the general case is given as \cite[Eq. 17]{cui2022deep}:
 \begin{align}
-	F_{X_k|X_{<k}}(x_k) = \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\hat{x}_k|x_{k-1},\dots,x_1) \diff \hat{x}_k  \, \, \text{\cite[Eq. 17]{cui2022deep}} \, ;
+	F_{X_k|X_{<k}}(x_k) = \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\hat{x}_k|x_{k-1},\dots,x_1) \diff \hat{x}_k  \, \,  \, ;
 	\label{eq:CurrCDF}
 \end{align}
 Now project the seed $u^{(s)}_k$ on the parameter space, and generate the sample $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$. \textcolor{red}{Argghhhh!}
-The ``conditional marginal'' is given as:
+The ``conditional marginal'' is given as \cite[Eq. 31]{cui2022deep}:
 \begin{align}\begin{split} 
 		f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1) \approx \frac{1}{z}
 		\Bigg( 
 		\xi \prod_{i=k+1}^{d} \uplambda_i(X_i) +&  \\
-		\sum_{l_{k} = 1}^{r_{k}} \Bigg( \sum_{i = 1}^{n}  \phi^{(i)}_k(x^{(s)}_k) \bigg( \sum_{\alpha_{k-1} = 1}^{r_{k-1}} \bm{G}^{(\alpha_{k-1})}_{<k}(x^{(s)}_{<k}) &\bm{B}_k[\alpha_{k-1},i,l_k] \bigg) \Bigg)^2 \Bigg) \uplambda_k(x_k) \, \,  \text{\cite[Eq. 31]{cui2022deep}},
+		\sum_{l_{k} = 1}^{r_{k}} \Bigg( \sum_{i = 1}^{n}  \phi^{(i)}_k(x^{(s)}_k) \bigg( \sum_{\alpha_{k-1} = 1}^{r_{k-1}} \bm{G}^{(\alpha_{k-1})}_{<k}(x^{(s)}_{<k}) &\bm{B}_k[\alpha_{k-1},i,l_k] \bigg) \Bigg)^2 \Bigg) \uplambda_k(x_k) \, \,  ,
 	\end{split} 
 	\label{eq:CurrMarg} 
 \end{align}
