@@ -113,7 +113,8 @@ See Appendix~\ref{ap:IATC} and~\cite{Sokal1997, wolff2004monte, wolff2002LecNot}
 
 \subsection{Marginal and then Conditional Method}
 \label{subsec:TheoMTC}
-Quickly generating a representative sample set from the posterior distribution often presents a significant challenge. This is mainly \textcolor{red}{this word is misplaced (for English). Better is Quickly generating (it's an adverb)} due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in~\cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
+Quickly generating a representative sample set from the posterior distribution often presents a significant challenge. %\textcolor{red}{this word is misplaced (for English). Better is Quickly generating (it's an adverb)} 
+This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in~\cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
 If $\bm{x}$ cannot be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, so that $\bm{x}(\bm{\theta})$ is function of $\bm{\theta}$, it is beneficial to factorise the posterior distribution as \textcolor{red}{this is unclear. Of course x(theta) is a function of theta. What are you trying to say?}
 \begin{align}
 	\pi(\bm{x}, \bm{\theta} |  \bm{y}) = \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \pi(\bm{\theta} |   \bm{y}), \label{eq:MTC}
@@ -125,7 +126,7 @@ into the full conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over th
 as in~\cite[Lemma 2]{fox2016fast}.
 %In \cite{norton2018sampling}, they classify inverse problems into problems with known or unknown conditional posterior distributions, and conclude that if $\pi(\bm{x} | \bm{\theta} ,   \bm{y}) = \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta})  / \pi(   \bm{y}| \bm{\theta})$ has a known form, the normalising constant of $\pi(\bm{\theta} |   \bm{y})$ is available \newline $\int \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta}) \text{d} \bm{x} = \pi(   \bm{y}| \bm{\theta})  \propto \pi( \bm{\theta}|\bm{y}) / \pi(\bm{\theta})$ and one can almost surely determine the $\bm{\theta}$-dependence of the marginal posterior $\pi(\bm{\theta} |   \bm{y})$.
 
-This approach, known as the MTC method, is particularly advantageous when $\bm{x}\in \mathbb{R}^n$ is high-dimensional, while $\bm{\theta}\in \mathbb{R}^{n_{\bm{\theta}}}$ is low-dimensional, so that $n_{\bm{\theta}} \ll n$ and the evaluation of $\pi(\bm{\theta}| \bm{y})$ is relatively cheap. \textcolor{red}{horrible notation, try better.}
+This approach, known as the MTC method, is particularly advantageous when $\bm{x}\in \mathbb{R}^n$ is high-dimensional, while $\bm{\theta}$ is low-dimensional and the evaluation of $\pi(\bm{\theta}| \bm{y})$ is relatively cheap.%\textcolor{red}{horrible notation, try better.}
 Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovariance}, Eq.~\eqref{eq:expPos} becomes
 \begin{align}
 	\mathbb{E}_{\bm{x} ,\bm{\theta}  |\bm{y}} [h(\bm{x})] &= \int \int   h(\bm{x}) \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \diff \bm{x} \,  \pi(\bm{\theta} |   \bm{y}) \, \diff \bm{\theta} \\
@@ -189,24 +190,31 @@ Within this scheme, we evaluate the marginal posterior first and then either con
 \end{align}
 of the posterior $\pi(\bm{x}| \bm{y})$ by some quadrature rule.
 
-\section{Ergodicity of MCMC chains}
-Because we are using the mTC method we draw sampples from the marginal posterio ifrat using MCMC methods ant hen from  to gernatea marhkov chain from the marginal distributon
-
-
-Ergditcy is imoprtatn to show that we dar sample from the dsitribution
-In this section we present the methods that draw samples from the marginal posterior $ \mathcal{M} = \{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} \sim \pi(\bm{\theta} |  \bm{y})$ \textcolor{red}{this reads as if M is the marginal posterior. Rewrite.} as well as the RTO method to draw samples from a normally distributed full conditional posterior $\pi(\bm{x}|\bm{\theta} , \bm{y})$. \textcolor{red}{what is the "full posterior" as opposed to the "posterior"?}
-Here, $\mathcal{M}$ denotes a Markov chain, where each new sample $\bm{\theta}^{(k)}$ is only affected by the previous one $\bm{\theta}^{(k-1)}$.
-MCMC methods generate such a chain $\mathcal{M}$ using random (Monte-Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |  \bm{\theta}^{(k-1)})$ \textcolor{red}{This is defining "Markov". . Be more explicit.} according to a proposal distribution conditioned on the previous sample (Markov), where ergodicity of the chain $\mathcal{M}$ is a sufficient criterion for using sample-based estimates~\cite{tan2016LecNot, roberts2004general}. \textcolor{red}{you are a little unclear about a chain of random variables, and an instance of such a chain.}
+\section{Sample-Based Estimates via Markov Chain Monte-Carlo Methods}
+We use Markov chain Monte-Carlo (MCMC) methods to calculate sample-based estimates of $\mathbb{E}_{\bm{x} ,\bm{\theta}  |\bm{y}} [h(\bm{x})] $ as in Eq.~\ref{eq:sampMean}.
+Within the MTC scheme one may draw samples $\{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} \sim \pi(\bm{\theta} | \bm{y})$ from the marginal posterior first and then evaluate the full conditional posterior $\pi(\bm{x}|\bm{\theta} , \bm{y})$.
+In doing so we generate a Markov chain $\mathcal{M} = \{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} $, where every new sample $\bm{\theta}^{(k)}$ is proposed according to a random proposal $\bm{\theta}^{(k)} \sim q( \cdot |  \bm{\theta}^{(k-1)})$ and only affected by the previous one $\bm{\theta}^{(k-1)}$.
+For large enough $N$ this chain of random variables can be used to calculate Monte-Carlo estimates, where ergodicity of $\mathcal{M}$ is a sufficient criterion to do so~\cite{tan2016LecNot, roberts2004general}.
 
 The ergodicity theorem in~\cite{tan2016LecNot} states that, if a Markov chain $\mathcal{M}$ is aperiodic, irreducible, and reversible, then it converges to a unique stationary equilibrium distribution.
 In other words, the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and satisfies the detailed balance condition~\cite{tan2016LecNot} (reversibility).
 Then the samples in that chain $ \mathcal{M} \sim \pi( \bm{\theta} |  \bm{y})$ are samples from the desired target distribution.
-In practice, one can inspect the trace $\pi(\bm{\theta}^{(k)} |  \bm{y})$ for $k = 1, \dots, N$ and visually assess convergence  \textcolor{red}{converge to, so after 'burn in'}  period.
-and mixing properties of the chain to evaluate if the behavours is consistent with ergodicty.
-\textcolor{red}{this is a bit loose. really, one evaluates if the behaviour is consistent with ergodicity.}
-The sampling methods used in this thesis possess proven ergodic properties, and we therefore refer the reader to the corresponding literature for further details. 
+In practice, one can inspect the trace $\pi(\bm{\theta}^{(k)} |  \bm{y})$ for $k = N_{\text{burn-in}}, \dots, N$ after a ``burn-in'' period $N_{\text{burn-in}}$ (to remove initialisation bias) and visually assess if the chain is consistent with ergodicity.
+The specific sampling methods in this thesis possess proven ergodic properties, and we therefore provide the reader with corresponding literature for further details when the methods are introduced.
 
-If the Markov chain over the marginal posterior $\pi(\bm{\theta} |  \bm{y})$ is ergodic \textcolor{red}{reference Jun Liu, or something.}, and the full conditional samples $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ are drawn independently, as e.g. in Sec.~\ref{subsec:RTO}, then the resulting joint chain $\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) =  \pi(\bm{x} |  \bm{\theta} , \bm{y}) \pi( \bm{\theta} | \bm{y})$ is also ergodic \textcolor{red}{for the posterior}~\cite{acosta2022markov}. \textcolor{red}{strictly, ergodic for [theta|y] -- ergodicity is with respect to a particular distribution.}
+
+If the instance $\bm{\theta}^{(k)}$ of an ergodic Markov chain represents an independent sample of the marginal posterior $\pi(\bm{\theta} | \bm{y})$ and if a full conditional posterior sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ is drawn independently, as in Sec.~\ref{subsec:RTO}, then the resulting sample $(\bm{x}^{(k)}, \bm{\theta}^{(k)})$ is an independent sample from the joint posterior $\pi(\bm{x},   \bm{\theta} | \bm{y})$~\cite{fox2016fast,acosta2022markov}.
+Repeating this procedure gives the chain $\{(\bm{x}, \bm{\theta})^{(1)},\dots, (\bm{x}, \bm{\theta})^{(k)} ,\dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x} ,  \bm{\theta} | \bm{y}) $ of independent samples from the joint posterior.
+%\cite{acosta2022markov}.
+%%\textcolor{red}{reference Jun Liu, or something.}
+%$\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) =  \pi(\bm{x} |  \bm{\theta} , \bm{y}) \pi( \bm{\theta} | \bm{y})$ is also ergodic \textcolor{red}{for the posterior}~\cite{acosta2022markov}. \textcolor{red}{strictly, ergodic for [theta|y] -- ergodicity is with respect to a particular distribution.}
+%
+%In this section we present the methods that draw samples from the marginal posterior $ \mathcal{M} = \{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} \sim \pi(\bm{\theta} |  \bm{y})$ \textcolor{red}{this reads as if M is the marginal posterior. Rewrite.} as well as the RTO method to draw samples from a normally distributed full conditional posterior $\pi(\bm{x}|\bm{\theta} , \bm{y})$. \textcolor{red}{what is the "full posterior" as opposed to the "posterior"?}
+%
+%MCMC methods generate such a Markoc chain $\mathcal{M}$ using random (Monte-Carlo) proposals $(\bm{x}, \bm{\theta})^{(k)} \sim q( \cdot |  \bm{\theta}^{(k-1)})$ \textcolor{red}{This is defining "Markov". . Be more explicit.} according to a proposal distribution conditioned on the previous sample (Markov), where ergodicity of the chain $\mathcal{M}$ is a sufficient criterion for using sample-based estimates~\cite{tan2016LecNot, roberts2004general}. \textcolor{red}{you are a little unclear about a chain of random variables, and an instance of such a chain.}
+%convergence  \textcolor{red}{converge to, so after 'burn in'}  period.
+%d mixing properties of the chain to evaluate if the behavours is consistent with ergodicty.
+%\textcolor{red}{this is a bit loose. really, one evaluates if the behaviour is consistent with ergodicity.}
 
 
 \section{Numerical Approximation -- Tensor-Train (TT)}

@@ -47,12 +47,12 @@ We demonstrated that the underlying non-linear forward model can be approximated
 For future application, we wish to include more measurement device-specific hyper-parameters in the forward model.
 This could include e.g. uncertainty in pointing accuracy or an antenna response function.
 
-In Sec.~\ref{sec:SVD}, we showed that we do not gain more information if we measure more frequently or collect more data in noise-dominated regions and that we need an SNR of $\approx10^7$ to produce data, which is informative about ozone at higher altitudes.
+In Sec.~\ref{sec:SVD}, we showed that we do not gain more information if we measure more frequently or collect more data in noise-dominated regions and that we need an SNR of $\approx10^4$ to produce data, which is informative about ozone at higher altitudes.
 
 Fig.~\ref{fig:O3Post} and Fig.~\ref{fig:PressPost} illustrate that pressure and ozone are highly correlated.
 One has to consider that when conditioning on pressure estimates from other measurements, as a slight change in pressure does skew the ozone VMR significantly.
 We could fix that by choosing a more restrictive prior for the pressure-related hyper-parameter $b$, but that would not be objective.
-By explanatory analysis, we found that data with an SNR of $\approx 10000$ recovers an ozone (without a peak in higher altitudes) and pressure profile close to the ground truth.
+By explanatory analysis, we found that data with an SNR of $\approx 1000$ recovers an ozone (without a peak in higher altitudes) and pressure profile close to the ground truth.
 As previously mentioned in the prior analysis (see Fig.~\ref{fig:PriorPressOverTemp}), the model as well as the data are uninformative about temperature and dominated by the exponentially decreasing pressure.
 
 All the samples plotted in Fig.~\ref{fig:O3SolplsReg}, Fig.~\ref{fig:O3Samp}, and Fig.~\ref{fig:O3Post} present valid solutions to the inverse problem, but consistently fail to capture the ozone peak at higher altitudes.
