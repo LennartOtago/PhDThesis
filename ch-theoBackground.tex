@@ -222,13 +222,15 @@ Repeating this procedure gives the chain $\{(\bm{x}, \bm{\theta})^{(1)},\dots, (
 %\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
 %First, we provide a short overview of probability spaces and their associated measures. 
 %I am not claiming this overview to be complete but consider it helpful to understand the notation in \cite{cui2022deep}, which we follow to approximate functions in the TT format.
-Instead of relying on sampling-based methods to explore a target distribution $\pi(\bm{x})$, we can approximate this distribution on a $d$-dimensional grid using a tensor-train (TT) approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, where $\bm{x} \in \mathbb{R}^d$, with far fewer function evaluation compared to conventional sampling methods.
-In the following, we describe how to compute marginal distributions from a probability density approximated in TT \textcolor{red}{ (tensor train)} format and how to generate samples using the inverse Rosenblatt transform (IRT) as in \cite{dolgov2020approximation}, following the notation and procedure introduced in~\cite{cui2022deep}.
-\textcolor{red}{We represent a probability distribution on a d-dimensional grid with grid points n in each dimension.
-I'm surprised that you never cite the Approximation an Sampling paper that introduced the idea of TT approximation of PDFs. Oh, you do, but the author list is abbreviated. Don't abbreviate the author list fro a thesis.}
+Instead of relying on sampling-based methods to explore a target function $\pi(\bm{x})$, we can approximate this function on a $d$-dimensional grid using a tensor-train (TT) approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, where $\bm{x} \in \mathbb{R}^d$, with far fewer function evaluation compared to conventional sampling methods.
+In the following, we describe how to compute marginal functions from a probability density approximated in TT format and how to generate samples using a scheme similar to the inverse Rosenblatt transform (IRT) as in~\cite{dolgov2020approximation}.
+In this section we follow the notation and procedure introduced in~\cite{cui2022deep}.
+
+%\textcolor{red}{We represent a probability distribution on a d-dimensional grid with grid points n in each dimension.}
+
 As in~\cite{cui2022deep}, we can define the parameter space as the product space $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$.
 % and $\bm{x} = ( x_1,\dots ,x_k,\dots,x_d )$.
-The marginal density function for the $k$-th component is then given by
+The marginal function for the $k$-th component is then given by
 \begin{align}
 	f_{X_k}(x_k) = \frac{1}{z} \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_{k-1}} \int_{\mathcal{X}_{k+1}} \cdots  \int_{\mathcal{X}_d} \uplambda(\bm{x}) \, \pi(\bm{x}) \, \diff x_1 \cdots \diff x_{k-1} \, \diff x_{k+1} \cdots \diff x_d, \label{eq:margInt}
 \end{align}
@@ -238,15 +240,16 @@ Here, Cui and Dolgov~\cite{cui2022deep} refer to $\uplambda(x)$ as the ``product
 	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \diff x_i. \label{eq:lebesgueWeight}
 \end{align}
 
-In the TT format, the integral in Eq.~\ref{eq:margInt} for the marginal probability can be computed at a low computational cost, as $\pi(\bm{x})$ is approximated by
+To approximate a target function in the TT format one has to predefined $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$ with $n$ grid points in each direction.
+Then the integral in Eq.~\ref{eq:margInt} for the marginal function can be computed at a low computational cost, as $\pi(\bm{x})$ is approximated by
 \begin{align*}
 	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d),
 \end{align*}
-which is a sequence of matrix multiplications with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$ for a fixed point $\bm{x} = (x_1, \dots, x_d)$ on a predefined $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$. 
+which is a sequence of matrix multiplications with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$ for a fixed grid point $\bm{x} = (x_1, \dots, x_d)$. 
 A TT core  $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ has ranks $ r_{k-1}$ and $r_k$, which are connecting the TT core to its respective neighbouring dimensions.
-A TT train has outer ranks $r_0 = r_d = 1$.  \textcolor{red}{more sentence creep. You should have defined the univariate grids, earlier.}
+A TT has outer ranks $r_0 = r_d = 1$.
 This enables us to approximate $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d$ over a discrete parameter space $\mathcal{X}$ using $2nr + (d-2)nr^2$ evaluation points for fixed ranks $r =r_{k-1} = r_k $, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluation.
-Consequently, the marginal target distribution
+Consequently, the marginal function
 \begin{align}
 	\begin{split}
 		f_{X_k}(x_k) \approx \frac{1}{z} \Bigg|\, 
@@ -293,21 +296,22 @@ Figure~(a) is adapted from~\cite{fox2021grid}.}
 
 
 %%%%%% Squared and Basis Function %%%%%
-In practice, TT approximations may suffer from numerical instability, in particular because it is not advantageous yet to approximate the target function $\pi(\bm{x})$ in e.g. the logarithmic space. 
-Hence, Cui et al.~\cite{cui2022deep} approximate the square root of the probability density \textcolor{red}{Thsi sentence needs rewriting - -it's a jumble of ideas.
-	Hence implies an implication -- is it that or just one possible resolution?}
-Define the approximation as in \cite[Eq. 18]{cui2022deep}
+In practice, TT approximations may suffer from numerical instability.
+In particular when non-negative functions (probability distributions) are approximated the TT approximation can have negative values in regions where true function values are very small.
+%because it is not advantageous yet to approximate the target function $\pi(\bm{x})$ in e.g. the logarithmic space. 
+One way to ensure positivity is to square the target function, hence~\cite{cui2022deep} approximate the square root of the target function and 
+%\textcolor{red}{Thsi sentence needs rewriting - -it's a jumble of ideas.Hence implies an implication -- is it that or just one possible resolution?}
+define the approximation as \cite[Eq. 18]{cui2022deep}
 \begin{align}
-	\sqrt{\pi(\bm{x})} \approx \tilde{g}(\bm{x}) = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\,
+	\sqrt{\pi(\bm{x})} \approx \tilde{g}(\bm{x}) = \bm{G}_1(x_1), \dots, \bm{G}_k(x_k), \dots, \bm{G}_d(x_d)\, .
 \end{align}
-to ensure positivity.
 %and intuitively ``reduces the range of numbers'' (excuse this unmathematical expression).
 Here, as in each TT core is given by \cite[Eq. 21]{cui2022deep}
 \begin{equation}
 	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, \dots, d,\, \,  ,
 \end{equation}
 where $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the $k$-th coefficient tensor and $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ are the basis functions corresponding to the $k$-th coordinate.
-The approximated unnormalised density is written as  \cite[Eq. 19]{cui2022deep}:
+The approximated unnormalised function (probability density) is written as \cite[Eq. 19]{cui2022deep}:
 \begin{align}
 	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2\,  ,
 \end{align}
@@ -338,10 +342,13 @@ Given the tensor train approximation of $\sqrt{\pi}$, the marginal function $f_{
 
 \subsection{Marginal Probability Distributions}
 \label{subsec:TTMarg}
-We compute the marginal probability distributions by a procedure to which Cui et al.~\cite{cui2022deep} refer to as backwards marginalisation, see Prop.~\ref{prob:ForMarg}, and to which we add the forward marginalisation, see Prop.~\ref{prob:backMarg}. \textcolor{red}{By now you have refered to multiple marginal distributions, so you'll need to be more clear.}
-This is similar to the left and right orthogonalisation of TT \textcolor{red}{why abbreviate?} cores~\cite{oseledets2011tensor, Oseledets2011DMRG}.
-The backwards marginalisation provides us with the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{R}_{\text{pre}, k}$. 
-These matrices enable the efficient evaluation of marginal functions since they integrate over the coordinates either left or right of the $k$-th dimension, as in~\cite{cui2022deep}. \textcolor{red}{are they marginal functions or marginal distributions. Pick a language and stick to it.}
+The marginal functions $f_{X_k}(x_k)$ of the target function $f_{X}(\bm{x})$ are computed by a procedure to which Cui et al.~\cite{cui2022deep} refer to as backwards marginalisation, see Prop.~\ref{prob:ForMarg}, and to which we add the forward marginalisation, see Prop.~\ref{prob:backMarg}. 
+%\textcolor{red}{By now you have refered to multiple marginal distributions, so you'll need to be more clear.}
+This is similar to the left and right orthogonalisation of TT cores~\cite{oseledets2011tensor, Oseledets2011DMRG}.
+%\textcolor{red}{why abbreviate?} 
+The backwards marginalisation provides the coefficient matrices $\bm{B}_k$, while the forward marginalisation gives the coefficient matrices $\bm{R}_{\text{pre}, k}$. 
+These matrices enable the efficient evaluation of marginal functions since they integrate over the coordinates either left or right of the $k$-th dimension, as in~\cite{cui2022deep}. 
+%\textcolor{red}{are they marginal functions or marginal distributions. Pick a language and stick to it.}
 In doing so, the mass matrix $\bm{M}_k \in \mathbb{R}^{n_k \times n_k}$ is defined as in \cite[Eq. 22]{cui2022deep}
 \begin{equation}
 	\bm{M}_k[i, j] = \int_{\mathcal{X}_k} \phi^{(i)}_k(x_k) \phi^{(j)}_k(x_k) \uplambda(x_k) \, \diff x_k, \quad i, j = 1, \dots, n_k, \, \,   \label{eq:MassMat},
@@ -370,11 +377,11 @@ and similarly in the last dimension
 	f_{X_d}(x_d)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{d-1}=1}^{r_{d-1}} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_d[l_{d-1},i] \right)^2 \right) \uplambda_d(x_d),
 \end{equation}
 where $\bm{D}_d[l_{d-1},i] = \bm{B}_{\text{pre},d}[l_{d-1}, i, \alpha_{d+1}]$ and $\alpha_{d+1} = 1$.
-Note that in practice we calculate $z$ numerically within the process of computing the marginals so that  $\sum f_{X_k}(x_k) =1 $ and for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ where we set $\uplambda(x) = 1$.
+Note that in practice we calculate $z$ numerically within the process of computing the marginals so that $\sum f_{X_k}(x_k) =1 $ and for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ with $\uplambda(x) = 1$.
 
 \begin{prop}[Backwards Marginalisation as in~\cite{cui2022deep}]
 	\label{prob:backMarg}
-	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k} \in \mathbb{R}^{r_{k-1} \times n_{k} \times r_{k}}$, which we need for defining the marginal function $f_{X_k}(x_k)$ or to draw samples from $\tilde{\pi}(\bm{x})$ via the squared IRT scheme (see Alg. Box~\ref{alg:SIRT}):
+	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k} \in \mathbb{R}^{r_{k-1} \times n_{k} \times r_{k}}$, which is needed for defining the marginal function $f_{X_k}(x_k)$ or to draw samples from $\tilde{\pi}(\bm{x})$ via the squared IRT scheme (see Alg. Box~\ref{alg:SIRT}):
 	\begin{enumerate}
 		\item Use the Cholesky decomposition of the mass matrix, $\bm{L}_k \bm{L}_k^\top = \bm{M}_k \in \mathbb{R}^{n_k \times n_k}$, to construct a tensor $\bm{C}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ \cite[Eq. (27)]{cui2022deep}:
 		\begin{equation}
@@ -413,7 +420,7 @@ Note that in practice we calculate $z$ numerically within the process of computi
 
 \subsection{Sampling from a TT Approximation}
 \label{subsec:SamplTT}
-Instead of evaluating marginal functions for quadrature, we can draw samples from the approximated function in the TT format via the inverse Rosenblatt transform, as in \cite{dolgov2020approximation}.
+Instead of evaluating marginal functions for quadrature, the inverse Rosenblatt transform (IRT) provide a scheme to draw samples from an approximated function in the TT format~\cite{dolgov2020approximation}.
 Since the square root of the target function is approximated, Cui and Dolgov~\cite{cui2022deep} call that the squared inverse Rosenblatt transform (SIRT).
 
 \begin{algorithm}[!th]
@@ -434,13 +441,14 @@ Since the square root of the target function is approximated, Cui and Dolgov~\ci
 	\label{alg:SIRT}
 \end{algorithm}
 Given the Backward marginals $\bm{B}_1 , \dots,\bm{B}_d$ as in Prop.~\ref{prob:backMarg}, draw $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is $d$-dimensional for $s = 1, \dots, N$.
-Then calculate the first marginal $f_{X_1}(x_1)$ as in Eq.~\ref{eq:firstMarg} and normalise with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$. \textcolor{red}{OK, another task -- remove all but one 'we' per page, and even then you will have 100, which is too many. FYI, I counted 397 occurrences of 'we' in this text -- so you only have to rewrite 297 sentences! Holy Toledo, here's one to zap. and another. Is this a novel about Lennart's adventures in MCMC for 10 year olds?}
+Then calculate the first marginal $f_{X_1}(x_1)$ as in Eq.~\ref{eq:firstMarg} and normalise with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$. 
+%\textcolor{red}{OK, another task -- remove all but one 'we' per page, and even then you will have 100, which is too many. FYI, I counted 397 occurrences of 'we' in this text -- so you only have to rewrite 297 sentences! Holy Toledo, here's one to zap. and another. Is this a novel about Lennart's adventures in MCMC for 10 year olds?}
 Next, compute the cumulative distribution function (CDF) $F_{X_1}(x_k) = \int^{x_k}_{-\infty} f_{X_1}(\hat{x}_1) d \hat{x}_1$, which for the general case is given as \cite[Eq. 17]{cui2022deep}:
 \begin{align}
 	F_{X_k|X_{<k}}(x_k) = \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\hat{x}_k|x_{k-1},\dots,x_1) \diff \hat{x}_k  \, \,  \, ;
 	\label{eq:CurrCDF}
 \end{align}
-Now project the seed $u^{(s)}_k$ on the parameter space, and generate the sample $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$. \textcolor{red}{Argghhhh!}
+Now project the seed $u^{(s)}_k$ on the parameter space, and generate the sample $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$. %\textcolor{red}{Argghhhh!}
 The ``conditional marginal'' is given as \cite[Eq. 31]{cui2022deep}:
 \begin{align}\begin{split} 
 		f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1) \approx \frac{1}{z}
@@ -450,7 +458,8 @@ The ``conditional marginal'' is given as \cite[Eq. 31]{cui2022deep}:
 	\end{split} 
 	\label{eq:CurrMarg} 
 \end{align}
-where we marginalise over the dimensions $k+1 , \dots, d$ via $\bm{B}_k$ and condition on the previous $k-1$ samples through the product $\bm{G}_k(x^{(s)}_k)\in \mathbb{R}^{1 \times r_{k-1}}$ to preserve the correlation structure. \textcolor{red}{God dammit, another pesky we.}
+where we marginalise over the dimensions $k+1 , \dots, d$ via $\bm{B}_k$ and condition on the previous $k-1$ samples through the product $\bm{G}_k(x^{(s)}_k)\in \mathbb{R}^{1 \times r_{k-1}}$ to preserve the correlation structure. 
+%\textcolor{red}{God dammit, another pesky we.}
 Function values between grid points $i$ and $i+1$ are approximated with a piecewise polynomial interpolation
 \begin{align}
 	\bm{G}_k(x^{(s)}_k) \approx   \frac{x^{(s)}_k - x^{(i)}_k }{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i+1)}_k) + \frac{ x^{(i+1)}_k - x^{(s)}_k}{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i)}_k) \, ,
@@ -459,8 +468,6 @@ Function values between grid points $i$ and $i+1$ are approximated with a piecew
 for $x^{(i)}_k \leq x^{(s)}_k \leq x^{(i+1)}_k$ as in~\cite{dolgov2020approximation} for the next ``conditional marginal''.
 
 The procedure is repeated for each $u^{(s)}_k \in \bm{u}^{(s)}$ to produce the samples $\bm{x}^{(s)} \sim f_{X}(\bm{x})$, as summarised in Alg.~Box~\ref{alg:SIRT}.%\textcolor{red}{The procedure is repeated ... (the 'we' is entirely redundant, and distracting.)}
-
-
 \textcolor{red}{Function or distribution}
 
 %Note that with Cartesian basis $ \sum \phi^{(i)}_k(x_k) \Bigg( \sum \bm{G}^{(\alpha_{k-1})}_{<k}(x_{<k}) \bm{B}_k[\alpha_{k-1},i,l_k] \Bigg) \Bigg)^2 
@@ -487,12 +494,12 @@ Since the samples by the SIRT scheme are generated from an approximation, it is 
 	\end{algorithmic}
 	\label{alg:MHCorr}
 \end{algorithm}
-In doing so, we compute the acceptance probability $  \alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$, where 
+In doing so, compute the acceptance probability $  \alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$, where 
 \begin{align}
 	w(x) = \frac{\pi(\bm{x})}{f_X(\bm{x})} = \frac{\pi(\bm{x})}{\xi + \tilde{g}(\bm{x})^2} 
 \end{align}
 is the importance ratio.
-Note that since we calculate the ratio $w^{(s+1)}/w^{(s)}$, the normalising constants cancel.
+Note the normalising constants in the ratio $w^{(s+1)}/w^{(s)}$ cancel.
 In practice, we calculate the importance ratio in the log space, where $\log f_X(\bm{x})  =  \log f_{X_1}(x_1) + \log f_{X_2|X_1}(x_2|x_1) + \cdots + \log f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ is given as in Eq.~\ref{eq:CurrMarg}, see \cite{dolgov2020approximation}.
 We refer to this as the SIRT-MH scheme, which provides the corrected chain $ \{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)}  \} \sim \pi(\bm{x}) $.
 
@@ -517,18 +524,16 @@ If large errors occur in regions with low probability the RMS is sensible to tho
 The Wasserstein distance is the infimum over all couplings between two probability distributions with respect to some distance measure.
 %\textcolor{red}{why is this sensible, or is it just 'another way'?}
 The Kantorovich-Rubinstein duality, as in~\cite{thickstun2019kantorovich, Ambrosio2024Kanta}, says that the 1-Wasserstein distance is equal to the supremum of differences in expectations over all 1-Lipschitz functions $h$ between two probability distributions.
-So the 1-Wasserstein distance provides an upper absolute error bound.
-
-The 1-Wasserstein distance is defined as
+So the 1-Wasserstein distance provides an upper absolute error bound and is defined as
 \begin{align}
-	W_1(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}\int_{\mathcal{X} \times \mathcal{X}} c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}}) \, \nu(\bm{x},\tilde{\bm{x}}) d\bm{x} d\tilde{\bm{x}}
+	W_1(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}\int_{\mathcal{X} \times \mathcal{X}} c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}}) \, \nu(\bm{x},\tilde{\bm{x}}) \diff \bm{x} \diff \tilde{\bm{x}}
 	\label{eq:wass} \, ,
 \end{align}
 where $\nu$ couples $\bm{x}$ and $\tilde{\bm{x}}$ so that the integral over the distance $c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}}) $ weighted by the probability measures $\pi$ and $\tilde{\pi}$ is the greatest lower bound of all integrals with respect to $\nu$ in the set of all couplings $ \Pi(\pi,\tilde{\pi})$.
 Often $\nu$ is the transport plan, where $c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}})$ is the (ground) cost function, and $\nu(\bm{x}, \tilde{\bm{x}})$ is related to the mass which has to be transported and the 1-Wasserstein distance is the earth mover distance.
 On the other hand (Kantorovich-Rubinstein duality) the 1-Wasserstein distance
 \begin{align}
-	W_1(\pi,\tilde{\pi})  =& \underset{ h(\bm{x}); \, c_{\mathcal{Y}}(h(\bm{x}), h(\tilde{\bm{x}}) ) \leq  c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}}) }{ \text{sup}} \Bigg\{  \int_{\mathcal{X}} h(\bm{x}) d \pi (\bm{x})  - \int_{\mathcal{X}} h(\tilde{\bm{x}}) d \tilde{\pi} (\tilde{\bm{x}}) \Bigg\} \\
+	W_1(\pi,\tilde{\pi})  =& \underset{ h(\bm{x}); \, c_{\mathcal{Y}}(h(\bm{x}), h(\tilde{\bm{x}}) ) \leq  c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}}) }{ \text{sup}} \Bigg\{  \int_{\mathcal{X}} h(\bm{x}) \diff \pi (\bm{x})  - \int_{\mathcal{X}} h(\tilde{\bm{x}}) \diff \tilde{\pi} (\tilde{\bm{x}}) \Bigg\} \\
 	=& \underset{ h(\bm{x});  \, c_{\mathcal{Y}}(h(\bm{x}), h(\tilde{\bm{x}}) )  \leq  c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}}) }{ \text{sup}}  \Bigg\{  \underset{\bm{x} \sim  \pi }{\mathbb{E}} \big[ h(\bm{x}) \big]  -  \underset{\tilde{\bm{x}}\sim \tilde{\pi}}{\mathbb{E}} \big[ h(\tilde{\bm{x}}) \big] \Bigg\} .
 \end{align}
 is the lowest upper bound of differences in expectations over all 1-Lipschitz function $h(\bm{x}) : \mathcal{X} \rightarrow \mathcal{Y}$ in between the two distributions $\pi$ and $\tilde{\pi}$, with the distance measure $c_{\mathcal{X}}$ on the set $\mathcal{X}$ forming the metric space $( \mathcal{X}, c_{\mathcal{X}} )$ and similarly the metric space $(\mathcal{Y}, c_{\mathcal{Y}})$.
@@ -539,7 +544,7 @@ More specifically,
 	W_1(\pi,\tilde{\pi}) = 	\underset{\nu \in \Pi(\pi,\tilde{\pi}) }{\text{min}} \sum^M_{j = 1} \sum^N_{i =1}  \nu_{ij} \lVert\bm{x}^{(i)}  -  \tilde{\bm{x}}^{(j)} \rVert_{L^2} \, , \label{eq:applWasser}
 \end{align}
 where the transport plan $\nu \in \mathbb{R}^{N \times M}_ {\geq 0}$ defines the coupling $\nu_{ij} \in \nu $ as $ \nu_{ij} \coloneqq \pi(\bm{x}^{(i)}) \tilde{\pi}(\tilde{\bm{x}}^{(j)})$ similar to~\cite[Eq. 3.166]{feydy2020OT}.
-Additionally we require that $\sum^N_{i =1} \pi(\bm{x}^{(i)}) = \sum^M_{j = 1} \tilde{\pi}(\tilde{\bm{x}}^{(j)})= 1 $.
+Additionally it is required that $\sum^N_{i =1} \pi(\bm{x}^{(i)}) = \sum^M_{j = 1} \tilde{\pi}(\tilde{\bm{x}}^{(j)})= 1 $.
 This gives us an upper bound of the absolute error between the expected value of any 1-Lipschitz function $h$.
 %, e.g the upper bound of absolute differences in means related to the probability measures $\pi$ and $\tilde{\pi}$. 
 
@@ -618,9 +623,9 @@ Based on the trade-off between the data misfit and the regularisation norm the r
 %\textcolor{red}{you use of the tem 'optimal' is offensive -- because it is a tautology that you define 'optimal' to mean that it is given by the L-curve. So say it is optimal because it is given by th eL-curve is saying nothing, other than defining what you mean by an 'optimal regularisation parameter'. If that's what you want to say, then say it. otherwise this sentence is content free. }
 
 Alternatively one can introduce a Lagrangian $\mathcal{L}(\bm{x},\lambda)\coloneqq\lambda\bm{x}^T\bm{L} \bm{x}+\left\lVert\bm{y}-\bm{A}\bm{x}\right\rVert^2_{L^2}$ similar to \cite{LiLagrange}.
-Then a solution $\bm{x}$ minimises $ \bm{x}^T \bm{L} \bm{x}$ with respect to constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2_{L^2}$ (see~\cite[fn. 6]{fox2016fast} and~\cite[Fig. 2.13]{SANTOSH202265}). 
+Then a solution $\bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$ minimises the squared regularisation norm with respect to constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2_{L^2}$ (see~\cite[fn. 6]{fox2016fast} and~\cite[Fig. 2.13]{SANTOSH202265}). 
 %\textcolor{red}{You need to fix this sentence, as L(x,lambda) is not a Lagrange multiplier -- it does have a name, and you should use it and not wite sentences that say : I introduce the chicken p=7 which minimizes frog. }
-So every solution $\bm{x}$ is extremely regularised for a given data misfit and \textcolor{red}{the L-Curve presents the limit to on an open set of $\bm{x}$}.
+So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and \textcolor{red}{the L-Curve presents the limit to on an open set of $\bm{x}$}.
 Hence every sample of the posterior, which represents a feasible solution given the data, lays above the L-Curve because it is less regularised and has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
 \textcolor{red}{So regularised solutions are representative of the posterior parameter space.}
 %\textcolor{red}{not accurate enough}

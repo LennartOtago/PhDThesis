@@ -46,8 +46,9 @@ Under the assumption of local thermodynamic equilibrium (LTE), the black body ra
 
 For fundamentals on the RTE, we recommend~\cite[Chapter 1]{rybicki2000rte}, and for a more comprehensive model, we refer to \cite{read2006forwardModel}.
 
-To calculate the integrals in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE} numerically, we discretise the atmosphere in $n$ layers, where the $i-th$ layer is defined by two spheres of radii $h_{L,i-1} < h_{L,i}$, for $i = 1, \dots, n$, with $h_{L,0}$ and $h_{L,n} $.
-Then the ozone VMR $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$, pressure $\bm{p} =\{p_1,p_2,\ldots,p_n\} \in \mathbb{R}^{n}$ and temperature $\bm{T} =\{T_1,T_2,\ldots,T_n\} \in \mathbb{R}^{n}$, as well as all other height dependent parameters, are discretised profiles with constant values in between the heights $h_{L,i-1}$ and $h_{L,i}$.
+To calculate the integrals in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE} numerically, we discretise the atmosphere in $n$ layers and define height values $h_{L,i-1} < h_{L,i}$ with respect to the surface of the earth, for $i = 1, \dots, n$.
+The $i$-th layer is defined by two spheres around the centre of the earth with radii $ r_0 + h_{L,i-1} $ and $r_0 + h_{L,i}$.
+Then the ozone VMR $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$, pressure $\bm{p} =\{p_1,p_2,\ldots,p_n\} \in \mathbb{R}^{n}$ and temperature $\bm{T} =\{T_1,T_2,\ldots,T_n\} \in \mathbb{R}^{n}$, as well as all other height dependent parameters, are discretised profiles with constant values between the heights $h_{L,i-1} \leq h < h_{L,i}$.
 Above $h_{L, n}$ and below $h_{L,0} $, the ozone VMR is set to zero, so no signal can be obtained.
 We evaluate the integral in Eq.~\eqref{eq:RTE} for one noise-free measurement $\bm{A_{j}}(\bm{p},\bm{T},\bm{x})$, using the trapezoidal rule.
 Here, each entry of $\bm{A}(\bm{p},\bm{T},\bm{x})\in \mathbb{R}^{m}$ includes multiple evaluations of the integral in Eq.~\ref{eq:absRTE} to calculate the absorption $\tau(r)$.
@@ -128,21 +129,20 @@ We calculate the absorption constant $k(\nu,T)$ as in Eq.~\ref{eq:absRTE}, follo
 %This gives us a non-linear forward model matrix $\bm{A}_{NL} = \bm{A}(\bm{x}, \bm{p}, \bm{T}) \in \mathbb{R}^{m \times n}$, where $\bm{x}\in \mathbb{R}^{n}$ is vector related to the ozone VMR, $\bm{p}\in \mathbb{R}^{n}$ is the vector describing the pressure values and $\bm{T}\in \mathbb{R}^{n}$ the temperature values.
 Lastly, we add independent and identically-distributed Gaussian noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ so that the $\text{SNR}=150$ (see Eq.~\ref{eq:SNR}) similar to~\cite{Froidevaux2008snrozone}, where a signal with a maximal spectral intensity of around $100\text{K}$ and a noise range of $0.4$ to $1.6\text{K}$ is reported.
 We note that the methods used in this thesis will work with different SNRs or other frequencies.
-Then we compute a data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $, with $m$ measurements determined by the satellite's pointing accuracy and the measurement strategy.
+Before computing a data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $ we decide for a measurement strategy with respect to the information provided by the forward model.
 
 \subsection{Understanding the Forward Model}
 %\textcolor{red}{understanding the forward map}
 \label{sec:SVD}
-Before choosing a measurement strategy, we provide a quick and intuitive way of assessing if the data collection is effective, how much information is passed through the forward model, and how the signal-to-noise ratio (SNR) and the measurement strategy affects that information.
+By choosing a measurement strategy, we provide a quick and intuitive way of assessing if the data collection is effective, how much information is passed through the forward model, and how the signal-to-noise ratio (SNR) and the measurement strategy affect that information.
 One way of doing this is via a singular value decomposition (SVD) of the linear forward model matrix $\bm{A}_L \in \mathbb{R}^{m \times n}$, which is given as
 \begin{align}
 	\bm{A}_L = \sum_{i =1}^{r} \bm{u}_i  \sigma_i \bm{v}^T_i = \bm{U} \bm{\Sigma} \bm{V}^T
 \end{align}
 with $r = \min\{m,n\}$.
 Our main objective is to measure ozone $\bm{x}$, so our forward model $\bm{A}_L$ includes temperature and pressure, the latter is dominant, see Fig.~\ref{fig:PriorPressOverTemp}, decreases exponentially in height and hence does affect the information passed through the model.
-A noise-free measurement vector is given as $\bm{A}_L \bm{x}$.
 If the pressure is high, the signal is large.
-If the pressure is low, the signal is low and the data tends to be noise-dominated.
+If the pressure is low, the signal is low, and the data tends to be noise-dominated.
 %\textcolor{red}{The action of A on the paraemter
 %Information about the projection of f along vk is “encoded” in the data as the component
 %along the direction uk . The size of the projection is multiplied by sigma k to give the coefficient of
@@ -154,8 +154,9 @@ If the pressure is low, the signal is low and the data tends to be noise-dominat
 %about the components of f along the remaining n - r right singular vectors, and we have to
 %use some other means for determining these components.}
 
-The SVD gives us information on how information on $\bm{A}_L$ acts on the parameter through the right singular vectors $\bm{v}_i$.
-The singular values $\sigma_i $, ordered in size from the largest $\sigma_1$ to the smallest $\sigma_{r}$, weigh that information from the right singular vectors to the left singular vectors $\bm{u}_i$, which project onto the data space.
+The SVD of the forward model provides information on how $\bm{A}_L$, more specifically the right singular vectors $\bm{v}_i$, act on the parameter $\bm{x}$ since a noise-free measurement vector is given as $\bm{A}_L\bm{x}$.
+The singular values $\sigma_i $, ordered in size from the largest $\sigma_1$ to the smallest $\sigma_{r}$, weigh that information from the right singular vectors to the left singular vectors $\bm{u}_i$.
+Then the left singular vectors project $\sigma_i \bm{v}^T_i \bm{x} $ onto the data space.
 For a large singular value, we can say that the forward model is informative about parameter structures according to the corresponding right singular vector. 
 For a small singular value, we can say that the forward model is uninformative about parameter structures according to the corresponding right singular vector.
 %\textcolor{red}{WQhat is the vice versa? Not clear what you are saying. }
@@ -167,8 +168,8 @@ Further, if we define the SNR as
 we can roughly assume that the maximum singular value $\max(y) \approx \sigma_1$ and the information transmitted through the forward model corresponds roughly to the singular values $\sigma_i \gtrsim \max(y)/ \text{SNR}$ \cite{fox2025BlokkLecNot}.
 Then, for very small singular values $\sigma_i \ll \sigma_1/\text{SNR}$ below the RMS noise level or the noise standard deviation (STD), an effective rank $r_{\text{eff}} \leq r$ is introduced.
 The parameter space spanned by $ \{\bm{v}_{r_{\text{eff}} +1}, \dots ,\bm{v}_r \}$ is noise-dominated in the corresponding data space, see Figure \ref{fig:nullSpace}.
-For singular values around the SNR we expect reconstruction to have larger uncertainties, as that is where the noise is starting to influence the data.
-And again for large singular values above the SNR we expect reconstructions to be close to the ground truth as the data is hardly influenced by the noise.
+For singular values around the SNR, we expect reconstruction to have larger uncertainties, as that is where the noise is starting to influence the data.
+For large singular values above the SNR, we expect reconstructions to be close to the ground truth as the corresponding data is hardly influenced by the noise.
 See~\cite{tan2016LecNot} for a more comprehensive analysis.
 
 \begin{figure}[ht!]
@@ -178,7 +179,7 @@ See~\cite{tan2016LecNot} for a more comprehensive analysis.
 	\label{fig:TangHCases}
 \end{figure}
 We test five different measurement strategies and plot the tangent heights corresponding to the pointing angles in Fig.~\ref{fig:TangHCases}.
-The measurement test case are:
+The measurement test cases are:
 \begin{itemize}
 	\item \textbf{Case 1} includes 42 measurements between heights of $\approx7$km and $\approx83$km with pointing angles
 	\begin{align*} 
@@ -203,14 +204,14 @@ The measurement test case are:
 \end{itemize} 
 Case 1 collects more data in low signal regions at high altitudes.
 Case 2 collects more data in high signal regions at low altitudes.
-Case 3, case 4, and case 5 measure at equidistance spaced pointing angles corresponding to different pointing accuracies.
-The pointing accuracy determines how well the satellite can point in a certain direction and, hence the smallest tangent height difference in a data set.
-Case 1, case 2, case 3, and case 4 measure in between heights $h_{L,1} = 6.9$km and $h_{L,n} = 83.3$km, case 5 and does not collect measurements in high altitude regions.
+Case 3, case 4, and case 5 measure at equidistantly spaced pointing angles corresponding to different pointing accuracies.
+The pointing accuracy determines how well the satellite can point in a certain direction and, hence, the spacing of tangent heights in the atmosphere for a stable satellite at $h_{\text{sat}}$.
+Case 1, case 2, case 3, and case 4 measure in between heights $h_{L,1} = 6.9$km and $h_{L,n} = 83.3$km, case 5 does not collect measurements in high altitude regions.
 The pointing accuracy for case 3 in Fig.~\ref{fig:TangHCases} of $150\text{arc sec}$ was given to us by the team of the University of New South Wales Canberra Space~\cite{CubeSatInternal}.
-Case 4 has half the pointing accuracy of case 3 and case 5 has a slightly larger pointing accuracy than case 3 .
-We visually asses the effective rank and how the singular values behave to determine which of the test cases is most effective.
-More specifically, if the singular values decay fast and only few singular values are above a SNR of 150 the forward map is rather uninformative.
-If the singular values decay less fast and more singular values are above a SNR of 150 we classify the forward map as informative.
+Case 4 has half the pointing accuracy of case 3, and case 5 has a slightly larger pointing accuracy than case 3.
+We visually assess the effective rank and how the singular values behave to determine which of the test cases is most effective.
+More specifically, if the singular values decay fast and only a few singular values are above an SNR of 150, the forward map is rather uninformative.
+If the singular values decay less fast and more singular values are above an SNR of 150, we classify the forward map as informative.
 %\textcolor{red}{Another, they are multiplying like rabbits. Or flies. Which is more annoying?}
 %\textcolor{red}{why is this plot here before you defined the cases? That's not remotely OK.}
 
@@ -218,46 +219,47 @@ If the singular values decay less fast and more singular values are above a SNR 
 	\centering
 	\includegraphics{SingValA.png}
 	\caption[Singular values of linear forward model matrix for different sequences of measurements.]{Singular values of the forward model matrix for different sequences of measurements.
-		The corresponding tangent heights of the test cases are plotted in Fig.~\ref{fig:TangHCases}. The dotted vertical line marks a SNR according to $\sigma_1$ of measurement case 5.}
-	\label{fig:SingA}
+	The corresponding tangent heights of the test cases are plotted in Fig.~\ref{fig:TangHCases}. The dotted vertical line marks an SNR according to $\sigma_1$ of measurement case 5.}
+\label{fig:SingA}
 \end{figure}
-In Fig.~\ref{fig:SingA} we plot the singular values for each of the measurement cases and the SNR corresponding to the singular values of case 5.
-The dotted SNR lines in Fig.~\ref{fig:SingA} correspond a SNR of roughly 150 and the SNR according to the lowest singular values which would be required to reconstruct all information provided by the forward model.
-The largest singular values of case 5 is roughly equal to the largest singular values of case 1, case 3, and case 4, \textcolor{red}{so the SNR would be in a similar region.}
-Fig.~\ref{fig:SingA} shows that case 2 has the largest singular value of all cases but its singular values decreases faster in the region where noise is becoming dominant than the singular values of cases 3, case 4, and case 5.
-In contrast case 1 does obtain singular values which are decreasing the fastest of all cases and the most number of singular values below a SNR of 150.
-Additionally case 1 and case 2 have a large number of very low singular values and, so neither of those cases are optimal.
+In Fig.~\ref{fig:SingA}, we plot the singular values for each of the measurement cases.
+The dotted lines in Fig.~\ref{fig:SingA} correspond to an SNR of roughly 150 with respect to the largest singular value of case 5 and an SNR according to the lowest singular value of case 5, which would be required to reconstruct all information provided by the forward model.
+The largest singular value of case 5 has approximately the same value as the largest singular values of case 1, case 3, and case 4, so the SNR line is indicative for those cases as well.
 
-The singular values of the cases 3, 4, and 5 with equidistance spaced pointing angles behave similar.
-Case 4 measures almost twice as much compared to case 3 but does not provide much more information, which would justify the engineering effort required to achieve such pointing accuracy.
-The slightly larger pointing accuracy in case 5 compared to case 3 provide similar information.
-Since the last 5 to 10 singular values of case 3 are so small that the information will be completely covered by the noise.
-Hence we do not measure in noise dominated regions and case 5 measures only up to height of $\approx 68$km instead of $\approx83$km without losing too much crucial information above the SNR.
+Fig.~\ref{fig:SingA} shows that case 2 has the largest singular value of all cases, but its singular values decrease faster than the singular values of cases 3, 4, and 5 in the region where noise is becoming dominant.
+In contrast, case 1 does obtain singular values which are decreasing the fastest of all cases and the largest number of singular values below an SNR of 150.
+Additionally, cases 1 and 2 have a large number of very low singular values, and the smallest effective ranks of all cases, so we conclude that cases 1 nor 2 is effective.
+
+The singular values of cases 3, 4, and 5 with equidistantly spaced pointing angles behave similarly and have larger effective ranks than case 1 or 2.
+Case 4 measures almost twice as much compared to case 3, but does not provide much more information, which would justify the engineering effort required to achieve such pointing accuracy.
+The slightly larger pointing accuracy in case 5 compared to case 3 provides similar information.
+The last 5 to 10 singular values of case 3 are so small that the information will be completely covered by the noise.
+Hence, we do not measure in noise-dominated regions and case 5 measures only up to a height of $\approx 68$km instead of $\approx83$km without losing too much crucial information above the SNR.
 We note that if one wanted to obtain all information provided by the forward model, we would need an SNR of roughly $10^4$.
 %\textcolor{red}{Oh come on, you are showing pictures of singular values without specifying exactly what the forward map and discretization is. That's not acceptable. If these are intended to be indicative, you need to be a damn site clearer about what they represent, and are trying to show.}
 %\textcolor{red}{why? Explain your reasoning. If you don't say something specific, quantitative, it's just waffle.}
 % \textcolor{red}{where is this spacing? At the satellite? A spacing in time? On the planet Mars. Be specific. All the way through, you need to tighten up loose statements like this.}
 % 
- 
+
 %The corresponding singular values are plotted in Fig.~\ref{fig:SingA}, of which the first 25 decrease linearly in log-space and about 10-15 singular values lie above the SNR. \textcolor{red}{where is this spacing? At the satellite? A spacing in time? On the planet Mars. Be specific. All the way through, you need to tighten up loose statements like this.}
 %In comparison, if we measure a lot of times in regions where the data is noise-dominated (high altitude), case 1, we do obtain more information since the singular values decrease rapidly.
-%\textcolor{red}{Oh come on, you are showing pictures of singular values without specifying exactly what the forward map and discretization is. That's not acceptable. If these are intended to be indicative, you need to be a damn site clearer about what they represent, and are trying to show.}
+%\textcolor{red}{Oh come on, you are showing pictures of singular values without specifying exactly what the forward map and discretisation are. That's not acceptable. If these are intended to be indicative, you need to be a damn site clearer about what they represent, and are trying to show.}
 %Measuring lots of times at low altitudes, where the data is informative, and less at higher altitudes, case 2, does not seem optimal either, as we observe one larger singular value, but the other singular values decrease faster compared to case 3.
-%Now consider case 4, where we double the number of measurements compared to case 3, we do get slightly larger singular values, but not so significantly that it would be worth the engineering effort required to achieve that.
+%Now consider case 4, where we double the number of measurements compared to case 3. We do get slightly larger singular values, but not so significantly that it would be worth the engineering effort required to achieve that.
 %The measurements with equidistance-spaced tangent height seem to be most effective. \textcolor{red}{why? Explain your reasoning. If you don't say something specific, quantitative, it's just waffle.}
 %By exploratory analysis, we find that we can tolerate a slightly larger distance between tangent heights (pointing accuracy of $175\text{arc sec}$) than required by~\cite{CubeSatInternal}, see case 5.
 %In that case, we also stop measuring when the signal is too noisy and decrease the number of measurements taken without losing crucial information.
 %We note that if one wanted to obtain all information provided by the forward model, we would need a signal-to-noise ratio of roughly $10^7$.
 
-In principle, we show that it does matter how one measures; but one cannot get much more information by measuring more in regions where the information content is low or high.
-The test cases show that a suitable measurement strategy may consist of equidistance spaced pointing angles and does stop measuring when the singular values (information) are too low. 
-Consequently, we proceed with case 5 and plot the right singular vectors of the forward model versus height in the atmosphere to see to which parameter structures our model is sensitive to.
+In principle, we show that it does matter how one measures, but one cannot get much more information by measuring more in regions where the information content is low or high.
+The test cases show that an efficient measurement strategy may consist of equidistantly spaced pointing angles and does stop measuring when the singular values (information) are too low. 
+Consequently, we proceed with case 5 and plot the right singular vectors of the forward model versus height in the atmosphere to see to which parameter structures our model is sensitive.
 %\textcolor{red}{on the contrary - -you have just been arguing that it does matter. no, this makes sense if the goal is to reduce noise.}
 %This contradicts the current measurement setup on the AURA MLS~\cite{livesey2006retrieval}, which reports high noise in lower atmospheric regions, due to thermal radiation from the earth, and measures more in those regions.
 
 %\textcolor{red}{oh no, I had hpped this section would be 'we' free.}
 %\textcolor{red}{where do you explain why this SNR has a line here?,
-%Were is the clear definition of these cases? I could not find it.}
+	%Were is the clear definition of these cases? I could not find it.}
 
 \begin{figure}[ht!]
 	\centering
@@ -269,28 +271,28 @@ Consequently, we proceed with case 5 and plot the right singular vectors of the 
 	\centering
 	\includegraphics{MiddleVecA.png}
 	\caption[Right singular vectors 11 to 19 of forward model.]{Right singular vectors with index $i = 11,\dots, 19$ of the forward model matrix for measurements case 5 in Fig.~\ref{fig:TangHCases}.
-		These singular vectors correspond to singular values in Fig.~\ref{fig:SingA} where the noise level is similar to the data.}
+		These singular vectors correspond to singular values in Fig.~\ref{fig:SingA}, where the noise level is similar to the data.}
 	\label{fig:middleSpace}
 \end{figure}
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{NullVecA.png}
-	\caption[Last 10 right singular vectors of forward model.]{Last 10 right singular vectors of the forward model matrix for measurements case 5 in Fig.~\ref{fig:TangHCases}. These singular vectors correspond to small singular values of the forward model in Fig.~\ref{fig:SingA} where the data is noise-dominated.}
+	\caption[Last 10 right singular vectors of forward model.]{Last 10 right singular vectors of the forward model matrix for measurements case 5 in Fig.~\ref{fig:TangHCases}. These singular vectors correspond to small singular values of the forward model in Fig.~\ref{fig:SingA}, where the data is noise-dominated.}
 	\label{fig:nullSpace}
 \end{figure}
 The parameter space of $\bm{A}_L$ spanned by the first 10 right singular vectors plotted in Fig.~\ref{fig:SingVecA} corresponds to the 10 largest singular values in Fig.~\ref{fig:SingA} and represents parameter structures in the lower atmospheric regions.
 So we can assume that, given some data, we will be able to provide good reconstructions of the parameter in lower altitudes up to $\approx30$km.
 The right singular vectors in Fig.~\ref{fig:middleSpace} correspond to the singular values $\sigma_j$ for $j = 11, \dots, 20$ around the SNR of 150, in Fig.~\ref{fig:SingA}.
-This is roughly where the noise starts to dominate the data and the space spanned by those right singular vectors represent parameter values the middle atmosphere.
-Consequently we expect a increasing uncertainty of reconstructed parameter values within the middle of the atmosphere of $\approx20$km to $\approx55$km.
-The singular vectors in Fig.~\ref{fig:nullSpace} corresponding to the smallest 10 singular values span parameter structures in higher altitudes.
-Since the singular values are very small we will not be able reconstruct structures above $\approx55$km and the data is noise-dominated.
+This is roughly where the noise starts to dominate the data, and the parameter space spanned by those right singular vectors represents parameter values in the middle atmosphere.
+Consequently, we expect an increasing uncertainty of reconstructed parameter values at heights between $\approx20$km and $\approx55$km.
+The singular vectors in Fig.~\ref{fig:nullSpace} corresponding to the smallest 10 singular values and span structures in parameter space at higher altitudes.
+Since the singular values are very small, we will not be able to reconstruct parameter values from the ground truth above $\approx55$km and the data is noise-dominated.
 More specifically, the retrieved parameter values at higher altitudes will be mostly determined by the prior or, in the case of regularisation, by the regulariser~\cite{tan2016LecNot}.
 
 %The difference in between tangent heights is between 2.05km and 2.17km.
 % \textcolor{red}{Actually, you should calculate this from the MIPAS specifications, or similar. It claims 1-3km resolution, presumably at a distance of 500km. So, what's that in arc seconds? It's also related to your vertical discretization, or, more to the point, your vertical discretization is determined by this.}
 %  around the SNR,
- 
+
 \begin{figure}[th!]
 	\centering
 	\includegraphics{DataPlot.png}
@@ -298,8 +300,7 @@ More specifically, the retrieved parameter values at higher altitudes will be mo
 	\label{fig:DataPlot}
 \end{figure}
 
-Then we can compute a data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $, with $m = 30$ measurements determined by the satellite pointing accuracy of $175\text{arc sec}$ (see case 5 in Fig.~\ref{fig:TangHCases}), according to the RTE as in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE} using the trapezoidal integration rule.
-As already mentioned a SNR of 150.
-We plot the data in Fig.~\ref{fig:DataPlot}, which is noise-dominated in higher altitudes and hence not sensitive to structures in the higher atmospheric regions.
+Now we can compute a data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $, with $m = 30$ measurements determined by the satellite pointing accuracy of $175\text{arc sec}$ (see case 5 in Fig.~\ref{fig:TangHCases}), according to the RTE as in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE} using the trapezoidal integration rule.
+As already mentioned, we set the SNR to 150 and plot the data in Fig.~\ref{fig:DataPlot}, which is noise-dominated in higher altitudes.
 Now, given the data, we like to determine the posterior distributions over ozone $\bm{x}$, pressure $\bm{p}$ and temperature $\bm{T}$.
 \clearpage

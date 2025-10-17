@@ -5,8 +5,9 @@
 
 The forward map, introduced in Chapter~\ref{ch:formodel}, poses a weakly non-linear forward problem.
 One could tackle the non-linearity by treating the inverse problem as a linear inverse problem and then iteratively updating the non-linear part after each parameter sample.
-Instead, as in Fig.~\ref{fig:affinStrat} illustrated, we approximate the non-linear model using an affine map, which maps from the linear model $\bm{A}_L$ to the non-linear model $\bm{A}(\bm{x})$.
-An affine map is a linear map with a translation, e.g. $\bm{A}\bm{x} + \bm{b}$, and maps Gaussians onto Gaussians.
+Instead, as in Fig.~\ref{fig:affinStrat} illustrated, we approximate the non-linear model using an affine map, which is a linear map with a translation, e.g. $\bm{A}\bm{x} + \bm{b}$, and maps Gaussians onto Gaussians.
+For parameters $\bm{x}$ around the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ the affine map $\bm{M}$ provides an approximation to the non-linear model $\bm{A}(\bm{x})$ based on the linear model $\bm{A}_L$.
+
 
 
 \begin{figure}[htb!]
@@ -32,20 +33,20 @@ An affine map is a linear map with a translation, e.g. $\bm{A}\bm{x} + \bm{b}$, 
 		\node[align=center] at (0,-4) (f5) {affine map \\ $\bm{M}$};
 		
 	\end{tikzpicture}
-	\caption[Strategy to find affine map.]{The strategy to find the affine map consists of first evaluating the marginal posterior for ozone $\pi(\lambda , \gamma  | \bm{y})$ based on the linear forward model. Then we draw ozone samples from the full posterior. Using those ozone samples, we find an affine map which approximates between noise-free data from the linear and the non-linear forward model.}
+	\caption[Strategy to find affine map.]{The strategy to find the affine map consists of first evaluating the marginal posterior for ozone $\pi(\lambda , \gamma  | \bm{y})$ based on the linear forward model. Based on ozone samples from the full posterior, we find an affine map $\bm{M}$ which approximates between noise-free linear data $\bm{A}_L$ and noise-free non-linear data $\bm{A}(\bm{x})$.}
 	\label{fig:affinStrat}
 \end{figure}
-We find the affine map by creating the vector spaces $\bm{W}$ based on the linear forward model and $\bm{V}$ based on the non-linear forward model with ground truth pressure and temperature.
+We find an affine map by creating the vector spaces $\bm{W}$ based on the linear forward model and $\bm{V}$ based on the non-linear forward model with ground truth pressure and temperature.
 More specifically $m-1$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$ for $j = 2, \dots,m$ from the posterior and the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ generate,
-\begin{align}
+\begin{align*}
 	\bm{W} = \begin{bmatrix}
 		\vert& \vert&   &  \vert & & \vert \\
 		\bm{A}_{L}  \bm{\mu}_{\bm{x}|\bm{y}} & \bm{A}_{L}  \bm{x}^{(2)}   &  \cdots& \bm{A}_{L} \bm{x}^{(j)} &  \cdots & \bm{A}_{L} \bm{x}^{(m)} \\
 		\vert& \vert&   &  \vert & & \vert 
 	\end{bmatrix}
 	\in \mathbb{R}^{m \times m}
-\end{align}\noindent and
-\begin{align}
+\end{align*}\noindent and
+\begin{align*}
 	\bm{V} = \begin{bmatrix}
 		\vert& \vert&   &  \vert & & \vert \\
 		\bm{A}(\bm{\mu}_{\bm{x}|\bm{y}} ) & \bm{A}(\bm{x}^{(2)}) &  \cdots& \bm{A}(\bm{x}^{(j)}) &  \cdots & \bm{A} (\bm{x}^{(m)})  \\
@@ -60,13 +61,13 @@ More specifically $m-1$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$ for $j = 
 			\horzbar &v_{m} & \horzbar
 		\end{array}
 	\end{bmatrix}\in \mathbb{R}^{m \times m} \, .
-\end{align}
+\end{align*}
 Then the non-linear forward model is approximated as 
 \begin{align}
 	\bm{A}(\bm{x}) \approx \bm{M A}_L \bm{x} \, , \label{eq:AffineM}
 \end{align}
 where we solve $v_j =r_j \bm{W}$ for each row $r_j$ in
-\begin{align}
+\begin{align*}
 	\bm{V}\bm{W}^{-1} = \bm{M} =
 	\begin{bmatrix}
 		\begin{array}{ccc}
@@ -77,7 +78,7 @@ where we solve $v_j =r_j \bm{W}$ for each row $r_j$ in
 			\horzbar &r_{m} & \horzbar
 		\end{array}
 	\end{bmatrix}\, \in \mathbb{R}^{m \times m} .
-\end{align}
+\end{align*}
 using the Python function \texttt{numpy.linalg.solve}.
 This is feasible since every noise-free measurement is independent of each other, and then every row $v_j$ of $\bm{V} \in \mathbb{R}^{m \times m}$ is independent of each other as well.
 For an $\bm{x} = \bm{\mu}_{\bm{x}|\bm{y}} + \Delta \bm{x}$ we rewrite Eq.~\ref{eq:AffineM} to
@@ -116,12 +117,12 @@ This is much smaller than the relative RMS difference between $\bm{W}$ and $\bm{
 	\centering
 	%\includegraphics{SampMapAssesment.png}
 	\includegraphics{SampMapAssesmentTT.png}
-	\caption[Assessment of affine map.]{Assessment of how well we can approximate noise-free non-linear data $\bm{A}(\bm{x})$  (red circles) with noise-free linear data $\bm{A}_L\bm{x}$ (grey stars) and the previously calculated affine map $\bm{M}$. The approximated noise-free data (black stars) has a relative RMS error of $\approx 0.07\%$ compared to the true non-linear noise-free data.
+	\caption[Assessment of affine map.]{Assessment of how well we can approximate noise-free non-linear data $\bm{A}(\bm{x})$  (red circles) with noise-free linear data $\bm{A}_L\bm{x}$ (grey stars) and the previously calculated affine map $\bm{M}$. The approximated noise-free data (black stars) has a relative RMS error of $\approx 0.06\%$ compared to the true non-linear noise-free data.
 		The ozone sample to generate this noise-free data has not been used to create the affine map.}
 	\label{fig:MapAsses}
 \end{figure}
-Fig.~\ref{fig:MapAsses} shows the mapping for one posterior ozone sample with a relative RMS error $\approx0.07\%$.
-This posterior ozone sample has not been used to create this mapping, in other words, this is an unseen event not occurring in the training data.
+Fig.~\ref{fig:MapAsses} shows the mapping for one posterior ozone sample with a relative RMS error $\approx0.06\%$.
+This posterior ozone sample has not been used to create this mapping; in other words, this is an unseen event not occurring in the training data.
 Consequently, from here onwards, we use the approximated forward map.
 \section{Marginal and Then Conditional Posterior of Ozone}
 
@@ -134,16 +135,17 @@ Again, we use the MTC scheme and the exact same setup and procedure as in Sec. \
 	\label{fig:MargPostHistTT}
 \end{figure}
 The marginal posterior is defined as in Eq.~\ref{eq:MargPostAppl}, but with the approximated forward model.
-We initialise the MWG at and approximate $f(\lambda)$ and $g(\lambda)$ around the mode of $\pi(\lambda,\gamma| \bm{y})$ (see Eq.~\ref{eq:fAprox} and Eq.~\ref{eq:gAprox}), and take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps.
+The MWG is initialised at the mode of $\pi(\lambda,\gamma| \bm{y})$ and $f(\lambda)$ and $g(\lambda)$ are approximated around the mode as in Sec. \ref{subsec:FirstMargPost} (see Eq.~\ref{eq:fAprox} and Eq.~\ref{eq:gAprox}).
+We take $N = 10000$ plus $N_{\text{burn-in}} = 100$ steps in $\approx 0.5$s.
 The IACTs provided by~\cite{drikHesse} are $\tau_{\text{int}, \gamma} \approx 5.2 \pm 0.3$ and $\tau_{\text{int}, \lambda} = 11 \pm 1 $ (see Fig. \ref{fig:IATCSecO3gam} and Fig.~\ref{fig:IATCSecO3lam}) and similar to the previously calculated values.
-We plot the samples in Fig. \ref{fig:MargPostHistTT} as well as TT approximation of the marginal posterior using 400 function evaluations (same grid; same number of ranks; see Sec.~\ref{subsec:FirstMargPost}).
-The approximation error of the TT is $\approx 3 \%$ and similar to the error due approximations of $f(\lambda)$ and $g(\lambda)$.
+We plot the samples in Fig. \ref{fig:MargPostHistTT} as well as the TT approximation of the marginal posterior using 400 function evaluations (same grid; same number of ranks; see Sec.~\ref{subsec:FirstMargPost}).
+The relative RMS error of the TT approximation over the whole grid and the relative RMS approximation error of $\pi(\lambda,\gamma| \bm{y})$ due to the approximations of $f(\lambda)$ and $g(\lambda)$ are both $\approx 8 \%$.
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{SecRecResinclRegandSampl.png}
 	%\includegraphics{SecRecResinclReg.png}
-	\caption[Full posterior mean and variance of ozone and the regularised solution compared to the ground truth.]{Full  posterior mean and variance and one ozone sample from the full posterior. We plot the regularised solution on top of the ground truth ozone profile in green. The results are based on the approximated forward model $\bm{M}\bm{A}_L$.}
+	\caption[Full posterior mean and variance of ozone and the regularised solution compared to the ground truth.]{Full posterior mean and variance and one ozone sample from the full posterior. We plot the regularised solution on top of the ground truth ozone profile in green. The results are based on the approximated forward model $\bm{M}\bm{A}_L$.}
 	\label{fig:O3SolplsReg}
 \end{figure} 
 Again, we calculate the full posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$, see Eq.~\ref{eq:MeanInt}, and covariance matrix $\bm{\Sigma}_{ \bm{x}|\bm{y}}$~\ref{eq:CovInt} as weighted expectation.

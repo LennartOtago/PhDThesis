@@ -1,4 +1,5 @@
 \chapter{Linear Bayesian Model vs Regularisation Approach -- Ozone}
+\label{ch:LinVsReg}
 
 
 
@@ -191,25 +192,26 @@ The Taylor series coefficient of $f(\lambda)$ is given by
 	f^{(r)}& (\lambda_0)= (-1)^{r+1} (\bm{A}^T \bm{y})^T (\bm{B}_0^{-1} \bm{L})^r \bm{B}_0^{-1} \bm{A}_L^T \bm{y} \label{eq:ftay}  \\
 \end{align} 
 with $\bm{B}_0 = \bm{A}^T  \bm{A} + \lambda_0 \bm{L}$.
-Note that usually a Taylor series includes a factor $(r!)^{-1}$, which in this case cancels in $f^{(r)}(\lambda_0)$, and $g(\lambda)$ can be approximated with a Taylor series as well (see~\cite{fox2016fast}).
-We plot the approximations 
-\begin{subequations}
-	\label{eq:fandgapprox}
-	\begin{align}
-		&\tilde{f} ( \lambda) = \sum^2_{r=0} 	f^{(r)}(\lambda_0) (\lambda-\lambda_0)^r  \label{eq:fAprox} \, ,  \\
-		&\text{and } \tilde{g}(\lambda)=  g(\lambda_{0}) + (\log{\lambda} - \log{\lambda_{0}})  \frac{ g(\lambda_{\text{max}}) - g(\lambda_{\text{min}}) }{\log{\lambda_{\text{max}}} - \log{\lambda_{\text{min}}} }  \label{eq:gAprox} \, ,
-	\end{align}
-\end{subequations} in Fig.~\ref{fig:fandg} and elaborate on the approximation errors in the section below.
-
+Note that usually a Taylor series includes a factor $(r!)^{-1}$~\cite{fox2016fast}, which in this case cancels in $f^{(r)}(\lambda_0)$ so that $f(\lambda)$ is approximated as 
+\begin{align}
+		\tilde{f} ( \lambda) = \sum^1_{r=0} 	f^{(r)}(\lambda_0) (\lambda-\lambda_0)^r  \label{eq:fAprox} \, . 
+\end{align}
+By exploratory analysis we find that the approximation
+\begin{align}
+ \tilde{g}(\lambda)=  g(\lambda_{0}) + (\log{\lambda} - \log{\lambda_{0}})  \frac{ g(1.25\lambda_{0}) - g(0.75\lambda_{0}) }{\log{1.25\lambda_{0}} - \log{0.75\lambda_{0}} }  \label{eq:gAprox} \, 
+\end{align}
+is sufficient.
+Note that $g(\lambda)$ can be approximated with a Taylor series as well (see~\cite{fox2016fast}).
+We plot the function $f(\lambda)$ and $g(\lambda)$ and their approximations in Fig.~\ref{fig:fandg} and elaborate on the approximation errors in the section below.
 
 \subsubsection{Error due to approximation of f and g}
 To assess the approximation error, we lay a 100-point grid over the sampling region in each dimension and compare the approximations of $f(\lambda)$, $g(\lambda)$ and $\pi(\lambda, \gamma | \bm{y})$ with their true function values.
 
-Compared to a 1-st, 3-rd or 4-th order Taylor approximation, we find that the 1-st order Taylor approximation of $f(\lambda)$ gives the smallest relative RMS error of $\approx 15 \%$ in the sampling region of $\lambda$ and a absolute RMS error of $1.8\times 10^{-16}$.
-Additionally, we find that a linear approximation of $g(\lambda)$ is sufficient with relative RMS $\approx 4\%$ and an absolute error of $0.74$.
+Compared to a 2nd, 3-rd or 4-th order Taylor approximation, we find that the 1-st order Taylor approximation of $f(\lambda)$ gives the smallest relative RMS error of $\approx 9 \%$ for $\lambda = [ 10^{-5}, 8 \times 10^{-4}]$ (TT grid) and a maximum absolute error of $\approx 3 \times 10^{-16}$.
+Additionally, we find that a linear approximation of $g(\lambda)$ is sufficient with relative RMS $\approx 3\%$ and a maximum absolute error of $\approx 5$.
 
-These errors then propagate into the marginal posterior $\pi(\lambda , \gamma| \bm{y})$ so that the relative RMS error is $\approx 5 \%$ over the whole grid.
-When sampling, we evaluate the acceptance ratio in the log-space, so we report a relative RMS error of $ \approx0.06\%$ for $\log{\pi(\lambda| \gamma, \bm{y})}$, with a maximum relative pointwise error of $\approx 0.3\%$.
+These errors then propagate into the marginal posterior $\pi(\lambda , \gamma| \bm{y})$ so that the relative RMS error is $\approx 6 \%$ over the whole grid.
+When sampling, we evaluate the acceptance ratio in the log-space, so we report a relative RMS error of $ \approx0.1\%$ for $\log{\pi(\lambda| \gamma, \bm{y})}$.
 We consider this good enough.
 
 
@@ -263,7 +265,7 @@ In practice, we calculate the acceptance ratio in log space, so that
 	= \log  \{\pi(\lambda^{\prime} | \gamma^{(k)}, \bm{y} ) \}  -\log  \{ \pi(\lambda^{(k)}| \gamma^{(k)}, \bm{y}) \} \\
 	= \frac{n}{2} (\log\{\lambda^{\prime}\} - \log\{\lambda^{(k)}\} ) + \frac{1}{2} \Delta g + \frac{\gamma^{(k)}}{2} \Delta f  + \beta_\delta \gamma^{(k)} \Delta \lambda  \, ,
 \end{align}
-where $\Delta \lambda = \lambda^{\prime} - \lambda^{(k)} $ and  $\Delta f \approx \tilde{f}(\lambda^\prime) - \tilde{f}(\lambda^{(k)}) =   (\Delta \lambda^\prime)- (\Delta \lambda^{(k)}) $, with  $\Delta \lambda^{\prime} = \lambda^\prime - \lambda_0 $ and $\Delta \lambda^{(k)} =  \lambda^{(k)} - \lambda_0$.
+where $\Delta \lambda = \lambda^{\prime} - \lambda^{(k)} $ and  $\Delta f \approx  \tilde{f} (\lambda^\prime) - \tilde{f}(\lambda^{(k)}) =   f^{(1)}(\lambda_0) \Delta \lambda^\prime- \Delta \lambda^{(k)} $, with  $\Delta \lambda^{\prime} = \lambda^\prime - \lambda_0 $ and $\Delta \lambda^{(k)} =  \lambda^{(k)} - \lambda_0$.
 Similarly we approximate $\Delta g \approx \tilde{g}(\lambda^{\prime}) -\tilde{g}(\lambda^{(k)})$.
 
 Next, we perform a Gibbs step on $\pi(	\gamma^{(k+1)} |  \lambda^{(k+1)}, \bm{y}) $ conditioned on the prevously drawn $ \lambda^{(k+1}$.
@@ -289,8 +291,8 @@ We calculate the IACT with the Python implementation of~\cite{wolff2004monte} pr
 \subsubsection{TT approximation of marginal posterior}
 Alternatively, we can utilise a TT approximation of the square root of the marginal posterior over a predefined grid and calculate the marginals $\pi(\gamma|\bm{y})$ and $\pi(\lambda|\bm{y})$ (see Sec. \ref{subsec:TTMarg}).
 
-\textcolor{red}{We predefined the univariate grid with $n = 20$ grid points (see Fig. \ref{fig:MeanVarError}) over $\gamma = [ 0.8 \times 10^{15},1.2 \times 10^{16}]$ and $\lambda = [ 10^{-5}, 8 \times 10^{-4}]$.}
-We introduce a ``normalisation constant'' $c = - 340/2$ to avoid underflow so that the values of $\sqrt{\pi( \lambda,\gamma| \bm{y})} = \exp \{ 0.5 \log  \pi(\lambda,\gamma | \bm{y}) + c \} $ are within computer precision.
+We predefined the univariate grid with $n = 20$ grid points (see Fig. \ref{fig:MeanVarError}) over $\gamma = [ 0.8 \times 10^{15},1.2 \times 10^{16}]$ and $\lambda = [ 10^{-5}, 8 \times 10^{-4}]$.
+We introduce a ``normalisation constant'' $c = - 300/2$ to avoid underflow so that the values of $\sqrt{\pi( \lambda,\gamma| \bm{y})} = \exp \{ 0.5 \log  \pi(\lambda,\gamma | \bm{y}) + c \} $ are within computer precision.
 Then we initialise the~\texttt{tt.cross.rectcross.rect\_cross.cross} function based on the TT cross algorithm in \cite{OSELEDETS2010TTCross,Dolgov2018TTCross} from the Python package \texttt{ttpy}~\cite{Oseledets2018ttpy} with a random tensor.
 The number of ranks is set to constant $r = 4$, we do 1 sweep with $2n_{\text{sweeps}}2nr =400$ function evaluations and obtain a TT approximation of $\pi( \lambda,\gamma| \bm{y})$ in about $0.02$s.
 Ironically, this the same number of functions evaluations to approximate a $20 \times 20$ point grid.
@@ -299,7 +301,7 @@ To compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ we set
 We calculate the coefficient tensor $\bm{B}$ and $\bm{R}_{\text{pre}}$ as in Prop.~\ref{prob:backMarg} and Prop.~\ref{prob:ForMarg} (see Sec.~\ref{subsec:TTMarg}).
 
 We plot the TT approximation as a colour map on top of the obtained samples in Fig.~\ref{fig:ScatterPlotTT}.
-The relative RMS TT approximation error over the whole grid is $\approx 5\%$ and similar to the propagation error in $\pi(\lambda, \gamma| \bm{y})$ due to the approximations of $f(\lambda)$ and $g(\lambda)$ (see further up).
+The relative RMS TT approximation error over the whole grid is $\approx 7\%$ and similar to the propagation error in $\pi(\lambda, \gamma| \bm{y})$ due to the approximations of $f(\lambda)$ and $g(\lambda)$ (see further up).
 \begin{figure}[h!]
 	\centering
 	\includegraphics{ScatterplusHistoPlusTT.png}
@@ -457,7 +459,7 @@ is calculated as in Sec.~\ref{sec:reg}.
 
 
 To find the regularised solution, we use the L-curve method, and follow~\cite{hansen1993use}.
-Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $10^{0}$ to $10^{6}$ and plot the solution semi norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{x} \rVert_{L^2}$ (see Figure \ref{fig:LCurve}). 
+Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $10^{0}$ to $10^{6}$ and plot the regularisation norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{x} \rVert_{L^2}$ (see Figure \ref{fig:LCurve}). 
 The regularised solution corresponds to the ``corner'' of the L-curve at the point of maximum curvature provided by the kneedle algorithm~\cite{satopaa2011kneedle} using the function \texttt{kneed.KneeLocator} in $\approx 0.015$s, which is slightly faster then the TT approach to obtain full posterior mean and covariance.
 We plot the corresponding regularisation parameter in Fig. \ref{fig:MargPostHistTT}, which can vary significantly compared to the $\lambda$-samples of the marginal posterior.
 \begin{figure}[ht!]
@@ -470,6 +472,6 @@ We plot the corresponding regularisation parameter in Fig. \ref{fig:MargPostHist
 The regularised solution in Fig.~\ref{fig:O3SolplsReg} is very similar to the posterior mean.
 It is pretty clear that the regularised solution accounts for only one possible solution and does not provide uncertainties. The regularised solution is not similar to the samples drawn from the posterior $\pi(\bm{x}| \bm{y})$ (see Fig.~\ref{fig:O3Samp}).
 The samples of $\pi(\bm{x}| \bm{y})$ plotted in Fig.~\ref{fig:LCurve} lie above the L-Curve, whereas the posterior mean and the regularised solution are on the L-Curve.
-This does make sense, if one thinks about the mean as the (smooth) average over less-smooth samples and the regularised solution as an extremely smooth ozone profile (see Lagrange multiplier in Sec. \ref{sec:regularise}).
+This does make sense, if one thinks about the mean as the (smooth) average over less-smooth samples and the regularised solution as an extremely smooth ozone profile (see Lagrangian in Sec. \ref{sec:reg}).
 In contrast, the samples are less regularised and hence lie above the L-Curve, but have a similar data misfit norm, and as already mentioned, are all feasible solutions to the data.
 Neither the regularisation solution nor the posterior ozone profiles capture the second ozone peak of the ground truth at high altitudes.

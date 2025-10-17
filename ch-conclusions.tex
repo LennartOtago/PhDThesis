@@ -8,7 +8,7 @@ Lastly, we situate our results within the broader context of atmospheric modelli
 
 \section{Regularisation Solution vs. Hierarchical Bayesian Approach}
 Using a regularisation approach, we need 200 solves of $\bm{x}_{\lambda}$ to obtain one solution of this inverse problem.
-In contrast, the hierarchical Bayesian approach involves 25 function evaluations of the marginal posterior and then 10100 samples from the approximated marginal posterior followed by 20 evaluations of $\bm{x}_{\lambda}$ and $\bm{B}^{-1}_{\lambda}$ to characterise the full posterior in $\approx 0.5$s.
+In contrast, the hierarchical Bayesian approach involves 25 function evaluations of the marginal posterior (to find the mode) and then 10100 samples from the approximated marginal posterior followed by 20 evaluations of $\bm{x}_{\lambda}$ and $\bm{B}^{-1}_{\lambda}$ to characterise the full posterior in $\approx 0.5$s.
 Utilising a TT approximation (including finding the mode) to compute the full posterior mean and covariance takes $\approx 0.025$s, requiring only 400 function evaluations to approximate $\pi(\lambda, \gamma | \bm{x})$ and is almost as fast as the regularisation approach ($\approx 0.015$).
 Regardless, either method has a runtime of much less than a second on a basic laptop.
 
