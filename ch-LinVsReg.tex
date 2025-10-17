@@ -1,27 +1,12 @@
-\chapter{Linear Bayesian Model vs Regularisation Approach -- Ozone}
+\chapter{Linear Bayesian vs. Regularisation -- Ozone}
 \label{ch:LinVsReg}
 
-
-
-
-\textcolor{red}{This sounds like it is the last Chapter. Is it? The hierarchical model is neither a 'Result' nor a 'Conclusion' so why is it in this Chapter? Something is very wrong with your structure.
-	This appears to contain Modelling and Numerical Experiments - -and those should be separate Chapters. }
-In this chapter, we use the forward model to generate some data given an underlying ground truth and then guide the reader through the process of setting up a Bayesian framework and ultimately obtaining the posterior distributions of hyper-parameters and parameters of interest, such as ozone concentration or pressure and temperature profiles.
-We use DAGs to visualise hierarchical and correlational structures of a Bayesian model, establish a choice of prior distributions within our Bayesian model and formulate the posterior distributions.
-All programming and analysis is done in Python, and the reported computation times correspond to a MacBook Pro from 2019 with a 2.4 GHz quad-core Intel Core i5 processor.
-
-Based on the linear forward model $\bm{A}_L$, we characterise the marginal posterior for ozone and compare that to the TT approximation.
-Then we calculate the mean and the covariance matrix of the full posterior for ozone, which we use to generate posterior ozone samples and according to those find an affine map to approximate the non-linear forward model $\bm{A}(\bm{x}) \approx \bm{M} \bm{A}_{L} \bm{x}$ (see Sec.~\ref{sec:affineMap}).
-In Sec.~\ref{sec:ComparReg}, we repeat the MTC scheme to provide a posterior distribution of ozone based on the approximate forward model and compare it to a regularisation approach and a ground truth.
-
-In Sec~\ref{sec:FullBay}, we extend the hierarchical Bayesian model and MTC scheme to jointly provide posterior distributions of ozone, temperature and pressure.
-Here, we elaborate on some aspects of prior modelling and on our findings when using a TT to approximate the higher-dimensional marginal posterior.
-
-\clearpage
-
-
-
-
+In this Chapter we set up an hierarchiacal Bayesian model and apply the MTC method to provide posterior ozone profiles.
+In this chapter, we guide the reader through the process of setting up a Bayesian framework and ultimately obtaining the posterior distributions of hyper-parameters and parameters of interest, DAGs to visualise hierarchical and conditional depdenseies of the parameters establish a choice of prior distributions within our Bayesian model and formulate the posterior distributions.
+We treat this inverse problem as a linear inverse problem by neglecting the absorption term in RTE (see Eq.~\ref{eq:RTE}).
+We employ a Metrolpis within Gibbs sampler and a TT approxiamtion to characterise the marginal posterior and elaborate on some errors.
+Then we calculate the mean and the covariance matrix ofposterior for ozone,
+Lastly, we compare to a regualrisaiotn approach.
 
 
 
@@ -162,7 +147,7 @@ the marginal posterior $\pi(\delta ,\gamma| \bm{y})$ and full conditional poster
 As discussed in Sec.~\ref{subsec:LinBay}, for the linear-Gaussian case, $\bm{x}$ cancels in the marginal posterior over the hyper-parameters.
 Following the MTC scheme, we characterise the marginal posterior first and then the full conditional posterior.
 
-\subsection{Marginal posterior}
+\subsection{Marginal Posterior}
 \label{subsec:FirstMargPost}
 Consequently, for the hierarchical model specified in Eq.~\ref{eq:O3BayMode}, the marginal posterior distribution over the hyper-parameters is given by
 \begin{align}
@@ -357,7 +342,7 @@ The relative RMS TT approximation error over the whole grid is $\approx 7\%$ and
 %\end{align}
 %is normal distribution and we compute weighted expectations, as in Eq.~\ref{eq:MargExpPos}, of the conditional mean and covariance matrix, where the weights are given by $\pi(\bm{\theta} | \bm{y})$. 
 %Note that both the noise covariance $\bm{\Sigma} = \bm{\Sigma}(\bm{\theta})$ and the prior precision matrix $\bm{Q} = \bm{Q}(\bm{\theta})$ depend on the hyper-parameters $\bm{\theta}$.
-\subsection{Full posterior ozone mean and variance}
+\subsection{Full Conditional Posterior -- Ozone}
 \label{subsec:firstCond}
 \begin{figure}[ht!]
 	\centering

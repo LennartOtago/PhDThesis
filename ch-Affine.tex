@@ -9,7 +9,7 @@ Instead, as in Fig.~\ref{fig:affinStrat} illustrated, we approximate the non-lin
 For parameters $\bm{x}$ around the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ the affine map $\bm{M}$ provides an approximation to the non-linear model $\bm{A}(\bm{x})$ based on the linear model $\bm{A}_L$.
 
 
-
+\section{Finding an Affine Approximation}
 \begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}
@@ -124,7 +124,7 @@ This is much smaller than the relative RMS difference between $\bm{W}$ and $\bm{
 Fig.~\ref{fig:MapAsses} shows the mapping for one posterior ozone sample with a relative RMS error $\approx0.06\%$.
 This posterior ozone sample has not been used to create this mapping; in other words, this is an unseen event not occurring in the training data.
 Consequently, from here onwards, we use the approximated forward map.
-\section{Marginal and Then Conditional Posterior of Ozone}
+\section{Marginal and Then Conditional Posterior -- Ozone}
 
 Again, we use the MTC scheme and the exact same setup and procedure as in Sec. \ref{sec:FirstO3Post} to evaluate the marginal posterior and then the full conditional posterior of ozone with similar computational time.
 

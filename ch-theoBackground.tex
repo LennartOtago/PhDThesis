@@ -116,17 +116,22 @@ See Appendix~\ref{ap:IATC} and~\cite{Sokal1997, wolff2004monte, wolff2002LecNot}
 Quickly generating a representative sample set from the posterior distribution often presents a significant challenge. %\textcolor{red}{this word is misplaced (for English). Better is Quickly generating (it's an adverb)} 
 This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in~\cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
 If $\bm{x}$ cannot be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, so that $\bm{x}(\bm{\theta})$ is function of $\bm{\theta}$, it is beneficial to factorise the posterior distribution as \textcolor{red}{this is unclear. Of course x(theta) is a function of theta. What are you trying to say?}
+If $\bm{x}$ cannot be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, and only a low level representation of $\bm{x}$ is availiable it is beneficial to factorise the posterior distribution as
 \begin{align}
 	\pi(\bm{x}, \bm{\theta} |  \bm{y}) = \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \pi(\bm{\theta} |   \bm{y}), \label{eq:MTC}
 \end{align}
-into the full conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the latent field $\bm{x}$ and the marginal posterior over the hyper-parameter $\bm{\theta}$, that can be calculated by,
+into the full conditional posterior $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ over the latent field $\bm{x}$ and the marginal posterior $ \pi(\bm{\theta} |   \bm{y})$ over hyper-parameter $\bm{\theta}$.
+This approach, known as the MTC method, is particularly advantageous when $\bm{x}\in \mathbb{R}^n$ is high-dimensional, while $\bm{\theta}$ is low-dimensional and the evaluation of $\pi(\bm{\theta}| \bm{y})$ is relatively cheap.
+If a high level model of $\bm{x}$ availiabe we can represnt the paramters space of $\mathbb{R}^n$ with a number of hyper-parameters much smaller than $n$.
+That is when Bayesian modelling is especially powerfull because we can impose prior knowlede throught those hyper-parameters much more precisely and the dimesnionalty of the posterior may be drastically reduced.
+The marginal posterior over the hyper-parameter $\bm{\theta}$, that can be calculated by,
 \begin{align}
 	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{x},\bm{\theta})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{x},\bm{\theta})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) } \label{eq:margGen}\, ,
 \end{align}
 as in~\cite[Lemma 2]{fox2016fast}.
 %In \cite{norton2018sampling}, they classify inverse problems into problems with known or unknown conditional posterior distributions, and conclude that if $\pi(\bm{x} | \bm{\theta} ,   \bm{y}) = \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta})  / \pi(   \bm{y}| \bm{\theta})$ has a known form, the normalising constant of $\pi(\bm{\theta} |   \bm{y})$ is available \newline $\int \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta}) \text{d} \bm{x} = \pi(   \bm{y}| \bm{\theta})  \propto \pi( \bm{\theta}|\bm{y}) / \pi(\bm{\theta})$ and one can almost surely determine the $\bm{\theta}$-dependence of the marginal posterior $\pi(\bm{\theta} |   \bm{y})$.
 
-This approach, known as the MTC method, is particularly advantageous when $\bm{x}\in \mathbb{R}^n$ is high-dimensional, while $\bm{\theta}$ is low-dimensional and the evaluation of $\pi(\bm{\theta}| \bm{y})$ is relatively cheap.%\textcolor{red}{horrible notation, try better.}
+%\textcolor{red}{horrible notation, try better.}
 Applying the law of total expectation~\cite{champ2022generalizedlawtotalcovariance}, Eq.~\eqref{eq:expPos} becomes
 \begin{align}
 	\mathbb{E}_{\bm{x} ,\bm{\theta}  |\bm{y}} [h(\bm{x})] &= \int \int   h(\bm{x}) \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \diff \bm{x} \,  \pi(\bm{\theta} |   \bm{y}) \, \diff \bm{\theta} \\
@@ -474,8 +479,8 @@ The procedure is repeated for each $u^{(s)}_k \in \bm{u}^{(s)}$ to produce the s
 %$  and $\bm{G}_{<k}(x^{(s)}_{<k}) = \bm{G}_{1}(x^{(s)}_{1}) \cdots \bm{G}_{k-1}(x^{(s)}_{k-1}) $ are simple matrix multiplications for each grid point $i$ or sample $\bm{x}^{(s)}$.
 
 
-\subsubsection{Metropolis-Hastings -- correction step}
-Since the samples by the SIRT scheme are generated from an approximation, it is sensible to correct those using a Metropolis-Hastings (MH) importance step.
+\subsubsection{Metropolis--Hastings -- correction step}
+Since the samples by the SIRT scheme are generated from an approximation, it is sensible to correct those using a Metropolis--Hastings (MH) importance step.
 \begin{algorithm}[!ht]
 	\caption{MH correction step}
 	\begin{algorithmic}[1]
