@@ -1,19 +1,19 @@
 \chapter{Introduction}
-Here, we briefly describe the currently used standard to retrieve atmospheric trace gas, e.g. ozone, concentrations from limb-sounding measurements and what motivates us to employ a hierarchical Bayesian framework addressing this inverse problem.
+Here, we briefly describe the currently used standard to retrieve atmospheric trace gas concentrations, e.g. ozone concentration, from limb-sounding measurements and what motivates us to employ a hierarchical Bayesian framework addressing this inverse problem.
 We explain how our approach contributes to and improves upon existing methods.
 Lastly, we provide the reader with the thesis structure.
 
 
 \section{Motivation}
 The only currently operating ozone limb sounder, the Microwave Limb Sounder (MLS) on NASA's Aura satellite, is gradually drifting from its orbit and scheduled to be phased out by 2026~\cite{Bryan2024NASA}.
-A group led by Harald Schwefel has proposed an alternative approach to fill this observational gap using a much smaller platform such as a 6U CubeSat (roughly $28\text{cm} \times 15\text{cm} \times 9\text{cm}$)~\cite{ustin2024current}. 
+A group led by Harald Schwefel has proposed an alternative approach to fill this observational gap using a much smaller platform such as a 6U CubeSat (roughly $30\text{cm} \times 15\text{cm} \times 10\text{cm}$)~\cite{ustin2024current}. 
 The proposed system includes a disk-shaped resonator targeting a narrow frequency band and converting the thermal radiation emitted by ozone molecules from the terahertz region to the optical domain~\cite{Suresh25,Sedlmeir14}. 
 This frequency conversion offers a cost-effective and energy-efficient solution, as it circumvents the need for large, energy-hungry cooling devices that are traditionally required to capture terahertz signals. 
 Instead, signal acquisition in the optical domain can be implemented by using compact, cheap, and low-power photonic technologies.
 
 Currently, the inverse problem to retrieve any trace gas from limb-sounding data is approached by the atmospheric physics community using optimisation and regularisation techniques developed in the 1970s~\cite{rodgers1976retrieval, NASA2022MLSv5}.
 These methods focus on finding the ``best fit to data but not the best fit to parameters''~\cite{tan2016LecNot}.
-Instead, we employ a hierarchically structured Bayesian framework to provide a distribution of ozone profiles, which represents a range of feasible solutions to some given data.
+Instead, we employ a hierarchically structured Bayesian framework to provide a distribution of ozone profiles, which represents multiple possible solutions according to some given data.
 This probabilistic approach allows us to determine meaningful estimates and uncertainties of parameters.
 
 \section{Research Gap and Contribution}
@@ -27,20 +27,21 @@ Furthermore, these regularisation methods condition on external point estimates 
 %Additionally they compare to a ``ground truth'' provided by the previously described optimal estimation approach \cite{werner2023machlearn, bojkov2008NeuralNet}.
 %Recent machine learning approaches suffer from related limitations. These models are typically trained over short periods (e.g., one month), condition on a single fixed noise value, and do not treat noise as a retrieval hyper-parameter. Moreover, they are benchmarked against a “ground truth” derived from the same optimal estimation method described above~\cite{werner2023machlearn, bojkov2008NeuralNet}.
 
-In Bayesian modelling all unknown parameters are treated as random variables~\cite{kaipio2005statinv}.
-Further a hierarchically ordered model incorporates unknown hyper-parameters, which e.g. model the noise and control the smoothness of the ozone profile, and includes hyper-parameters and parameters in the retrieval process.
-Hence, a hierarchical Bayesian framework is able to model conditional dependences between parameters and hyper-parameters and provides posterior distributions over those, which present a range of feasible solutions for some given data.
-Livesey et al.~\cite{livesey2006retrieval} report ``unexpected spectrally correlate noise'' on the MLS aura, so here is another real reason why one should include noise in the model.
+In Bayesian modelling, all unknown parameters are treated as random variables~\cite{kaipio2005statinv}.
+Further, a hierarchically ordered model incorporates unknown hyper-parameters, which, e.g.~model the noise and control the smoothness of the ozone profile, and includes hyper-parameters and parameters in the retrieval process.
+Hence, a hierarchical Bayesian framework is able to model conditional dependences between parameters and hyper-parameters.
+Furthermore, a Bayesian approach provides posterior probability distributions over a range of feasible solutions for some given data.
+Livesey et al.~\cite{livesey2006retrieval} report ``unexpected spectrally correlated noise'' on the MLS Aura, so here is another real reason why one should include noise in the model.
 
-In this thesis the marginal and then conditional (MTC) method~\cite{fox2016fast} is utilised and a hierarchical Bayesian model based on the radiative transfer equation (RTE) to provide posterior distributions of ozone, as well as temperature and pressure profiles is set up.
-The MTC scheme is a relatively new method within the Bayesian community, and is, to the best of our knowledge, the first application to a forward model based on the radiative transfer equation (RTE).
-First, we neglect the non-linearity of the RTE and employ a linear-Gaussian hierarchical Bayesian to give a posterior distribution of ozone profiles, and compare to a regularisation approach.
-Since the RTE is weakly non-linear, we use these results to find an affine map that approximates the non-linear forward model, which seems to be another novelty in the field of atmospheric remote sensing.
-Lastly, the hierarchical Bayesian framework is extended to jointly provide posterior ozone, pressure, and temperature profiles.
+In this thesis the marginal and then conditional (MTC) method~\cite{fox2016fast} is utilised and a hierarchical Bayesian model based on the radiative transfer equation (RTE) is developed to provide posterior distributions of ozone, as well as temperature and pressure profiles.
+First, we neglect the non-linearity of the RTE and employ a linear-Gaussian hierarchical Bayesian model.
+Since the RTE is weakly non-linear, we use the results based on the linearised RTE to find an affine map that approximates the non-linear forward model, which seems to be another novelty in the field of atmospheric remote sensing.
+Lastly, the hierarchical Bayesian framework is extended to include pressure and temperature.
+The MTC scheme is a relatively new method within the Bayesian community, and we are the first, to the best of our knowledge, to apply it to a forward model based on the RTE and to jointly provide posterior ozone, pressure, and temperature profiles.
 
-Moreover, instead of using sampling algorithms to characterise those posterior distributions we approximate posterior distributions directly utilising the tensor-train (TT) format~\cite{cui2022deep}. 
-This allows us to generate independent samples from a TT approximation similar to the inverse Rosenblatt transform (IRT)~\cite{dolgov2020approximation} with far fewer function evaluations compared to conventional samplers.
-Further, in the TT format one can calculate marginal distributions of each hyper-parameter and evaluate integrals via quadrature without any sampling.
+Moreover, instead of using sampling algorithms to characterise the posterior probability distribution of the hierarchical Bayesian model we approximate the distribution directly utilising the tensor-train (TT) format~\cite{cui2022deep}. 
+This allows us to generate independent samples from a TT approximation via a scheme similar to the inverse Rosenblatt transform (IRT)~\cite{dolgov2020approximation} with far fewer function evaluations compared to conventional samplers.
+Further, in the TT format one can calculate marginal probability distributions of each hyper-parameter and evaluate integrals via quadrature without any sampling.
 
 
 %and first the treat the 
@@ -58,15 +59,15 @@ Further, in the TT format one can calculate marginal distributions of each hyper
 %This approach is known as hierarchical Bayesian modelling.\textcolor{red}{  OH, your trying to say that a hyperparametr controls something about the distribution of the noise, not that the noise is a hyperparameter, which is how this sentence reads.}
 %\textcolor{red}{likewise. Besides, this sentence is not true. You know about the Approximation and Sampling paper.}
 \section{Thesis Structure}
-
-In Chapter~\ref{ch:background}, we give a brief overview of the key methods used along with references for further reading.
+In Chapter~\ref{ch:background}, we give a brief overview of the key methods used, along with references for further reading.
 Chapter~\ref{ch:formodel} introduces the simplified forward model based on the RTE.
-Here we test a few measurement cases assess via a singular value decomposition (SVD) to understand the forward model and to determine how one can measure most effectively. and discusses strategies for measuring effectively.
+Here, we test several measurement cases and assess the information content using a singular value decomposition (SVD) to understand the forward model and determine the most effective measurement method.
 Based on those results and a ground truth, we simulate noisy data for an idealised limb sounder within a simplified atmosphere.
-Then, in Chapter~\ref{ch:LinVsReg}, linear-Gaussian hierarchical Bayesian model based on the linearised RTE is constructed
+Then, in Chapter~\ref{ch:LinVsReg}, a linear-Gaussian hierarchical Bayesian model based on the linearised RTE is constructed.
 We discuss some prior modelling choices, apply the MTC scheme and compare posterior ozone profiles and a regularisation approach to a ground truth ozone profile.
 Given those results we find an affine map in Chapter~\ref{ch:affine} to approximate the non-linear forward model.
-In Chapter~\ref{ch:FullBay}, the previously built hierarchical Bayesian model is extended to include hyper-parameters corresponding to pressure and temperature and touch on some prior modelling choices. 
-Again, using the MTC method joint estimates of posterior ozone, pressure and temperature profiles are provide and important aspects for improving the effectiveness and stability of TT approximations are highlighted.
+In Chapter~\ref{ch:FullBay}, the previously built hierarchical Bayesian model is extended to include hyper-parameters corresponding to pressure and temperature.
+Again, we touch on some prior modelling choices and use the MTC method to provide joint estimates of posterior ozone, pressure and temperature profiles.
+Additionally, some important aspects for improving the effectiveness and stability of TT approximations are highlighted.
 Lastly, in Chapter~\ref{ch:Concl} we summarise and discuss our results and provide an outlook for future work.
-All programming and analysis in this thesis is done in Python, and the reported computation times correspond to a MacBook Pro from 2019 with a 2.4 GHz quad-core Intel Core i5 processor.
+All programming and analysis in this thesis are done in Python, and the reported computation times are taken on a MacBook Pro from 2019 with a 2.4 GHz quad-core Intel i5 processor.

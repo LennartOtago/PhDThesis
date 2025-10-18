@@ -2,7 +2,7 @@
 \label{ch:formodel}
 
 In this Chapter, we present the forward model to which we apply our entire methodology and conduct a singular value analysis for different measurement scenarios to understand the forward model and to determine a sensible way to measure ozone. We follow the Michelson interferometer for passive atmospheric sounding (MIPAS) handbook~\cite{mipas2000handbook} and simulate data according to an idealised cloud-free atmosphere in local thermodynamic equilibrium, assuming a measurement instrument with infinite spectral resolution and no pointing errors.
-This is a simplified forward model and we do not include any other instrument-specific details, such as sensor area or antenna response, as they are not available to us. 
+This is a simplified forward model, and we do not include any other instrument-specific details, such as sensor area or antenna response, as they are not available to us. 
 \begin{figure}[ht!]
 	\centering
 	\input{LIMB.pdf_tex}
@@ -49,6 +49,7 @@ For fundamentals on the RTE, we recommend~\cite[Chapter 1]{rybicki2000rte}, and 
 
 
 \section{Simulate Data Based on a Ground Truth}
+\label{sec:SimDat}
 To calculate the integrals in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE} numerically, we discretise the atmosphere in $n$ layers and define height values $h_{L,i-1} < h_{L,i}$ with respect to the surface of the earth, for $i = 1, \dots, n$.
 The $i$-th layer is defined by two spheres around the centre of the earth with radii $ r_0 + h_{L,i-1} $ and $r_0 + h_{L,i}$.
 Then the ozone VMR $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$, pressure $\bm{p} =\{p_1,p_2,\ldots,p_n\} \in \mathbb{R}^{n}$ and temperature $\bm{T} =\{T_1,T_2,\ldots,T_n\} \in \mathbb{R}^{n}$, as well as all other height dependent parameters, are discretised profiles with constant values between the heights $h_{L,i-1} \leq h < h_{L,i}$.

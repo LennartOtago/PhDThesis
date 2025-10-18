@@ -2,14 +2,10 @@
 \label{ch:affine}
 \newcommand*{\vertbar}{\rule[-1ex]{0.5pt}{2.5ex}}
 \newcommand*{\horzbar}{\rule[.5ex]{2.5ex}{0.5pt}}
-
 The forward map, introduced in Chapter~\ref{ch:formodel}, poses a weakly non-linear forward problem.
 One could tackle the non-linearity by treating the inverse problem as a linear inverse problem and then iteratively updating the non-linear part after each parameter sample.
 Instead, as in Fig.~\ref{fig:affinStrat} illustrated, we approximate the non-linear model using an affine map, which is a linear map with a translation, e.g. $\bm{A}\bm{x} + \bm{b}$, and maps Gaussians onto Gaussians.
-For parameters $\bm{x}$ around the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ the affine map $\bm{M}$ provides an approximation to the non-linear model $\bm{A}(\bm{x})$ based on the linear model $\bm{A}_L$.
-
-
-\section{Finding an Affine Approximation}
+Here we find an affine map $\bm{M}$ based on the linear model $\bm{A}_L$ that provides an approximation of the non-linear model $\bm{A}(\bm{x})$ for parameters $\bm{x}$ around the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$.
 \begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}
@@ -21,8 +17,8 @@ For parameters $\bm{x}$ around the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ the
 		\draw[->, very thick] (x) -- (V); 
 		\draw[->, very thick] (x) -- (W); 
 		\draw[->, very thick] (W.east) --  (V.west); 
-		\node[align=center] at (1,0) (l1) {Data};
-		\node[align=center] at (3.5,-2) (f2) {Ozone Profiles from $\pi(\bm{x}|\bm{y}) $};
+		\node[align=center] at (1,0) (l1) {data};
+		\node[align=center] at (3.5,-2) (f2) {ozone profiles from $\pi(\bm{x}|\bm{y}) $};
 		\node[align=center] at (1.75,-1) (l1) {$\pi(\lambda , \gamma  | \bm{y})$ with $\bm{A}_L$};
 		
 		
@@ -36,8 +32,11 @@ For parameters $\bm{x}$ around the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ the
 	\caption[Strategy to find affine map.]{The strategy to find the affine map consists of first evaluating the marginal posterior for ozone $\pi(\lambda , \gamma  | \bm{y})$ based on the linear forward model. Based on ozone samples from the full posterior, we find an affine map $\bm{M}$ which approximates between noise-free linear data $\bm{A}_L$ and noise-free non-linear data $\bm{A}(\bm{x})$.}
 	\label{fig:affinStrat}
 \end{figure}
+
+\section{Finding an Affine Map}
+
 We find an affine map by creating the vector spaces $\bm{W}$ based on the linear forward model and $\bm{V}$ based on the non-linear forward model with ground truth pressure and temperature.
-More specifically $m-1$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$ for $j = 2, \dots,m$ from the posterior and the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ generate,
+More specifically $m-1$ samples $\bm{x}^{(j)} \sim \pi(\bm{x}|\bm{y})$, for $j = 2, \dots,m$, from the posterior and the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ generate,
 \begin{align*}
 	\bm{W} = \begin{bmatrix}
 		\vert& \vert&   &  \vert & & \vert \\
@@ -124,7 +123,7 @@ This is much smaller than the relative RMS difference between $\bm{W}$ and $\bm{
 Fig.~\ref{fig:MapAsses} shows the mapping for one posterior ozone sample with a relative RMS error $\approx0.06\%$.
 This posterior ozone sample has not been used to create this mapping; in other words, this is an unseen event not occurring in the training data.
 Consequently, from here onwards, we use the approximated forward map.
-\section{Marginal and Then Conditional Posterior -- Ozone}
+\section{Marginal and then Conditional Posterior -- Ozone}
 
 Again, we use the MTC scheme and the exact same setup and procedure as in Sec. \ref{sec:FirstO3Post} to evaluate the marginal posterior and then the full conditional posterior of ozone with similar computational time.
 

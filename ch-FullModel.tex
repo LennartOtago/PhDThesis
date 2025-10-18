@@ -1,15 +1,16 @@
 \chapter{Joint Retrival of Ozone, Pressure and Temperature}
 \label{ch:FullBay}
-Here, the hierarchical Bayesian model in Sec. \ref{sec:BayModelO3} and the MTC scheme is extended to jointly provide posterior distributions of ozone ,pressure and  temperature.
-We elaborate on some aspects of prior modelling.
-Additionaly we guide the reader through the process of approximating the  higher-dimensional marginal posterior more efficiently using a TT.
+Here, we extend the hierarchical Bayesian model set up in Sec. \ref{sec:BayModelO3} to include pressure and temperature-related hyper-parameters and elaborate on some aspects of prior modelling.
+Then the MTC scheme is applied to jointly provide posterior distributions of ozone, pressure and temperature.
+Additionally, we guide the reader through the process of setting up a TT of the higher-dimensional marginal posterior to obtain a more efficient approximation.
 
-We use the affine approximation$\bm{M}$ from the previous Chapter, and define a linear forward model matrix as
+We use the affine approximation $\bm{M}$ from the previous Chapter, and define a linear forward model matrix as
 \begin{align}
 	\bm{A}  \coloneqq \bm{M A}_L \, .
 \end{align}
 
-\section{Hierarchical Bayesian Model -- Ozone, Pressure, Temperature }
+\section{Hierarchical Bayesian Framework}
+\label{sec:FullHierarch}
 \begin{figure}[thb!]
 	\centering
 	\begin{tikzpicture}
@@ -91,7 +92,7 @@ We use the affine approximation$\bm{M}$ from the previous Chapter, and define a 
 		Given the data we like to determine the posterior distribution over the hyper-parameters $\pi(p_0,b,T_0,\bm{h_T},\bm{a}, \delta, \gamma | \bm{y})$ first and then $\pi(\bm{x}|p_0,b,T_0,\bm{h_T},\bm{a}, \delta, \gamma, \bm{y})$, utilising the MTC scheme.}
 	\label{fig:DAGComplete}
 \end{figure}
-As in Sec. \ref{sec:BayModelO3}, we use a DAG as in Fig.~\ref{fig:DAGComplete} to visualise the measurement process and correlations between pressure $\bm{p}$, temperature $\bm{T}$ and ozone $\bm{x}$, which progress deterministically (dashed line) into the forward model, via $\bm{x} \times \bm{p} / \bm{T}$.
+As in Sec. \ref{sec:BayModelO3}, we use a DAG as in Fig.~\ref{fig:DAGComplete} to visualise the measurement process and conditional dependencies between pressure $\bm{p}$, temperature $\bm{T}$ and ozone $\bm{x}$, which progress deterministically (dashed line) into the forward model, via $\bm{x} \times \bm{p} / \bm{T}$.
 Note that other variables such as absorption constant, internal partition function and the black body radiation are also dependent on temperature.
 Through their respective prior distributions, they generate a space of all possible noise-free data $\Omega$, from which we observe some data, including some added normally distributed noise $\bm{\eta}$.
 This hierarchical Bayesian framework includes the hyper-parameters $p_0, b $ for pressure (see Eq.~\ref{eq:pressFunc}), $\bm{a}, \bm{h}_T, T_0$ for temperature (see Eq.~\ref{eq:tempFunc}), $\delta$ for ozone smoothness and $\gamma$ for noise precision.
@@ -195,13 +196,14 @@ Here we already observe that $\bm{p}/\bm{T}$ inherits the structure of the press
 \clearpage
 
 \section{Posterior Distribution}
-
-\subsection{Marginal Posterior Distribution -- Pressure and Temperature}
 Here, we define the marginal and then the full conditional posterior distribution for the described Bayesian model.
 We either use the t-walk algorithm~\cite{christen2010general} to draw samples from $\pi(p_0,b,T_0,\bm{h_T},\bm{a} ,\lambda, \gamma| \bm{y})$ or we utilise a TT approximation on a predefined grid to generate samples via the SIRT method with an MH correction step.
 In doing so, we guide the reader through the procedure and point out some key aspects of how we obtain an efficient TT approximation.
 Lastly, we use the RTO method to draw samples from the full conditional posterior $\pi(\bm{x}|p_0,b,T_0,\bm{h_T},\bm{a} ,\lambda, \gamma, \bm{y})$.
 
+
+
+\subsection{Marginal Posterior -- Pressure and Temperature}
 
 The marginal posterior is given as
 \begin{align}
@@ -216,7 +218,7 @@ with $\lambda= \delta / \gamma$,
 		&\text{and } g(\bm{\theta}_{\bm{p}, \bm{T}},\lambda) = \log \det \big(\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}})^T  \bm{A}(\bm{\theta}_{\bm{p}, \bm{T}}) + \lambda \bm{L}\big) \label{eq:gFullAppl} \, .
 	\end{align}
 \end{subequations}
-For each evaluation of $\pi( \bm{\theta}_{\bm{p}, \bm{T}},\lambda,\gamma  | \bm{y})$ we compose $\bm{A}_L(\bm{\theta}_{\bm{p}, \bm{T}})$ as in Chapter~\ref{ch:formodel}, and calculate $f$ and $g$ directly using the Cholesky decomposition.
+For each evaluation of $\pi( \bm{\theta}_{\bm{p}, \bm{T}},\lambda,\gamma  | \bm{y})$ we compose $\bm{A}_L(\bm{\theta}_{\bm{p}, \bm{T}})$ as in Chapter~\ref{ch:formodel}, and calculate $f$ and $g$ directly using the Cholesky decomposition via the Python functions \texttt{np.linalg.cholesky} \texttt{scy.linalg.cho\_solve}.
 
 
 \subsubsection{Sampling from marginal posterior}
@@ -225,9 +227,6 @@ If the number of hyper-parameters is large, we sample from the marginal posterio
 The~t-walk chooses between four different types of steps on the target distribution and is employed as a black-box algorithm in default settings, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
 Convergence to the target distribution is guaranteed by the construction of this algorithm (see~\cite{christen2010general}).
 \textcolor{red}{Oh, are you defining some kind of decision tree about what kind of sampler you run. Did you introduce that ? At the moment this reads like a detective novel -- I have no idea what is going on - -I have to guess. Not a good thing to have the reader guessing.}
-
-
-
 For a ground truth, we run the t-walk~\cite{christen2010general} algorithm on $\pi( \bm{\theta}_{\bm{p}, \bm{T}},\lambda,\gamma  | \bm{y})$, where we set our objective to generate $1000$ independent samples from the marginal posterior.
 We bound the maximum IACT (see Tab.~\ref{tab:priors} and Fig.~\ref{fig:TWalkIATC1} to Fig.~\ref{fig:TWalkIATC18}) by $1100$, so we run the t-walk for $N = 1000 \times 1100$ steps with a burn-in period of $N_{\text{burn-in}} = 100 \times 1100 $.
 We initialise the Python implementation of the t-walk~\cite{christentwalkaccess} around the hyper-prior mean values and the mode of $\pi(\lambda ,\gamma|\bm{y})$.
@@ -361,8 +360,8 @@ We observe that, besides $\lambda$ and $\gamma$, only the marginal posterior of 
 	\caption[Pressure posterior samples.]{According to the hyper-parameter samples from the marginal posterior distribution (see Fig.~\ref{fig:PostHistTT0} and Fig.~\ref{fig:PostHistTT1}) we plot the corresponding posterior pressure profile as given by Eq.~\ref{eq:pressFunc}.}
 	\label{fig:PressPost}
 \end{figure}
-
-\subsection{Full Conditional Posterior Distribution -- Ozone}
+\clearpage
+\subsection{Full Conditional Posterior -- Ozone}
 We use the RTO method (see Sec.~\ref{subsec:RTO}) to obtain ozone samples from the full conditional posterior and sample hyper-parameter samples directly from the marginal posterior to compute posterior temperature and pressure profiles according to their respective function (see Eq.~\ref{eq:tempFunc} and Eq.~\ref{eq:pressFunc}). 
 We plot posterior profiles of ozone in Fig.~\ref{fig:O3Post}, temperature in Fig.~\ref{fig:TempPost} and pressure in Fig.~\ref{fig:PressPost}.
 
