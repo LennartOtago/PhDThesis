@@ -1,5 +1,6 @@
 \chapter{Joint Retrival of Ozone, Pressure and Temperature}
 \label{ch:FullBay}
+\thispagestyle{empty}
 Here, we extend the hierarchical Bayesian model set up in Sec. \ref{sec:BayModelO3} to include pressure and temperature-related hyper-parameters and elaborate on some aspects of prior modelling.
 Then the MTC scheme is applied to jointly provide posterior distributions of ozone, pressure and temperature.
 Additionally, we guide the reader through the process of setting up a TT of the higher-dimensional marginal posterior to obtain a more efficient approximation.
@@ -160,7 +161,6 @@ Before we formulate the posterior distribution, we carefully define $\bm{\theta}
 	\caption[Prior Samples of $\bm{T}$ according to the respective hyper-prior distribution.]{Prior samples from the hyper-prior distribution of $\bm{h}_T$, $\bm{a}$ and $T_0$, as defined in Tab.~\ref{tab:priors}, where we calculate $\bm{T}$ according to the function in Eq.~\ref{eq:tempFunc}.}
 	\label{fig:PriorTemp}
 \end{figure}
-
 \begin{figure}[ht!]
 	\centering
 	\input{TruePress.pdf_tex}
@@ -218,7 +218,7 @@ with $\lambda= \delta / \gamma$,
 		&\text{and } g(\bm{\theta}_{\bm{p}, \bm{T}},\lambda) = \log \det \big(\bm{A}(\bm{\theta}_{\bm{p}, \bm{T}})^T  \bm{A}(\bm{\theta}_{\bm{p}, \bm{T}}) + \lambda \bm{L}\big) \label{eq:gFullAppl} \, .
 	\end{align}
 \end{subequations}
-For each evaluation of $\pi( \bm{\theta}_{\bm{p}, \bm{T}},\lambda,\gamma  | \bm{y})$ we compose $\bm{A}_L(\bm{\theta}_{\bm{p}, \bm{T}})$ as in Chapter~\ref{ch:formodel}, and calculate $f$ and $g$ directly using the Cholesky decomposition via the Python functions \texttt{np.linalg.cholesky} \texttt{scy.linalg.cho\_solve}.
+For each evaluation of $\pi( \bm{\theta}_{\bm{p}, \bm{T}},\lambda,\gamma  | \bm{y})$ we compose$\bm{A}_{\bm{\theta}_{\bm{p}, \bm{T}}} \coloneqq \bm{M}\bm{A}_L(\bm{\theta}_{\bm{p}, \bm{T}})$ as in Chapter~\ref{ch:formodel}, and calculate $f$ and $g$ directly using the Cholesky decomposition via the Python functions \texttt{np.linalg.cholesky} \texttt{scy.linalg.cho\_solve}.
 
 
 \subsubsection{Sampling from marginal posterior}
@@ -347,6 +347,9 @@ We plot the marginals for each hyper-parameter in Fig.~\ref{fig:PostHistTT0} to 
 We observe that, besides $\lambda$ and $\gamma$, only the marginal posterior of the $b$ hyper-parameter is seriously affected by the data and has significantly changed compared to the hyper-prior distribution.
 \clearpage
 \subsubsection{Posterior pressure and temperature}
+sample hyper-parameter samples directly from the marginal posterior to compute posterior temperature and pressure profiles according to their respective function (see Eq.~\ref{eq:tempFunc} and Eq.~\ref{eq:pressFunc}). 
+We plot posterior temperature in Fig.~\ref{fig:TempPost} and pressure in Fig.~\ref{fig:PressPost}.
+
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{TempPostMeanSigm.png} 
@@ -362,21 +365,20 @@ We observe that, besides $\lambda$ and $\gamma$, only the marginal posterior of 
 \end{figure}
 \clearpage
 \subsection{Full Conditional Posterior -- Ozone}
-We use the RTO method (see Sec.~\ref{subsec:RTO}) to obtain ozone samples from the full conditional posterior and sample hyper-parameter samples directly from the marginal posterior to compute posterior temperature and pressure profiles according to their respective function (see Eq.~\ref{eq:tempFunc} and Eq.~\ref{eq:pressFunc}). 
-We plot posterior profiles of ozone in Fig.~\ref{fig:O3Post}, temperature in Fig.~\ref{fig:TempPost} and pressure in Fig.~\ref{fig:PressPost}.
-
+We use the RTO method to obtain ozone samples from the full conditional posterior and 
+We plot posterior profiles of ozone in Fig.~\ref{fig:O3Post}, 
+Where we condotioned on indepdent samples from the marginal posteiror.
 
 
 \subsubsection{Randomise then optimise}
 \label{subsec:RTO} 
-If it is computationally not feasible to calculate the mean and the covariance matrix of the full posterior (see Eq.~\ref{eq:MeanGenInt} and~\ref{eq:CoVarGenInt}) via quadrature due to a large number of hyper-parameters, e.g. $\bm{\theta} \in \mathbb{R}^{n_{\bm{\theta}}}$ and $n_{\bm{\theta}} \geq 4$, we need an alternative way to draw samples from $\pi(\bm{x} |  \bm{\theta}, \bm{y})$.
-For the linear-Gaussian Bayesian model, we condition on $\bm{\theta}$ and draw samples from the full conditional normal posterior distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the RTO method~\cite{bardsley2012mcmc}.
+Because it is computationally not feasible to calculate the mean and the covariance matrix of the full posterior (see Eq.~\ref{eq:MeanGenInt} and~\ref{eq:CoVarGenInt}) via quadrature due to the large number of hyper-parameters in$( \bm{\theta}_{\bm{p}, \bm{T}},\lambda,\gamma $ , we need an alter nice way to sample from the full conditional normal posterior distribution $\pi(\bm{x} |  \bm{\theta}, \bm{y})$ using the RTO method~\cite{bardsley2012mcmc}.
 \textcolor{red}{OK, another condition and another method. You definitelu need some kind of explanatory introduction to this, So these are going to be specific elgorithms, but this section is 'general', so these end up being waffly and of no clear purpose. You have some work to do.}
 
 The full conditional posterior, as in Eq.~\ref{eq:CondPostLin}, can be rewritten as
 \begin{align}
 	\pi(\bm{x} | \bm{\theta},  \bm{y}) & \propto \pi(\bm{y}|\bm{x}, \bm{\theta}) \pi(\bm{x}| \bm{\theta})\\
-	&\propto \exp \left(-\frac{1}{2} (\bm{A}_{\bm{\theta}} \, \bm{x} - \bm{y})^T \bm{\Sigma}^{-1}_{\bm{\theta}} (\bm{A}_{\bm{\theta}} \,  \bm{x} - \bm{y})\right) \exp \left(-\frac{1}{2} (\bm{\mu} - \bm{x} )^T \bm{Q}_{\bm{\theta}}(\bm{\mu} - \bm{x} ) \right),\\
+	&\propto \exp \left(-\frac{1}{2} (\bm{A}_{\bm{\theta}}  \bm{x} - \bm{y})^T \bm{\Sigma}^{-1}_{\gamma} (\bm{A}_{\bm{\theta}}   \bm{x} - \bm{y})\right) \exp \left(-\frac{1}{2} (\bm{\mu} - \bm{x} )^T \bm{Q}_{\delta}(\bm{\mu} - \bm{x} ) \right),\\
 	& = \exp \left( - \frac{1}{2}\left\lVert \hat{\bm{A}} \bm{x} - \hat{\bm{y}} \right\rVert_{L^2}^2 \right),
 \end{align}
 where we define
@@ -384,16 +386,16 @@ where we define
 	\label{eq:minimizer}
 	\hat{\bm{A}} \coloneqq 
 	\begin{bmatrix}
-		\bm{\Sigma}_{\bm{\theta}}^{-1/2} \bm{A}_{\bm{\theta}} \\
-		\bm{Q}_{\bm{\theta}}^{1/2}
+		\bm{\Sigma}_{\gamma}^{-1/2} \bm{A}_{\bm{\theta}} \ \\
+		\bm{Q}_{\delta}^{1/2}
 	\end{bmatrix}, \quad 
 	\hat{\bm{y}} \coloneqq 
 	\begin{bmatrix}
-		\bm{\Sigma}_{\bm{\theta}}^{-1/2} \bm{y} \\
-		\bm{Q}_{\bm{\theta}}^{1/2} \bm{\mu}
-	\end{bmatrix} \quad \text{\cite{bardsley2014randomize,BardsleyTC2019RTO}}\, ,
+		\bm{\Sigma}_{\gamma}^{-1/2} \bm{y} \\
+		\bm{Q}_{\delta}^{1/2} \bm{\mu}
+	\end{bmatrix} , ,
 \end{align}
-with $\bm{A}(\bm{\theta}) \coloneqq \bm{A}_{\bm{\theta}}$, $\bm{Q}(\bm{\theta}) \coloneqq \bm{Q}_{\bm{\theta}} $ and $\bm{\Sigma}^{-1}(\bm{\theta})\coloneqq \bm{\Sigma}^{-1}_{\bm{\theta}}$, which are all dependent on the hyper-parameters $\bm{\theta}$.
+with $\bm{Q}_{\delta}$ is the prior precions  and prior mean $\bm{\mu}$and $\bm{\Sigma}_{\gamma}$ noise covariance \cite{bardsley2014randomize,BardsleyTC2019RTO}.
 A sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}, \bm{y}) $ from the full conditional posterior is obtained by minimising the following equation with respect to $\bm{x}$ :
 \begin{align}
 	\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
@@ -402,12 +404,21 @@ where we add a random perturbation $\bm{b}$.
 Similar to Section~\ref{sec:regularise}, this expression becomes
 \begin{align}
 	\label{eq:RTO}
-	\left( \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{A}_{\bm{\theta}} + \bm{Q}_{\bm{\theta}} \right) \bm{x}^{(k)} = \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{y} + \bm{Q}_{\bm{\theta}} \bm{\mu} + \bm{v}_1 + \bm{v}_2,
+	\left( \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} + \bm{Q}_{\delta} \right) \bm{x}^{(k)} = \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{y} + \bm{Q}_{\delta} \bm{\mu} + \bm{v}_1 + \bm{v}_2,
 \end{align}
 %where the term $-\hat{\bm{A}}^T \bm{b}$ is decomposed as $\bm{v}_1 + \bm{v}_2$, 
-with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\bm{\theta}} \bm{A}_{\bm{\theta}})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\bm{\theta}})$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
+with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\delta})$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
 
 
+
+\subsubsection{Posterior ozone samples}
+with $\bm{Q}_{\delta} = \delta  \bm{L} $ and $\bm{\Sigma}^{-1}_{gamma} = \gamma \bm{I}$
+Now more explicilty we draw an independent $\bm{\theta}^{(k)}_{\bm{p}, \bm{T}},\lambda^{(k)},\gamma^{(k)} \sim \pi(\bm{\theta}_{\bm{p}, \bm{T}},\lambda,\gamma | \bm{y})$ and solve for 
+\begin{align}
+	\label{eq:RTO}
+	\bm{x}^{(k)} = 	\left(  \gamma^{(k)} \bm{A}_{\bm{\theta}^{(k)}}^T\bm{A}_{\bm{\theta}^{(k)}} +  \delta^{(k)}\bm{L} \right)^{-1} \left(  \gamma^{(k)}  \bm{A}_{\bm{\theta}^{(k)}}^T\bm{y} +\sqrt{\gamma^{(k)}} \bm{A}_{\bm{\theta}^{(k)}}^T \bm{v}_1 + \sqrt{\delta^{(k)}}\bm{L}^{1/2}\bm{v}_2\right),
+\end{align}
+with $\bm{v}_1 \sim \mathcal{N}(\bm{0},  \bm{I}_m )$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{I}_n )$,  $\bm{L}^{1/2}$ is the Cholesky factorization of $\bm{L}$ \cite{bardsley2012mcmc}.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{FullO3Res.png}
