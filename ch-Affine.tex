@@ -6,7 +6,7 @@
 The forward map, introduced in Chapter~\ref{ch:formodel}, poses a weakly non-linear forward problem.
 One could tackle the non-linearity by treating the inverse problem as a linear inverse problem and then iteratively updating the non-linear part after each parameter sample.
 Instead, as in Fig.~\ref{fig:affinStrat} illustrated, we approximate the non-linear model using an affine map, which is a linear map with a translation, e.g. $\bm{A}\bm{x} + \bm{b}$, and maps Gaussians onto Gaussians.
-Here we find an affine map $\bm{M}$ based on the linear model $\bm{A}_L$ that provides an approximation of the non-linear model $\bm{A}(\bm{x})$ for parameters $\bm{x}$ around the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$.
+Here we find an affine map $\bm{M}$ based on the linear model $\bm{A}_L$ that provides an approximation of the non-linear model $\bm{A}(\bm{x})$ for parameters $\bm{x}$ near the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$.
 \begin{figure}[htb!]
 	\centering
 	\begin{tikzpicture}

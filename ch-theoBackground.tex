@@ -593,7 +593,7 @@ Eq.~\ref{eq:lastRegDiff} yields the regularised solution
 	\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L})^{-1} \bm{A}^T \bm{y} \, , \label{eq:regSol}
 \end{align}
 where we define $\bm{L} \coloneqq \bm{T}^T \bm{T}$.
-Typically, $\bm{L} $ represents a discrete matrix approximation of a derivative operator~\cite{tan2016LecNot}.
+Typically, $\bm{L} $ represents a discrete matrix approximation of a differential operator~\cite{tan2016LecNot}.
 %\textcolor{red}{more sentence creep. Yoiu need to define L separately, what is a "differential operator choice"? This reads very strangely.}
 For example
 \begin{align}
@@ -635,18 +635,22 @@ In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and 
 Based on the trade-off between the data misfit and the regularisation norm, the regularisation solution corresponds to the point of maximum curvature of the L-curve~\cite{hansen1993use}.
 %\textcolor{red}{you use of the tem 'optimal' is offensive -- because it is a tautology that you define 'optimal' to mean that it is given by the L-curve. So, say it is optimal because it is given by th eL-curve is saying nothing, other than defining what you mean by an 'optimal regularisation parameter'. If that's what you want to say, then say it. otherwise this sentence is content free. }
 
-Alternatively one can introduce a Lagrangian $\mathcal{L}(\bm{x},\lambda)\coloneqq\lambda\bm{x}^T\bm{L} \bm{x}+\left\lVert\bm{y}-\bm{A}\bm{x}\right\rVert^2_{L^2}$ similar to \cite{LiLagrange}.
-Then a solution $\bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$ minimises the squared regularisation norm with respect to constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2_{L^2}$ (see~\cite[fn. 6]{fox2016fast} and~\cite[Fig. 2.13]{SANTOSH202265}). 
+\begin{figure}[ht!]
+	\centering
+	\input{Lagrangian.pdf_tex}
+	\caption[]{This Figure is directly inspired by~\cite{ColinPhD} and shows how a solution $ \bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$ subject to the constraint $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2_{L^2}= c$ is obtained.}
+	\label{fig:Langrangian}
+\end{figure}
+Alternatively one can introduce a Lagrangian $\mathcal{L}(\bm{x},\lambda)\coloneqq \left\lVert\bm{y}-\bm{A}\bm{x}\right\rVert^2_{L^2} + \lambda\bm{x}^T\bm{L} \bm{x}$ similar to \cite{LiLagrange}, where $\lambda$ is a Lagrange multiplier.
+A solution $\bm{x}_{\lambda} $ that minimises $\mathcal{L}(\bm{x},\lambda)$ is usually obtained by finding the minimum of $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2_{L^2}$ with respect to the constant constrained $\bm{x}^T \bm{L} \bm{x} = c$.
+This is equivalent to $\bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$  subject to constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2_{L^2}= c$ (see~\cite[fn. 6]{fox2016fast} and~\cite[Fig. 2.13]{SANTOSH202265}). 
 %\textcolor{red}{You need to fix this sentence, as L(x,lambda) is not a Lagrange multiplier -- it does have a name, and you should use it and not wite sentences that say : I introduce the chicken p=7 which minimizes frog. }
 So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and \textcolor{red}{the L-Curve presents the limit to on an open set of $\bm{x}$}.
 Hence, every sample of the posterior, which represents a feasible solution given the data, lies above the L-Curve because it is less regularised and has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
-\textcolor{red}{So regularised solutions are representative of the posterior parameter space.}
+\textcolor{red}{So regularised solutions do not represent the posterior parameter space.}
+
 %\textcolor{red}{not accurate enough}
-
-\textcolor{red}{say on or above - -do any points in the posterior actually lie in the L-Cerve, I don't think so. Are you claiming that the regularised solutions are in the posterior? The L-curve could be the limit of an open set.}
-
-
-
+%\textcolor{red}{say on or above - -do any points in the posterior actually lie in the L-Cerve, I don't think so. Are you claiming that the regularised solutions are in the posterior? The L-curve could be the limit of an open set.}
 %Now consider the 2-Wasserstein distance
 %\begin{align}
 %	W_2(\pi,\tilde{\pi}) = \underset{  \nu \in \Pi(\pi,\tilde{\pi}) }{ \text{inf}}  \Bigg(\int_{\mathcal{X} \times \mathcal{X}} c(\bm{x},\tilde{\bm{x}})^2 \, \nu(\bm{x},\tilde{\bm{x}}) d\bm{x} d\tilde{\bm{x}} \Bigg)^{1/2}

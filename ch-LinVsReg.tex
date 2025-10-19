@@ -2,12 +2,11 @@
 \label{ch:LinVsReg}
 \thispagestyle{empty}
 
-In this Chapter we set up an hierarchiacal Bayesian model and apply the MTC method to provide posterior ozone profiles.
-In this chapter, we guide the reader through the process of setting up a Bayesian framework and ultimately obtaining the posterior distributions of hyper-parameters and parameters of interest, DAGs to visualise hierarchical and conditional depdenseies of the parameters establish a choice of prior distributions within our Bayesian model and formulate the posterior distributions.
+In this Chapter we guide the reader through the process of setting up a hierarchical Bayesian framework use a DAG to visualise conditional dependencies between hyper-parameters and parameters.
+We establish a choice of prior distributions within our Bayesian model and applying the MTC we formulate the marginal and full conditional posterior distribution.
 We treat this inverse problem as a linear inverse problem by neglecting the absorption term in RTE (see Eq.~\ref{eq:RTE}).
-We employ a Metrolpis within Gibbs sampler and a TT approxiamtion to characterise the marginal posterior and elaborate on some errors.
-Then we calculate the mean and the covariance matrix ofposterior for ozone,
-Lastly, we compare to a regualrisaiotn approach.
+We employ a Metropolis within Gibbs sampler and a TT approximation to characterise the marginal posterior and elaborate on some errors.
+Then we calculate the mean and the covariance matrix of the posterior distribution for ozone and compare to a regularisation approach.
 
 
 
@@ -125,7 +124,7 @@ As already mentioned, we set the precision matrix of that prior distribution to
 	\label{eq:GLapl} 
 \end{align}
 which is a 1-dimensional Graph Laplacian as in~\cite{wang2015graphs,fox2016fast} with Dirichlet boundary condition.
-This matrix will also act as the regulariser later in Sec.~\ref{sec:regularise}.
+This matrix will also act as the regulariser later in Sec.~\ref{sec:SolByReg}.
 We reduce the dimension of $\bm{x}$ from $45$ to $34$ by discarding every second ozone VMR over a height of $\approx47$km.
 Doing that, while not changing $\bm{L}$, we effectively induce a larger correlation between points at higher altitude.
 We plot the corresponding prior ozone profiles according to $\bm{x}\sim \mathcal{N}(0, (\delta \bm{L})^{-1})$ in Fig.~\ref{fig:O3Prior}.
@@ -169,8 +168,10 @@ Note that when changing variables from $\delta = \lambda \gamma$ to $\lambda$ th
 	\caption[Functions $f(\lambda)$ and $g(\lambda)$ of 2D marginal posterior.]{Functions $f(\lambda)$ and $g(\lambda)$ from the marginal posterior in Eq.~\ref{eq:MargPostAppl} for a wide range of $\lambda = \delta / \gamma$. We plot the approximations (see Eq.~\ref{eq:fAprox} and Eq.~\ref{eq:gAprox}) in black around the mode of the marginal posterior (vertical line) for the sampling range of $\lambda$ within the MWG algorithm.}
 	\label{fig:fandg}
 \end{figure}
-For each evaluation of the marginal posterior most of the computational effort lies in the calculation of $f(\lambda)$ and $g(\lambda)$, which we evaluate using the Cholesky decomposition $\bm{A}^T  \bm{A} + \lambda \bm{L} = \bm{C}_{\lambda} \bm{C}_{\lambda}^T$.
-More specifically we solve for $(\bm{A}^T  \bm{A} + \lambda \bm{L})^{-1} (\bm{A}^T \bm{y})$ via \texttt{scipy.linalg.cho\_solve} and calculate the $g(\lambda) = 2 \sum \log \text{diag}(\bm{C}_{\lambda}) $.
+For each evaluation of the marginal posterior most of the computational effort lies in the calculation of $f(\lambda)$ and $g(\lambda)$.
+Obtaining the Cholesky decomposition $\bm{A}^T  \bm{A} + \lambda \bm{L} = \bm{C}_{\lambda} \bm{C}_{\lambda}^T$ via \texttt{numpy.linalg.cholesky} immediately gives $g(\lambda) = 2 \sum \log \text{diag}(\bm{C}_{\lambda}) $.
+Additionally to the Cholesky decomposition of $\bm{A}^T  \bm{A} + \lambda \bm{L}$, the Python function \texttt{scipy.linalg.cho\_solve} is used to solve for $(\bm{A}^T  \bm{A} + \lambda \bm{L})^{-1} (\bm{A}^T \bm{y})$ to calculate $f(\lambda)$.
+If that is not too expensive one may consider a 
 In  Fig.~\ref{fig:fandg} we see that $f(\lambda)$ and $g(\lambda)$ are well behaved within the region of interest.
 Because of this, we approximate $f(\lambda) \approx \tilde{f}(\lambda)$ with a Taylor series and $\tilde{g}(\lambda) \approx g(\lambda)$ with a linear approximation in $\lambda$ log-space around the mode $\lambda_0$ of $\pi(\lambda, \gamma | \bm{y})$.
 The Taylor series coefficient of $f(\lambda)$ is given by
@@ -277,10 +278,11 @@ The IACTs is given by twice the value of the Python implementation of~\cite{wolf
 \subsubsection{TT approximation of marginal posterior}
 Alternatively, we can utilise a TT approximation of the square root of the marginal posterior over a predefined grid and calculate the marginals $\pi(\gamma|\bm{y})$ and $\pi(\lambda|\bm{y})$ (see Sec. \ref{subsec:TTMarg}).
 
-We predefined the univariate grid with $n = 20$ grid points (see Fig. \ref{fig:MeanVarError}) over $\gamma = [ 0.8 \times 10^{15},1.2 \times 10^{16}]$ and $\lambda = [ 10^{-5}, 8 \times 10^{-4}]$.
-We introduce a ``normalisation constant'' $c = - 300/2$ to avoid underflow so that the values of $\sqrt{\pi( \lambda,\gamma| \bm{y})} = \exp \{ 0.5 \log  \pi(\lambda,\gamma | \bm{y}) + c \} $ are within computer precision.
+We predefine the univariate grid with $n = 20$ grid points (see Fig. \ref{fig:MeanVarError}) over $\gamma = [ 0.8 \times 10^{15},1.2 \times 10^{16}]$ and $\lambda = [ 10^{-5}, 8 \times 10^{-4}]$.
+The ``normalisation constant'' is set to $c=-150$ so that the values of $\sqrt{\pi( \lambda,\gamma| \bm{y})} = \exp \{ 0.5 \log  \pi(\lambda,\gamma | \bm{y}) + c \} $ are within computer precision.
+ %-320/2
 Then we initialise the~\texttt{tt.cross.rectcross.rect\_cross.cross} function based on the TT cross algorithm in \cite{OSELEDETS2010TTCross,Dolgov2018TTCross} from the Python package \texttt{ttpy}~\cite{Oseledets2018ttpy} with a random tensor.
-The number of ranks is set to constant $r = 4$, we do 1 sweep with $2n_{\text{sweeps}}2nr =400$ function evaluations and obtain a TT approximation of $\pi( \lambda,\gamma| \bm{y})$ in about $0.02$s.
+The number of ranks $r = 4$ is constant and we do one sweep with $2n_{\text{sweeps}}2nr =400$ function evaluations and obtain a TT approximation of $\pi( \lambda,\gamma| \bm{y})$ in about $0.02$s.
 Ironically, this the same number of functions evaluations to approximate a $20 \times 20$ point grid.
 The TT format is especially advantageous for larger grid sizes and higher dimensional parameter spaces.
 To compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ we set the TT error $\xi = 1 / \uplambda (\mathcal{X})$ and $\uplambda(x) = 1$, so that for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ (see Eq.~\ref{eq:MassMat}).
@@ -429,6 +431,7 @@ This sets the TT grid size and the number of evaluations of $\bm{x}_{\lambda}$ i
 
 
 \section{Solution by Regularisation}
+\label{sec:SolByReg}
 Since we claim that the Bayesian approach is superior to regularisation methods, we compare the MTC method to a regularisation approach, which is most similar to our chosen linear-Gaussian Bayesian framework~\cite{fox2016fast}.
 
 The regularised solution is defined as in~\cite{hansen2010discrete, fox2016fast} 
