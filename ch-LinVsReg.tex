@@ -129,7 +129,7 @@ Doing that, while not changing $\bm{L}$, we effectively induce a larger correlat
 We plot the corresponding prior ozone profiles according to $\bm{x}\sim \mathcal{N}(0, (\delta \bm{L})^{-1})$ in Fig.~\ref{fig:O3Prior}.
 
 For $\delta$ and $\gamma$ we pick relatively uninformative gamma distributions so that $\gamma \sim \mathcal{T}(\bm{\theta_{\gamma}}) \propto \gamma^{\alpha_\gamma -1 } \exp{( -\beta_\gamma \gamma) } $ and $\delta \sim \mathcal{T}(\bm{\theta_{\delta}})$, where $\bm{\theta_{\gamma}} = \{  \alpha_\gamma, \beta_\gamma\}  = \{ \alpha_\delta ,\beta_\delta\} = \bm{\theta_{\delta}} = (1,10^{-35})$ (see Fig.~\ref{fig:MargPostHistTT}) similar to \cite{fox2016fast}.
-Those gamma distributions have another advantage when using the Metropolis within Gibbs algorithm, as in Sec.~\ref{subsec:MWG} to sample from the marginal posterior distribution $\pi(\delta, \gamma | \bm{y})$, where then $\pi(\gamma | \lambda, \bm{y}) \sim \mathcal{T}(\cdot)$ is a gamma distribution with $\lambda = \delta / \gamma $, and easy to sample from.
+Those gamma distributions have another advantage when using the Metropolis within Gibbs algorithm, as in Sec.~\ref{subsec:MWG}, to sample from the marginal posterior distribution $\pi(\delta, \gamma | \bm{y})$, where then $\pi(\gamma | \lambda, \bm{y}) \sim \mathcal{T}(\cdot)$ is a gamma distribution with $\lambda = \delta / \gamma $, and easy to sample from.
 
 \section{Posterior Distribution}
 \label{sec:FirstO3Post}
