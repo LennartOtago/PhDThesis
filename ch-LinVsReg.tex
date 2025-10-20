@@ -2,12 +2,11 @@
 \label{ch:LinVsReg}
 \thispagestyle{empty}
 
-In this Chapter we guide the reader through the process of setting up a hierarchical Bayesian framework use a DAG to visualise conditional dependencies between hyper-parameters and parameters.
-We establish a choice of prior distributions within our Bayesian model and applying the MTC we formulate the marginal and full conditional posterior distribution.
-We treat this inverse problem as a linear inverse problem by neglecting the absorption term in RTE (see Eq.~\ref{eq:RTE}).
-We employ a Metropolis within Gibbs sampler and a TT approximation to characterise the marginal posterior and elaborate on some errors.
-Then we calculate the mean and the covariance matrix of the posterior distribution for ozone and compare to a regularisation approach.
-
+In this Chapter, we guide the reader through the process of setting up a hierarchical Bayesian framework, establishing a choice of prior distributions, and using a DAG to visualise conditional dependencies between hyper-parameters and parameters.
+Applying the MTC scheme the marginal and then full conditional posterior distributions are explicitly formulated.
+Here this inverse problem is treated as a linear inverse problem by neglecting the absorption term in RTE (see Eq.~\ref{eq:RTE}).
+A Metropolis within Gibbs sampler and a TT approximation to characterise the marginal posterior are utilised.
+Then we calculate the mean and the covariance matrix of the posterior distribution for ozone and compare it to a regularisation approach.
 
 
 \section{Hierarchical Bayesian Framework}
@@ -63,21 +62,21 @@ Then we calculate the mean and the covariance matrix of the posterior distributi
 	\label{fig:DAGO3}
 \end{figure}
 In this section, we set up the hierarchically-ordered linear-Gaussian Bayesian framework to determine the ozone posterior distribution, conditioned on ground truth temperature and pressure.
-Where, for now, we define the forward model matrix $\bm{A} \coloneqq \bm{A}_L$ and define the distributions of that Bayesian model, similarly to a regularisation approach, as:
+For now the forward model matrix is defined as $\bm{A} \coloneqq \bm{A}_L$ and the distributions of that Bayesian model are:
 \begin{subequations}
+		\label{eq:O3BayMode}
 	\begin{align}
 		\bm{y} |  \bm{x},\gamma,\delta  &\sim \mathcal{N}(\bm{A} \, \bm{x}, \gamma^{-1} \bm{I}) \label{eq:likelihoodAppl} \\
 		\bm{x}| \delta  &\sim \mathcal{N}(\bm{0}, (\delta \bm{L})^{-1} ) \label{eq:priorXAppl} \\
 		\delta  &\sim \Gamma(\alpha_{\delta}, \beta_{\delta})\label{eq:priorDelAppl} \\
 		\gamma  &\sim \Gamma(\alpha_{\gamma}, \beta_{\gamma})\label{eq:priorGamAppl} \, .
 	\end{align} 
-	\label{eq:O3BayMode}
 \end{subequations}
 Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \bm{I})$, the likelihood function is a normal distribution with mean $\bm{A} \bm{x}$ and covariance matrix $\gamma^{-1} \bm{I}$.
-We define the normal prior-distribution $\pi(\bm{x}|\delta)$ with zero mean and precision matrix $\delta \bm{L}$, where $\delta$ is a smoothness hyper-parameter and $\bm{L}$ is the second order discrete derivate operator (see Eq.~\ref{eq:GLapl}).
+We define the normal prior-distribution $\pi(\bm{x}|\delta)$ with zero mean and precision matrix $\delta \bm{L}$, where $\delta$ is a smoothness hyper-parameter and $\bm{L}$ is a discrete approximation to the second derivate operator (see Eq.~\ref{eq:GLapl}).
 Here the hyper-prior distributions $\pi(\delta)$ and $\pi(\gamma)$ are gamma distributions with shape $\alpha$ and rate $\beta$.
 
-We can visualise this hierarchical structure and the correlations between different hyper-parameters and parameters through a DAG, as in Fig.~\ref{fig:DAGO3}.
+We can visualise this hierarchical structure and the conditional dependencies between hyper-parameters and parameters through a DAG, as in Fig.~\ref{fig:DAGO3}.
 The hyper-parameter $\gamma$ sets the noise covariance deterministically (dotted line), but is itself statistically (solid line) defined by the hyper-prior distribution $\pi(\gamma)$.
 This is a gamma distribution, where $\bm{\theta}_{\gamma}$ determines the shape and rate of $\pi(\gamma)$.
 Similarly $\bm{\theta}_{\delta}$ defines $\pi(\delta)$, where $\delta$ accounts for smoothness of the ozone profile and sets the prior precision $\bm{Q}(\delta)$.
@@ -123,14 +122,14 @@ As already mentioned, we set the precision matrix of that prior distribution to
 	\end{bmatrix} 
 	\label{eq:GLapl} 
 \end{align}
-which is a 1-dimensional Graph Laplacian as in~\cite{wang2015graphs,fox2016fast} with Dirichlet boundary condition.
+which is discrete approximation to the second derivate operator with Dirichlet boundary condition and defines a 1-dimensional Graph Laplacian as in~\cite{wang2015graphs, fox2016fast}.
 This matrix will also act as the regulariser later in Sec.~\ref{sec:SolByReg}.
 We reduce the dimension of $\bm{x}$ from $45$ to $34$ by discarding every second ozone VMR over a height of $\approx47$km.
 Doing that, while not changing $\bm{L}$, we effectively induce a larger correlation between points at higher altitude.
 We plot the corresponding prior ozone profiles according to $\bm{x}\sim \mathcal{N}(0, (\delta \bm{L})^{-1})$ in Fig.~\ref{fig:O3Prior}.
 
 For $\delta$ and $\gamma$ we pick relatively uninformative gamma distributions so that $\gamma \sim \mathcal{T}(\bm{\theta_{\gamma}}) \propto \gamma^{\alpha_\gamma -1 } \exp{( -\beta_\gamma \gamma) } $ and $\delta \sim \mathcal{T}(\bm{\theta_{\delta}})$, where $\bm{\theta_{\gamma}} = \{  \alpha_\gamma, \beta_\gamma\}  = \{ \alpha_\delta ,\beta_\delta\} = \bm{\theta_{\delta}} = (1,10^{-35})$ (see Fig.~\ref{fig:MargPostHistTT}) similar to \cite{fox2016fast}.
-Those gamma distributions have another advantage when using the MWG algorithm to sample from the marginal posterior distribution $\pi(\delta, \gamma | \bm{y})$, where then $\pi(\gamma | \lambda, \bm{y}) \sim \mathcal{T}(\cdot)$ is a gamma distribution with $\lambda = \delta / \gamma $, and easy to sample from.
+Those gamma distributions have another advantage when using the Metropolis within Gibbs algorithm, as in Sec.~\ref{subsec:MWG} to sample from the marginal posterior distribution $\pi(\delta, \gamma | \bm{y})$, where then $\pi(\gamma | \lambda, \bm{y}) \sim \mathcal{T}(\cdot)$ is a gamma distribution with $\lambda = \delta / \gamma $, and easy to sample from.
 
 \section{Posterior Distribution}
 \label{sec:FirstO3Post}

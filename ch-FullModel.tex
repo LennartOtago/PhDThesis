@@ -280,12 +280,12 @@ Hyper-parameters describing temperature at higher altitudes are very much uncorr
 
 
 \paragraph{Find optimal rank and grid size}
-Next, the aim is to decrease the number of function evaluation and to determine the optimal rank and grid size without loosing too much accuracy of the marginal posterior approximation.
+The aim is to decrease the number of function evaluations and to determine the optimal rank and grid size without losing too much accuracy of the marginal posterior approximation.
 For stable and comparable results, we do five sweeps within \linebreak the~\texttt{tt.cross.rectcross.rect\_cross.cross} python function initialised at a random TT, where the ranks between TT cores are constant.
-Then we draw $1000$ independent samples from the TT approximation of the marginal posterior via the SIRT-MH scheme. 
-First, we set the number of grid points to $n = 150$ and calculate different error measures for ranks $\{2,3,4,5,6,7,8,9,10,11,12,13,14,15, 20, 25, 30, 35, 50\}$.
+Then $1000$ independent samples from the TT approximation of the marginal posterior via the SIRT-MH scheme are drawn. 
+First, the number of grid points is set to $n = 150$ and different error measures for ranks $\{2,3,4,5,6,7,8,9,10,11,12,13,14,15, 20, 25, 30, 35, 50\}$ are calculated.
 We compare to true marginal posterior function values and $1000$ independent t-walk samples to find a small but tolerable rank.
-Then we fix a rank and decrease the number of grid points $\{10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 90, 100\}$ until sufficient accuracy.
+Then with a fixed rank the number of grid points $\{10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 90, 100\}$ is decreased until sufficient accuracy.
 
 \begin{figure}[ht!]
 	\centering% will be the left-side figure
@@ -298,17 +298,17 @@ One of the error measures is the 1-Wasserstein distance $W_1$ (blue crosses in F
 The  1-Wasserstein distance is calculated between the SIRT-MH samples $\tilde{\bm{x}} \sim \tilde{\pi}$ weighted with the TT approximation $\tilde{\pi}$ of marginal posterior and the t-walk samples $\bm{x} \sim \pi$ weighted by $\pi$, the true marginal posterior values.
 We use the \texttt{SamplesLoss("sinkhorn", p=1, blur=0.05, scaling=0.8)} function with default settings from the Python package \texttt{geomloss}~\cite{Wassersteinaccess} to obtain $W_1$.
 This function provides the unbiased Sinkhorn divergence, which converges towards the Wasserstein distance and can be understood as the generalised Quicksort algorithm~\cite{feydy2020OT}.
-Here, p = 1 defines the distance measure $\lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2}$, the blur parameter is an entropic penalty and the scaling parameter specifies the trade-off between speed (scaling $< 0.4$) and accuracy (scaling $>0.9$)~\cite{Wassersteinaccess}.
+Here p = 1 defines the distance measure $\lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2}$, the blur parameter is an entropic penalty and the scaling parameter specifies the trade-off between speed (scaling $< 0.4$) and accuracy (scaling $>0.9$)~\cite{Wassersteinaccess}.
 Additionally, the marginal functions of each TT approximation are used to calculate the quadrature-based means $\bm{\mu}_{\text{TT}} \in \mathbb{R}^{18}$ of each hyper-parameter by weighted expectations, and to obtain the relative RMS difference $\lVert\bm{\mu}_{\text{TT}} - \bm{\mu}_{\text{t-walk}} \rVert_{L^2} / \lVert \bm{\mu}_{\text{t-walk}} \rVert_{L^2} $ (black dots in Fig.~\ref{fig:FindRankGrid}).
-Here, $\bm{\mu}_{\text{t-walk}}$ denotes the ``true sample-based means'' from the t-walk.
+The ``true sample-based means'' from the t-walk are denoted as $\bm{\mu}_{\text{t-walk}}$.
 Further, we calculate the relative RMS between the SIRT-MH sample-based mean $\bm{\mu}_{\text{SIRT-MH}}$ and $\bm{\mu}_{\text{t-walk}}$  (red circles in Fig.~\ref{fig:FindRankGrid}), and the relative RMS error at SIRT-MH samples compared to ground truth function values (orange squares in Fig.~\ref{fig:FindRankGrid}).
 
-We plot all of these measures in Fig.~\ref{fig:FindRankGrid}, where we observe that a rank $r = 10$ is sufficient because the error measures are relatively stable for $r\geq10$.
-Then we decrease the grid size and decide that for $n \geq 30$ the relative differences of sample-based means to $\bm{\mu}_{\text{t-walk}}$ (red circles in Fig.~\ref{fig:FindRankGrid}) and the RMS error at the SIRT-MH samples (orange squares in Fig.~\ref{fig:FindRankGrid}) of around $ 10\%$ is good enough.
-Since for an increasing number of grid points, the interpolation between grid points is more accurate, the sample-based relative errors decrease, since the chosen linear interpolation (see Eq.~\ref{eq:LinPol}) is a rather rudimentary choice.
+We plot all of these measures in Fig.~\ref{fig:FindRankGrid} and observe that a rank $r = 10$ is sufficient because the error measures are relatively stable for $r\geq10$.
+For a grid size $n \geq 30$ the relative differences of sample-based means to $\bm{\mu}_{\text{t-walk}}$ (red circles in Fig.~\ref{fig:FindRankGrid}) and the RMS error at the SIRT-MH samples (orange squares in Fig.~\ref{fig:FindRankGrid}) are around $ 10\%$ and considered good enough.
+For an increasing number of grid points the interpolation of function values between grid points is more accurate and the sample-based relative errors decrease, since the chosen linear interpolation (see Eq.~\ref{eq:LinPol}) is a rather rudimentary choice.
 The quadrature-based relative expectation error (black dots in Fig.~\ref{fig:FindRankGrid}) is almost constant for ranks $ \gtrsim 7$ and grid sizes $ > 20$.
-Since the hyper-parameters have different length scales, we are only interested in the trend of the 1-Wasserstein distance (blue crosses in Fig.~\ref{fig:FindRankGrid}).
-Since the 1-Wasserstein distance is sample-based, it is quite fluctuant but decreases with increasing ranks and stays within a similar range for decreasing grid size.
+Since the hyper-parameters have different length scales, we are only interested in the trend of the sample-based 1-Wasserstein distance (blue crosses in Fig.~\ref{fig:FindRankGrid}).
+The 1-Wasserstein distance is quite fluctuant but decreases with increasing ranks and stays within a similar range for grid sizes $n \geq 30$.
 
 
 \begin{figure}[ht!]
@@ -349,15 +349,16 @@ Since the 1-Wasserstein distance is sample-based, it is quite fluctuant but decr
 \end{figure}
 
 Further, we decrease the number of functions evaluations and define ranks \linebreak$r =[ 1,  10,  10, 10, 10, 10, 5, 3, 3, 3, 3, 3, 3 , 3, 3, 3, 3, 3, 1]$ between TT cores harvesting the correlation structure of $\pi(\bm{\theta},\lambda,\gamma  | \bm{y})$ even more.
-We do one sweep in \linebreak the~\texttt{tt.cross.rectcross.rect\_cross.cross}, reducing the computation time to $\approx 7$s and the number of function evaluations to 34080, where we initialise at a previously calculated approximation.
-We report an average IACT (provided by~\cite{wolff2004monte, drikHesse}) of $\approx 1.2 \pm 0.2$ for the samples drawn via the SIRT-MH scheme, which means that we need two function evaluations per independent sample, once the TT approximation is available.
+One sweep in \linebreak the~\texttt{tt.cross.rectcross.rect\_cross.cross} initialised at a previously calculated approximation reduces the computation time to $\approx 7$s and the number of function evaluations to 34080.
+An average IACT (provided by~\cite{wolff2004monte, drikHesse}) of $\approx 1.2 \pm 0.2$ for the samples drawn via the SIRT-MH scheme is calculated.
+This means that once the TT approximation is available two function evaluations per independent sample are needed.
 To draw 1000 independent samples, including generating a TT approximation, takes $\approx30$s, and we report a relative RMS error of $\approx 12 \%$ evaluated over those 1000 independent samples.
-Additionally, we report a relative RMS error of $\leq 1\%$ on 1000 randomly chosen grid points, indicating that the linear interpolation causes most of the approximation error.
-We plot the marginals for each hyper-parameter in Fig.~\ref{fig:PostHistTT0} to Fig.~\ref{fig:PostHistTT5} and samples in Fig.~\ref{fig:CorrPlot}.
+The relative RMS error over 1000 randomly chosen grid points is $\leq 1\%$ indicating that the linear interpolation causes most of the approximation error.
+The marginals for each hyper-parameter are plotted in Fig.~\ref{fig:PostHistTT0} to Fig.~\ref{fig:PostHistTT5} and the samples in Fig.~\ref{fig:CorrPlot}.
 We observe that, besides $\lambda$ and $\gamma$, only the marginal posterior of the $b$ hyper-parameter is seriously affected by the data and has significantly changed compared to the hyper-prior distribution.
 \clearpage
 \subsubsection{Posterior pressure and temperature}
-Posterior pressure and temperature profiles are directly  obtained by samples from the marginal posterior $\pi(\bm{\theta},\lambda,\gamma  | \bm{y})$ and according to their respective function (see Eq.~\ref{eq:tempFunc} and Eq.~\ref{eq:pressFunc}). 
+Posterior pressure and temperature profiles are directly obtained by samples from the marginal posterior $\pi(\bm{\theta},\lambda,\gamma  | \bm{y})$ and according to their respective function (see Eq.~\ref{eq:tempFunc} and Eq.~\ref{eq:pressFunc}). 
 We plot posterior temperature profiles in Fig.~\ref{fig:TempPost} and pressure profiles in Fig.~\ref{fig:PressPost}.
 The posterior temperature profiles look (as expected) similar to the prior temperature profiles, whereas the pressure profile has slightly larger values compared to the ground truth.
 This is because the hyper-parameter $b$ is smaller than its ground truth value (see Fig.~\ref{fig:PostHistTT0}), resulting in the posterior pressure profiles that do not exponentially decrease as fast as the ground truth pressure profile.
@@ -377,8 +378,8 @@ This is because the hyper-parameter $b$ is smaller than its ground truth value (
 \clearpage
 \subsection{Full Conditional Posterior -- Ozone}
 Due to the large number of hyper-parameters calculating the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and $\bm{\Sigma}_{\bm{x}|\bm{y}}$ covariance via quadrature as in Eq.~\ref{eq:MeanGenInt} and~\ref{eq:CoVarGenInt} is computationally not feasible.
-Then, if the full conditional posterior $\pi(\bm{x}|\bm{\theta}, \delta, \gamma, \bm{y})$ is a normal distribution, the randomise then optimise (RTO) method provides a scheme to obtain an independent ozone sample $\bm{x}^{(k)} \sim \pi(\bm{x}|\bm{\theta}, \delta, \gamma, \bm{y})$ with $\delta = \lambda \, \gamma$.
-We introduce the RTO method for general case first and then draw ozone samples from $\pi(\bm{x}|\bm{\theta}^{(k)} , \delta^{(k)} , \gamma^{(k)} , \bm{y})$ conditioned on an independent marginal posterior samples $\bm{\theta}^{(k)} , \delta^{(k)} , \gamma^{(k)} \sim \pi(\bm{\theta} , \delta , \gamma | \bm{y})$.
+If the full conditional posterior is a normal distribution the randomise then optimise (RTO) method provides a scheme to obtain an independent ozone sample from $\pi(\bm{x}|\bm{\theta}, \delta, \gamma, \bm{y})$ with $\delta = \lambda \, \gamma$.
+We introduce the RTO method for general case first and then draw ozone samples from $\bm{x}^{(k)} \sim \pi(\bm{x}|\bm{\theta}^{(k)} , \delta^{(k)} , \gamma^{(k)} , \bm{y})$ conditioned on independent marginal posterior samples $\bm{\theta}^{(k)} , \delta^{(k)} , \gamma^{(k)} \sim \pi(\bm{\theta} , \delta , \gamma | \bm{y})$.
 
 
 
@@ -402,14 +403,14 @@ where
 	\begin{bmatrix}
 		\bm{\Sigma}_{\gamma}^{-1/2} \bm{y} \\
 		\bm{Q}_{\delta}^{1/2} \bm{\mu}
-	\end{bmatrix} , ,
+	\end{bmatrix} , 
 \end{align}
-and $\bm{Q}_{\delta}$ is the prior precision, $\bm{\mu}$ the prior mean and $\bm{\Sigma}_{\gamma}$ the noise covariance (see also~\cite{bardsley2014randomize,BardsleyTC2019RTO}).
-A sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta},  \delta, \gamma,  \bm{y}) $ from the full conditional posterior is obtained by minimising the following equation:
+$\bm{Q}_{\delta}$ is the prior precision, $\bm{\mu}$ the prior mean and $\bm{\Sigma}_{\gamma}$ the noise covariance (see also~\cite{bardsley2014randomize,BardsleyTC2019RTO}).
+A sample $\bm{x}^{(k)}$ from the full conditional posterior $ \pi(\bm{x}|   \bm{\theta},  \delta, \gamma,  \bm{y})$ is obtained by minimising the following equation:
 \begin{align}
-	\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \mathbf{I}) \, ,
+	\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \bm{I}_m) \, ,
 \end{align}
-where we add a random perturbation $\bm{b}$.
+where a random perturbation $\bm{b}$ is added.
 Similar to Section~\ref{sec:reg}, this expression becomes
 \begin{align}
 	\label{eq:RTO}
@@ -419,27 +420,29 @@ Similar to Section~\ref{sec:reg}, this expression becomes
 with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\delta})$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
 
 
-
 \subsubsection{Posterior ozone samples}
-Now more explicitly we condition on an independent $\bm{\theta}^{(k)},\lambda^{(k)},\gamma^{(k)} \sim \pi(\bm{\theta},\lambda,\gamma | \bm{y})$ and one independent full conditional sample is given as  
+More explicitly conditioned on an independent $\bm{\theta}^{(k)},\lambda^{(k)},\gamma^{(k)} \sim \pi(\bm{\theta},\lambda,\gamma | \bm{y})$ and one independent full conditional posterior sample is given as  
 \begin{align}
 	\label{eq:RTOAppl}
 	\bm{x}^{(k)} = 	\Big(  \underbrace{\gamma^{(k)} \bm{A}_{\bm{\theta}^{(k)}}^T\bm{A}_{\bm{\theta}^{(k)}} +  \delta^{(k)}\bm{L}}_{\bm{B}^{(k)}} \Big)^{-1} \left(  \gamma^{(k)}  \bm{A}_{\bm{\theta}^{(k)}}^T\bm{y} +\sqrt{\gamma^{(k)}} \bm{A}_{\bm{\theta}^{(k)}}^T \bm{v}_1 + \sqrt{\delta^{(k)}}\bm{L}^{1/2}\bm{v}_2\right)
 \end{align}
 with $\bm{v}_1 \sim \mathcal{N}(\bm{0},  \bm{I}_m )$, $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{I}_n )$, $\bm{Q}_{\delta} = \delta  \bm{L} $, $\bm{\Sigma}^{-1}_{\gamma} = \gamma \bm{I}$  and $\bm{L}^{1/2}$ is the Cholesky factorisation of $\bm{L}$ \cite{bardsley2012mcmc}.
+If $n$ is large and calculating the Cholesky decomposition of $\bm{L}$ or constructing $\bm{L}$ is expensive it is recommended to represent $\bm{L}$ as a sum over cliques e.g.~small $2\times2$ rank-1 matrices (see $\bm{L}$ in Eq.~\ref{eq:LaplRegTheo}).
+Then a sample $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\delta})$ can be obtained by drawing $n$ random variables from $\mathcal{N}(0,1)$ without explicitly forming $\bm{L}$~\cite{fox2016fast}.
+
 We obtain the Cholesky factorisation of $\bm{B}^{(k)}$ and $\bm{L}$ from the Python function \texttt{numpy.linalg.cholesky} and 
 solve for $\bm{x}^{(k)}$ using \texttt{scipy.linalg.cho\_solve}.
 We plot 100 samples in Fig.~\ref{fig:O3Post} and a sample mean based on 1000 samples.
 The posterior ozone mean is much smaller than the ground truth especially around the ozone peak.
-Comparing to the posterior pressure in Fig.~\ref{fig:PressPost}, which is slightly larger than the ground truth, we can conclude that pressure and ozone are highly correlated.
-Additionally, the individual posterior samples are more prior-dominated through larger $\lambda$ values (see Fig.\ref{fig:PostHistTT0}) and hence smoother compared to the previously calculated ozone posterior profiles.
-Again, we are not able to recover the second peak at high altitudes.
+Compared to the posterior pressure in Fig.~\ref{fig:PressPost}, which is slightly larger than the ground truth, we can conclude that pressure and ozone are highly correlated.
+Additionally, the individual posterior samples are more prior-dominated through larger $\lambda$ values (see Fig.~\ref{fig:PostHistTT0}) and hence smoother compared to the previously calculated ozone posterior profiles.
+Again, we are not able to recover the second ozone peak at high altitudes.
 
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{FullO3Res.png}
-	\caption[Pressure posterior samples.]{According to the hyper-parameter samples from the marginal posterior distribution (see Fig.~\ref{fig:PostHistTT0}) we plot the corresponding ozone sample from the full conditional posterior using the RTO method.}
+	\caption[Pressure posterior samples.]{Conditioned on the hyper-parameter samples from the marginal posterior distribution $\pi(\bm{\theta} , \delta , \gamma | \bm{y})$ we plot the corresponding ozone sample from the full conditional posterior $\pi(\bm{x} | \bm{\theta},  \delta, \gamma, \bm{y})$ using the RTO method.}
 	\label{fig:O3Post}
 \end{figure}
 
