@@ -63,8 +63,9 @@ The data vector
 \begin{align}
 	\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}\, 
 \end{align}
-includes an additive noise vector $\bm{\eta} \in \mathbb{R}^{m}$, where we define the non-linear forward model as $\bm{A}(\bm{x}) \coloneqq \bm{A}(\bm{x},  \bm{p},\bm{T})   \in \mathbb{R}^{m}$ for brevity.
-Similarly, we define $\bm{A}_L\in \mathbb{R}^{m\times n}$, which denotes the linear forward model matrix and neglects absorption (e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}) and enables matrix-vector multiplication $\bm{A}_L \bm{x}$ to compute noise-free linear data.
+includes an additive noise vector $\bm{\eta} \in \mathbb{R}^{m}$.
+For brevity the non-linear forward model is defined as $\bm{A}(\bm{x}) \coloneqq \bm{A}(\bm{x},  \bm{p},\bm{T})   \in \mathbb{R}^{m}$.
+Similarly, $\bm{A}_L\in \mathbb{R}^{m\times n}$ denotes the linear forward model matrix and neglects absorption (e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}) and enables matrix-vector multiplication $\bm{A}_L \bm{x}$ to compute noise-free linear data.
 Further, we classify the inverse problem as a weakly non-linear inverse problem, because neglecting the absorption changes the measurements only slightly (about $1\%$, see Chapter~\ref{ch:affine}).
 
 As the ground truth for our methodology, we consider an ozone profile at distinct pressure values generated from some data~\cite{MLSdata} of the MLS on the Aura satellite within the Antarctic region.
@@ -122,16 +123,14 @@ Following \cite{atmosphere1976us} we form the temperature function
 \end{equation}
 with gradient and height values provided by~\cite{atmosphere1976us} (see Tab.~\ref{tab:tempGrad}) which acts as the ground truth temperature profile (see Fig.~\ref{fig:PriorTemp}).
 
-
-
-One measurement is calculated according to the RTE as in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE} using the trapezoidal integration rule.
-We assume an atmosphere between $h_{L,1} = 6.9$km and $h_{L,n} = 83.3$km with $n = 45$ equidistant layers and a satellite at a fixed height of $h_{\text{sat}} = 500$km (see Fig.~\ref{fig:LIMB}).
-The height value $h_{L,i}$ for each layer $i = 1,\dots, n$ is defined by the pressure values from~\cite{MLSdata} and the hydrostatic equilibrium equation, see Eq.~\ref{eq:hydr}.
+One measurement in an atmosphere between $h_{L,1} = 6.9$km and $h_{L,n} = 83.3$km with $n = 45$ equidistant layers and a satellite at a fixed height of $h_{\text{sat}} = 500$km (see Fig.~\ref{fig:LIMB}) is calculated according to the RTE.
+The height value $h_{L,i}$ for each layer $i = 1,\dots, n$ is defined by the pressure values from the ground truth ozone profile~\cite{MLSdata} and the hydrostatic equilibrium equation, see Eq.~\ref{eq:hydr}.
 We target ozone at a frequency of $235.71$GHz, which lies within the region where the MLS observes ozone~\cite{livesey2008ozonecarbonmono, waters2006earth}.
 The corresponding wave number is $\nu = 7.86\text{cm}^{-1}$.
 The absorption constant $k(\nu,T)$ is calculated as in Eq.~\ref{eq:absRTE}, following the high resolution transmission (HITRAN) database~\cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
 %This gives us a non-linear forward model matrix $\bm{A}_{NL} = \bm{A}(\bm{x}, \bm{p}, \bm{T}) \in \mathbb{R}^{m \times n}$, where $\bm{x}\in \mathbb{R}^{n}$ is vector related to the ozone VMR, $\bm{p}\in \mathbb{R}^{n}$ is the vector describing the pressure values and $\bm{T}\in \mathbb{R}^{n}$ the temperature values.
-Lastly, we add independent and identically-distributed Gaussian noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ so that the signal-to-noise ratio (SNR) is $\approx150$ (see Eq.~\ref{eq:SNR}) similar to~\cite{Froidevaux2008snrozone}, where a signal with a maximal spectral intensity of around $100\text{K}$ and a noise range of $0.4$ to $1.6\text{K}$ is reported.
+Lastly, we add independent and identically-distributed Gaussian noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ so that the signal-to-noise ratio (SNR) is approximately $150$ (see Eq.~\ref{eq:SNR}).
+This is similar to~\cite{Froidevaux2008snrozone}, where a signal with a maximal spectral intensity of around $100\text{K}$ and a noise range of $0.4$ to $1.6\text{K}$ is reported.
 Note that the methods used in this thesis will work with different SNRs or other frequencies.
 Before computing a data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $ we test different measurement strategies and asses the information provided by the forward model via a singular value decomposition (SVD).
 
@@ -222,8 +221,8 @@ Case 1, 2, 3, and 4 measure in between heights $h_{L,1} = 6.9$km and $h_{L,n} = 
 The pointing accuracy for case 3 in Fig.~\ref{fig:TangHCases} of $150\text{arc sec}$ was given to us by the team of the University of New South Wales Canberra Space~\cite{CubeSatInternal}.
 Case 4 has half the pointing accuracy of case 3, and case 5 has a slightly larger pointing accuracy than case 3.
 We visually assess the effective rank and how the singular values behave to determine which of the test cases is most effective.
-More specifically, if the singular values decay fast and only a few singular values are above an SNR of 150, the forward map is rather uninformative.
-If the singular values decay slowly and more singular values are above an SNR of 150, we classify the forward map as informative.
+More specifically, if the singular values decay fast and only a few singular values lie above an SNR of 150, the forward map is rather uninformative.
+If the singular values decay slowly and many singular values lie above an SNR of 150, we classify the forward map as informative.
 %\textcolor{red}{Another, they are multiplying like rabbits. Or flies. Which is more annoying?}
 %\textcolor{red}{why is this plot here before you defined the cases? That's not remotely OK.}
 
@@ -297,9 +296,9 @@ So we can assume that, given some data, we will be able to provide good reconstr
 The right singular vectors in Fig.~\ref{fig:middleSpace} correspond to the singular values $\sigma_j$ for $j = 11, \dots, 20$ around the SNR of 150 (see Fig.~\ref{fig:SingA}).
 This is roughly where the noise starts to dominate the data.
 The parameter space spanned by those right singular vectors represents parameter values in the middle atmosphere.
-Consequently, we expect an increasing uncertainty of reconstructed parameter values at heights between $\approx20$km and $\approx55$km.
+Consequently, we expect an increasing uncertainty of reconstructed parameter values at heights between $\approx20$km and $\approx50$km.
 The singular vectors in Fig.~\ref{fig:nullSpace} corresponding to the smallest 10 singular values and span structures in parameter space at higher altitudes and the associated data space is noise-dominated.
-That is why we will not be able to reconstruct parameter values from the ground truth above $\approx55$km.
+That is why we will not be able to reconstruct parameter values from the ground truth above $\approx50$km.
 More specifically, the retrieved parameter values at higher altitudes have large uncertainties and will be determined by the prior or, in the case of a regularisation approach, by the regulariser~\cite{tan2016LecNot}.
 
 %The difference in between tangent heights is between 2.05km and 2.17km.
@@ -313,7 +312,7 @@ More specifically, the retrieved parameter values at higher altitudes have large
 	\label{fig:DataPlot}
 \end{figure}
 
-The data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $ is computed according the RTE (see Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE}) and the froward model is determined by the data collection strategy of case 5, with $m = 30$ measurements between $\approx 7$km and $\approx 68$km and the satellite pointing accuracy of $175\text{arc sec}$ (see in Fig.~\ref{fig:TangHCases}).
+Finally, the data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $ is computed according the RTE (see Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE}) and the froward model is determined by the data collection strategy of case 5, with $m = 30$ measurements between $\approx 7$km and $\approx 68$km and a satellite pointing accuracy of $175\text{arc sec}$ (see in Fig.~\ref{fig:TangHCases}).
 % according to the RTE as in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE} using the trapezoidal integration rule.
 As already mentioned, we set the SNR to 150 and plot the data in Fig.~\ref{fig:DataPlot}, which is noise-dominated in higher altitudes.
 Given the data, we aim to determine the posterior distributions over ozone $\bm{x}$, pressure $\bm{p}$ and temperature $\bm{T}$.
