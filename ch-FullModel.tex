@@ -2,8 +2,8 @@
 \label{ch:FullBay}
 \thispagestyle{empty}
 Here, we extend the hierarchical Bayesian model set up in Sec. \ref{sec:BayModelO3} to include pressure and temperature related hyper-parameters and elaborate on some aspects of prior modelling.
-Then the MTC scheme is applied to jointly provide posterior distributions of ozone, pressure and temperature.
-Additionally, we guide the reader through the process of setting up an efficient TT approximation of the higher-dimensional marginal posterior.
+The MTC scheme is applied to jointly provide posterior distributions of ozone, pressure and temperature.
+Additionally, the reader is guided through the process of setting up an efficient TT approximation of the higher-dimensional marginal posterior.
 
 
 
@@ -84,14 +84,14 @@ Additionally, we guide the reader through the process of setting up an efficient
 	\caption[Directed acyclic graph of Bayesian model for ozone, pressure and temperature.]{DAG of Bayesian model for ozone, pressure and temperature. The hyper-parameters $\bm{h}_T= \{ h_{T,1}, h_{T,2},h_{T,3},h_{T,4},h_{T,5},h_{T,6}\}$, $\bm{a} = \{ a_0, a_1, a_2,a_3,a_4,a_5,a_6\}$, $T_0$, $b$ and $p_0$ deterministically (dotted line) describe pressure parameter $\bm{p}$ through the function in Eq.~\ref{eq:pressFunc}, and temperature parameter $\bm{T}$ through the function in Eq.~\ref{eq:tempFunc}. In this case, we choose the hyper-parameters $\pi(p_0,b,T_0,\bm{h_T},\bm{a})$ to be a normally distributed a-priori, determined by $\bm{\theta}_{\bm{h}_T},\bm{\theta}_{\bm{a}}, \bm{\theta}_{T_{0}},\bm{\theta}_{b} , \bm{\theta}_{p_0}$ which represent mean and variances, e.g.~$b \sim \mathcal{N}(\mu_b, \sigma^2_b)$ and $\bm{\theta}_{b} = \{\mu_b, \sigma_b\}$.
  As previously described in Sec. \ref{sec:BayModelO3}, $\bm{\theta}_{\gamma}, \bm{\theta}_{\delta}$ determine gamma distributions, e.g. $\gamma \sim \Gamma(\alpha_{\gamma},\beta_{\gamma}) $ with $\bm{\theta}_{\gamma} = \{\alpha_{\gamma},\beta_{\gamma} \}$.
 The ozone parameter $\bm{x}$ is statistically (solid line) described by the prior distribution $\bm{x}| \delta \sim \mathcal{N}(0,(\delta \bm{L})^{-1}) $. 
-		Here, the hyper-parameter $\delta$ accounts for smoothness in the ozone profile and defines the precision matrix $\bm{Q} = \delta \bm{L}$, where $\bm{L}$ is the graph Laplacian as in Eq. \ref{eq:GLapl}.
+		Here, the hyper-parameter $\delta$ accounts for smoothness in the ozone profile and defines the precision matrix $\bm{Q} = \delta \bm{L}$, where $\bm{L}$ is the graph Laplacian as in Eq.~\ref{eq:GLapl}.
 		The noise covariance $\bm{\Sigma} = \gamma^{-1} \bm{I}$ of the random noise vector $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I} ) $ is defined by the hyper-parameter $\gamma$.
-		From the space of all measurables $\Omega$ mapped through the approximated forward model $\bm{A}_{\bm{\theta}} \coloneqq \bm{M}\bm{A}_L(p_0,b,T_0,\bm{h_T},\bm{a})$, depending on the hyper-parameter $\bm{\theta}  \coloneqq \{p_0, b, T_0,\bm{h}_T,\bm{a} \}$ a data set $\bm{y}$ is radnomly observed (square box) including some additive noise.
+		From the space of all measurables $\Omega$ mapped through the approximated forward model $\bm{A}_{\bm{\theta}} \coloneqq \bm{M}\bm{A}_L(p_0,b,T_0,\bm{h_T},\bm{a})$, depending on the hyper-parameter $\bm{\theta}  \coloneqq \{p_0, b, T_0,\bm{h}_T,\bm{a} \}$ a data set $\bm{y}$ is randomly observed (square box) including some additive noise.
 		Given the data we like to determine the marginal posterior distribution over the hyper-parameters $\pi(\bm{\theta}, \delta, \gamma | \bm{y})$ first and then the conditional posterior distribution for ozone $\pi(\bm{x}|\bm{\theta}, \delta, \gamma, \bm{y})$, utilising the MTC scheme.}
 	\label{fig:DAGComplete}
 \end{figure}
 As in Sec.~\ref{sec:BayModelO3}, we use a DAG as in Fig.~\ref{fig:DAGComplete} to visualise the measurement process and conditional dependencies between pressure $\bm{p}$, temperature $\bm{T}$ and ozone $\bm{x}$, which progress deterministically (dashed line) into the forward model, via $\bm{x} \times \bm{p} / \bm{T}$.
-Note that other variables in the RTE, such as the absorption constant, the internal partition function and the black body radiation, are also dependent on temperature (see Sec.~\ref{sec:RTE}).
+Note that other variables in the RTE, such as the internal partition function and the black body radiation, are dependent on temperature (see Sec.~\ref{sec:RTE}).
 This hierarchical Bayesian framework includes the hyper-parameters $p_0, b$ for pressure (see Eq.~\ref{eq:pressFunc}), $\bm{a}, \bm{h}_T, T_0$ for temperature (see Eq.~\ref{eq:tempFunc}), $\delta$ for ozone smoothness and $\gamma$ for noise precision.
 Each of those hyper-parameters is described by the hyper-prior distribution $\pi(p_0,b,T_0,\bm{h_T},\bm{a}, \delta,\gamma)$ (see Sec.~\ref{subsec:PriorFull}).
 Through their respective prior distributions, pressure $\bm{p}$, temperature $\bm{T}$ and ozone $\bm{x}$ generate a space of all possible noise-free data $\Omega$ from which we observe some data with additive normally distributed noise $\bm{\eta}$.
@@ -230,11 +230,12 @@ Since the hierarchical model has $18$ hyper-parameters, we utilise the t-walk al
 The t-walk chooses between four different types of steps on the target distribution and is employed as a black-box algorithm in default settings, requiring the specification of the number of samples, burn-in period, support region, and the target distribution. 
 Convergence to the target distribution is guaranteed by the construction of this algorithm~\cite{christen2010general}.
 
-We run the t-walk~\cite{christen2010general} algorithm with the objective to generate $1000$ independent samples from the marginal posterior to provide a ground truth, which we compare the TT approximation to.
-The maximum IACT (see Tab.~\ref{tab:priors} and Fig.~\ref{fig:TWalkIATC1} to Fig.~\ref{fig:TWalkIATC18}) can be bounded by $1100$, so that the t-walk takes $N = 1000 \times 1100$ steps with a burn-in period of $N_{\text{burn-in}} = 100 \times 1100 $ for $1000$ independent samples.
+Running the t-walk~\cite{christen2010general} algorithm with the objective to generate $1000$ independent samples from the marginal posterior provides a ground truth, which we compare the TT approximation to.
+The maximum IACT provided by twice the value of \cite{wolff2004monte, drikHesse} (see Tab.~\ref{tab:priors} and Fig.~\ref{fig:TWalkIATC1} to Fig.~\ref{fig:TWalkIATC18}) can be bounded by $1100$.
+Then the t-walk takes $N = 1000 \times 1100$ steps with a burn-in period of $N_{\text{burn-in}} = 100 \times 1100 $ for $1000$ independent samples.
 We initialise the Python implementation of the t-walk~\cite{christentwalkaccess} around the hyper-prior mean values and the mode of $\pi(\lambda ,\gamma|\bm{y})$.
-We take a total number of $N' =N + N_{\text{burn-in}} = 1210000$ steps in $\approx 10$ mins within hyper-parameter support bounds given by the iteratively defined TT grid (see Tab.~\ref{tab:priors}).
-We plot the resulting histograms in Fig.~\ref{fig:PostHistTT0} to Fig.~\ref{fig:PostHistTT4} and the trace of the samples in Fig.~\ref{fig:TraceTwalk}.
+For a total number of $N + N_{\text{burn-in}} = 1210000$ steps within hyper-parameter support bounds given by the iteratively defined TT grid (see Tab.~\ref{tab:priors}) a time of $\approx 10$ mins is taken.
+The resulting sample histograms are plotted in Fig.~\ref{fig:PostHistTT0} to Fig.~\ref{fig:PostHistTT4} and the trace of the samples in Fig.~\ref{fig:TraceTwalk}.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{TraceTwalk.png}
@@ -251,10 +252,11 @@ The aim now is to approximate the square root of the marginal posterior
 	\end{split} \, ,
 	\label{eq:MargPostFullTT}
 \end{align}
-where we introduce a ``normalisation constant'' $c=-200$ to stay within computer precision.
+with a ``normalisation constant'' $c=-200$ to stay within computer precision.
 In doing so, we run the~\texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} python package \cite{Oseledets2018ttpy} on a grid (see Tab.~\ref{tab:priors}) according to the results of the t-walk.
-When computing the marginal of each hyper-parameter as in Sec.~\ref{sec:tensortrain}, we set $\xi = 1 / \uplambda (\mathcal{X})$ and $\uplambda(x) = 1$ so that for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$.
-To draw samples from the TT approximation the SIRT-MH scheme is used as in Sec. \ref{subsec:SamplTT}.
+When computing the marginal of each hyper-parameter as in Sec.~\ref{sec:tensortrain} the maximum values of $\sqrt{\pi( \bm{\theta},\lambda,\gamma  | \bm{y})}$ are around $10^{27}$ so we set $\xi = 1 / \uplambda (\mathcal{X})$ with $\uplambda(x) = 1$.
+For Cartesian basis the mass matrix becomes $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$.
+To draw samples from the TT approximation the SIRT-MH scheme is used as introduced in Sec. \ref{subsec:SamplTT}.
 
 \paragraph{Correlation structure}
 First, we order the hyper-parameters according to their correlation structure to improve the efficiency of the TT approximation. 
@@ -266,6 +268,7 @@ Additionally, $h_{T,1}$ describing the temperature at low altitudes (strong sign
 This is because $h_{T,1}$ influences ``the smoothness'' of $\bm{p}/\bm{T}$, which is hard to see in Fig.~\ref{fig:PriorPressOverTemp}.
 Interestingly, $p_0$ appears largely uncorrelated with other hyper-parameters, while $b$ is the key parameter linking pressure to ozone and temperature.
 Hyper-parameters describing temperature at higher altitudes are very much uncorrelated and the IACTs in Tab.~\ref{tab:priors} agree with those results.
+Alternatively, one could decorrelate the hyper-parameter space, e.g.~via Cholesky whitening~\cite{KessyWhitening2018}.
 \clearpage
 \begin{figure}[h]% will be the left-side figure
 	\includegraphics[]{CorrPlot.png}

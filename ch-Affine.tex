@@ -4,8 +4,9 @@
 \newcommand*{\vertbar}{\rule[-1ex]{0.5pt}{2.5ex}}
 \newcommand*{\horzbar}{\rule[.5ex]{2.5ex}{0.5pt}}
 The forward map, introduced in Chapter~\ref{ch:formodel}, poses a weakly non-linear forward problem.
-One could tackle the non-linearity by treating the inverse problem as a linear inverse problem and then iteratively updating the non-linear part after each parameter sample.
-Instead, as in Fig.~\ref{fig:affinStrat} illustrated, we approximate the non-linear model using an affine map, which is a linear map with a translation, e.g. $\bm{A}\bm{x} + \bm{b}$, and maps Gaussians onto Gaussians.
+One could tackle this non-linear inverse problem by fixing the absorption at a previously obtained parameter state and treating this as a linear inverse problem, and then iteratively update the absorption after each parameter sample. 
+Instead, as in Fig.~\ref{fig:affinStrat} illustrated, we approximate the non-linear model using an affine map, which is a linear map with a translation, e.g. $\bm{A}\bm{x} + \bm{b}$.
+An affine map $ \bm{z} = \bm{A}\bm{x} + \bm{b}$ maps a Gaussian $\bm{x} \sim \mathcal{N}(\bm{\mu}, \bm{\Sigma})$ onto a Gaussian $\bm{z} \sim \mathcal{N}(\bm{A}\bm{\mu} + \bm{b}, \bm{A}^T\bm{\Sigma}\bm{A})$.
 Here we find an affine map $\bm{M}$ based on the linear model $\bm{A}_L$ that provides an approximation of the non-linear model $\bm{A}(\bm{x})$ for parameters $\bm{x}$ near the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$.
 \begin{figure}[htb!]
 	\centering
@@ -117,11 +118,11 @@ This is much smaller than the relative RMS difference between $\bm{W}$ and $\bm{
 	\centering
 	%\includegraphics{SampMapAssesment.png}
 	\includegraphics{SampMapAssesmentTT.png}
-	\caption[Assessment of affine map.]{Assessment of how well we can approximate noise-free non-linear data $\bm{A}(\bm{x})$  (red circles) with noise-free linear data $\bm{A}_L\bm{x}$ (grey stars) and the previously calculated affine map $\bm{M}$. The approximated noise-free data (black stars) has a relative RMS error of $\approx 0.06\%$ compared to the true non-linear noise-free data.
+	\caption[Assessment of affine map.]{Assessment of how well we can approximate noise-free non-linear data $\bm{A}(\bm{x})$  (red circles) with noise-free linear data $\bm{A}_L\bm{x}$ (grey stars) and the previously calculated affine map $\bm{M}$. The approximated noise-free data (black stars) has a relative RMS error of $\approx 0.02\%$ compared to the true non-linear noise-free data.
 		The ozone sample to generate this noise-free data has not been used to create the affine map.}
 	\label{fig:MapAsses}
 \end{figure}
-Fig.~\ref{fig:MapAsses} shows the mapping for one posterior ozone sample with a relative RMS error $\approx0.06\%$.
+Fig.~\ref{fig:MapAsses} shows the mapping for one posterior ozone sample with a relative RMS error $\approx0.02\%$.
 This posterior ozone sample has not been used to create this mapping; in other words, this is an unseen event not occurring in the training data.
 Consequently, from here onwards, we use the approximated forward map.
 \section{Marginal and then Conditional Posterior -- Ozone}

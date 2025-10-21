@@ -118,7 +118,8 @@ See Appendix~\ref{ap:IATC} and~\cite{Sokal1997, wolff2004monte, wolff2002LecNot}
 Quickly generating a representative sample set from the posterior distribution often presents a significant challenge. %\textcolor{red}{this word is misplaced (for English). Better is Quickly generating (it's an adverb)} 
 This is mainly due to the strong correlations that usually exist between the parameters and hyper-parameters, as discussed by Rue and Held in~\cite{rue2005gaussian} and illustrated in Appendix~\ref{ap:Correlation}.
 %If $\bm{x}$ cannot be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, so that $\bm{x}(\bm{\theta})$ is function of $\bm{\theta}$, it is beneficial to factorise the posterior distribution as \textcolor{red}{this is unclear. Of course x(theta) is a function of theta. What are you trying to say?}
-If $\bm{x}$ cannot be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, and only a low-level representation of $\bm{x}$ is available, it is beneficial to factorise the joint posterior distribution
+%If $\bm{x}$ cannot be parametrised directly in terms of the hyper-parameters $\bm{\theta}$, and only a low-level representation~\cite{fox2016fast, Watzenig_2009} of $\bm{x}$ is available, 
+Depending on the problem and the available model it is beneficial to factorise the joint posterior distribution
 \begin{align}
 	\pi(\bm{x}, \bm{\theta} |  \bm{y}) = \pi(\bm{x} |  \bm{\theta}, \bm{y}) \, \pi(\bm{\theta} |   \bm{y}) \label{eq:MTC}
 \end{align}
@@ -128,9 +129,10 @@ This approach, known as the MTC method, is particularly advantageous when $\bm{x
 	\pi(\bm{\theta} |   \bm{y}) =  \frac{ \pi(   \bm{y} | \bm{x},\bm{\theta})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y})   \pi( \bm{y})} \propto \frac{ \pi(   \bm{y} | \bm{x},\bm{\theta})  \pi( \bm{x} | \bm{\theta} )  \pi(\bm{\theta}) }{ \pi(\bm{x} | \bm{\theta} ,   \bm{y}) } \label{eq:margGen}\, 
 \end{align}
 as in~\cite[Lemma 2]{fox2016fast} is relatively cheap.
-\textcolor{red}{If a mid-level or high-level model of $\bm{x}$ is available, we can represent the parameter space of $\mathbb{R}^n$ with a number of hyper-parameters much smaller than $n$~\cite{fox2016fast, Watzenig_2009}.
-See e.g.~Chapter~\ref{ch:FullBay} where ozone, temperature and pressure are retrieved jointly, and a temperature profile $\bm{T}\in \mathbb{R}^{34} $ is described through 14 hyper-parameters as in Eq.~\ref{eq:tempFunc} and only two hyper-parameters are needed to form a pressure profile $\bm{p}\in \mathbb{R}^{34} $ (see Eq.~\ref{eq:pressFunc}).
-This drastically reduces the dimensionality of the joint posterior and that is when Bayesian modelling is especially powerful because we can impose prior knowledge through those hyper-parameters much more precisely compared to a low-level model.}
+%Bayesian modelling is especially powerful if a representation of $\bm{x}$ is available so that a number of hyper-parameters much smaller than $n$ effectively represent the parameter space.
+%This can reduce the dimensionality of the posterior.
+%Further, prior knowledge may be imposed through those hyper-parameters much more precisely.
+%See e.g.~Chapter~\ref{ch:FullBay} where ozone, temperature and pressure are retrieved jointly, and a temperature profile $\bm{T}\in \mathbb{R}^{34} $ is described through 14 hyper-parameters as in Eq.~\ref{eq:tempFunc} and only two hyper-parameters are needed to form a pressure profile $\bm{p}\in \mathbb{R}^{34} $ (see Eq.~\ref{eq:pressFunc}).
 
 
 %In \cite{norton2018sampling}, they classify inverse problems into problems with known or unknown conditional posterior distributions, and conclude that if $\pi(\bm{x} | \bm{\theta} ,   \bm{y}) = \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta})  / \pi(   \bm{y}| \bm{\theta})$ has a known form, the normalising constant of $\pi(\bm{\theta} |   \bm{y})$ is available \newline $\int \pi(\bm{y} | \bm{x}, \bm{\theta} ) \pi(\bm{x}| \bm{\theta}) \text{d} \bm{x} = \pi(   \bm{y}| \bm{\theta})  \propto \pi( \bm{\theta}|\bm{y}) / \pi(\bm{\theta})$ and one can almost surely determine the $\bm{\theta}$-dependence of the marginal posterior $\pi(\bm{\theta} |   \bm{y})$.
@@ -222,11 +224,12 @@ For large enough $N$, this chain of random variables can be used to calculate Mo
 The ergodicity theorem in~\cite{tan2016LecNot} states that, if a Markov chain $\mathcal{M}$ is aperiodic, irreducible, and reversible, then it converges to a unique stationary equilibrium distribution.
 In other words, the chain can reach any state from any other state (irreducibility), is not stuck in periodic cycles (aperiodicity), and satisfies the detailed balance condition~\cite{tan2016LecNot} (reversibility).
 Then the samples in that chain $ \mathcal{M} \sim \pi( \bm{\theta} |  \bm{y})$ are samples from the desired target distribution.
-In practice, one can inspect the trace $\pi(\bm{\theta}^{(k)} |  \bm{y})$ for $k = N_{\text{burn-in}}, \dots, N$ after a ``burn-in'' period $N_{\text{burn-in}}$ which removes initialisation bias and visually assess if the chain is consistent with ergodicity.
+In practice, one can inspect the trace $\pi(\bm{\theta}^{(k)} |  \bm{y})$ for $k = N_{\text{burn-in}}, \dots, N$ after a ``burn-in'' period $N_{\text{burn-in}}$ and visually assess if the chain is consistent with ergodicity.
+The ``burn-in'' period $N_{\text{burn-in}}$ removes initialisation bias.
 The specific sampling methods in this thesis possess proven ergodic properties, and we therefore provide the reader with corresponding literature for further details when the methods are introduced.
 
 
-If the instance $\bm{\theta}^{(k)}$ of an ergodic Markov chain represents an independent sample of the marginal posterior $\pi(\bm{\theta} | \bm{y})$ and if a full conditional posterior sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ is drawn independently, as in Sec.~\ref{subsec:RTO}, then the resulting sample $(\bm{x}^{(k)}, \bm{\theta}^{(k)})$ is an independent sample from the joint posterior $\pi(\bm{x},   \bm{\theta} | \bm{y})$~\cite{fox2016fast,acosta2022markov}.
+If the instance $\bm{\theta}^{(k)}$ of an ergodic Markov chain represents an independent sample of the marginal posterior $\pi(\bm{\theta} | \bm{y})$ and $\bm{x}^{(k)}$ is a sample from the full conditional posterior $ \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$, e.g.~as in Sec.~\ref{subsec:RTO}, then the resulting sample $(\bm{x}^{(k)}, \bm{\theta}^{(k)})$ is an independent sample from the joint posterior $\pi(\bm{x},   \bm{\theta} | \bm{y})$~\cite{fox2016fast,acosta2022markov}.
 Repeating this procedure gives the chain $\{(\bm{x}, \bm{\theta})^{(1)},\dots, (\bm{x}, \bm{\theta})^{(k)} ,\dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x} ,  \bm{\theta} | \bm{y}) $ of independent samples from the joint posterior.
 %\cite{acosta2022markov}.
 %%\textcolor{red}{reference Jun Liu, or something.}
@@ -636,7 +639,7 @@ Then
 is a discrete approximation to the second derivative with Neumann boundary conditions~\cite{wang2015graphs}.
 %\textcolor{red}{no it's not, it's a second-difference operator, that is a discrete approximation to the second derivative (no 'order')}
 
-If $\lambda$ is large, then the effect of the data on the solution $\bm{x}_{\lambda}$ is small or negligible and dominated by the regulariser, resulting in an under-fitted $\bm{x}_{\lambda}$.
+If $\lambda$ is large, then the effect of the data on the solution $\bm{x}_{\lambda}$ is small and dominated by the regulariser, resulting in an under-fitted $\bm{x}_{\lambda}$.
 For example, if the regulariser imposes smoothness, the solutions will be overly smooth and not sensitive to structures from the data.
 If $\lambda$ is small, the solution $\bm{x}_{\lambda}$ will be dominated by the data misfit norm.
 Then $\bm{x}_{\lambda}$ is sensitive to noise, resulting in an over-fitted solution inheriting the structure of the noise.
@@ -652,16 +655,15 @@ Based on the trade-off between the data misfit and the regularisation norm, the 
 \begin{figure}[ht!]
 	\centering
 	\input{Lagrangian.pdf_tex}
-	\caption[]{This Figure not to scale is directly inspired by~\cite{ColinPhD} and shows how a solution $ \bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$ subject to the constraint $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2_{L^2}= c$ is obtained.}
+	\caption[]{This Figure is not to scale and is directly inspired by~\cite{ColinPhD}. One solution $\bm{x}_{\lambda}$ is obtained by following a contour line $\left\lVert \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2}= c$ until $\bm{x}^T \bm{L} \bm{x}$ is minimised. In the centre of the likelihood contours a solution $\bm{x}_{0}$ uneffected by the regulariser is obtained, whereas the solution $\bm{x}_{\infty}$ is determined a-priori.}
 	\label{fig:Langrangian}
 \end{figure}
-Alternatively one can introduce a Lagrangian $\mathcal{L}(\bm{x},\lambda)\coloneqq \left\lVert\bm{y}-\bm{A}\bm{x}\right\rVert^2_{L^2} + \lambda\bm{x}^T\bm{L} \bm{x}$ similar to \cite{LiLagrange}, where $\lambda$ is a Lagrange multiplier.
-A solution $\bm{x}_{\lambda} $ that minimises $\mathcal{L}(\bm{x},\lambda)$ is usually obtained by finding the minimum of $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2_{L^2}$ with respect to the constant constrained $\bm{x}^T \bm{L} \bm{x} = c$.
-This is equivalent to $\bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$  subject to constant $\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert^2_{L^2}= c$ (see~\cite[fn. 6]{fox2016fast} and~\cite[Fig. 2.13]{SANTOSH202265}). 
+Alternatively one can introduce a Lagrangian $\mathcal{L}(\bm{x},\lambda)\coloneqq \left\lVert \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2} + \lambda \, \bm{x}^T\bm{L} \bm{x}$ similar to~\cite{LiLagrange}, where $\lambda$ is a Lagrange multiplier.
+For a given $\lambda$, a solution $\bm{x}_{\lambda} $ that minimises $\mathcal{L}(\bm{x},\lambda)$ is usually obtained by finding the minimum of $\left\lVert \bm{A} \bm{x} - \bm{y} \right\rVert^2_{L^2}$ with respect to the constant constrained $\bm{x}^T \bm{L} \bm{x} = c$~\cite[Fig.~2.13]{SANTOSH202265}.
+This is equivalent to $\bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$ subject to a constant constrain $\left\lVert  \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2}= c$ (see~\cite[fn.~6]{fox2016fast}). 
 %\textcolor{red}{You need to fix this sentence, as L(x,lambda) is not a Lagrange multiplier -- it does have a name, and you should use it and not wite sentences that say : I introduce the chicken p=7 which minimizes frog. }
-So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and \textcolor{red}{the L-Curve presents the limit to on an open set of $\bm{x}$}.
-Hence, every sample of the posterior, which represents a feasible solution given the data, lies above the L-Curve because it is less regularised and has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
-\textcolor{red}{So regularised solutions do not represent the posterior parameter space.}
+So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and the L-Curve presents the lower boundary to an open set of $\bm{x}^T \bm{L} \bm{x}$ values.
+Hence, almost every sample of the posterior, which represents a feasible solution given the data, lies above the L-Curve and is less regularised and because it has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
 
 %\textcolor{red}{not accurate enough}
 %\textcolor{red}{say on or above - -do any points in the posterior actually lie in the L-Cerve, I don't think so. Are you claiming that the regularised solutions are in the posterior? The L-curve could be the limit of an open set.}
