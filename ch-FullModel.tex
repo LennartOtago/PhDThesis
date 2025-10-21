@@ -1,7 +1,7 @@
 \chapter{Joint Retrieval of Ozone, Pressure and Temperature}
 \label{ch:FullBay}
 \thispagestyle{empty}
-Here, we extend the hierarchical Bayesian model set up in Sec. \ref{sec:BayModelO3} to include pressure and temperature related hyper-parameters and elaborate on some aspects of prior modelling.
+Here we extend the hierarchical Bayesian model set up in Sec. \ref{sec:BayModelO3} to include pressure and temperature related hyper-parameters and elaborate on some aspects of prior modelling.
 The MTC scheme is applied to jointly provide posterior distributions of ozone, pressure and temperature.
 Additionally, the reader is guided through the process of setting up an efficient TT approximation of the higher-dimensional marginal posterior.
 
@@ -99,7 +99,7 @@ For brevity, we define a linear forward model matrix as
 \begin{align}
 	\bm{A}_{\bm{\theta}} \coloneqq \bm{M}\bm{A}_L(p_0,b,T_0,\bm{h_T},\bm{a}) \, .
 \end{align}
-with $\bm{\theta}  \coloneqq \{p_0,b,T_0,\bm{h_T},\bm{a}  \}$ accounting for the all pressure and temperature related hyper-parameters and $\bm{M}$ the affine approximation from the previous Chapter.
+with $\bm{\theta}  \coloneqq \{p_0,b,T_0,\bm{h_T},\bm{a}  \}$ accounting for the all pressure and temperature related hyper-parameters and the affine approximation $\bm{M}$ from the previous Chapter.
 \begin{table}
 	\centering
 	\begin{tabular}{ |c||c|c|c|c|c|   }
