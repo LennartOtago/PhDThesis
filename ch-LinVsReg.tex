@@ -456,16 +456,19 @@ To find the regularised solution, we use the L-curve method, and follow~\cite{ha
 Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $10^{-8}$ to $10^{0}$ and plot the regularisation norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{y} \rVert_{L^2}$ (see Figure \ref{fig:LCurve}). 
 The regularised solution corresponds to the ``corner'' of the L-curve at the point of maximum curvature provided by the kneedle algorithm~\cite{satopaa2011kneedle} using the function \texttt{kneed.KneeLocator} in $\approx 0.015$s, which is slightly faster then the TT approach to obtain full posterior mean and covariance.
 The corresponding regularisation parameter is $\lambda = 1.6 \times 10^{-4}$.
+
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{LCurvePhD.png}
 	\caption[Plot of the L-curve to find the regularised solution.]{L-curve of regularisation norm $\sqrt{\bm{x}^T\bm{Lx}}$ against the data misfit norm $\lVert \bm{A}\bm{x} - \bm{y} \rVert_{L^2}$ for different $\lambda$ values, where $\bm{x}_{\lambda}$ is calculated as in Eq.~\ref{eq:xLam}. The best regularised solution is located at the point of maximum curvature (pink triangle) of the L-curve. Additionally, we calculate the data misfit norm and the regularised norm for the mean (black circle) and samples (blue squares) of the full posterior of ozone.}
 	\label{fig:LCurve}
 \end{figure}
-
-The regularised solution in Fig.~\ref{fig:O3SolplsReg} is very similar to the posterior mean.
-It is pretty clear that the regularised solution accounts for only one possible solution and does not provide uncertainties. The regularised solution is not similar to the samples drawn from the posterior $\pi(\bm{x}| \bm{y})$ (see Fig.~\ref{fig:O3Samp}).
-The samples of $\pi(\bm{x}| \bm{y})$ lie above the L-curve, whereas the posterior mean and the regularised solution are on the L-Curve.
-This does make sense, if one thinks about the mean as the (smooth) average over less-smooth samples and the regularised solution as an extremely smooth ozone profile (see Lagrangian in Sec. \ref{sec:reg}).
-In contrast, the samples are less regularised and hence lie above the L-curve, but have a similar data misfit norm, and as already mentioned, are all feasible solutions to the data.
+The regularised solution in Fig.~\ref{fig:O3SolplsReg} is very similar to the posterior mean and have a similar data misfit and regularisation norm.
+Note that we cannot infer the posterior mean from the regularised solutions, even if it appears to lie on the L-curve.
+It is pretty clear that the regularised solution accounts for only one possible solution and does not provide uncertainties. The regularised solution and the posterior mean are not similar to the samples drawn from the posterior $\pi(\bm{x}| \bm{y})$ (see Fig.~\ref{fig:O3Samp}).
+This does make sense, if one thinks about the mean as the (smooth) average over less-smooth samples and the regularised solution as an extremely smooth ozone profile (see Lagrangian in Sec.~\ref{sec:reg}).
+Hence, all posterior samples of $\pi(\bm{x}| \bm{y})$ are less regularised and lie above the L-curve, and as already mentioned, are all feasible solutions to the data.
+Counterintuitively, in multi-dimensional spaces, it is not possible to obtain a sample that represents the mean, despite it being the point of highest probability, because the probability mass concentrates on a “shell” or “ring” away from the mean~\cite{VowelsMultiD} and \cite[Sec.~3.1]{VershyninMultiD2018}.
+Intuitively, think about how an electron's mean position may be inside the atom's core but it's location is always outside the atom's core \cite[Fig.~4]{ElectronBessel}.
 Neither the regularisation solution nor the posterior ozone profiles capture the second ozone peak of the ground truth at high altitudes.
+
