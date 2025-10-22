@@ -52,7 +52,8 @@ For fundamentals on the RTE, we recommend~\cite[Chapter 1]{rybicki2000rte}, and 
 
 \section{Simulate Data Based on a Ground Truth}
 \label{sec:SimDat}
-To calculate the integrals in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE} numerically, we discretise the atmosphere in $n$ layers and define height values $h_{L,i-1} < h_{L,i}$ with respect to the surface of the earth, for $i = 1, \dots, n$.
+One measurement is calculated according to the integrals in Eq.~\ref{eq:RTE} and Eq.~\ref{eq:absRTE}.
+In doing so, we discretise the atmosphere in $n$ layers and define height values $h_{L,i-1} < h_{L,i}$ with respect to the surface of the earth, for $i = 1, \dots, n$.
 The $i$-th layer is defined by two spheres around the centre of the earth with radii $ r_0 + h_{L,i-1} $ and $r_0 + h_{L,i}$.
 Then the ozone VMR $\bm{x} =\{x_1,x_2,\ldots,x_n\} \in \mathbb{R}^{n}$, pressure $\bm{p} =\{p_1,p_2,\ldots,p_n\} \in \mathbb{R}^{n}$ and temperature $\bm{T} =\{T_1,T_2,\ldots,T_n\} \in \mathbb{R}^{n}$, as well as all other height dependent parameters, are discretised profiles with constant values between the heights $h_{L,i-1} \leq h < h_{L,i}$.
 Above $h_{L, n}$ and below $h_{L,0} $, the ozone VMR is set to zero, so no signal can be obtained.
@@ -123,25 +124,27 @@ Following \cite{atmosphere1976us} we form the temperature function
 \end{equation}
 with gradient and height values provided by~\cite{atmosphere1976us} (see Tab.~\ref{tab:tempGrad}) which acts as the ground truth temperature profile (see Fig.~\ref{fig:PriorTemp}).
 
-One measurement in an atmosphere between $h_{L,1} = 6.9$km and $h_{L,n} = 83.3$km with $n = 45$ equidistant layers and a satellite at a fixed height of $h_{\text{sat}} = 500$km (see Fig.~\ref{fig:LIMB}) is calculated according to the RTE.
+In this thesis, we define an atmosphere between $h_{L,1} = 6.9$km and $h_{L,n} = 83.3$km with $n = 45$ equidistant layers and a satellite at a fixed height of $h_{\text{sat}} = 500$km (see Fig.~\ref{fig:LIMB}).
 The height value $h_{L,i}$ for each layer $i = 1,\dots, n$ is defined by the pressure values from the ground truth ozone profile~\cite{MLSdata} and the hydrostatic equilibrium equation, see Eq.~\ref{eq:hydr}.
 We target ozone at a frequency of $235.71$GHz, which lies within the region where the MLS observes ozone~\cite{livesey2008ozonecarbonmono, waters2006earth}.
 The corresponding wave number is $\nu = 7.86\text{cm}^{-1}$.
-The absorption constant $k(\nu,T)$ is calculated as in Eq.~\ref{eq:absRTE}, following the high resolution transmission (HITRAN) database~\cite{gordon2022hitran2020}, which provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
+The absorption constant $k(\nu,T)$ is calculated as in Eq.~\ref{eq:absRTE}, following the high resolution transmission (HITRAN) database~\cite{gordon2022hitran2020}.
+The HITRAN database provides the line intensity $L(\nu,T_{\text{ref}})$ for the isotopologue $\prescript{16}{}{\text{O}}_3$ with the AFGL Code 666.
 %This gives us a non-linear forward model matrix $\bm{A}_{NL} = \bm{A}(\bm{x}, \bm{p}, \bm{T}) \in \mathbb{R}^{m \times n}$, where $\bm{x}\in \mathbb{R}^{n}$ is vector related to the ozone VMR, $\bm{p}\in \mathbb{R}^{n}$ is the vector describing the pressure values and $\bm{T}\in \mathbb{R}^{n}$ the temperature values.
-Lastly, we add independent and identically-distributed Gaussian noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ so that the signal-to-noise ratio (SNR) is approximately $150$ (see Eq.~\ref{eq:SNR}).
+To compute a data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $ independent and identically-distributed Gaussian noise $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$ is added so that the signal-to-noise ratio (SNR) is approximately $150$ (see Eq.~\ref{eq:SNR}).
 This is similar to~\cite{Froidevaux2008snrozone}, where a signal with a maximal spectral intensity of around $100\text{K}$ and a noise range of $0.4$ to $1.6\text{K}$ is reported.
 Note that the methods used in this thesis will work with different SNRs or other frequencies.
-Before computing a data vector $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta} $ we test different measurement strategies and asses the information provided by the forward model via a singular value decomposition (SVD).
+
 
 \subsection{Understanding the Forward Model}
 %\textcolor{red}{understanding the forward map}
 \label{sec:SVD}
+Before computing a data vector we test different measurement strategies and asses the information provided by the forward model via a singular value decomposition (SVD).
 An SVD of the forward model matrix provides a quick and intuitive way of assessing if the data collection is effective.
 More specifically, the behaviour of the singular values tells us how much information is passed through the forward model and how the measurement strategy affects that information.
 The SVD of the linear forward model matrix $\bm{A}_L \in \mathbb{R}^{m \times n}$ is given as
 \begin{align}
-	\bm{A}_L = \sum_{i =1}^{r} \bm{u}_i  \sigma_i \bm{v}^T_i = \bm{U} \bm{\Sigma} \bm{V}^T
+	\bm{A}_L = \sum_{j =1}^{r} \bm{u}_j  \sigma_j \bm{v}^T_j = \bm{U} \bm{\Sigma} \bm{V}^T
 \end{align}
 with $r = \min\{m,n\}$.
 Our main objective is to measure ozone $\bm{x}$, so this forward model $\bm{A}_L$ includes temperature and pressure.
@@ -160,8 +163,8 @@ If the pressure is low, the signal is low, and the data tends to be noise-domina
 %use some other means for determining these components.}
 
 The noise-free measurement vector is given as $\bm{A}_L\bm{x}$, so the SVD of the forward model $\bm{A}_L$ provides information on how the right singular vectors $\bm{v}_i$ act on the parameter $\bm{x}$.
-Then the singular values $\sigma_i $, ordered in size from the largest $\sigma_1$ to the smallest $\sigma_{r}$, weigh that information from the right singular vectors to the left singular vectors $\bm{u}_i$.
-The left singular vectors project $\sigma_i \bm{v}^T_i \bm{x} $ onto the data space.
+Then the singular values $\sigma_j $, ordered in size from the largest $\sigma_1$ to the smallest $\sigma_{r}$, weigh that information from the right singular vectors to the left singular vectors $\bm{u}_j$.
+The left singular vectors project $\sigma_j \bm{v}^T_j \bm{x} $ onto the data space.
 For a large singular value the forward model is informative about parameter structures represented by the corresponding right singular vector. 
 For a small singular value the forward model is uninformative about parameter structures represented by the corresponding right singular vector.
 %\textcolor{red}{WQhat is the vice versa? Not clear what you are saying. }
@@ -171,8 +174,8 @@ Further, we define the SNR as
 	\text{SNR} \coloneqq \frac{\max(y)}{\text{STD noise}} = \frac{\text{peak signal}}{\text{RMS noise}} \label{eq:SNR} \, 
 \end{align}
 where STD is the standard deviation.
-Based on the assumption that the largest singular value $\sigma_1  \approx \max(y)$, then most of the information transmitted through the forward model corresponds to the singular values $\sigma_i \gtrsim \max(y)/ \text{SNR}$ \cite{fox2025BlokkLecNot}.
-For very small singular values $\sigma_i \ll \sigma_1/\text{SNR}$ below the RMS noise level or the noise STD, an effective rank $r_{\text{eff}} \leq r$ is introduced and the data space spanned by $ \{\bm{u}_{r_{\text{eff}} +1}, \dots ,\bm{u}_r \}$ is noise-dominated.
+Based on the assumption that the largest singular value $\sigma_1  \approx \max(y)$, then most of the information transmitted through the forward model corresponds to the singular values $\sigma_j \gtrsim \max(y)/ \text{SNR}$ \cite{fox2025BlokkLecNot}.
+For very small singular values $\sigma_j \ll \sigma_1/\text{SNR}$ below the RMS noise level or the noise STD, an effective rank $r_{\text{eff}} \leq r$ is introduced and the data space spanned by $ \{\bm{u}_{r_{\text{eff}} +1}, \dots ,\bm{u}_r \}$ is noise-dominated.
 
 For large singular values above the SNR the associated data space is hardly influenced by the noise.
 Therefore, reconstructions in the parameter space spanned by the respective right singular vectors are expected to be close to the ground truth.
@@ -280,7 +283,7 @@ Next, the right singular vectors of the forward model will be assessed to see to
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{MiddleVecA.png}
-	\caption[Right singular vectors 11 to 19 of forward model.]{Right singular vectors with index $i = 11,\dots, 200$ of the forward model matrix $\bm{A}_L$ for measurements case 5 in Fig.~\ref{fig:TangHCases}.
+	\caption[Right singular vectors 11 to 19 of forward model.]{Right singular vectors with index $j = 11,\dots, 200$ of the forward model matrix $\bm{A}_L$ for measurements case 5 in Fig.~\ref{fig:TangHCases}.
 		These singular vectors correspond to singular values in Fig.~\ref{fig:SingA}, where the noise level is similar to the data.}
 	\label{fig:middleSpace}
 \end{figure}

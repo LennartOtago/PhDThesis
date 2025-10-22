@@ -339,14 +339,14 @@
 \begin{romanpages}
 
 % Title page is created here
+\pagestyle{empty}
 \maketitle
+%\thispagestyle{empty}
 
 %%%%% DEDICATION -- If you'd like one, un-comment the following.
-%\begin{dedication}
-%This thesis is dedicated to\\
-%someone\\
-%for some special reason\\
-%\end{dedication}
+\begin{dedication}
+In Gedenken an Oma Luzie
+\end{dedication}
 
 %%%%% ACKNOWLEDGEMENTS -- Nothing to do here except comment out if you don't want it.
 \begin{acknowledgements}
@@ -371,7 +371,7 @@
 
 % This is where the whole-document ToC appears:
 \tableofcontents
-
+\thispagestyle{fancy}
 
 %\listoffigures
 	\mtcaddchapter
@@ -385,8 +385,9 @@
 % This example includes a list of abbreviations.  Look at text/abbreviations.tex to see how that file is
 % formatted.  The template can handle any kind of list though, so this might be a good place for a
 % glossary, etc.
+%\thispagestyle{empty}
 \include{abbreviations}
-
+%\thispagestyle{empty}
 % The Roman pages, like the Roman Empire, must come to its inevitable close.
 \end{romanpages}
 

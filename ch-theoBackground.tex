@@ -588,7 +588,7 @@ Since we want to show that Bayesian methods provide more information than regula
 
 For a linear forward model matrix $\bm{A}$, data $\bm{y}$ and a regularisation operator $\bm{T}$, the regularisation approach provides one solution $\bm{x}$ that minimises both the data misfit norm
 \begin{align}
-	\left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2}
+	\left\lVert  \bm{A} \bm{x}- \bm{y} \right\rVert_{L^2}
 \end{align} and a regularisation norm 
 %\textcolor{red}{why is lambda in the semi-norm. If it is there, this is a family of semi-norms.}
 \begin{align}
@@ -596,11 +596,11 @@ For a linear forward model matrix $\bm{A}$, data $\bm{y}$ and a regularisation o
 \end{align}
 For a fixed regularisation parameter $\lambda> 0 $, the regularised solution as in~\cite{hansen2010discrete, fox2016fast, tan2016LecNot} is given by $\bm{x}_{\lambda}$ that minimises the weighted sum
 \begin{align}
-	\bm{x}_{\lambda} = \underset{\bm{x}}{\mathrm{arg\,min}} \left\lVert \bm{y} - \bm{A} \bm{x} \right\rVert_{L^2}^2 + \lambda \left\lVert \bm{T} \bm{x} \right\rVert_{L^2}^2\, ,
+	\bm{x}_{\lambda} = \underset{\bm{x}}{\mathrm{arg\,min}} \left\lVert  \bm{A} \bm{x} -\bm{y} \right\rVert_{L^2}^2 + \lambda \left\lVert \bm{T} \bm{x} \right\rVert_{L^2}^2\, ,
 \end{align}
 which can be calculated by taking the derivative with respect to $\bm{x}$:
 \begin{align}
-	& & \nabla_{\bm{x}} \left\{ (\bm{y} - \bm{A} \bm{x})^T (\bm{y} - \bm{A} \bm{x}) + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
+	& & \nabla_{\bm{x}} \left\{ ( \bm{A} \bm{x}-\bm{y})^T ( \bm{A} \bm{x}-\bm{y}) + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
 	&\iff & \nabla_{\bm{x}} \left\{ \bm{y}^T \bm{y} + \bm{x}^T \bm{A}^T \bm{A} \bm{x} - 2 \bm{y}^T \bm{A} \bm{x} + \lambda \bm{x}^T \bm{T}^T \bm{T} \bm{x} \right\} &= 0 \\
 	&\iff & 2 \bm{A}^T \bm{A} \bm{x} - 2 \bm{A}^T \bm{y} + 2 \lambda \bm{T}^T \bm{T} \bm{x} &= 0 \label{eq:lastRegDiff}.
 \end{align}
@@ -655,16 +655,15 @@ Based on the trade-off between the data misfit and the regularisation norm, the 
 \begin{figure}[ht!]
 	\centering
 	\input{Lagrangian.pdf_tex}
-	\caption[]{This Figure is not to scale and is directly inspired by~\cite{ColinPhD}. One solution $\bm{x}_{\lambda}$ is obtained by following a contour line $\left\lVert \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2}= c$ until $\bm{x}^T \bm{L} \bm{x}$ is minimised. In the centre of the likelihood contours a solution $\bm{x}_{0}$ uneffected by the regulariser is obtained, whereas the solution $\bm{x}_{\infty}$ is determined a-priori.}
+	\caption[]{This Figure is not to scale and directly inspired by~\cite{ColinPhD}. One solution $\bm{x}_{\lambda}$ is obtained by following a contour line $\left\lVert \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2}= c$ until $\bm{x}^T \bm{L} \bm{x}$ is minimised. In the centre of the likelihood contours a solution $\bm{x}_{0}$ uneffected by the regulariser is obtained, whereas the solution $\bm{x}_{\infty}$ is determined a-priori.}
 	\label{fig:Langrangian}
 \end{figure}
 Alternatively one can introduce a Lagrangian $\mathcal{L}(\bm{x},\lambda)\coloneqq \left\lVert \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2} + \lambda \, \bm{x}^T\bm{L} \bm{x}$ similar to~\cite{LiLagrange}, where $\lambda$ is a Lagrange multiplier.
 For a given $\lambda$, a solution $\bm{x}_{\lambda} $ that minimises $\mathcal{L}(\bm{x},\lambda)$ is usually obtained by finding the minimum of $\left\lVert \bm{A} \bm{x} - \bm{y} \right\rVert^2_{L^2}$ with respect to the constant constrained $\bm{x}^T \bm{L} \bm{x} = c$~\cite[Fig.~2.13]{SANTOSH202265}.
 This is equivalent to $\bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$ subject to a constant constrain $\left\lVert  \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2}= c$ (see~\cite[fn.~6]{fox2016fast}). 
 %\textcolor{red}{You need to fix this sentence, as L(x,lambda) is not a Lagrange multiplier -- it does have a name, and you should use it and not wite sentences that say : I introduce the chicken p=7 which minimizes frog. }
-So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and the L-Curve presents the lower boundary to an open set of $\bm{x}^T \bm{L} \bm{x}$ values.
-Hence, almost every sample of the posterior, which represents a feasible solution given the data, lies above the L-Curve and is less regularised and because it has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
-
+So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and the L-curve presents the lower boundary to an open set of high-dimensional posterior samples~\cite{VowelsMultiD}.
+Hence, every sample of the high-dimensional posterior, which represents a feasible solution given the data, lies above the L-Curve and is less regularised because it has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
 %\textcolor{red}{not accurate enough}
 %\textcolor{red}{say on or above - -do any points in the posterior actually lie in the L-Cerve, I don't think so. Are you claiming that the regularised solutions are in the posterior? The L-curve could be the limit of an open set.}
 %Now consider the 2-Wasserstein distance
