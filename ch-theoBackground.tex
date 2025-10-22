@@ -231,6 +231,7 @@ The specific sampling methods in this thesis possess proven ergodic properties, 
 
 If the instance $\bm{\theta}^{(k)}$ of an ergodic Markov chain represents an independent sample of the marginal posterior $\pi(\bm{\theta} | \bm{y})$ and $\bm{x}^{(k)}$ is a sample from the full conditional posterior $ \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$, e.g.~as in Sec.~\ref{subsec:RTO}, then the resulting sample $(\bm{x}^{(k)}, \bm{\theta}^{(k)})$ is an independent sample from the joint posterior $\pi(\bm{x},   \bm{\theta} | \bm{y})$~\cite{fox2016fast,acosta2022markov}.
 Repeating this procedure gives the chain $\{(\bm{x}, \bm{\theta})^{(1)},\dots, (\bm{x}, \bm{\theta})^{(k)} ,\dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x} ,  \bm{\theta} | \bm{y}) $ of independent samples from the joint posterior.
+
 %\cite{acosta2022markov}.
 %%\textcolor{red}{reference Jun Liu, or something.}
 %$\{ (\bm{x}, \bm{\theta})^{(1)}, \dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x}, \bm{\theta} |  \bm{y}) =  \pi(\bm{x} |  \bm{\theta} , \bm{y}) \pi( \bm{\theta} | \bm{y})$ is also ergodic \textcolor{red}{for the posterior}~\cite{acosta2022markov}. \textcolor{red}{strictly, ergodic for [theta|y] -- ergodicity is with respect to a particular distribution.}
@@ -242,7 +243,7 @@ Repeating this procedure gives the chain $\{(\bm{x}, \bm{\theta})^{(1)},\dots, (
 %d mixing properties of the chain to evaluate if the behavours is consistent with ergodicty.
 %\textcolor{red}{this is a bit loose. really, one evaluates if the behaviour is consistent with ergodicity.}
 
-
+\clearpage
 \section{Numerical Function Approximation -- Tensor-Train (TT)}
 \label{sec:tensortrain}
 %\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
@@ -268,7 +269,37 @@ Here, Cui and Dolgov~\cite{cui2022deep} refer to $\uplambda(x)$ as the ``product
 	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \diff x_i. \label{eq:lebesgueWeight}
 \end{align}
 
-To approximate a target function in the TT format, one has to predefine $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$ with $n$ grid points in each direction.
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}{\textwidth}
+		\input{TTSchem.pdf_tex}
+		\caption{}
+	\end{subfigure}
+	\centering
+	\begin{subfigure}{\textwidth}
+		\begin{tikzpicture} 
+			\node[rectnode] at (-5,0) (T1)    {$1 \times n \times r_1$};
+			\node[rectnode] at (-2,0) (T2)    {$r_1 \times n \times r_{2}$};
+			
+			\node[rectnode] at (3,0) (Tn1)    {$r_{d-2} \times n \times r_{d-1} $};
+			\node[rectnode] at (6.75,0) (Tn)    {$r_{d-1} \times n \times 1$};
+			\draw[-, very thick] (T1.east) -- (T2.west); 
+			\draw[-, very thick] (Tn.west) -- (Tn1.east); 
+			\draw[-, mydotted, very thick] (T2.east) -- (Tn1.west);
+			
+			\node[align=center] at (-3.5,0.25) (R) {$r_1$};
+			\node[align=center] at (5,0.25) (R) {$r_{d-1}$};	
+		\end{tikzpicture} 
+		\caption{}
+	\end{subfigure}
+	\caption[Visualisation of a tensor train]{Here, we visualise the TT cores as a train of two- and three-dimensional matrices. 
+		Each core has a length $n$, corresponding to the number of grid points in each dimension, and the cores are connected through ranks $r_k$. 
+		More specifically, a core $\tilde{\pi}_k$ has dimensions $r_{k-1} \times n \times r_k$, with outer ranks $r_0 = r_d = 1$.
+		Using the TT format enables us to represent a $d$-dimensional grid with only $2nr + (d-2)nr^2$ evaluation points instead of $n^d$ grid points.
+		Figure~(a) is adapted from~\cite{fox2021grid}.}
+	\label{fig:TTfig}
+\end{figure}
+The approximation of a function in the TT format requires a predefine $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$ with $n$ grid points in each direction.
 In the TT format, the integral in Eq.~\ref{eq:margInt} for the marginal PDF can be computed at a low computational cost, as $\pi(\bm{x})$ is approximated by
 \begin{align*}
 	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d),
@@ -290,37 +321,6 @@ Consequently, the marginal PDF
 	\end{split}
 \end{align}
 is computed by integrating over all TT cores except the $k$-th core $\pi_k$, as in~\cite{dolgov2020approximation}, and normalised by the constant $z$~\cite{cui2022deep}.
-
-\begin{figure}[ht!]
-	\centering
-\begin{subfigure}{\textwidth}
-	\input{TTSchem.pdf_tex}
-	\caption{}
-\end{subfigure}
-	\centering
-\begin{subfigure}{\textwidth}
-\begin{tikzpicture} 
-	\node[rectnode] at (-5,0) (T1)    {$1 \times n \times r_1$};
-	\node[rectnode] at (-2,0) (T2)    {$r_1 \times n \times r_{2}$};
-	
-	\node[rectnode] at (3,0) (Tn1)    {$r_{d-2} \times n \times r_{d-1} $};
-	\node[rectnode] at (6.75,0) (Tn)    {$r_{d-1} \times n \times 1$};
-	\draw[-, very thick] (T1.east) -- (T2.west); 
-	\draw[-, very thick] (Tn.west) -- (Tn1.east); 
-	\draw[-, mydotted, very thick] (T2.east) -- (Tn1.west);
-	
-	\node[align=center] at (-3.5,0.25) (R) {$r_1$};
-	\node[align=center] at (5,0.25) (R) {$r_{d-1}$};	
-\end{tikzpicture} 
-	\caption{}
-\end{subfigure}
-\caption[Visualisation of a tensor train]{Here, we visualise the TT cores as a train of two- and three-dimensional matrices. 
-Each core has a length $n$, corresponding to the number of grid points in each dimension, and the cores are connected through ranks $r_k$. 
-More specifically, a core $\tilde{\pi}_k$ has dimensions $r_{k-1} \times n \times r_k$, with outer ranks $r_0 = r_d = 1$.
-Using the TT format enables us to represent a $d$-dimensional grid with only $2nr + (d-2)nr^2$ evaluation points instead of $n^d$ grid points.
-Figure~(a) is adapted from~\cite{fox2021grid}.}
-\label{fig:TTfig}
-\end{figure}
 
 
 %%%%%% Squared and Basis Function %%%%%
@@ -405,7 +405,7 @@ and similarly in the last dimension
 \end{equation}
 where $\bm{D}_d[l_{d-1},i] = \bm{B}_{\text{pre},d}[l_{d-1}, i, \alpha_{d+1}]$ and $\alpha_{d+1} = 1$.
 Note that in practice we calculate $z$ numerically within the process of computing the marginal PDFs so that $\sum f_{X_k}(x_k) =1 $ and for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ with $\uplambda(x) = 1$.
-
+\clearpage
 \begin{prop}[Backward Marginalisation as in~\cite{cui2022deep}]
 	\label{prob:backMarg}
 	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k} \in \mathbb{R}^{r_{k-1} \times n_{k} \times r_{k}}$, which is needed for defining the marginal function $f_{X_k}(x_k)$ or to draw samples from $\tilde{\pi}(\bm{x})$ via the squared IRT scheme (see Alg. Box~\ref{alg:SIRT}):
@@ -424,7 +424,6 @@ Note that in practice we calculate $z$ numerically within the process of computi
 		\end{equation}
 	\end{enumerate}
 \end{prop}
-
 \begin{prop}[Forward Marginalisation]
 	\label{prob:ForMarg}
 	Starting with the first coordinate $k = 1$, we set $\bm{B}_{\text{pre},1} = \bm{A}_1$. The following procedure can be used to obtain $\bm{R}_{\text{pre},k-1} \in \mathbb{R}^{r_{k-1}  \times r_{k-1}}$ for defining the marginal function $f_{X_k}(x_k)$:
@@ -444,7 +443,7 @@ Note that in practice we calculate $z$ numerically within the process of computi
 	\end{enumerate}
 \end{prop}
 
-
+\clearpage
 \subsection{Sampling from a TT Approximation}
 \label{subsec:SamplTT}
 Instead of evaluating marginal functions for quadrature, the inverse Rosenblatt transform (IRT) provides a scheme to draw samples from an approximated function in the TT format~\cite{dolgov2020approximation}.
@@ -577,7 +576,7 @@ This gives us an upper bound of the absolute error between the expected value of
 %, e.g the upper bound of absolute differences in means related to the probability measures $\pi$ and $\tilde{\pi}$. 
 
 
-
+\clearpage
 \section{Regularisation Approach}
 \label{sec:reg}
 

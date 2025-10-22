@@ -100,42 +100,10 @@ For brevity, we define a linear forward model matrix as
 	\bm{A}_{\bm{\theta}} \coloneqq \bm{M}\bm{A}_L(p_0,b,T_0,\bm{h_T},\bm{a}) \, .
 \end{align}
 with $\bm{\theta}  \coloneqq \{p_0,b,T_0,\bm{h_T},\bm{a}  \}$ accounting for the all pressure and temperature related hyper-parameters and the affine approximation $\bm{M}$ from the previous Chapter.
-\begin{table}
-	\centering
-	\begin{tabular}{ |c||c|c|c|c|c|   }
-		\hline
-		& &\multicolumn{2}{|c|}{TT bounds}& t-walk&\\
-		\hline
-		model parameters& priors&\makecell{lower}& \makecell{upper\\
-		}&$\tau_{\text{int}}$&Context\\
-		\hhline{|=||=|=|=|=|=|}
-		$\bm{x}$ &$\mathcal{N}(0,(\delta \bm{L})^{-1})$ & -&-&-& $\bm{x}$\\ \hline
-		$\delta$ &$\mathcal{T}(1,10^{-35})$ & -&-&  -& $\bm{x}$\\ \hline
-		$\gamma$ & $\mathcal{T}(1,10^{-35})$ &$8\times10^{14}$ &$1.2\times10^{16}$&  $ 507\pm 29$ &$\bm{y}$\\ \hline
-		$\lambda  = \delta / \gamma$ &- & $1\times10^{-5}$&$2.5\times10^{-3}$& $979 \pm 75$ & -\\ \hline
-		$b$ &  $\mathcal{N}(0.174,(0.01)^2)$& 0.129& 0.214 &$830\pm 60$&$\bm{p}$\\ \hline
-		$h_{T,1}$ &  $\mathcal{N}(11,(1.5)^2)$&5.4 &16.3&$286\pm 13$ &$\bm{T}$\\ \hline
-		$T_{0}$ &  $\mathcal{N}(288.15,(10)^2)$& 247 &326&$279 \pm 12$&$\bm{T}$\\ \hline
-		$p_0$ &  $\mathcal{N}(1311,(20)^2)$&1237 &1387&$279\pm 12$&$\bm{p}$\\ \hline
-		$h_{T,3}$ &  $\mathcal{N}(32.3,(2.5)^2)$&22.9&41.7&$254\pm 11$&$\bm{T}$\\ \hline
-		$a_{1}$ &  $\mathcal{N}(0,(0.1)^2)$&-0.38 &0.38&$295 \pm 13$&$\bm{T}$\\ \hline
-		$h_{T,2}$ &  $\mathcal{N}(20.1,(0.7)^2)$&17.2 &22.7&$296\pm 13$&$\bm{T}$\\ \hline
-		$a_{0}$ &  $\mathcal{N}(-6.5,(0.01)^2)$&-6.54 &-6.47&$252 \pm 10$&$\bm{T}$\\ \hline
-		$a_{2}$ &  $\mathcal{N}(1,(0.01)^2)$&0.97 &1.03&$267 \pm 11$&$\bm{T}$\\ \hline
-		$a_{3}$ &  $\mathcal{N}(2.8,(0.1)^2)$&2.5 &3.1&$267\pm 11$&$\bm{T}$\\ \hline
-		$h_{T,4}$ &  $\mathcal{N}(47.4,(0.5)^2)$&45.5 &49.3&$270 \pm 12$&$\bm{T}$\\ \hline
-		$a_{4}$ &  $\mathcal{N}(0,(0.1)^2)$&-0.38 &0.38&$254 \pm 11$&$\bm{T}$\\ \hline
-		$h_{T,5}$ &  $\mathcal{N}(51.4,(0.5)^2)$&49.5 &53.3&$280 \pm 12$&$\bm{T}$\\ \hline
-		$a_{5}$ &  $\mathcal{N}(-2.8,(0.1)^2)$&-3.18 &-2.43&$278 \pm 12$&$\bm{T}$\\ \hline
-		$h_{T,6}$ &  $\mathcal{N}(71.8,(3)^2)$&60.5 &83.1&$250\pm 10$&$\bm{T}$\\ \hline
-		$a_{6}$ & $\mathcal{N}(-2,(0.01)^2)$ &-2.04 &-1.96&$272\pm 12$&$\bm{T}$\\
-		\hline
-	\end{tabular}
-	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma^2)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in~\cite{UwerrM} from posterior samples based on the approximated forward map.}
-	\label{tab:priors}
-\end{table}
 
-Then, we set up the hierarchical Bayesian framework
+\clearpage
+\noindent
+The distributions of the hierarchical Bayesian framework are:
 \begin{subequations}
 	\label{eq:BayMode}
 	\begin{align}
@@ -147,10 +115,10 @@ Then, we set up the hierarchical Bayesian framework
 		\bm{h}_{\bm{T}}  &\sim \mathcal{N}(\bm{\mu}_{T}, \bm{\Sigma}_{\bm{h}_T}) \\
 		T_0  &\sim \mathcal{N}(\mu_{T_0}, \sigma_{T_0} )\\
 		p_0  &\sim \mathcal{N}(\mu_{p_0}, \sigma_{p_0} )\\
-		b  &\sim \mathcal{N}(\mu_b, \sigma_b )
+		b  &\sim \mathcal{N}(\mu_b, \sigma_b )  \label{eq:lastprior}  \, .
 	\end{align}
 \end{subequations}
-and define a normally distributed likelihood (due to Gaussian noise) and normally distributed priors.
+Due to Gaussian noise $\pi(\bm{y} |  \bm{x},\bm{\theta},\delta,\gamma )$ is a normally distributed likelihood and Eq.~\ref{eq:priorXFull} to Eq.~\ref{eq:lastprior} denote prior distributions.
 Before we formulate the posterior distribution, we carefully define $\bm{\theta}_{\gamma}, \bm{\theta}_{\delta},\bm{\theta}_{p_0},\bm{\theta}_{b},\bm{\theta}_{\bm{h}},\bm{\theta}_{T_0},\bm{\theta}_{\bm{a}}$, the hyper-prior scales, shapes, means and variances, which are explicitly given in Tab.~\ref{tab:priors}.
 
 \subsection{Prior Modelling}
@@ -207,6 +175,40 @@ We either use the t-walk algorithm~\cite{christen2010general} to draw samples fr
 In doing so, we guide the reader through the procedure and point out some key aspects of how we obtain an efficient TT approximation.
 Lastly, we use the RTO method to draw ozone samples from the full conditional posterior $\pi(\bm{x}|p_0,b,T_0,\bm{h_T},\bm{a} ,\lambda, \gamma, \bm{y})$.
 Recall that the linear forward model matrix is $\bm{A}_{\bm{\theta}}$ is depending on the hyper-parameter defined as $\bm{\theta}  \coloneqq \{p_0,b,T_0,\bm{h_T},\bm{a}  \}$.
+\begin{table}[ht!]
+	\centering
+	\begin{tabular}{ |c||c|c|c|c|c|   }
+		\hline
+		& &\multicolumn{2}{|c|}{TT bounds}& t-walk&\\
+		\hline
+		model parameters& priors&\makecell{lower}& \makecell{upper\\
+		}&$\tau_{\text{int}}$&Context\\
+		\hhline{|=||=|=|=|=|=|}
+		$\bm{x}$ &$\mathcal{N}(0,(\delta \bm{L})^{-1})$ & -&-&-& $\bm{x}$\\ \hline
+		$\delta$ &$\mathcal{T}(1,10^{-35})$ & -&-&  -& $\bm{x}$\\ \hline
+		$\gamma$ & $\mathcal{T}(1,10^{-35})$ &$8\times10^{14}$ &$1.2\times10^{16}$&  $ 507\pm 29$ &$\bm{y}$\\ \hline
+		$\lambda  = \delta / \gamma$ &- & $1\times10^{-5}$&$2.5\times10^{-3}$& $979 \pm 75$ & -\\ \hline
+		$b$ &  $\mathcal{N}(0.174,(0.01)^2)$& 0.129& 0.214 &$830\pm 60$&$\bm{p}$\\ \hline
+		$h_{T,1}$ &  $\mathcal{N}(11,(1.5)^2)$&5.4 &16.3&$286\pm 13$ &$\bm{T}$\\ \hline
+		$T_{0}$ &  $\mathcal{N}(288.15,(10)^2)$& 247 &326&$279 \pm 12$&$\bm{T}$\\ \hline
+		$p_0$ &  $\mathcal{N}(1311,(20)^2)$&1237 &1387&$279\pm 12$&$\bm{p}$\\ \hline
+		$h_{T,3}$ &  $\mathcal{N}(32.3,(2.5)^2)$&22.9&41.7&$254\pm 11$&$\bm{T}$\\ \hline
+		$a_{1}$ &  $\mathcal{N}(0,(0.1)^2)$&-0.38 &0.38&$295 \pm 13$&$\bm{T}$\\ \hline
+		$h_{T,2}$ &  $\mathcal{N}(20.1,(0.7)^2)$&17.2 &22.7&$296\pm 13$&$\bm{T}$\\ \hline
+		$a_{0}$ &  $\mathcal{N}(-6.5,(0.01)^2)$&-6.54 &-6.47&$252 \pm 10$&$\bm{T}$\\ \hline
+		$a_{2}$ &  $\mathcal{N}(1,(0.01)^2)$&0.97 &1.03&$267 \pm 11$&$\bm{T}$\\ \hline
+		$a_{3}$ &  $\mathcal{N}(2.8,(0.1)^2)$&2.5 &3.1&$267\pm 11$&$\bm{T}$\\ \hline
+		$h_{T,4}$ &  $\mathcal{N}(47.4,(0.5)^2)$&45.5 &49.3&$270 \pm 12$&$\bm{T}$\\ \hline
+		$a_{4}$ &  $\mathcal{N}(0,(0.1)^2)$&-0.38 &0.38&$254 \pm 11$&$\bm{T}$\\ \hline
+		$h_{T,5}$ &  $\mathcal{N}(51.4,(0.5)^2)$&49.5 &53.3&$280 \pm 12$&$\bm{T}$\\ \hline
+		$a_{5}$ &  $\mathcal{N}(-2.8,(0.1)^2)$&-3.18 &-2.43&$278 \pm 12$&$\bm{T}$\\ \hline
+		$h_{T,6}$ &  $\mathcal{N}(71.8,(3)^2)$&60.5 &83.1&$250\pm 10$&$\bm{T}$\\ \hline
+		$a_{6}$ & $\mathcal{N}(-2,(0.01)^2)$ &-2.04 &-1.96&$272\pm 12$&$\bm{T}$\\
+		\hline
+	\end{tabular}
+	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma^2)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in~\cite{UwerrM} from posterior samples based on the approximated forward map.}
+	\label{tab:priors}
+\end{table}
 
 
 \subsection{Marginal Posterior -- Pressure and Temperature}
@@ -270,7 +272,7 @@ Interestingly, $p_0$ appears largely uncorrelated with other hyper-parameters, w
 Hyper-parameters describing temperature at higher altitudes are very much uncorrelated and the IACTs in Tab.~\ref{tab:priors} agree with those results.
 Alternatively, one could decorrelate the hyper-parameter space, e.g.~via Cholesky whitening~\cite{KessyWhitening2018}.
 \clearpage
-\begin{figure}[h]% will be the left-side figure
+\begin{figure}[h!]% will be the left-side figure
 	\includegraphics[]{CorrPlot.png}
 	\caption[Correlation plot of samples from TT approximation]{Plot of 1000 independent samples from TT approximation of $\sqrt{\pi( \bm{\theta},\lambda,\gamma  | \bm{y})}$ via SIRT-MH scheme. We plot the Pearson correlation coefficient ranging from $-1$ to $1$ for each hyper-parameter pair.}
 	\label{fig:CorrPlot}
@@ -279,7 +281,7 @@ Alternatively, one could decorrelate the hyper-parameter space, e.g.~via Cholesk
 	\includegraphics[]{2ndCorrPlot.png}
 	\caption*{Correlation plot of samples from TT-approximation of $\sqrt{\pi(\bm{\theta},\lambda,\gamma | \bm{y})}$ via SIRT-MH scheme.}
 \end{figure}
-\clearpage
+
 
 
 \paragraph{Find optimal rank and grid size}
