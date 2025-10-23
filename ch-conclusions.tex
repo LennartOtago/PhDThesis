@@ -35,10 +35,10 @@ Then drawing 1000 independent samples via the SIRT-MH scheme requires another 20
 So the cost per independent sample for the t-walk is $1210$ and for the TT approach is $\approx 36$ function evaluations, including the burn-in period and the TT approximation via the \texttt{rect\_cross.cross} Python function.
 Or, after the burn-in phase, the t-walk requires around 1100 function evaluations per independent sample, while with an approximation of a probability density in the TT format available, only two function evaluations per independent sample are needed.
 
-For future application, we suggest improving the efficiency of the TT approximation by, e.g., reducing the correlation structure through a coordinate system rotation or using better interpolators in between grid points to reduce the approximation error.
+For future application, we suggest improving the efficiency of the TT approximation by e.g., reducing the correlation structure through a coordinate system rotation or using better interpolators in between grid points to reduce the approximation error.
 This may be particularly important when the CDF in the SIRT scheme is not smooth due to poor approximations of the target density at previous samples.  
 Moreover, using a different reference measure for integration as in~\cite{cui2022deep}, such as a Gaussian measure instead of the current Lebesgue measure, may increase numerical stability.
-Currently, we have to predefine a normalisation constant and lower ranks manually, bounding the ranks automatically would be helpful (see e.g.~\cite{Rohrbach2022tterror}).
+Currently, we have to predefine a normalisation constant and lower ranks manually, bounding the ranks automatically would be helpful (see e.g.,~\cite{Rohrbach2022tterror}).
 
 
 
@@ -46,7 +46,7 @@ Currently, we have to predefine a normalisation constant and lower ranks manuall
 Here we summarise results within the context of our simplified physical atmospheric limb-sounding model.
 We demonstrated that the underlying non-linear forward model can be approximated with an affine map and the linear model, making this a linear inverse problem.
 For future application, we wish to include more measurement device-specific hyper-parameters in the forward model.
-This could include e.g. uncertainty in pointing accuracy or an antenna response function.
+This could include e.g., uncertainty in pointing accuracy or an antenna response function.
 
 In Sec.~\ref{sec:SVD}, we showed that we do not gain more information if we measure more frequently or collect more data in noise-dominated regions and that we need an SNR of $\approx10^4$ to produce data, which is informative about ozone at higher altitudes.
 

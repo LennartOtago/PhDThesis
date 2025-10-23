@@ -81,8 +81,8 @@ Additionally, the reader is guided through the process of setting up an efficien
 		\node[fit=(x)(T2),draw,dotted,black, rounded corners] {};
 		
 	\end{tikzpicture} 
-	\caption[Directed acyclic graph of Bayesian model for ozone, pressure and temperature.]{DAG of Bayesian model for ozone, pressure and temperature. The hyper-parameters $\bm{h}_T= \{ h_{T,1}, h_{T,2},h_{T,3},h_{T,4},h_{T,5},h_{T,6}\}$, $\bm{a} = \{ a_0, a_1, a_2,a_3,a_4,a_5,a_6\}$, $T_0$, $b$ and $p_0$ deterministically (dotted line) describe pressure parameter $\bm{p}$ through the function in Eq.~\ref{eq:pressFunc}, and temperature parameter $\bm{T}$ through the function in Eq.~\ref{eq:tempFunc}. In this case, we choose the hyper-parameters $\pi(p_0,b,T_0,\bm{h_T},\bm{a})$ to be a normally distributed a-priori, determined by $\bm{\theta}_{\bm{h}_T},\bm{\theta}_{\bm{a}}, \bm{\theta}_{T_{0}},\bm{\theta}_{b} , \bm{\theta}_{p_0}$ which represent mean and variances, e.g.~$b \sim \mathcal{N}(\mu_b, \sigma^2_b)$ and $\bm{\theta}_{b} = \{\mu_b, \sigma_b\}$.
- As previously described in Sec. \ref{sec:BayModelO3}, $\bm{\theta}_{\gamma}, \bm{\theta}_{\delta}$ determine gamma distributions, e.g. $\gamma \sim \Gamma(\alpha_{\gamma},\beta_{\gamma}) $ with $\bm{\theta}_{\gamma} = \{\alpha_{\gamma},\beta_{\gamma} \}$.
+	\caption[Directed acyclic graph of Bayesian model for ozone, pressure and temperature.]{DAG of Bayesian model for ozone, pressure and temperature. The hyper-parameters $\bm{h}_T= \{ h_{T,1}, h_{T,2},h_{T,3},h_{T,4},h_{T,5},h_{T,6}\}$, $\bm{a} = \{ a_0, a_1, a_2,a_3,a_4,a_5,a_6\}$, $T_0$, $b$ and $p_0$ deterministically (dotted line) describe pressure parameter $\bm{p}$ through the function in Eq.~\ref{eq:pressFunc}, and temperature parameter $\bm{T}$ through the function in Eq.~\ref{eq:tempFunc}. In this case, we choose the hyper-parameters $\pi(p_0,b,T_0,\bm{h_T},\bm{a})$ to be a normally distributed a-priori, determined by $\bm{\theta}_{\bm{h}_T},\bm{\theta}_{\bm{a}}, \bm{\theta}_{T_{0}},\bm{\theta}_{b} , \bm{\theta}_{p_0}$ which represent mean and variances e.g.,~$b \sim \mathcal{N}(\mu_b, \sigma^2_b)$ and $\bm{\theta}_{b} = \{\mu_b, \sigma_b\}$.
+ As previously described in Sec. \ref{sec:BayModelO3}, $\bm{\theta}_{\gamma}, \bm{\theta}_{\delta}$ determine gamma distributions e.g., $\gamma \sim \Gamma(\alpha_{\gamma},\beta_{\gamma}) $ with $\bm{\theta}_{\gamma} = \{\alpha_{\gamma},\beta_{\gamma} \}$.
 The ozone parameter $\bm{x}$ is statistically (solid line) described by the prior distribution $\bm{x}| \delta \sim \mathcal{N}(0,(\delta \bm{L})^{-1}) $. 
 		Here, the hyper-parameter $\delta$ accounts for smoothness in the ozone profile and defines the precision matrix $\bm{Q} = \delta \bm{L}$, where $\bm{L}$ is the graph Laplacian as in Eq.~\ref{eq:GLapl}.
 		The noise covariance $\bm{\Sigma} = \gamma^{-1} \bm{I}$ of the random noise vector $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I} ) $ is defined by the hyper-parameter $\gamma$.
@@ -94,7 +94,7 @@ As in Sec.~\ref{sec:BayModelO3}, we use a DAG as in Fig.~\ref{fig:DAGComplete} t
 Note that other variables in the RTE, such as the internal partition function and the black body radiation, are dependent on temperature (see Sec.~\ref{sec:RTE}).
 This hierarchical Bayesian framework includes the hyper-parameters $p_0, b$ for pressure (see Eq.~\ref{eq:pressFunc}), $\bm{a}, \bm{h}_T, T_0$ for temperature (see Eq.~\ref{eq:tempFunc}), $\delta$ for ozone smoothness and $\gamma$ for noise precision.
 Each of those hyper-parameters is described by the hyper-prior distribution $\pi(p_0,b,T_0,\bm{h_T},\bm{a}, \delta,\gamma)$ (see Sec.~\ref{subsec:PriorFull}).
-Through their respective prior distributions, pressure $\bm{p}$, temperature $\bm{T}$ and ozone $\bm{x}$ generate a space of all possible noise-free data $\Omega$ from which we observe some data with additive normally distributed noise $\bm{\eta}$.
+Through their respective prior distributions, pressure $\bm{p}$, temperature $\bm{T}$ and ozone $\bm{x}$ generate a space of all possible noise-free data $\Omega$ from which some data with additive normally distributed noise $\bm{\eta}$ is observed.
 For brevity, we define a linear forward model matrix as
 \begin{align}
 	\bm{A}_{\bm{\theta}} \coloneqq \bm{M}\bm{A}_L(p_0,b,T_0,\bm{h_T},\bm{a}) \, .
@@ -143,7 +143,7 @@ Before we formulate the posterior distribution, we carefully define $\bm{\theta}
 	\caption[Prior Samples of $\bm{p}/\bm{T}$ according to the respective hyper-prior distribution.]{Prior samples from the hyper-prior distribution of $\bm{h}_T$, $\bm{a}$ and $T_0$ for temperature as in Eq.~\ref{eq:tempFunc} and $b$ and $p_0$ for pressure as in Eq.~\ref{eq:pressFunc}. We plot $\bm{p}/\bm{T}$. The hyper-priors are defined in Tab.~\ref{tab:priors}.}
 	\label{fig:PriorPressOverTemp}
 \end{figure}
-We start by describing the pressure $\bm{p}$ in between $h_{L,0} \approx 7$km and $h_{L,n} \approx 82$km with an exponential function
+We start by describing the pressure $\bm{p}$ in between $h_{L,0} \approx 7$km and $h_{L,n} \approx 83$km with an exponential function
 \begin{align}
 	p(h) =
 	\exp \left( -b \, h \right)   \,  p_0 \quad , \text{$h_{L,0}  \leq h \leq h_{L,n}$}
@@ -206,7 +206,8 @@ Recall that the linear forward model matrix is $\bm{A}_{\bm{\theta}}$ is dependi
 		$a_{6}$ & $\mathcal{N}(-2,(0.01)^2)$ &-2.04 &-1.96&$272\pm 12$&$\bm{T}$\\
 		\hline
 	\end{tabular}
-	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma^2)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in~\cite{UwerrM} from posterior samples based on the approximated forward map.}
+	\caption[Summary of relevant parameter characteristics, bounds and sampling statistics.]{Summary of relevant parameter characteristics, bounds and sampling statistics. We denote $\mathcal{N}(\mu,\sigma^2)$ as the Gaussian and $\mathcal{T}(\alpha = \text{scale}, \beta = \text{rate})$ as the gamma distribution. The IACT $\tau_{\text{int}}$ is estimated as in~\cite{UwerrM} from posterior samples based on the approximated forward map.
+	The hyper-parameters are ordered as in the TT format according to their correlation structure.}
 	\label{tab:priors}
 \end{table}
 
@@ -225,7 +226,7 @@ with $\lambda= \delta / \gamma$,
 		&\text{and } g(\bm{\theta},\lambda) = \log \det \big(\bm{A}_{\bm{\theta}}^T  \bm{A}_{\bm{\theta}} + \lambda \bm{L}\big) \label{eq:gFullAppl} \, .
 	\end{align}
 \end{subequations}
-For each evaluation of $\pi( \bm{\theta},\lambda,\gamma  | \bm{y})$ we compose $\bm{A}_{\bm{\theta}}$ as in Chapter~\ref{ch:formodel}, and calculate $f$ and $g$ directly using the Cholesky decomposition via the Python functions \texttt{np.linalg.cholesky} and \texttt{scy.linalg.cho\_solve}.
+For each evaluation of $\pi( \bm{\theta},\lambda,\gamma  | \bm{y})$, $\bm{A}_{\bm{\theta}}$ is composed as in Chapter~\ref{ch:formodel}, and $f$ and $g$ are calculated directly using the Cholesky decomposition via the Python functions \texttt{np.linalg.cholesky} and \texttt{scy.linalg.cho\_solve}.
 
 \subsubsection{Sampling from the marginal posterior}
 Since the hierarchical model has $18$ hyper-parameters, we utilise the t-walk algorithm by Christen and Fox~\cite{christen2010general} to sample from the marginal posterior $\pi(\bm{\theta} , \lambda, \gamma| \bm{y})$, because it is quick-to-implement and easy-to-use.
@@ -269,8 +270,8 @@ We observe that the hyper-parameters $\lambda$ and $b$, and $\lambda$ and $\gamm
 Additionally, $h_{T,1}$ describing the temperature at low altitudes (strong signal) is mildly correlated to $b$.
 This is because $h_{T,1}$ influences ``the smoothness'' of $\bm{p}/\bm{T}$, which is hard to see in Fig.~\ref{fig:PriorPressOverTemp}.
 Interestingly, $p_0$ appears largely uncorrelated with other hyper-parameters, while $b$ is the key parameter linking pressure to ozone and temperature.
-Hyper-parameters describing temperature at higher altitudes are very much uncorrelated and the IACTs in Tab.~\ref{tab:priors} agree with those results.
-Alternatively, one could decorrelate the hyper-parameter space, e.g.~via Cholesky whitening~\cite{KessyWhitening2018}.
+Hyper-parameters describing the temperature at higher altitudes are very much uncorrelated and the IACTs in Tab.~\ref{tab:priors} agree with those results.
+Alternatively, one could decorrelate the hyper-parameter space e.g.,~via Cholesky whitening~\cite{KessyWhitening2018}.
 \clearpage
 \begin{figure}[h!]% will be the left-side figure
 	\includegraphics[]{CorrPlot.png}
@@ -432,7 +433,7 @@ More explicitly conditioned on an independent $\bm{\theta}^{(k)},\lambda^{(k)},\
 	\bm{x}^{(k)} = 	\Big(  \underbrace{\gamma^{(k)} \bm{A}_{\bm{\theta}^{(k)}}^T\bm{A}_{\bm{\theta}^{(k)}} +  \delta^{(k)}\bm{L}}_{\bm{B}^{(k)}} \Big)^{-1} \left(  \gamma^{(k)}  \bm{A}_{\bm{\theta}^{(k)}}^T\bm{y} +\sqrt{\gamma^{(k)}} \bm{A}_{\bm{\theta}^{(k)}}^T \bm{v}_1 + \sqrt{\delta^{(k)}}\bm{L}^{1/2}\bm{v}_2\right)
 \end{align}
 with $\bm{v}_1 \sim \mathcal{N}(\bm{0},  \bm{I}_m )$, $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{I}_n )$, $\bm{Q}_{\delta} = \delta  \bm{L} $, $\bm{\Sigma}^{-1}_{\gamma} = \gamma \bm{I}$  and $\bm{L}^{1/2}$ is the Cholesky factorisation of $\bm{L}$ \cite{bardsley2012mcmc}.
-If $n$ is large and calculating the Cholesky decomposition of $\bm{L}$ or constructing $\bm{L}$ is expensive it is recommended to represent $\bm{L}$ as a sum over cliques e.g.~small $2\times2$ rank-1 matrices (see $\bm{L}$ in Eq.~\ref{eq:LaplRegTheo}).
+If $n$ is large and calculating the Cholesky decomposition of $\bm{L}$ or constructing $\bm{L}$ is expensive it is recommended to represent $\bm{L}$ as a sum over cliques e.g.,~small $2\times2$ rank-1 matrices (see $\bm{L}$ in Eq.~\ref{eq:LaplRegTheo}).
 Then a sample $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\delta})$ can be obtained by drawing $n$ random variables from $\mathcal{N}(0,1)$ without explicitly forming $\bm{L}$~\cite{fox2016fast}.
 
 We obtain the Cholesky factorisation of $\bm{B}^{(k)}$ and $\bm{L}$ from the Python function \texttt{numpy.linalg.cholesky} and 

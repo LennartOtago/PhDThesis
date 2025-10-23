@@ -2,7 +2,7 @@
 \chapter{Theoretical and Technical Background}
 \label{ch:background}
 \thispagestyle{empty}
-In this chapter, we introduce the hierarchical Bayesian approach to inverse problems, along with key concepts of Markov Chain Monte Carlo (MCMC) methods and tensor-train (TT) approximations for high-dimensional probability distributions.
+This Chapter introduces the hierarchical Bayesian approach to inverse problems, along with key concepts of Markov Chain Monte Carlo (MCMC) methods and tensor-train (TT) approximations for high-dimensional probability distributions.
 We keep it as general as possible.
 Specific sampling algorithms are not introduced here, as they are specifically tailored towards the structure of the forward model and the particular problem. Therefore, they will be presented in detail when applied.
 %We will introduce the Metropolis-within Gibbs in Sec.~\ref{subsec:MWG} and the radnommise then optimse in Sec.~\ref{subsec:RTO}.
@@ -47,7 +47,8 @@ based on a forward model $\bm{A}(\bm{x})$, which may be non-linear, an unknown p
 
 Naturally, due to the noise, the observation process in Eq. \ref{eq:NonLinDat} is a random process.
 Hence, in Bayesian modelling, the aim is to determine a probability distribution over the parameter $\bm{x}$ given some data $\bm{y}$.
-Further, a hierarchical Bayesian model incorporates (auxiliary) hyper-parameters $\bm{\theta}$, and treats unknown hyper-parameters and parameters as random variables \cite[Chapter 3]{kaipio2005statinv}.
+Further, a hierarchical Bayesian model incorporates (auxiliary) hyper-parameters $\bm{\theta}$.
+Within a Bayesian approach all unknown hyper-parameters and parameters are treated as random variables \cite[Chapter 3]{kaipio2005statinv}.
 
 According to Bayes' theorem, the joint posterior distribution over the parameters $\bm{x}$ and the hyper-parameter $\bm{\theta}$ is given as
 \begin{align}
@@ -55,12 +56,13 @@ According to Bayes' theorem, the joint posterior distribution over the parameter
 \end{align}
 with finite and non-zero $\pi(\bm{y})$.
 The likelihood function $\pi(\bm{y}|\bm{x},\bm{\theta})$ is defined by the nature of the noise and the noise-free data $\bm{A}(\bm{x})$, which we read as the distribution over $\bm{y}$ conditioned on $\bm{x}$ and $\bm{\theta}$.
-Here $\bm{\theta}$ may account for multiple hyper-parameters, e.g.~modelling the noise vector $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$, where $\sim$ reads as ``is distributed as'', and describing physical properties or functional dependencies of $\bm{x}$ such as the smoothness of $\bm{x}$.
+Here $\bm{\theta}$ may describe multiple hyper-parameters.
+The hyper-parameters can e.g.,~model the noise vector $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$, where $\sim$ reads as ``is distributed as'', and account for physical properties or functional dependencies of $\bm{x}$, such as the smoothness of $\bm{x}$.
 Because unknown parameter are treated as random variables the joint prior distribution is introduced as $\pi(\bm{x}, \bm{\theta}) = \pi(\bm{x}|\bm{\theta}) \pi(\bm{\theta})$ with the parameter prior distribution $\pi(\bm{x}|\bm{\theta})$ and the hyper-prior distribution $\pi(\bm{\theta})$.
 Choosing these prior distributions is ultimately a modeller's choice and is crucial, as those shall be as uninformative as possible for regions in hyper-parameter and parameter space where the data is informative.
 If the data is uninformative, the prior distributions can be informative and may represent a rather restrictive range of (physically) feasible hyper-parameters and parameters.
 
-Figure~\ref{fig:FirstDAG} visualises the conditional dependencies between hyper-parameters and parameters as well as how distributions progress through to an observation (square box) using a directed acyclic graph (DAG).
+Fig.~\ref{fig:FirstDAG} visualises the conditional dependencies between hyper-parameters and parameters as well as how distributions progress through to an observation (square box) using a directed acyclic graph (DAG).
 We plot statistical dependencies as solid arrows and deterministic dependencies as dotted arrows.
 %\textcolor{red}{conditional dependencies and sqaure box is observation}
 
@@ -92,7 +94,7 @@ If it is a high-dimensional integral and computationally not feasible to solve w
 \end{align}
 with an the unbiased sample-based Monte-Carlo estimate \cite{roberts2004general} for large enough $N$ (law of large numbers \cite[Chapter 17]{tweedie2009measprob}).
 Here the posterior samples $\{\bm{x}^{(k)},\bm{\theta}^{(k)} \}\sim \pi_{\bm{x}, \bm{\theta}}(\cdot|\bm{y})$, for $k = 1, \dots, N$, form a sample set $\mathcal{M} =\{ (\bm{x},\bm{\theta})^{(1)}, \dots ,  (\bm{x},\bm{\theta})^{(N)} \}$.
-The central limit theorem states that the sample mean $\bar{h}^{(i)}_N $ of independent sample sets $\mathcal{M}^{(i)}\sim\pi (\bm{x}, \bm{\theta}| \bm{y})$, for $i = 1, \dots, n$ from a distribution, converges to be normally distributed, so that
+The central limit theorem states that the sample mean $\bar{h}^{(i)}_N $ of independent sample sets $\mathcal{M}^{(i)}\sim\pi (\bm{x}, \bm{\theta}| \bm{y})$, for $i = 1, \dots, n$, converges to be normally distributed, so that
 \begin{align}
 	\sqrt{n} (\bar{h}^{(i)}_N -  \bar{h} ) \overset{\mathcal{D}}{\longrightarrow} \mathcal{N} (0,\sigma^2) \text{\cite{geyer1992practical}},
 \end{align}
@@ -103,13 +105,14 @@ In practice, the Monte-Carlo error from a sample set $\mathcal{M}^{(i)}$ is appr
 	\approx \frac{\text{Var}(h(\bm{x}) )}{N} \Bigg( \underbrace{  1 + 2 \sum_{t = 1}^{W} \frac{\Gamma(t)}{\Gamma(0)}  }_{ \coloneqq 	\tau_{\text{int}} }\Bigg) = \text{Var}(h(\bm{x})) \frac{ \tau_{\text{int}} }{N} \, , \label{eq:MCerr}
 \end{align}
 where we have to take into account that the samples generated by any system or algorithm are correlated.
-We define the integrated autocorrelation time (IACT) $\tau_{\text{int}}$ as in \cite{fox2016fast}, which is twice the value of the IACT in~\cite[pp. 103-105]{wolff2002LecNot} and~\cite{wolff2004monte,drikHesse}.
+We define the integrated autocorrelation time (IACT) $\tau_{\text{int}}$ as in \cite{fox2016fast} which is a common definition in statistics.
+This is twice the value of the IACT in~\cite[pp. 103-105]{wolff2002LecNot} and~\cite{wolff2004monte,drikHesse}, as commonly defined within the physics community.
 Here the autocorrelation coefficient $\Gamma(t) \propto \exp\{ - |t| /\tau \} \longrightarrow 0$ for $t \rightarrow \infty$ at lag $t$ decays exponentially and $\Gamma(0) =\text{Var}(h(\bm{x}) ) $.
 Choosing the summation window $W$ is crucial because it has to be large compared to the decay time $\tau$, but for too large $t$ the autocorrelation coefficient $\Gamma(t)$ is noise-dominated.
 U. Wolff~\cite{wolff2004monte} (and the Python implementation by D. Hesse~\cite{drikHesse}) provide a way to not only calculate the IACT safely but also to quantify the errors of the estimated IACT.
 
 The IACT provides a good estimate of the number of steps the sampling algorithm needs to take to produce one independent sample.
-According to the IACT, we define the effective sample size as $ \tau_{\text{int}} /N$.
+According to the IACT, the effective sample size is defined as $ \tau_{\text{int}} /N$.
 We point out that for uncorrelated samples $\tau_{\text{int}} = 1$ the error $(\sigma^{(i)})^2$ is a typical Monte-Carlo estimate.
 See Appendix~\ref{ap:IATC} and~\cite{Sokal1997, wolff2004monte, wolff2002LecNot} for a more detailed derivation.
 
@@ -197,11 +200,11 @@ Immediately\footnote{$\text{Assume }
 \begin{equation}
 	\label{eq:CondPostLin}
 	 \adjustbox{max width=0.99\textwidth}{$
-	\bm{x} | \bm{\theta} , \bm{y}\sim \mathcal{N}\Big(\underbrace{ \bm{\mu} + (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1} \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} (\bm{y} - \bm{A}\bm{\mu})}_{\bm{\mu}_{\bm{x} | \bm{\theta} , \bm{y}}},\underbrace{ (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1}}_{\bm{\Sigma}_{\bm{x} | \bm{\theta} , \bm{y}}} \Big)\,$.}
+	\bm{x} | \bm{\theta} , \bm{y}\sim \mathcal{N}\Big(\underbrace{ \bm{\mu} + \big(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A} \big)^{-1} \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} (\bm{y} - \bm{A}\bm{\mu})}_{\bm{\mu}_{\bm{x} | \bm{\theta} , \bm{y}}},\underbrace{ \big(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A}\big)^{-1}}_{\bm{\Sigma}_{\bm{x} | \bm{\theta} , \bm{y}}} \Big)\,$.}
 \end{equation}
 Then the marginal posterior distribution over the hyper-parameters in Eq.~\ref{eq:margGen} is derived as
 \begin{align}\begin{split}
-		\pi(\bm{\theta} | \bm{y}) \propto & \sqrt{\frac{\det{(\bm{\Sigma}(\bm{\theta})^{-1})} \det{(\bm{Q}(\bm{\theta}))} }{\det{(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})} } }  \exp \Bigg\{  -\frac{1}{2} (\bm{y} - \bm{A} \bm{\mu})^T \\ &\big[ \bm{\Sigma}(\bm{\theta})^{-1} - \bm{\Sigma}(\bm{\theta})^{-1} \bm{A}  (\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})^{-1} \bm{A}^T \bm{\Sigma} (\bm{\theta})^{-1} \big] (\bm{y} - \bm{A} \bm{\mu}) \Bigg\} \pi(\bm{\theta}) \, ,
+		\pi(\bm{\theta} | \bm{y}) \propto & \sqrt{\frac{\det{(\bm{\Sigma}(\bm{\theta})^{-1})} \det{(\bm{Q}(\bm{\theta}))} }{\det{(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A})} } }  \exp \Bigg\{  -\frac{1}{2} (\bm{y} - \bm{A} \bm{\mu})^T \\ &\Big[ \bm{\Sigma}(\bm{\theta})^{-1} - \bm{\Sigma}(\bm{\theta})^{-1} \bm{A}  \big(\bm{Q}(\bm{\theta}) + \bm{A}^T \bm{\Sigma}(\bm{\theta})^{-1} \bm{A}\big)^{-1} \bm{A}^T \bm{\Sigma} (\bm{\theta})^{-1} \Big] (\bm{y} - \bm{A} \bm{\mu}) \Bigg\} \pi(\bm{\theta}) \, ,
 	\end{split} 
 \end{align} 
 where, as noted by Fox and Norton~\cite{fox2016fast}, the parameter $\bm{x}$ cancels.
@@ -229,7 +232,7 @@ The ``burn-in'' period $N_{\text{burn-in}}$ removes initialisation bias.
 The specific sampling methods in this thesis possess proven ergodic properties, and we therefore provide the reader with corresponding literature for further details when the methods are introduced.
 
 
-If the instance $\bm{\theta}^{(k)}$ of an ergodic Markov chain represents an independent sample of the marginal posterior $\pi(\bm{\theta} | \bm{y})$ and $\bm{x}^{(k)}$ is a sample from the full conditional posterior $ \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$, e.g.~as in Sec.~\ref{subsec:RTO}, then the resulting sample $(\bm{x}^{(k)}, \bm{\theta}^{(k)})$ is an independent sample from the joint posterior $\pi(\bm{x},   \bm{\theta} | \bm{y})$~\cite{fox2016fast,acosta2022markov}.
+If the instance $\bm{\theta}^{(k)}$ of an ergodic Markov chain represents an independent sample of the marginal posterior $\pi(\bm{\theta} | \bm{y})$ and $\bm{x}^{(k)}$ is a sample from the full conditional posterior $ \pi(\bm{x}|   \bm{\theta}^{(k)}, \bm{y})$ e.g.,~as in Sec.~\ref{subsec:RTO}, then the resulting sample $(\bm{x}^{(k)}, \bm{\theta}^{(k)})$ is an independent sample from the joint posterior $\pi(\bm{x},   \bm{\theta} | \bm{y})$~\cite{fox2016fast,acosta2022markov}.
 Repeating this procedure gives the chain $\{(\bm{x}, \bm{\theta})^{(1)},\dots, (\bm{x}, \bm{\theta})^{(k)} ,\dots, (\bm{x}, \bm{\theta})^{(N)} \} \sim \pi(\bm{x} ,  \bm{\theta} | \bm{y}) $ of independent samples from the joint posterior.
 
 %\cite{acosta2022markov}.
@@ -253,7 +256,7 @@ Instead of relying on sampling-based methods to explore an unnormalised density 
 The TT approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, where $\bm{x} \in \mathbb{R}^d$, on a $d$-dimensional grid requires far fewer function evaluations compared to conventional sampling methods.
 In the following, we describe how to compute a normalised marginal probability density function (PDF) $f_{X_k}(x_k)$, for an $x_k \in \bm{x}$ and $k = 1, \dots,d$, from a target function $\pi(\bm{x})$ approximated in TT format.
 Further, a scheme similar to the inverse Rosenblatt transform (IRT) in~\cite{dolgov2020approximation} is introduced to generate samples from $\pi(\bm{x})$.
-In doing so, we follow the notation and procedure introduced in~\cite{cui2022deep}.
+In doing so, we follow the notation and procedure introduced by Cui and Dolgov~\cite{cui2022deep}.
 
 %\textcolor{red}{We represent a probability distribution on a d-dimensional grid with grid points n in each dimension.}
 
@@ -264,7 +267,7 @@ The marginal PDF for the $k$-th component is then given by
 	f_{X_k}(x_k) = \frac{1}{z} \int_{\mathcal{X}_1} \cdots \int_{\mathcal{X}_{k-1}} \int_{\mathcal{X}_{k+1}} \cdots  \int_{\mathcal{X}_d} \uplambda(\bm{x}) \, \pi(\bm{x}) \, \diff x_1 \cdots \diff x_{k-1} \, \diff x_{k+1} \cdots \diff x_d, \label{eq:margInt}
 \end{align}
 where we integrate over all dimensions except the $k$-th, and $z$ is a normalisation constant.
-Here, Cui and Dolgov~\cite{cui2022deep} refer to $\uplambda(x)$ as the ``product-form Lebesgue-measurable weighting function'', which can be useful for quadrature rules~\cite{davis2007methods}, and define it as
+Cui and Dolgov~\cite{cui2022deep} refer to $\uplambda(x)$ as the ``product-form Lebesgue-measurable weighting function'', which can be useful for quadrature rules~\cite{davis2007methods}, and define it as
 \begin{align}
 	\uplambda(\mathcal{X}) = \prod_{i = 1}^{d} \uplambda_i(\mathcal{X}_i), \quad \text{where} \quad \uplambda_i(\mathcal{X}_i) = \int_{\mathcal{X}_i} \uplambda_i(x_i) \, \diff x_i. \label{eq:lebesgueWeight}
 \end{align}
@@ -292,7 +295,7 @@ Here, Cui and Dolgov~\cite{cui2022deep} refer to $\uplambda(x)$ as the ``product
 		\end{tikzpicture} 
 		\caption{}
 	\end{subfigure}
-	\caption[Visualisation of a tensor train]{Here, we visualise the TT cores as a train of two- and three-dimensional matrices. 
+	\caption[Visualisation of a tensor train]{Here the TT cores are visualised as a train of two- and three-dimensional matrices. 
 		Each core has a length $n$, corresponding to the number of grid points in each dimension, and the cores are connected through ranks $r_k$. 
 		More specifically, a core $\tilde{\pi}_k$ has dimensions $r_{k-1} \times n \times r_k$, with outer ranks $r_0 = r_d = 1$.
 		Using the TT format enables us to represent a $d$-dimensional grid with only $2nr + (d-2)nr^2$ evaluation points instead of $n^d$ grid points.
@@ -300,15 +303,15 @@ Here, Cui and Dolgov~\cite{cui2022deep} refer to $\uplambda(x)$ as the ``product
 	\label{fig:TTfig}
 \end{figure}
 The approximation of a function in the TT format requires a predefine $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$ with $n$ grid points in each direction.
-In the TT format, the integral in Eq.~\ref{eq:margInt} for the marginal PDF can be computed at a low computational cost, as $\pi(\bm{x})$ is approximated by
+For a fixed grid point $\bm{x} = (x_1, \dots, x_d)$,  $\pi(\bm{x})$ is approximated by
 \begin{align*}
 	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d),
 \end{align*}
-which is a sequence of matrix multiplications with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$ for a fixed grid point $\bm{x} = (x_1, \dots, x_d)$. 
+which is a sequence of matrix multiplications with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$.
 A TT core  $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ has ranks $ r_{k-1}$ and $r_k$, which connect the core to its respective neighbouring dimensions.
 The outer ranks of a TT are $r_0 = r_d = 1$.
 Then, a discrete parameter space $\mathcal{X}$ is approximated by $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d$ with $2nr + (d-2)nr^2$ evaluation points for fixed ranks $r =r_{k-1} = r_k $, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluations.
-Consequently, the marginal PDF
+In the TT format the integral in Eq.~\ref{eq:margInt} can be calculated at a low computational cost and the marginal PDF
 \begin{align}
 	\begin{split}
 		f_{X_k}(x_k) \approx \frac{1}{z} \Bigg|\, 
@@ -642,7 +645,7 @@ If $\lambda$ is large, then the effect of the data on the solution $\bm{x}_{\lam
 For example, if the regulariser imposes smoothness, the solutions will be overly smooth and not sensitive to structures from the data.
 If $\lambda$ is small, the solution $\bm{x}_{\lambda}$ will be dominated by the data misfit norm.
 Then $\bm{x}_{\lambda}$ is sensitive to noise, resulting in an over-fitted solution inheriting the structure of the noise.
-We refer to~\cite{hansen1989GSVD} and~\cite{tan2016LecNot} for a more comprehensive analysis on the effects of the regularisation parameter on the solution, e.g.~due to small singular values of the forward model.
+We refer to~\cite{hansen1989GSVD} and~\cite{tan2016LecNot} for a more comprehensive analysis on the effects of the regularisation parameter on the solution e.g.,~due to small singular values of the forward model.
 
 %\textcolor{red}{Next part is your sentence creep. Make two clear sentences, not one lengthy, going on too long, garbled while saying something else and the queen likes to read it on Sundays, when there is no rain or a poodle has too many walks, and also the evening news to be interesting.}
 %\textcolor{red}{what does that mean -- the solution is essentially equal to the noisy data, or what? If you are going to say anything, you need to be specific. Currently this says essentially nothing. A person who knows what is going on does not need to read this sentence (or section) while a person who does not know will still have no idea after reading this. }

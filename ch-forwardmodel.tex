@@ -66,7 +66,7 @@ The data vector
 \end{align}
 includes an additive noise vector $\bm{\eta} \in \mathbb{R}^{m}$.
 For brevity the non-linear forward model is defined as $\bm{A}(\bm{x}) \coloneqq \bm{A}(\bm{x},  \bm{p},\bm{T})   \in \mathbb{R}^{m}$.
-Similarly, $\bm{A}_L\in \mathbb{R}^{m\times n}$ denotes the linear forward model matrix and neglects absorption (e.g. set $\tau = 1$ in Eq.~\eqref{eq:absRTE}) and enables matrix-vector multiplication $\bm{A}_L \bm{x}$ to compute noise-free linear data.
+Similarly, $\bm{A}_L\in \mathbb{R}^{m\times n}$ denotes the linear forward model matrix and neglects absorption (e.g., set $\tau = 1$ in Eq.~\eqref{eq:absRTE}) and enables matrix-vector multiplication $\bm{A}_L \bm{x}$ to compute noise-free linear data.
 Further, we classify the inverse problem as a weakly non-linear inverse problem, because neglecting the absorption changes the measurements only slightly (about $1\%$, see Chapter~\ref{ch:affine}).
 
 As the ground truth for our methodology, we consider an ozone profile at distinct pressure values generated from some data~\cite{MLSdata} of the MLS on the Aura satellite within the Antarctic region.

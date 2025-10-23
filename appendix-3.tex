@@ -8,7 +8,7 @@ Some of the additional figures shown are repetitive and omitted from the main do
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{OzonePrior.png}
-	\caption[Samples from ozone prior distribution.]{We draw samples from ozone prior distribution $\bm{x} \sim \mathcal{N}(0,\delta \bm{L})$ after generating a sample from the hyper-prior distribution $\delta \sim \mathcal{T}(1,10^{-10})$. Note that since the variance of prior samples is very large compared to the ozone volume mixing ratios, the ozone profile appears to be constant, which is not the case, see e.g. Fig. \ref{fig:O3Samp}.}
+	\caption[Samples from ozone prior distribution.]{We draw samples from ozone prior distribution $\bm{x} \sim \mathcal{N}(0,\delta \bm{L})$ after generating a sample from the hyper-prior distribution $\delta \sim \mathcal{T}(1,10^{-10})$. Note that since the variance of prior samples is very large compared to the ozone volume mixing ratios, the ozone profile appears to be constant, which is not the case, see e.g., Fig. \ref{fig:O3Samp}.}
 	\label{fig:O3Prior}
 \end{figure}
 \clearpage
@@ -36,14 +36,14 @@ Some of the additional figures shown are repetitive and omitted from the main do
  \begin{figure}[ht!]
  	\centering
  	\includegraphics{CovEigVec1.png}
- 	\caption[First 11 eigenvectors of conditional precision matrix.]{First 11 eigenvectors corresponding to in size ordered eigenvalues of conditional precision matrix $\bm{Q}_{ \bm{x}|\delta, \gamma, \bm{y}}$.
- 	We see that the eigenvectors span structures for heights $\leq 40$.}
+ 	\caption[First 12 eigenvectors of conditional precision matrix.]{First 12 eigenvectors corresponding to in size ordered eigenvalues of conditional precision matrix $\bm{Q}_{ \bm{x}|\delta, \gamma, \bm{y}}$.
+ 	The eigenvectors span structures for heights below $35$km.}
  	\label{fig:CovEigVec1}
  \end{figure}
  \begin{figure}[ht!]
  	\centering
  	\includegraphics{CovEigVec2.png}
- 	\caption[Last 23 eigenvectors of conditional precision matrix.]{Last 23 eigenvectors corresponding to in size ordered eigenvalues of conditional precision matrix $\bm{Q}_{ \bm{x}|\delta, \gamma, \bm{y}}$. The eigenvectors represent structures according to the prior.}
+ 	\caption[Last 22 eigenvectors of conditional precision matrix.]{Last 22 eigenvectors corresponding to in size ordered eigenvalues of conditional precision matrix $\bm{Q}_{ \bm{x}|\delta, \gamma, \bm{y}}$. The eigenvectors represent structures mainly above $30$km.}
  	\label{fig:CovEigVec2}
  \end{figure}
 \clearpage

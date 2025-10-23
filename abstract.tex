@@ -1,7 +1,7 @@
-In this thesis, we develop a hierarchical Bayesian model based on the radiative transfer equation for a simplified atmospheric limb-sounder targeting ozone, as described in~\cite{mipas2000handbook}.
+In this thesis, we develop a hierarchical Bayesian model based on the radiative transfer equation for an idealised atmospheric limb-sounder targeting ozone, as described in~\cite{mipas2000handbook}.
 To ensure effective measurements, we briefly assess the informativity of different measurement approaches via a singular value decomposition of the forward model and adapt the data collection accordingly.
 Following~\cite{fox2016fast}, we utilise the marginal and then conditional scheme to provide posterior distributions of hyper-parameters and ozone profiles, and compare with a regularisation approach.
-After approximating the non-linear forward model with an affine map, we extend our hierarchical Bayesian framework and the marginal and then conditional scheme to jointly infer posterior pressure, temperature and ozone.
+After approximating the non-linear forward model with an affine map, we extend our hierarchical Bayesian framework and the marginal and then conditional scheme to jointly infer posterior ozone, pressure and temperature.
 
 The main contribution of this work is the application of tensor-trains to approximate high-dimensional posterior probability distributions~\cite{cui2022deep, dolgov2020approximation}.
 This enables us to generate samples from the target distribution with far fewer function evaluations compared to the t-walk sampling algorithm~\cite{christen2010general}.

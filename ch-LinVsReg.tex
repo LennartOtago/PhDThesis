@@ -415,8 +415,8 @@ If calculating the variance is too costly, see Sec.~\ref{subsec:RTO} where we pr
 In Fig.~\ref{fig:PostCov} the eigenvalues (ordered in size) of the precision matrix $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}=  \gamma \bm{A}^T \bm{A} + \delta \bm{L} $ for a random $\delta,\gamma \sim \pi(\delta,\gamma|\bm{y})$ are plotted and compared to the eigenvalues of the prior precision matrix $\delta \bm{L}$ and $\gamma \bm{A}^T \bm{A}$.
 We observe that the larger eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ are very much the same as the larger eigenvalues of $\gamma \bm{A}^T \bm{A}$.
 Once the eigenvalues of $\gamma \bm{A}^T \bm{A}$ are significantly smaller than the eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ the structure of the eigenvalues is dominated by the eigenvalues of $\delta \bm{L}$.
-The largest 10 eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ include ozone profile structure at lower altitudes, where the other eigenvector mainly represent structures at higher altitudes (see Fig.~\ref{fig:CovEigVec1} and Fig.~\ref{fig:CovEigVec1}).
-Note that the eigenvalues of each matrix may correspond to different eigenvectors, even if the eigenvalues of two matrices are the same.
+The eigenvectors corresponding to the 12 largest eigenvalues of $\bm{Q}_{ \bm{x}|\delta, \gamma,\bm{y}}$ include ozone profile structure at lower altitudes up to $35$km, where the other eigenvectors mainly represent structures above $30$km (see Fig.~\ref{fig:CovEigVec1} and Fig.~\ref{fig:CovEigVec2}).
+Note that the eigenvalues of each matrix may correspond to different eigenvectors, even if the eigenvalues are the same.
 
 \subsubsection{Errors of Full Posterior Mean and Covariance}
 \begin{figure}[ht!]
@@ -428,7 +428,7 @@ Note that the eigenvalues of each matrix may correspond to different eigenvector
 In Fig. \ref{fig:MeanVarError}, we plot the relative RMS error for the mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and covariance $\bm{\Sigma}_{\bm{x}|\bm{y}}$ of $\pi(\bm{x}|\bm{y})$ due to grid size or number of bins of the marginal posterior.
 Those results are obtained by calculating the weighted expectation over normalised histograms of $\pi(\lambda,\gamma | \bm{y})$, where the number of bins is increased and compared to a solution calculated from a histogram with 200 bins.
 The relative error behaves roughly proportional to $1/N$, and we consider a relative RMS error less than $0.5\%$ good enough, which is easily met at 20 bins.
-This sets the TT grid size and the number of evaluations of $\bm{x}_{\lambda}$ in Eq.~\ref{eq:MeanInt} and $(\gamma \bm{B}_{\lambda})^{-1}$ in Eq.~\ref{eq:CovInt}.
+This sets the TT grid size and the number of evaluations of $\bm{x}_{\lambda}$ (posterior mean, see Eq.~\ref{eq:MeanInt}) and $(\gamma \bm{B}_{\lambda})^{-1}$ (posterior covariance, see Eq.~\ref{eq:CovInt}).
 
 %marginal Ozone Pressure Temperature
 %\clearpage
@@ -436,8 +436,8 @@ This sets the TT grid size and the number of evaluations of $\bm{x}_{\lambda}$ i
 
 \section{Solution by Regularisation}
 \label{sec:SolByReg}
-Since we claim that the Bayesian approach is superior to regularisation methods, we compare the MTC method to a regularisation approach.
-The chosen linear-Gaussian Bayesian framework is most similar to the here used regularisation approach~\cite{fox2016fast}.
+Since we claim that the a hierarchical Bayesian framework provides more information than regularisation methods, we compare the MTC scheme to a regularisation approach.
+That is why the chosen linear-Gaussian Bayesian framework is most similar to the here used regularisation approach~\cite{fox2016fast}.
 
 The regularised solution is defined as in~\cite{hansen2010discrete, fox2016fast} 
 \begin{align}
@@ -452,9 +452,9 @@ A regularised solution
 is calculated as in Sec.~\ref{sec:reg}.
 
 
-To find the regularised solution, we use the L-curve method, and follow~\cite{hansen1993use}.
+The regularised solution is found using the L-curve method following~\cite{hansen1993use}.
 Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $10^{-8}$ to $10^{0}$ and plot the regularisation norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{y} \rVert_{L^2}$ (see Figure \ref{fig:LCurve}). 
-The regularised solution corresponds to the ``corner'' of the L-curve at the point of maximum curvature provided by the kneedle algorithm~\cite{satopaa2011kneedle} using the function \texttt{kneed.KneeLocator} in $\approx 0.015$s, which is slightly faster then the TT approach to obtain full posterior mean and covariance.
+The regularised solution corresponds to the ``corner'' of the L-curve at the point of maximum curvature provided by the kneedle algorithm~\cite{satopaa2011kneedle} using the function \texttt{kneed.KneeLocator} in $\approx 0.015$s, which is slightly faster then the TT approach to obtain posterior mean and covariance.
 The corresponding regularisation parameter is $\lambda = 1.6 \times 10^{-4}$.
 
 \begin{figure}[ht!]
@@ -463,12 +463,17 @@ The corresponding regularisation parameter is $\lambda = 1.6 \times 10^{-4}$.
 	\caption[Plot of the L-curve to find the regularised solution.]{L-curve of regularisation norm $\sqrt{\bm{x}^T\bm{Lx}}$ against the data misfit norm $\lVert \bm{A}\bm{x} - \bm{y} \rVert_{L^2}$ for different $\lambda$ values, where $\bm{x}_{\lambda}$ is calculated as in Eq.~\ref{eq:xLam}. The best regularised solution is located at the point of maximum curvature (pink triangle) of the L-curve. Additionally, we calculate the data misfit norm and the regularised norm for the mean (black circle) and samples (blue squares) of the full posterior of ozone.}
 	\label{fig:LCurve}
 \end{figure}
-The regularised solution in Fig.~\ref{fig:O3SolplsReg} is very similar to the posterior mean and have a similar data misfit and regularisation norm.
+The regularised solution in Fig.~\ref{fig:O3SolplsReg} is very similar to the posterior mean and both have a similar data misfit and regularisation norm.
+Neither the regularisation solution nor the posterior ozone profiles capture the second ozone peak of the ground truth at high altitudes.
 Note that we cannot infer the posterior mean from the regularised solutions, even if it appears to lie on the L-curve.
 It is pretty clear that the regularised solution accounts for only one possible solution and does not provide uncertainties. The regularised solution and the posterior mean are not similar to the samples drawn from the posterior $\pi(\bm{x}| \bm{y})$ (see Fig.~\ref{fig:O3Samp}).
+All posterior samples of $\pi(\bm{x}| \bm{y})$ are less regularised and lie above the L-curve, and as already mentioned, are all feasible solutions to the data.
 This does make sense, if one thinks about the mean as the (smooth) average over less-smooth samples and the regularised solution as an extremely smooth ozone profile (see Lagrangian in Sec.~\ref{sec:reg}).
-Hence, all posterior samples of $\pi(\bm{x}| \bm{y})$ are less regularised and lie above the L-curve, and as already mentioned, are all feasible solutions to the data.
-Counterintuitively, in multi-dimensional spaces, it is not possible to obtain a sample that represents the mean, despite it being the point of highest probability, because the probability mass concentrates on a “shell” or “ring” away from the mean~\cite{VowelsMultiD} and \cite[Sec.~3.1]{VershyninMultiD2018}.
-Intuitively, think about how an electron's mean position may be inside the atom's core but it's location is always outside the atom's core \cite[Fig.~4]{ElectronBessel}.
-Neither the regularisation solution nor the posterior ozone profiles capture the second ozone peak of the ground truth at high altitudes.
+
+Counterintuitively it is not possible to obtain a sample that represents the mean of a multivariate probability distribution~\cite[Sec.~3.1]{VershyninMultiD2018}.
+%, despite it being the point of the highest probability.
+This is because the probability mass in a mutli-dimensional space concentrates on a “shell” or “ring” away from the mean~\cite{VowelsMultiD}.
+Alternatively, think about how an electron's mean position may be inside the atom's core but the electron can never be observed at the centre of the atom's nucleus~\cite[Fig.~4]{ElectronBessel}.
+
+
 
