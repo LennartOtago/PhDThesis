@@ -1,0 +1,37 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+	\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{MargBack}\PYG{p}{(}\PYG{n}{TTCore}\PYG{p}{,} \PYG{n}{univarGrid}\PYG{p}{)}\PYG{p}{:}
+\PYG{+w}{	}\PYG{l+s+sd}{\PYGZsq{}\PYGZsq{}\PYGZsq{} Backward marginalisation (see \PYGZdq{}Prop. \PYGZbs{}ref\PYGZob{}prob:backMarg\PYGZcb{}\PYGZdq{})}
+\PYG{l+s+sd}{	    as in SIRT from Cui and Dolgov\PYGZdq{}\PYGZti{}\PYGZbs{}cite\PYGZob{}cui2022deep\PYGZcb{}\PYGZdq{} \PYGZsq{}\PYGZsq{}\PYGZsq{}}
+	
+	\PYG{n}{dim} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{univarGrid}\PYG{p}{)}
+	\PYG{n}{B} \PYG{o}{=} \PYG{n}{dim} \PYG{o}{*} \PYG{p}{[}\PYG{k+kc}{None}\PYG{p}{]}  \PYG{c+c1}{\PYGZsh{} coeffTensor}
+	\PYG{n}{B}\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{TTCore}\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]}
+	\PYG{n}{R} \PYG{o}{=} \PYG{p}{[}\PYG{k+kc}{None}\PYG{p}{]} \PYG{o}{*} \PYG{n}{dim}
+	\PYG{n}{C} \PYG{o}{=} \PYG{p}{[}\PYG{k+kc}{None}\PYG{p}{]} \PYG{o}{*} \PYG{n}{dim}
+	
+	\PYG{k}{for} \PYG{n}{k} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{dim} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{:}
+		\PYG{n}{r\PYGZus{}kmin1}\PYG{p}{,} \PYG{n}{n}\PYG{p}{,} \PYG{n}{r\PYGZus{}k} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{(}\PYG{n}{TTCore}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]}\PYG{p}{)}
+		\PYG{c+c1}{\PYGZsh{} \PYGZdq{}Eq.\PYGZti{}\PYGZbs{}ref\PYGZob{}eq:MassMat\PYGZcb{}, \PYGZbs{}cite[Eq.\PYGZti{}22]\PYGZob{}cui2022deep\PYGZcb{}\PYGZdq{} !!}
+		\PYG{c+c1}{\PYGZsh{} we set Lebesgue Measure to const = one}
+		\PYG{n}{M} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{identity}\PYG{p}{(}\PYG{n}{n}\PYG{p}{)} \PYG{o}{*} \PYG{p}{(}\PYG{n}{univarGrid}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]}\PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{univarGrid}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{)}  \PYG{c+c1}{\PYGZsh{} Mass matrix}
+		\PYG{n}{L} \PYG{o}{=} \PYG{n}{scy}\PYG{o}{.}\PYG{n}{linalg}\PYG{o}{.}\PYG{n}{cholesky}\PYG{p}{(}\PYG{n}{M}\PYG{p}{)}
+		
+		\PYG{c+c1}{\PYGZsh{} construct Tensor C  \PYGZdq{}Eq.\PYGZti{}\PYGZbs{}ref\PYGZob{}eq:constrCBack\PYGZcb{}, \PYGZbs{}cite[Eq.\PYGZti{}27]\PYGZob{}cui2022deep\PYGZcb{}\PYGZdq{}}
+		\PYG{n}{C}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{p}{(}\PYG{n}{r\PYGZus{}kmin1}\PYG{p}{,} \PYG{n}{n}\PYG{p}{,} \PYG{n}{r\PYGZus{}k}\PYG{p}{)}\PYG{p}{)}
+		\PYG{k}{for} \PYG{n}{alpha} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{r\PYGZus{}kmin1}\PYG{p}{)}\PYG{p}{:}
+			\PYG{k}{for} \PYG{n}{l} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{r\PYGZus{}k}\PYG{p}{)}\PYG{p}{:}
+				\PYG{n}{C}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]}\PYG{p}{[}\PYG{n}{alpha}\PYG{p}{,} \PYG{p}{:}\PYG{p}{,} \PYG{n}{l}\PYG{p}{]} \PYG{o}{=} \PYG{n}{B}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]}\PYG{p}{[}\PYG{n}{alpha}\PYG{p}{,} \PYG{p}{:}\PYG{p}{,} \PYG{n}{l}\PYG{p}{]} \PYG{o}{@} \PYG{n}{L}\PYG{p}{[}\PYG{p}{:}\PYG{p}{,} \PYG{p}{:}\PYG{p}{]}
+		
+		\PYG{c+c1}{\PYGZsh{} unfold along first coordinate and compute thin QR decomposition of C\PYGZca{}T}
+		\PYG{c+c1}{\PYGZsh{}  \PYGZdq{}Eq.\PYGZti{}\PYGZbs{}ref\PYGZob{}eq:thinQRBack\PYGZcb{}, \PYGZbs{}cite[Eq.\PYGZti{}28]\PYGZob{}cui2022deep\PYGZcb{}\PYGZdq{}}
+		\PYG{n}{Q}\PYG{p}{,} \PYG{n}{R}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linalg}\PYG{o}{.}\PYG{n}{qr}\PYG{p}{(}\PYG{n}{C}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]}\PYG{o}{.}\PYG{n}{reshape}\PYG{p}{(}\PYG{p}{(}\PYG{n}{r\PYGZus{}kmin1}\PYG{p}{,} \PYG{n}{n} \PYG{o}{*} \PYG{n}{r\PYGZus{}k}\PYG{p}{)}\PYG{p}{,} \PYG{n}{order}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{C}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}\PYG{o}{.}\PYG{n}{transpose}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,} \PYG{n}{mode}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{reduced}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+		
+		\PYG{c+c1}{\PYGZsh{} compute next coefficient tensor \PYGZdq{}Eq.\PYGZti{}\PYGZbs{}ref\PYGZob{}eq:nextCoeffTBack\PYGZcb{}, 			\PYGZbs{}cite[Eq.\PYGZti{}29]\PYGZob{}cui2022deep\PYGZcb{}\PYGZdq{}}
+		\PYG{n}{r\PYGZus{}kmin2}\PYG{p}{,} \PYG{n}{n}\PYG{p}{,} \PYG{n}{r\PYGZus{}kmin1} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{(}\PYG{n}{TTCore}\PYG{p}{[}\PYG{n}{k} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{)}
+		\PYG{n}{B}\PYG{p}{[}\PYG{n}{k} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{(}\PYG{n}{TTCore}\PYG{p}{[}\PYG{n}{k} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{)}\PYG{p}{)}
+		\PYG{k}{for} \PYG{n}{alpha\PYGZus{}2} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{r\PYGZus{}kmin2}\PYG{p}{)}\PYG{p}{:}
+			\PYG{k}{for} \PYG{n}{l\PYGZus{}1} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{r\PYGZus{}kmin1}\PYG{p}{)}\PYG{p}{:}
+					\PYG{n}{B}\PYG{p}{[}\PYG{n}{k} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{[}\PYG{n}{alpha\PYGZus{}2}\PYG{p}{,} \PYG{p}{:}\PYG{p}{,} \PYG{n}{l\PYGZus{}1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{TTCore}\PYG{p}{[}\PYG{n}{k} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{[}\PYG{n}{alpha\PYGZus{}2}\PYG{p}{,} \PYG{p}{:}\PYG{p}{,} \PYG{p}{:}\PYG{p}{]} \PYG{o}{@} \PYG{n}{R}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]}\PYG{p}{[}\PYG{n}{l\PYGZus{}1}\PYG{p}{,} \PYG{p}{:}\PYG{p}{]}
+		
+	\PYG{k}{return} \PYG{n}{B}
+\end{MintedVerbatim}

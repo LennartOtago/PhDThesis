@@ -316,6 +316,26 @@ The ``true sample-based means'' from the t-walk are denoted as $\bm{\mu}_{\text{
 The relative RMS between the SIRT-MH sample-based mean $\bm{\mu}_{\text{SIRT-MH}}$ and $\bm{\mu}_{\text{t-walk}}$ is calculated and plotted in Fig.~\ref{fig:FindRankGrid} (red circles).
 Further, the relative RMS error between TT approximated and true function values for 1000 independent SIRT-MH samples is calculated and plotted in Fig.~\ref{fig:FindRankGrid} (orange squares).
 
+\begin{itemize}
+	\item \includegraphics[height=0.6\baselineskip]{SIRTMH.png} \textbf{rel. expect Err. (SIRT-MH)} 
+	\begin{align*} 
+		\frac{\lVert\bm{\mu}_{\text{SIRT-MH}} - \bm{\mu}_{\text{t-walk}} \rVert_{L^2}}{  \lVert \bm{\mu}_{\text{t-walk}} \rVert_{L^2} }
+	\end{align*}
+	\item  \includegraphics[height=0.6\baselineskip]{QUAD.png} \textbf{rel. expect Err. (quadrature)}
+	\begin{align*} 
+		\frac{\lVert\bm{\mu}_{\text{TT}} - \bm{\mu}_{\text{t-walk}} \rVert_{L^2} }{ \lVert \bm{\mu}_{\text{t-walk}} \rVert_{L^2} }
+	\end{align*}
+	\item  \includegraphics[height=0.6\baselineskip]{RMS.png} \textbf{rel. RMS Error} 
+	\begin{align*} 
+				\frac{\lVert \tilde{\pi}  - \pi \rVert_{L^2} }{ \lVert \pi \rVert_{L^2} }
+	\end{align*}
+	\item  \includegraphics[height=0.6\baselineskip]{W1.png} \textbf{Wasserstein Distance}
+	\begin{align*} 
+		W_1(\pi,\tilde{\pi}) = 	\underset{\nu \in \Pi(\pi,\tilde{\pi}) }{\text{min}} \sum^M_{j = 1} \sum^N_{i =1}  \nu_{ij} \lVert\bm{x}^{(i)}  -  \tilde{\bm{x}}^{(j)} \rVert_{L^2} 
+		\lVert \cdot \rVert_{L^2}
+	\end{align*}
+\end{itemize} 
+
 All of these measures are plotted in Fig.~\ref{fig:FindRankGrid}.
 We observe that a rank $r = 10$ is sufficient because the error measures are relatively stable for $r\geq10$.
 For a grid size $n \geq 30$ the relative differences between $\bm{\mu}_{\text{TT}}$ and $\bm{\mu}_{\text{t-walk}}$ (red circles in Fig.~\ref{fig:FindRankGrid}) and the RMS errors at the 1000 independent SIRT-MH samples (orange squares in Fig.~\ref{fig:FindRankGrid}) are around $ 10\%$ and considered good enough.
