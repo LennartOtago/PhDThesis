@@ -30,9 +30,9 @@ Furthermore, these regularisation methods condition on external point estimates 
 %Recent machine learning approaches suffer from related limitations. These models are typically trained over short periods (e.g., one month), condition on a single fixed noise value, and do not treat noise as a retrieval hyper-parameter. Moreover, they are benchmarked against a “ground truth” derived from the same optimal estimation method described above~\cite{werner2023machlearn, bojkov2008NeuralNet}.
 
 In Bayesian modelling all unknown parameters are treated as random variables~\cite{kaipio2005statinv}.
-Further, a hierarchically ordered model incorporates unknown hyper-parameters, which for example,~control the noise and the smoothness of the ozone profile.
+Further, a hierarchically ordered model incorporates unknown hyper-parameters, which for example,~control the noise of the data and the smoothness of the ozone profile.
 Therefore, it is able to model conditional dependencies between parameters and hyper-parameters.
-The posterior probability distribution of this hierarchical Bayesian framework provides a range of feasible unbiased solutions and hence true errors for some given data.
+For some given data, the posterior probability distribution of this hierarchical Bayesian framework provides a range of feasible unbiased solutions and hence true errors.
 Livesey et al.~\cite{livesey2006retrieval} report ``unexpected spectrally correlated noise'' on the MLS Aura, so here is another real reason why one should include noise in the model.
 
 In this thesis the marginal and then conditional (MTC) method~\cite{fox2016fast} is utilised and a hierarchical Bayesian model based on the radiative transfer equation (RTE) is developed to provide posterior distributions of ozone as well as temperature and pressure profiles.

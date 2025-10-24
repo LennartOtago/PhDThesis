@@ -221,7 +221,7 @@ of $\pi(\bm{x}| \bm{y})$ by some quadrature rule.
 \section{Sample-Based Estimates via Markov Chain Monte-Carlo Methods}
 One may use Markov chain Monte-Carlo (MCMC) methods to calculate sample-based estimates of $\mathbb{E}_{\bm{x} ,\bm{\theta}  |\bm{y}} [h(\bm{x})] $ as in Eq.~\ref{eq:sampMean}.
 Within the MTC scheme we draw samples $\{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} \sim \pi(\bm{\theta} | \bm{y})$ from the marginal posterior first and then characterise the full conditional posterior $\pi(\bm{x}|\bm{\theta} , \bm{y})$.
-In doing so we generate a Markov chain $\mathcal{M} = \{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} $, where every new sample $\bm{\theta}^{(k)}$ is proposed according to a random proposal $\bm{\theta}^{(k)} \sim q( \cdot |  \bm{\theta}^{(k-1)})$ and only affected by the previous one $\bm{\theta}^{(k-1)}$.
+In doing so we generate a Markov chain $\mathcal{M} = \{  \bm{\theta}^{(1)}, \dots,  \bm{\theta}^{(k)}, \dots, \bm{\theta}^{(N)} \} $ where every new sample $\bm{\theta}^{(k)}$ is proposed according to a random proposal $\bm{\theta}^{(k)} \sim q( \cdot |  \bm{\theta}^{(k-1)})$ and only affected by the previous one $\bm{\theta}^{(k-1)}$.
 For large enough $N$, this chain of random variables can be used to calculate Monte-Carlo estimates, where ergodicity of the Markov chain $\mathcal{M}$ is a sufficient criterion to do so~\cite{tan2016LecNot, roberts2004general}.
 
 The ergodicity theorem in~\cite{tan2016LecNot} states that, if a Markov chain $\mathcal{M}$ is aperiodic, irreducible, and reversible, then it converges to a unique stationary equilibrium distribution.
@@ -342,11 +342,14 @@ Here, each TT core is given by \cite[Eq.~21]{cui2022deep}
 	G^{(\alpha_{k-1},\alpha_k)}_k(x_k) = \sum_{i=1}^{n_k} \phi^{(i)}_k(x_k) \bm{A}_k[\alpha_{k-1}, i, \alpha_k], \quad k = 1, \dots, d,\, \,  ,
 \end{equation}
 where $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the $k$-th coefficient tensor and $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ are the basis functions corresponding to the $k$-th coordinate.
-The approximated unnormalised density function is written as \cite[Eq.~19]{cui2022deep}:
+The unnormalised density function is approximated as in~\cite[Eq.~19]{cui2022deep} so that
 \begin{align}
-	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2\,  ,
+	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2 
 \end{align}
-to ensure a positivity a small constant $\xi > 0$ is added according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting (see Eq.~\ref{eq:lebesgueWeight} and \cite[Eq.~35]{cui2022deep}) such that 
+with a small additive constant $\xi > 0$ to ensure positivity.
+This is maintains that the cumulative distribution functions (CDFs) are monotonically increasing.
+The CDFs are needed to draw samples from $\tilde{\pi}(\bm{x})$ (see Sec.~\ref{subsec:SamplTT}).
+The constant $\xi$ is chosen according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting (see Eq.~\ref{eq:lebesgueWeight} and \cite[Eq.~35]{cui2022deep}) such that 
 \begin{align}
 	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(\mathcal{X})}^2\,  \label{eq:gamErr}.
 \end{align}
@@ -407,7 +410,7 @@ and similarly in the last dimension
 	f_{X_d}(x_d)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{d-1}=1}^{r_{d-1}} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_d[l_{d-1},i] \right)^2 \right) \uplambda_d(x_d),
 \end{equation}
 where $\bm{D}_d[l_{d-1},i] = \bm{B}_{\text{pre},d}[l_{d-1}, i, \alpha_{d+1}]$ and $\alpha_{d+1} = 1$.
-Note that in practice we calculate $z$ numerically within the process of computing the marginal PDFs so that $\sum f_{X_k}(x_k) =1 $ and for Cartesian basis $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ with $\uplambda(x) = 1$.
+In practice, we calculate $z$ numerically within the process of computing the marginal PDFs so that $\sum f_{X_k}(x_k) =1 $ and for Cartesian basis the mass matrix becomes $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ with $\uplambda(x) = 1$.
 \clearpage
 \begin{prop}[Backward Marginalisation as in~\cite{cui2022deep}]
 	\label{prob:backMarg}
@@ -457,23 +460,23 @@ Since the square root of the target function is approximated, Cui and Dolgov~\ci
 \begin{algorithm}[!th]
 	\caption{Squared Inverse Rosenblatt Transform (SIRT)}
 	\begin{algorithmic}[1]
-		\STATE \textbf{Input:} seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $ and $\bm{B}_1 , \dots,\bm{B}_d$  from Prop.~\ref{prob:backMarg}
+		\STATE \textbf{Input:} seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $ and $\bm{B}_1 , \dots,\bm{B}_d$ from Prop.~\ref{prob:backMarg}.
 		\FOR{ \( s = 1, \dots, N\)}
 		\FOR{ \( k = 1, \dots, d\)}
-		\STATE compute normalised PDF $ f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1)$, Eq.~\ref{eq:CurrMarg}
-		\STATE compute cumulative distribution function $F_{X_k|X_{<k}}(x_k)$, Eq.~\ref{eq:CurrCDF},
-		\STATE project sample $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$
-		\STATE interpolate $\bm{G}_k(x^{(s)}_k)$, Eq. \ref{eq:LinPol}
-		\STATE update $\bm{G}_{\leq k}(x^{(s)}_{\leq k}) = \bm{G}_{<k}(x^{(s)}_{<k}) \bm{G}_k(x^{(s)}_k)$
+		\STATE Compute normalised PDF $ f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1)$ as in Eq.~\ref{eq:CurrMarg}.
+		\STATE Compute cumulative distribution function $F_{X_k|X_{<k}}(x_k)$ as in Eq.~\ref{eq:CurrCDF}.
+		\STATE Project sample $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$.
+		\STATE Interpolate $\bm{G}_k(x^{(s)}_k)$ as in Eq.~\ref{eq:LinPol}.
+		\STATE Update $\bm{G}_{\leq k}(x^{(s)}_{\leq k}) = \bm{G}_{<k}(x^{(s)}_{<k}) \bm{G}_k(x^{(s)}_k)$.
 		\ENDFOR
 		\ENDFOR
-		\STATE \textbf{Output:} samples $\{ \bm{x}^{(1)},\dots, \bm{x}^{(N)} \} $, where each $\bm{x}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N$
+		\STATE \textbf{Output:} samples $\{ \bm{x}^{(1)},\dots, \bm{x}^{(N)} \} $ with $\bm{x}^{(s)} \in \mathbb{R}^d$, for $s = 1, \dots, N$.
 	\end{algorithmic}
 	\label{alg:SIRT}
 \end{algorithm}
 Given the backward marginal coefficient tensors $\bm{B}_1 , \dots,\bm{B}_d$ as in Prop.~\ref{prob:backMarg} and $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is $d$-dimensional for $s = 1, \dots, N$, the first marginal $f_{X_1}(x_1)$ is calculated as in Eq.~\ref{eq:firstMarg} and normalised with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$. 
 %\textcolor{red}{OK, another task -- remove all but one 'we' per page, and even then you will have 100, which is too many. FYI, I counted 397 occurrences of 'we' in this text -- so you only have to rewrite 297 sentences! Holy Toledo, here's one to zap. and another. Is this a novel about Lennart's adventures in MCMC for 10 year olds?}
-Next, the cumulative distribution function (CDF) $F_{X_1}(x_k) = \int^{x_k}_{-\infty} f_{X_1}(\hat{x}_1) d \hat{x}_1$ is formed, which for the general case is given as \cite[Eq. 17]{cui2022deep}:
+Next, the CDF $F_{X_1}(x_k) = \int^{x_k}_{-\infty} f_{X_1}(\hat{x}_1) d \hat{x}_1$ is formed, which for the general case is given as \cite[Eq. 17]{cui2022deep}:
 \begin{align}
 	F_{X_k|X_{<k}}(x_k) = \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\hat{x}_k|x_{k-1},\dots,x_1) \diff \hat{x}_k  \, \,  \, ;
 	\label{eq:CurrCDF}
@@ -495,7 +498,7 @@ Function values between grid points $i$ and $i+1$ are approximated with a piecew
 	\bm{G}_k(x^{(s)}_k) \approx   \frac{x^{(s)}_k - x^{(i)}_k }{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i+1)}_k) + \frac{ x^{(i+1)}_k - x^{(s)}_k}{x^{(i+1)}_k -x^{(i)}_k } \bm{G}_k(x^{(i)}_k) \, ,
 	\label{eq:LinPol}
 \end{align}
-for $x^{(i)}_k \leq x^{(s)}_k \leq x^{(i+1)}_k$ as in~\cite{dolgov2020approximation} for the next ``conditional marginal''.
+for $x^{(i)}_k \leq x^{(s)}_k \leq x^{(i+1)}_k$, as in~\cite{dolgov2020approximation} for the next ``conditional marginal''.
 
 The procedure is repeated for each $u^{(s)}_k \in \bm{u}^{(s)}$ to produce the samples $\bm{x}^{(s)} \sim f_{X}(\bm{x})$, as summarised in Alg.~Box~\ref{alg:SIRT}.%\textcolor{red}{The procedure is repeated ... (the 'we' is entirely redundant, and distracting.)}
 %\textcolor{red}{Function or distribution}
@@ -506,21 +509,22 @@ The procedure is repeated for each $u^{(s)}_k \in \bm{u}^{(s)}$ to produce the s
 
 \subsubsection{Metropolis--Hastings -- correction step}
 Since the samples by the SIRT scheme are generated from an approximation, it is sensible to correct those using a Metropolis--Hastings (MH) importance step as in~\cite{dolgov2020approximation}.
+
 \begin{algorithm}[!ht]
 	\caption{MH correction step}
 	\begin{algorithmic}[1]
-		\STATE \textbf{Input:} samples $\{ \bm{x}^{(1)},\dots, \bm{x}^{(N+1)} \} $, where each $\bm{x}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N+1$
-		\FOR{ \( s = 1, \dots, N\)}
-		\STATE compute MH ratio $\frac{w^{(s+1)}}{w^{(s)} } =\frac{\pi(\bm{x}^{(s+1)})}{\pi(\bm{x}^{(s)})} \frac{f_X(\bm{x}^{(s)})}{f_X(\bm{x}^{(s+1)})}$ 
-		\STATE compute acceptance probability $\alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$ 
-		\STATE Draw $u \sim \mathcal{U}(0,1)$
+		\STATE \textbf{Input:} samples $\{ \bm{x}^{(1)},\dots, \bm{x}^{(N+1)} \} $, where each $\bm{x}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N+1$.
+		\FOR{ \( s = 1, \dots, N-1\)}
+		\STATE Compute MH ratio $\frac{w^{(s+1)}}{w^{(s)} } =\frac{\pi(\bm{x}^{(s+1)})}{\pi(\bm{x}^{(s)})} \frac{f_X(\bm{x}^{(s)})}{f_X(\bm{x}^{(s+1)})}$.
+		\STATE Compute acceptance probability $\alpha = \text{min}(w^{(s+1)}/w^{(s)}, 1)$. 
+		\STATE Draw $u \sim \mathcal{U}(0,1)$.
 		\IF{$\alpha \geq u$ }
-		\STATE Accept and set $\bm{x}_{\text{MH}}^{(s+1)} = \bm{x}^{(s+1)}$
+		\STATE Accept and set $\bm{x}_{\text{MH}}^{(s+1)} = \bm{x}^{(s+1)}$.
 		\ELSE  
-		\STATE Reject and keep $\bm{x}_{\text{MH}}^{(s+1)} = \bm{x}^{(s)}$
+		\STATE Reject and keep $\bm{x}_{\text{MH}}^{(s+1)} = \bm{x}^{(s)}$.
 		\ENDIF
 		\ENDFOR
-		\STATE \textbf{Output:} corrected sample chain $\{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)} \} $, where each $\bm{x}_{\text{MH}}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N$
+		\STATE \textbf{Output:} corrected sample chain $\{ \bm{x}_{\text{MH}}^{(1)},\dots, \bm{x}_{\text{MH}}^{(N)} \} $, where each $\bm{x}_{\text{MH}}^{(s)} \in \mathbb{R}^d$ for $s = 1, \dots, N$.
 	\end{algorithmic}
 	\label{alg:MHCorr}
 \end{algorithm}
@@ -568,7 +572,8 @@ On the other hand (Kantorovich-Rubinstein duality), the 1-Wasserstein distance
 \end{align}
 is the lowest upper bound of differences in expectations over all 1-Lipschitz function $h(\bm{x}) : \mathcal{X} \rightarrow \mathcal{Y}$ in between the two distributions $\pi$ and $\tilde{\pi}$, with the distance measure $c_{\mathcal{X}}$ on the set $\mathcal{X}$ forming the metric space $( \mathcal{X}, c_{\mathcal{X}} )$ and similarly the metric space $(\mathcal{Y}, c_{\mathcal{Y}})$.
 
-For two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(N)}\} \sim \pi$ and $\{\tilde{ \bm{x}}^{(1)},\dots,\tilde{\bm{x}}^{(M)}\} \sim \tilde{\pi}$ the calculation of the Wasserstein distance becomes an optimisation problem that is to find the best coupling of samples weighted by their distribution value according to an appropriate distance measure~\cite{feydy2020OT}, which we set to $c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}})= \lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2} $.
+For two sample sets $\{ \bm{x}^{(1)},\dots,\bm{x}^{(N)}\} \sim \pi$ and $\{\tilde{ \bm{x}}^{(1)},\dots,\tilde{\bm{x}}^{(M)}\} \sim \tilde{\pi}$ the calculation of the Wasserstein distance becomes an optimisation problem.
+That is to find the best coupling of samples weighted by their distribution value according to an appropriate distance measure~\cite{feydy2020OT}, which we set to $c_{\mathcal{X}}(\bm{x},\tilde{\bm{x}})= \lVert \bm{x} -\tilde{\bm{x}} \rVert_{L^2} $.
 More specifically,
 \begin{align}
 	W_1(\pi,\tilde{\pi}) = 	\underset{\nu \in \Pi(\pi,\tilde{\pi}) }{\text{min}} \sum^M_{j = 1} \sum^N_{i =1}  \nu_{ij} \lVert\bm{x}^{(i)}  -  \tilde{\bm{x}}^{(j)} \rVert_{L^2} \, , \label{eq:applWasser}
@@ -651,13 +656,13 @@ We refer to~\cite{hansen1989GSVD} and~\cite{tan2016LecNot} for a more comprehens
 %\textcolor{red}{what does that mean -- the solution is essentially equal to the noisy data, or what? If you are going to say anything, you need to be specific. Currently this says essentially nothing. A person who knows what is going on does not need to read this sentence (or section) while a person who does not know will still have no idea after reading this. }
 
 In practice, $\bm{x}_{\lambda}$ is computed for a range of $\lambda$-values and the data misfit norm versus the regularisation norm is plotted in log-space to form an L-curve (see Fig.~\ref{fig:LCurve}).
-Based on the trade-off between the data misfit and the regularisation norm, the regularisation solution corresponds to the point of maximum curvature of the L-curve~\cite{hansen1993use}.
+Based on the trade-off between the data misfit and the regularisation norm, the regularised estimate corresponds to the point of maximum curvature of the L-curve~\cite{hansen1993use}.
 %\textcolor{red}{you use of the tem 'optimal' is offensive -- because it is a tautology that you define 'optimal' to mean that it is given by the L-curve. So, say it is optimal because it is given by th eL-curve is saying nothing, other than defining what you mean by an 'optimal regularisation parameter'. If that's what you want to say, then say it. otherwise this sentence is content free. }
 
 \begin{figure}[ht!]
 	\centering
 	\input{Lagrangian.pdf_tex}
-	\caption[]{This Figure is not to scale and directly inspired by~\cite{ColinPhD}. One solution $\bm{x}_{\lambda}$ is obtained by following a contour line $\left\lVert \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2}= c$ until $\bm{x}^T \bm{L} \bm{x}$ is minimised. In the centre of the likelihood contours a solution $\bm{x}_{0}$ uneffected by the regulariser is obtained, whereas the solution $\bm{x}_{\infty}$ is determined a-priori.}
+	\caption[]{This Figure is not to scale and directly inspired by~\cite{ColinPhD}. One regularisation solution $\bm{x}_{\lambda}$ is obtained by following a contour line $\left\lVert \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2}= c$ until $\bm{x}^T \bm{L} \bm{x}$ is minimised. $\lambda$ is the regularisation parameter or Lagrange multiplier and ranges from $0$ to $\infty$. In the centre of the likelihood contours a solution $\bm{x}_{0}$ uneffected by the regulariser is obtained, whereas the solution $\bm{x}_{\infty}$ is determined a-priori.}
 	\label{fig:Langrangian}
 \end{figure}
 Alternatively one can introduce a Lagrangian $\mathcal{L}(\bm{x},\lambda)\coloneqq \left\lVert \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2} + \lambda \, \bm{x}^T\bm{L} \bm{x}$ similar to~\cite{LiLagrange}, where $\lambda$ is a Lagrange multiplier.
@@ -665,7 +670,7 @@ For a given $\lambda$, a solution $\bm{x}_{\lambda} $ that minimises $\mathcal{L
 This is equivalent to $\bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$ subject to a constant constrain $\left\lVert  \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2}= c$ (see~\cite[fn.~6]{fox2016fast}). 
 %\textcolor{red}{You need to fix this sentence, as L(x,lambda) is not a Lagrange multiplier -- it does have a name, and you should use it and not wite sentences that say : I introduce the chicken p=7 which minimizes frog. }
 So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and the L-curve presents a lower boundary to an open set of high-dimensional posterior samples~\cite{VowelsMultiD}.
-Hence, every sample of the high-dimensional posterior, which represents a feasible solution given the data, lies above the L-Curve and is less regularised because it has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
+Hence, every sample of the high-dimensional posterior, which represents a feasible solution given the data, lies above the L-Curve, is less regularised and has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
 %\textcolor{red}{not accurate enough}
 %\textcolor{red}{say on or above - -do any points in the posterior actually lie in the L-Cerve, I don't think so. Are you claiming that the regularised solutions are in the posterior? The L-curve could be the limit of an open set.}
 %Now consider the 2-Wasserstein distance

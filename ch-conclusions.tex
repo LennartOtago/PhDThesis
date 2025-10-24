@@ -1,41 +1,45 @@
 \chapter{Summary and Outlook}
 \label{ch:Concl}
 \thispagestyle{empty}
-In this chapter, we summarise the key results and conclusions of our work and provide an outlook for future research.
-We compare the Bayesian approach to a regularisation approach and elaborate on the differences between sampling-based methods and the TT approximation.
-Lastly, we situate our results within the broader context of atmospheric modelling and discuss the implications for the future development of an atmospheric limb sounder.
+In this chapter, the key results and conclusions of this work are summarised.
+The comparison between the Bayesian approach and the regularisation approach is made.
+We elaborate on the differences between sampling-based methods and the TT approximation.
+Lastly, our results are situated within the broader context of atmospheric modelling and the implications for the future development of an atmospheric limb sounder are discussed.
+An outlook for future research is provided.
 
 
 
 \section{Regularisation Solution vs. Hierarchical Bayesian Approach}
-Using a regularisation approach, we need 200 solves of $\bm{x}_{\lambda}$ to obtain one solution of this inverse problem.
+Using a regularisation approach, 200 solves of $\bm{x}_{\lambda}$ are needed to obtain one solution to this inverse problem.
 In contrast, the hierarchical Bayesian approach involves 25 function evaluations of the marginal posterior (to find the mode) and then 10100 samples from the approximated marginal posterior followed by 20 evaluations of $\bm{x}_{\lambda}$ and $\bm{B}^{-1}_{\lambda}$ to characterise the full posterior in $\approx 0.5$s.
 Utilising a TT approximation (including finding the mode) to compute the full posterior mean and covariance takes $\approx 0.025$s, requiring only 400 function evaluations to approximate $\pi(\lambda, \gamma | \bm{x})$ and is almost as fast as the regularisation approach ($\approx 0.015$).
 Regardless, either method has a runtime of much less than a second on a basic laptop.
 
-While regularisation yields a single optimal solution (point estimate), a Bayesian framework provides a distribution of ozone profiles, which are all feasible solutions to the inverse problem, and hence true errors.
+While regularisation yields a single optimal solution (point estimate), a Bayesian framework provides a distribution of ozone profiles.
+This posterior distribution presents a range of feasible solutions to the inverse problem and hence true errors.
 Moreover, within the hierarchical Bayesian approach, we can include prior knowledge about the noise, ozone profile and many more physical processes through hyper-parameters, offering an arbitrarily flexible and informative inference framework.
 
 
 \section{Sampling Methods vs. TT Approximation}
-Using the TT approximation involves far fewer function evaluations of the target distribution compared to sample-based methods, but requires a predefined grid and a normalisation constant, which, for now, we have to find iteratively.
+Using the TT approximation involves far fewer function evaluations of the target distribution compared to sample-based methods.
+The main disadvantage of TT methods is that they require a predefined grid and a ``normalisation constant'', which we have to find iteratively.
 Relying solely on TT approximations may lead to a substantial amount of trial and error and dealing with numerical issues.
 Nevertheless, once properly configured, we have shown the potential and advantages of TT methods.
 
-More specifically, the TT approximation of the 2-dimensional marginal posterior ($\approx0.02$s) is more than 20 times faster than the MWG sampler ($\approx0.5$s).
+More specifically, the TT approximation of the 2-dimensional marginal posterior ($\approx0.025$s) is 20 times faster than the MWG sampler ($\approx0.5$s)
 Excluding the function evaluations for finding the mode of the marginal posterior, the MWG sampler takes $10100$ steps while the TT approximation only needs $400$ function evaluations; this is a factor of $\approx25$.
-Alternatively, for low-dimensional distributions, it may be preferable to approximate integrals directly using existing freely available quadrature libraries and packages such as \texttt{quadpy}.
+Alternatively, for low-dimensional distributions, it may be preferable to approximate integrals directly and to use existing freely available quadrature libraries and packages such as \texttt{quadpy}.
 
 In higher dimensions, such as the 18-dimensional marginal posterior considered in this thesis, TT methods ($\approx0.5$min) outperform samplers like the t-walk ($\approx 10$min), once a grid and normalisation constant have been defined.
-Although the t-walk may not be the best sampler for this specific marginal posterior and the underlying correlation structure, it is robust and easy to implement.
+Although the t-walk may not be the best sampler for this specific problem and the underlying correlation structure, it is robust and easy-to-implement.
 To illustrate the efficiency of TT approximations, we compare the number of function evaluations per 1000 independent samples.
 For 1000 independent samples with a maximum IACT of 1100 and a burn-in period of 100 independent samples, the t-walk needs 1210000 function evaluations. 
 In contrast, 34080 function evaluations are enough to approximate the marginal posterior in the TT format.
 Then drawing 1000 independent samples via the SIRT-MH scheme requires another 2000 function evaluations with an IACT of $\approx 1.2$.
-So the cost per independent sample for the t-walk is $1210$ and for the TT approach is $\approx 36$ function evaluations, including the burn-in period and the TT approximation via the \texttt{rect\_cross.cross} Python function.
-Or, after the burn-in phase, the t-walk requires around 1100 function evaluations per independent sample, while with an approximation of a probability density in the TT format available, only two function evaluations per independent sample are needed.
+So the cost per independent sample for the t-walk is $1210$ and for the TT approach is $\approx 36$ function evaluations, including the burn-in period or the TT approximation via the \texttt{rect\_cross.cross} Python function.
+Without the burn-in phase the t-walk requires around 1100 function evaluations per independent sample, while once a TT approximation is available only two function evaluations per independent sample are needed.
 
-For future application, we suggest improving the efficiency of the TT approximation by e.g., reducing the correlation structure through a coordinate system rotation or using better interpolators in between grid points to reduce the approximation error.
+For future application, we suggest improving the efficiency of the TT approximation by e.g., reducing the correlation structure through a coordinate system rotation (Cholesky Whitening) or using better interpolators in between grid points to reduce the approximation error.
 This may be particularly important when the CDF in the SIRT scheme is not smooth due to poor approximations of the target density at previous samples.  
 Moreover, using a different reference measure for integration as in~\cite{cui2022deep}, such as a Gaussian measure instead of the current Lebesgue measure, may increase numerical stability.
 Currently, we have to predefine a normalisation constant and lower ranks manually, bounding the ranks automatically would be helpful (see e.g.,~\cite{Rohrbach2022tterror}).
@@ -43,16 +47,17 @@ Currently, we have to predefine a normalisation constant and lower ranks manuall
 
 
 \section{Atmospheric Physics}
-Here we summarise results within the context of our simplified physical atmospheric limb-sounding model.
-We demonstrated that the underlying non-linear forward model can be approximated with an affine map and the linear model, making this a linear inverse problem.
+Here the results within the context of our simplified atmospheric limb-sounding model are summarised.
+This thesis showed that the underlying non-linear forward model can be approximated with an affine map and the linear model, making this a linear inverse problem.
 For future application, we wish to include more measurement device-specific hyper-parameters in the forward model.
 This could include e.g., uncertainty in pointing accuracy or an antenna response function.
 
-In Sec.~\ref{sec:SVD}, we showed that we do not gain more information if we measure more frequently or collect more data in noise-dominated regions and that we need an SNR of $\approx10^4$ to produce data, which is informative about ozone at higher altitudes.
+For an SNR of $\approx150$, Sec.~\ref{sec:SVD} implicated that there is no information gain if one measures more frequently or collects more data in noise-dominated regions.
+An SNR of $\approx10^4$ is needed to produce data that is informative about ozone at higher altitudes.
 
 Fig.~\ref{fig:O3Post} and Fig.~\ref{fig:PressPost} illustrate that pressure and ozone are highly correlated.
-One has to consider that when conditioning on pressure estimates from other measurements, as a slight change in pressure does skew the ozone VMR significantly.
-We could fix that by choosing a more restrictive prior for the pressure-related hyper-parameter $b$, but that would not be objective.
+One has to consider that when conditioning on pressure estimates from other sources, a slight change in pressure does skew the ozone VMR significantly.
+A more restrictive prior for the pressure-related hyper-parameter $b$ would provide a fix to that issue, but that would not be objective.
 By explanatory analysis, we found that data with an SNR of $\approx 1000$ recovers an ozone (without a peak in higher altitudes) and pressure profile close to the ground truth.
 As previously mentioned in the prior analysis (see Fig.~\ref{fig:PriorPressOverTemp}), the model as well as the data are uninformative about temperature and dominated by the exponentially decreasing pressure.
 
