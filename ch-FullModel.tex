@@ -289,55 +289,55 @@ Alternatively, one could decorrelate the hyper-parameter space e.g.,~via Cholesk
 
 
 \paragraph{Find optimal rank and grid size}
-The aim is to decrease the number of function evaluations of $\sqrt{\pi( \bm{\theta},\lambda,\gamma  | \bm{y})}$ and to determine the optimal rank and grid size without losing too much accuracy of the marginal posterior approximation.
-For stable and comparable results, we do five sweeps within the~\texttt{tt.cross.rectcross.rect\_cross.cross} Python function initialised at a random TT.
+The aim is to approximate $\pi( \bm{\theta},\lambda,\gamma  | \bm{y})$ with a number of function evaluations as small as possible but without losing too much accuracy.
+In doing so, the number of grid points is set to $n = 150$ and different error measures for ranks $\{2,3,4,5,6,7,8,9,10,11,12,13,14,15, 20, 25, 30, 35, 50\}$ are calculated.
+Then, with a fixed rank, the number of grid points \linebreak$\{10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 90, 100\}$ is decreased until sufficient accuracy.
+
+For stable and comparable results, we do five sweeps within \linebreak the~\texttt{tt.cross.rectcross.rect\_cross.cross} Python function initialised at a random TT.
 The ranks between TT cores are constant.
-Then $1000$ independent samples from the TT approximation of the marginal posterior via the SIRT-MH scheme are drawn. 
-First, the number of grid points is set to $n = 150$ and different error measures for ranks $\{2,3,4,5,6,7,8,9,10,11,12,13,14,15, 20, 25, 30, 35, 50\}$ are calculated.
-We compare to true marginal posterior function values and $1000$ independent t-walk samples to find a small but tolerable rank.
-Then with a fixed rank the number of grid points $\{10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 90, 100\}$ is decreased until sufficient accuracy.
+Then $N = 1000$ independent samples  $ \{( \tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma })^{(1)} ,\dots, (\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma })^{(N)}   \} \sim \tilde{\pi}( \bm{\theta},\lambda,\gamma  | \bm{y})$ from the TT approximation $\tilde{\pi}( \bm{\theta},\lambda,\gamma  | \bm{y})$ via the SIRT-MH scheme are drawn.
+The sample mean is denoted as $\bm{\mu}_{\text{SIRT-MH}}\in \mathbb{R}^{18}$.
+Further, the marginal functions from the TT approximation are used to calculate the mean $\bm{\mu}_{\text{TT}}\in \mathbb{R}^{18}$ by weighted expectations via quadrature of each hyper-parameter.
+For a ground truth $N = 1000$ samples $ \{( \bm{\theta},\lambda,\gamma )^{(1)} ,\dots,( \bm{\theta},\lambda,\gamma )^{(N)}   \} \sim \pi( \bm{\theta},\lambda,\gamma  | \bm{y})$
+are obatined via t-walk and the sample mean $ \bm{\mu}_{\text{t-walk}}  \in \mathbb{R}^{18}$ acts as a ground thruth.
+The true marginal posterior is denoted as $ \pi( \bm{\theta},\lambda,\gamma  | \bm{y})$.
 
-\begin{figure}[ht!]
-	\centering% will be the left-side figure
-	\includegraphics[]{findGridRank.png}
-	\caption[Optimal rank and number of grid points for TT approximation.]{Given a TT approximation of $\sqrt{\pi( \bm{\theta},\lambda,\gamma  | \bm{y}) }$, the relative RMS error (orange squares) and the 1-Wasserstein distance (blue cross) between approximated values at sample points provided by the SIRT-MH and the true function values are calculated. The relative RMS error between the sample means provided by the t-walk and mean values for the hyper-parameters from the TT approximation is plotted (black dots). The mean values for the hyper-parameters are computed via quadrature, where the marginal functions from the TT approximation act as quadrature weights. Additionally, the relative RMS error between the sample-based mean from the SIRT-MH and the t-walk (red circles) is plotted.}
-	\label{fig:FindRankGrid}
-\end{figure}
-\clearpage
-One of the error measures is the 1-Wasserstein distance $W_1$ (blue crosses in Fig.~\ref{fig:FindRankGrid}), as in Eq.~\ref{eq:applWasser}.
-The 1-Wasserstein distance is calculated between 1000 independent SIRT-MH samples from the TT approximation $\tilde{\pi}( \bm{\theta},\lambda,\gamma  | \bm{y})$ weighted by their approximated values and 1000 independent t-walk samples from the true marginal posterior weighted by $\pi( \bm{\theta},\lambda,\gamma  | \bm{y})$.
-We use the Python function \texttt{SamplesLoss("sinkhorn", p=1, blur=0.05, scaling=0.8)} with default settings from the Python package \texttt{geomloss}~\cite{Wassersteinaccess} to obtain $W_1$.
-This function provides the unbiased Sinkhorn divergence which converges towards the Wasserstein distance and can be understood as the generalised Quicksort algorithm~\cite{feydy2020OT}.
-Here p = 1 defines the distance measure $\lVert \cdot \rVert_{L^2}$.
-The blur parameter is an entropic penalty and the scaling parameter specifies the trade-off between speed (scaling $< 0.4$) and accuracy (scaling $>0.9$)~\cite{Wassersteinaccess}.
-Additionally, the marginal functions of each TT approximation are used to obtain the quadrature-based means $\bm{\mu}_{\text{TT}} \in \mathbb{R}^{18}$ of each hyper-parameter by weighted expectations.
-Then the relative RMS difference $\lVert\bm{\mu}_{\text{TT}} - \bm{\mu}_{\text{t-walk}} \rVert_{L^2} / \lVert \bm{\mu}_{\text{t-walk}} \rVert_{L^2} $ is calculated and plotted in Fig.~\ref{fig:FindRankGrid} (black dots).
-The ``true sample-based means'' from the t-walk are denoted as $\bm{\mu}_{\text{t-walk}}$.
-The relative RMS between the SIRT-MH sample-based mean $\bm{\mu}_{\text{SIRT-MH}}$ and $\bm{\mu}_{\text{t-walk}}$ is calculated and plotted in Fig.~\ref{fig:FindRankGrid} (red circles).
-Further, the relative RMS error between TT approximated and true function values for 1000 independent SIRT-MH samples is calculated and plotted in Fig.~\ref{fig:FindRankGrid} (orange squares).
-
+Plotted in Fig.~\ref{fig:FindRankGrid}, for each tested TT approximation, the following error measures are calculated:
 \begin{itemize}
-	\item \includegraphics[height=0.6\baselineskip]{SIRTMH.png} \textbf{rel. expect Err. (SIRT-MH)} 
+	\item[{\includegraphics[height=0.65\baselineskip]{SIRTMH.png}}] The \textbf{relative expectation Errorr (SIRT-MH)}
 	\begin{align*} 
-		\frac{\lVert\bm{\mu}_{\text{SIRT-MH}} - \bm{\mu}_{\text{t-walk}} \rVert_{L^2}}{  \lVert \bm{\mu}_{\text{t-walk}} \rVert_{L^2} }
+		\frac{\lVert\bm{\mu}_{\text{SIRT-MH}} - \bm{\mu}_{\text{t-walk}} \rVert_{L^2}}{  \lVert \bm{\mu}_{\text{t-walk}} \rVert_{L^2} } \, .
 	\end{align*}
-	\item  \includegraphics[height=0.6\baselineskip]{QUAD.png} \textbf{rel. expect Err. (quadrature)}
+	\item[{\includegraphics[height=0.65\baselineskip]{QUAD.png}}] The \textbf{relative expectation Error (quadrature)}
 	\begin{align*} 
-		\frac{\lVert\bm{\mu}_{\text{TT}} - \bm{\mu}_{\text{t-walk}} \rVert_{L^2} }{ \lVert \bm{\mu}_{\text{t-walk}} \rVert_{L^2} }
+		\frac{\lVert\bm{\mu}_{\text{TT}} - \bm{\mu}_{\text{t-walk}} \rVert_{L^2} }{ \lVert \bm{\mu}_{\text{t-walk}} \rVert_{L^2} } \, .
 	\end{align*}
-	\item  \includegraphics[height=0.6\baselineskip]{RMS.png} \textbf{rel. RMS Error} 
+	\item[{\includegraphics[height=0.65\baselineskip]{RMS.png}}] The \textbf{relative RMS Error} 
 	\begin{align*} 
-				\frac{\lVert \tilde{\pi}  - \pi \rVert_{L^2} }{ \lVert \pi \rVert_{L^2} }
+		\frac{\lVert \tilde{\pi}(\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma})  - \pi(\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma}) \rVert_{L^2} }{ \lVert \pi(\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma})  \rVert_{L^2} } \, .
 	\end{align*}
-	\item  \includegraphics[height=0.6\baselineskip]{W1.png} \textbf{Wasserstein Distance}
+	\item[{\includegraphics[height=0.65\baselineskip]{W1.png}}] The \textbf{1-Wasserstein Distance}
 	\begin{align*} 
-		W_1(\pi,\tilde{\pi}) = 	\underset{\nu \in \Pi(\pi,\tilde{\pi}) }{\text{min}} \sum^M_{j = 1} \sum^N_{i =1}  \nu_{ij} \lVert\bm{x}^{(i)}  -  \tilde{\bm{x}}^{(j)} \rVert_{L^2} 
-		\lVert \cdot \rVert_{L^2}
+		W_1(\pi,\tilde{\pi}) = 	\underset{\nu \in \Pi(\pi,\tilde{\pi}) }{\text{min}} \sum^N_{i,j =1}  \nu_{ij} \lVert \text{vec}\big(( \bm{\theta},\lambda,\gamma ) ^{(i)} \big)-  \text{vec}\big( (\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma})^{(j)}\big) \rVert_{L^2} \, .
 	\end{align*}
 \end{itemize} 
+The 1-Wasserstein distance as in Eq.~\ref{eq:applWasser} is calculated between 1000 independent SIRT-MH samples from the TT approximation $\tilde{\pi}( \bm{\theta},\lambda,\gamma  | \bm{y})$ weighted by their approximated values and 1000 independent t-walk samples from the true marginal posterior weighted by $\pi( \bm{\theta},\lambda,\gamma  | \bm{y})$.
+Here $\text{vec}( \bm{\theta},\lambda,\gamma )$ denotes the vector of hyper-parameters $\big( \bm{\theta}^T,\lambda^T,\gamma^T \big)^T \in \mathbb{R}^{18}$ and $\nu_{ij} \coloneqq  \tilde{\pi}\big( (\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma})^{(j)}   | \bm{y}\big)  \pi\big( (\bm{\theta},\lambda,\gamma )^{(i)}  | \bm{y}\big) $.
+As in~\cite{feydy2020OT} we normalise over the samples so that $\sum \pi\big( (\bm{\theta},\lambda,\gamma )^{(i)}  | \bm{y}\big)  = 1$ and $\sum \tilde{\pi}\big( (\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma})^{(j)}   | \bm{y}\big) = 1$.
+We use the Python function \texttt{SamplesLoss("sinkhorn", p$=1$, blur$=0.05$, scaling=0.8)} with default settings from the Python package \texttt{geomloss}~\cite{Wassersteinaccess} to obtain $W_1$.
+This function provides the unbiased Sinkhorn divergence which converges towards the Wasserstein distance and can be understood as the generalised Quicksort algorithm~\cite{feydy2020OT}.
+Here p$ = 1$ defines the distance measure $\lVert \cdot \rVert_{L^2}$.
+The blur parameter is an entropic penalty and the scaling parameter specifies the trade-off between speed (scaling $< 0.4$) and accuracy (scaling $>0.9$)~\cite{Wassersteinaccess}.
 
-All of these measures are plotted in Fig.~\ref{fig:FindRankGrid}.
-We observe that a rank $r = 10$ is sufficient because the error measures are relatively stable for $r\geq10$.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[]{findGridRank.png}
+	\caption[Optimal rank and number of grid points for TT approximation.]{Given a TT approximation of $\sqrt{\pi( \bm{\theta},\lambda,\gamma  | \bm{y}) }$, the relative RMS error (orange squares) between approximated values at sample points provided by the SIRT-MH and true function values are calculated. The relative RMS error between the sample means provided by the t-walk and mean values for the hyper-parameters from the TT approximation is plotted (black dots). The mean values for the hyper-parameters are computed via quadrature, where the marginal functions from the TT approximation act as quadrature weights. Additionally, the relative RMS error between the sample-based mean from the SIRT-MH and the sample-based mean from the t-walk (red circles) is plotted.  The 1-Wasserstein distance (blue cross) is calculated between SIRT-MH samples and t-walk samples weighted by their repective approxiamted or true function value.}
+	\label{fig:FindRankGrid}
+\end{figure}
+ 
+In Fig.~\ref{fig:FindRankGrid} we observe that a rank $r = 10$ is sufficient because the error measures are relatively stable for $r\geq10$.
 For a grid size $n \geq 30$ the relative differences between $\bm{\mu}_{\text{TT}}$ and $\bm{\mu}_{\text{t-walk}}$ (red circles in Fig.~\ref{fig:FindRankGrid}) and the RMS errors at the 1000 independent SIRT-MH samples (orange squares in Fig.~\ref{fig:FindRankGrid}) are around $ 10\%$ and considered good enough.
 For an increasing number of grid points the interpolation of function values between grid points is more accurate and the sample-based relative errors decrease.
 This is because the chosen linear interpolation (see Eq.~\ref{eq:LinPol}) is a rather rudimentary choice.
