@@ -5,20 +5,19 @@
 \label{ap:Correlation}
 In the book Gaussian Markov Random Fields~\cite{rue2005gaussian}, Rue and Held demonstrate that a strong correlation between the hyper-parameter $\mu$ and the latent field $\bm{x}$ can significantly slow down convergence particularly when using Gibbs samplers.  
 They consider the hierarchical model
-
 \begin{subequations}
+		\label{eq:rueMod}
 	\begin{align}
 		\mu &\sim \mathcal{N}(0, 1) \\
 		\bm{x} | \mu &\sim \mathcal{N}(\mu \bm{1}, \bm{Q}^{-1}),
 	\end{align}
-	\label{eq:rueMod}
 \end{subequations}
-
 and apply a Gibbs sampler based on the full conditional distributions
 \begin{align}
 	\mu^{(k)} | \bm{x}^{(k)} &\sim \mathcal{N} \left( \frac{\bm{1}^T \bm{Q} \bm{x}^{(k-1)}}{1 + \bm{1}^T \bm{Q} \bm{1}}, \, \left(1 + \bm{1}^T \bm{Q} \bm{1} \right)^{-1} \right) \label{eq:gibbsMu} \\
 	\bm{x}^{(k)} | \mu^{(k)} &\sim \mathcal{N}(\mu^{(k)} \bm{1}, \bm{Q}^{-1})\label{eq:gibbsx}.
 \end{align}
+
 As illustrated in Figure~\ref{fig:RueHeld}, when the sampler is restricted to steps only in the $\mu$-direction (horizontal axis) or the $\bm{x}$-direction (vertical axis), it requires many iterations to adequately explore the parameter space. 
 This inefficiency arises from the high correlation between $\mu$ and $\bm{x}$, visible in Figure~\ref{fig:RueHeld} as a ``squeeze'' of the distribution.
 \begin{figure}[ht!]
@@ -29,12 +28,12 @@ This inefficiency arises from the high correlation between $\mu$ and $\bm{x}$, v
 \end{figure}
 
 A solution to the slow mixing problem is to update $(\mu, \bm{x})$ jointly.
-Since $\mu$ is one-dimensional, effectively only the marginal density of $\mu$ is needed.
+Since here $\mu$ is one-dimensional, effectively only the marginal density of $\mu$ is needed.
 \begin{align}
 	\mu^{\star}  &\sim q (\mu^{\star}|	\mu^{(k-1)} ) \\
 	\bm{x}^{(k)} | \mu^{\star} &\sim \mathcal{N} (	\mu^{\star}\bm{1}, \bm{Q}^{-1}) 
 \end{align}
-With a simple MCMC algorithm targeting $ \mu$, one can explore the sample space efficiently and only draw a corresponding sample for $\bm{x}$ from its full conditional once, for instance, the proposal $\mu^{\star}$ has been accepted.
+With a simple MCMC algorithm targeting $ \mu$ one can explore the sample space (of$ \mu$) efficiently and only draw a sample for $\bm{x}$ from its full conditional once the proposal $\mu^{\star} =\mu^{(k)} $ has been accepted.
 
 \section{Monte-Carlo Error and Integrated Autocorrelation Time}
 \label{ap:IATC}
@@ -42,7 +41,7 @@ To assess the error $(\sigma^{(i)})^2$ of a samples-based estimate
 \begin{align}
 \bar{h}_N^{(i)} \coloneqq	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}),
 \end{align} 
-from the chain $\mathcal{M}^{(i)} = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\} \sim \pi(\bm{x}|\bm{y})$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
+from the chain $\mathcal{M}^{(i)} = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\}$, where $ mathcal{M}^{(i)} \sim \pi(\bm{x}|\bm{y})$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
 To derive the IACT, we follow Ulli Wolff's lecture notes \cite{wolff2002LecNot} (or alternatively \cite{wolff2004monte}).
 
 In general, the error of a Monte-Carlo estimate is:

@@ -347,7 +347,7 @@ The unnormalised density function is approximated as in~\cite[Eq.~19]{cui2022dee
 	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2 
 \end{align}
 with a small additive constant $\xi > 0$ to ensure positivity.
-This maintains the smoothness~\cite{cui2022deep} and strict monotonicity~\cite{foxRosen21} of the cumulative distribution functions (CDFs).
+This maintains the smoothness~\cite{cui2022deep} and strict monotonicity of the cumulative distribution functions (CDFs) and makes the IRT maps in Eq.~\ref{eq:IRTmap} well defined~\cite{foxRosen21}.
 The CDFs are needed within the IRT to draw samples from $\tilde{\pi}(\bm{x})$ (see Sec.~\ref{subsec:SamplTT}).
 The constant $\xi$ is chosen according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting (see Eq.~\ref{eq:lebesgueWeight} and \cite[Eq.~35]{cui2022deep}) such that 
 \begin{align}
@@ -481,7 +481,10 @@ Next, the CDF $F_{X_1}(x_k) = \int^{x_k}_{-\infty} f_{X_1}(\hat{x}_1) d \hat{x}_
 	F_{X_k|X_{<k}}(x_k) = \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\hat{x}_k|x_{k-1},\dots,x_1) \diff \hat{x}_k  \, \,  \, ;
 	\label{eq:CurrCDF}
 \end{align}
-Then the seed $u^{(s)}_k$ is projected onto the parameter space to generate the sample $x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k)$. %\textcolor{red}{Argghhhh!}
+Then the seed $u^{(s)}_k$ is projected onto the parameter space to generate the sample 
+\begin{align}
+x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k) \, . \label{eq:IRTmap}
+\end{align} %\textcolor{red}{Argghhhh!}
 For $k = 2, \dots,d$ the general ``conditional marginal'' is given as \cite[Eq.~31]{cui2022deep}:
 \begin{align}\begin{split} 
 		f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1) \approx \frac{1}{z}
