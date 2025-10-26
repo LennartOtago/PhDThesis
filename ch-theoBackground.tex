@@ -347,8 +347,8 @@ The unnormalised density function is approximated as in~\cite[Eq.~19]{cui2022dee
 	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2 
 \end{align}
 with a small additive constant $\xi > 0$ to ensure positivity.
-This is maintains that the cumulative distribution functions (CDFs) are monotonically increasing.
-The CDFs are needed to draw samples from $\tilde{\pi}(\bm{x})$ (see Sec.~\ref{subsec:SamplTT}).
+This maintains the smoothness~\cite{cui2022deep} and strict monotonicity~\cite{foxRosen21} of the cumulative distribution functions (CDFs).
+The CDFs are needed within the IRT to draw samples from $\tilde{\pi}(\bm{x})$ (see Sec.~\ref{subsec:SamplTT}).
 The constant $\xi$ is chosen according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting (see Eq.~\ref{eq:lebesgueWeight} and \cite[Eq.~35]{cui2022deep}) such that 
 \begin{align}
 	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(\mathcal{X})}^2\,  \label{eq:gamErr}.
@@ -669,8 +669,10 @@ Alternatively one can introduce a Lagrangian $\mathcal{L}(\bm{x},\lambda)\colone
 For a given $\lambda$, a solution $\bm{x}_{\lambda} $ that minimises $\mathcal{L}(\bm{x},\lambda)$ is usually obtained by finding the minimum of $\left\lVert \bm{A} \bm{x} - \bm{y} \right\rVert^2_{L^2}$ with respect to the constant constrained $\bm{x}^T \bm{L} \bm{x} = c$~\cite[Fig.~2.13]{SANTOSH202265}.
 This is equivalent to $\bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$ subject to a constant constrain $\left\lVert  \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2}= c$ (see~\cite[fn.~6]{fox2016fast}). 
 %\textcolor{red}{You need to fix this sentence, as L(x,lambda) is not a Lagrange multiplier -- it does have a name, and you should use it and not wite sentences that say : I introduce the chicken p=7 which minimizes frog. }
-So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and the L-curve presents a lower boundary to an open set of high-dimensional posterior samples~\cite{VowelsMultiD}.
-Hence, every sample of the high-dimensional posterior, which represents a feasible solution given the data, lies above the L-Curve, is less regularised and has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
+So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and the L-curve presents a limit to an open set of high-dimensional posterior samples~\cite{VowelsMultiD}.
+Every sample of the high-dimensional posterior, which represents a feasible solution given the data, is less regularised and has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
+If all posterior samples lie above the L-curve, then it presents a lower boundary.
+
 %\textcolor{red}{not accurate enough}
 %\textcolor{red}{say on or above - -do any points in the posterior actually lie in the L-Cerve, I don't think so. Are you claiming that the regularised solutions are in the posterior? The L-curve could be the limit of an open set.}
 %Now consider the 2-Wasserstein distance
