@@ -1,6 +1,6 @@
 \begin{MintedVerbatim}[commandchars=\\\{\}]
 	\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{MargBack}\PYG{p}{(}\PYG{n}{TTCore}\PYG{p}{,} \PYG{n}{univarGrid}\PYG{p}{)}\PYG{p}{:}
-\PYG{+w}{	}\PYG{l+s+sd}{\PYGZsq{}\PYGZsq{}\PYGZsq{} Backward marginalisation (see \PYGZdq{}Prop. \PYGZbs{}ref\PYGZob{}prob:backMarg\PYGZcb{}\PYGZdq{})}
+\PYG{+w}{	}\PYG{l+s+sd}{\PYGZsq{}\PYGZsq{}\PYGZsq{} Backward marginalisation (see \PYGZdq{}Prop.\PYGZti{}\PYGZbs{}ref\PYGZob{}prob:backMarg\PYGZcb{}\PYGZdq{})}
 \PYG{l+s+sd}{	    as in SIRT from Cui and Dolgov\PYGZdq{}\PYGZti{}\PYGZbs{}cite\PYGZob{}cui2022deep\PYGZcb{}\PYGZdq{} \PYGZsq{}\PYGZsq{}\PYGZsq{}}
 	
 	\PYG{n}{dim} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{univarGrid}\PYG{p}{)}
