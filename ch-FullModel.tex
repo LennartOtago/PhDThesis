@@ -255,8 +255,8 @@ The aim now is to approximate the square root of the marginal posterior
 	\label{eq:MargPostFullTT}
 \end{align}
 with a ``normalisation constant'' $c=-200$ to stay within computer precision.
-In doing so, we run the~\texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} python package \cite{Oseledets2018ttpy} on a grid (see Tab.~\ref{tab:priors}) according to the results of the t-walk.
-When computing the marginal of each hyper-parameter as in Sec.~\ref{sec:tensortrain} the maximum values of $\sqrt{\pi( \bm{\theta},\lambda,\gamma  | \bm{y})}$ are around $10^{27}$ so we set $\xi = 1 / \uplambda (\mathcal{X})$ with $\uplambda(x) = 1$.
+In doing so, we run the~\texttt{tt.cross.rectcross.rect\_cross.cross} function from the \texttt{ttpy} python package \cite{Oseledets2018ttpy} on a grid (see Tab.~\ref{tab:priors}) according to the results of the t-walk. 
+We observe marginal posterior values around $10^{27}$ so we set $\xi = 1 / \uplambda (\mathcal{X})$ with $\uplambda(x) = 1$.
 For Cartesian basis the mass matrix becomes $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$.
 To draw samples from the TT approximation the SIRT-MH scheme is used as introduced in Sec. \ref{subsec:SamplTT}.
 
@@ -420,7 +420,7 @@ This is because the hyper-parameter $b$ is smaller than its ground truth value (
 
 \subsection{Full Conditional Posterior -- Ozone}
 Due to the large number of hyper-parameters calculating the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and $\bm{\Sigma}_{\bm{x}|\bm{y}}$ covariance via quadrature as in Eq.~\ref{eq:MeanGenInt} and~\ref{eq:CoVarGenInt} is computationally not feasible.
-If the full conditional posterior is a normal distribution, then the randomise then optimise (RTO) method provides a scheme to obtain an independent ozone sample from $\pi(\bm{x}|\bm{\theta}, \delta, \gamma, \bm{y})$ with $\delta = \lambda \, \gamma$.
+If the full conditional posterior is a normal distribution, then the randomise then optimise (RTO) method provides a scheme to obtain an ozone sample from $\pi(\bm{x}|\bm{\theta}, \delta, \gamma, \bm{y})$ with $\delta = \lambda \, \gamma$.
 We introduce the RTO method for general case first and then draw ozone samples from $\bm{x}^{(k)} \sim \pi(\bm{x}|\bm{\theta}^{(k)} , \delta^{(k)} , \gamma^{(k)} , \bm{y})$ conditioned on independent marginal posterior samples $\bm{\theta}^{(k)} , \delta^{(k)} , \gamma^{(k)} \sim \pi(\bm{\theta} , \delta , \gamma | \bm{y})$.
 
 
@@ -449,10 +449,10 @@ where
 $\bm{Q}_{\delta}$ is the prior precision, $\bm{\mu}$ the prior mean and $\bm{\Sigma}_{\gamma}$ the noise covariance (see also~\cite{bardsley2014randomize,BardsleyTC2019RTO}).
 A sample $\bm{x}^{(k)}$ from the full conditional posterior $ \pi(\bm{x}|   \bm{\theta},  \delta, \gamma,  \bm{y})$ is obtained by minimising the following equation:
 \begin{align}
-	\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \bm{I}_m) \, ,
+	\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 , \quad \bm{b} \sim \mathcal{N}(\bm{0}, \bm{I}) \, ,
 \end{align}
 where a random perturbation $\bm{b}$ is added.
-Similar to Section~\ref{sec:reg}, this expression becomes
+Similar to Sec.~\ref{sec:reg}, this expression becomes
 \begin{align}
 	\label{eq:RTO}
 	\left( \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} + \bm{Q}_{\delta} \right) \bm{x}^{(k)} = \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{y} + \bm{Q}_{\delta} \bm{\mu} + \bm{v}_1 + \bm{v}_2,
@@ -462,12 +462,13 @@ with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_
 
 
 \subsubsection{Posterior ozone samples}
-More explicitly conditioned on an independent $\bm{\theta}^{(k)},\lambda^{(k)},\gamma^{(k)} \sim \pi(\bm{\theta},\lambda,\gamma | \bm{y})$ and one full conditional posterior sample is given as  
+More explicitly, conditioned on an independent $\bm{\theta}^{(k)},\lambda^{(k)},\gamma^{(k)} \sim \pi(\bm{\theta},\lambda,\gamma | \bm{y})$, one full conditional posterior sample is given as  
 \begin{align}
 	\label{eq:RTOAppl}
 	\bm{x}^{(k)} = 	\Big(  \underbrace{\gamma^{(k)} \bm{A}_{\bm{\theta}^{(k)}}^T\bm{A}_{\bm{\theta}^{(k)}} +  \delta^{(k)}\bm{L}}_{\bm{B}^{(k)}} \Big)^{-1} \left(  \gamma^{(k)}  \bm{A}_{\bm{\theta}^{(k)}}^T\bm{y} +\sqrt{\gamma^{(k)}} \bm{A}_{\bm{\theta}^{(k)}}^T \bm{v}_1 + \sqrt{\delta^{(k)}}\bm{L}^{1/2}\bm{v}_2\right)
 \end{align}
-with $\bm{v}_1 \sim \mathcal{N}(\bm{0},  \bm{I}_m )$, $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{I}_n )$, $\bm{Q}_{\delta} = \delta  \bm{L} $, $\bm{\Sigma}^{-1}_{\gamma} = \gamma \bm{I}$ and $\bm{L}^{1/2}$ is the Cholesky decomposition of $\bm{L}$ \cite{bardsley2012mcmc}.
+with $\bm{v}_1 \sim \mathcal{N}(\bm{0},  \bm{I})$, $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{I} )$, $\bm{Q}_{\delta} = \delta  \bm{L} $, $\bm{\Sigma}^{-1}_{\gamma} = \gamma \bm{I}$ and $\bm{L}^{1/2}$ is the Cholesky decomposition of $\bm{L}$ \cite{bardsley2012mcmc}.
+Note that $\bm{v}_1 \in \mathbb{R}^m$ and $\bm{v}_2 \in \mathbb{R}^n$.
 If $n$ is large and calculating the Cholesky decomposition of $\bm{L}$ or constructing $\bm{L}$ is expensive it is recommended to represent $\bm{L}$ as a sum over cliques e.g.,~small $2\times2$ rank-1 matrices (see $\bm{L}$ in Eq.~\ref{eq:LaplRegTheo}).
 Then a sample $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\delta})$ can be obtained by drawing $n$ random variables from $\mathcal{N}(0,1)$ without explicitly forming $\bm{L}$~\cite{fox2016fast}.
 

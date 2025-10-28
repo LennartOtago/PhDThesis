@@ -22,7 +22,8 @@ This probabilistic approach allows us to determine meaningful estimates and unce
 
 As already mentioned, currently the MLS retrieval algorithm~\cite{livesey2006retrieval} is based on the ``optimal estimation'' method from~\cite{rodgers1976retrieval}.
 This approach provides a point estimate by fitting parameters to some data and iteratively minimising a squared residual norm, penalised against a chosen regularisation.
-However, this does not provide comprehensive information about the parameters' underlying correlation structures can lead to unphysical results, e.g.~negative ozone concentration values~\cite{MLSdata}, and biased solutions where the bias is then removed based on empirical decisions~\cite{livesey2008ozonecarbonmono, Froidevaux2008snrozone}.
+However, this does not provide comprehensive information about the parameters' underlying correlation structures and can lead to unphysical results, e.g.~negative ozone concentration values~\cite{MLSdata}.
+Additionally, the solutions may be biased and the bias is then removed based on empirical decisions~\cite{livesey2008ozonecarbonmono, Froidevaux2008snrozone}.
 Errors are provided by a local derivative of the forward map at the optimal solution, which is inherently highly sensitive to that specific point in the parameter space.
 Furthermore, these regularisation methods condition on external point estimates of other parameters such as temperature or pressure~\cite{livesey2006retrieval}.
 %Recent machine learning efforts do not include noise as a retrieval hyper-parameter condition on one single noise value (point estimate) in the developed model, which is trained for about one month, and .
@@ -35,11 +36,11 @@ Therefore, it is able to model conditional dependencies between parameters and h
 For some given data, the posterior probability distribution of this hierarchical Bayesian framework provides a range of feasible unbiased solutions and hence true errors.
 Livesey et al.~\cite{livesey2006retrieval} report ``unexpected spectrally correlated noise'' on the MLS Aura, so here is another real reason why one should include noise in the model.
 
-In this thesis the marginal and then conditional (MTC) method~\cite{fox2016fast} is utilised and a hierarchical Bayesian model based on the radiative transfer equation (RTE) is developed to provide posterior distributions of ozone as well as temperature and pressure profiles.
-First, we neglect the non-linearity of the RTE and employ a linear-Gaussian hierarchical Bayesian model.
-Since the RTE is weakly non-linear we use the results based on the linearised RTE to find an affine map that approximates the non-linear forward model.
+In this thesis, the marginal and then conditional (MTC) method~\cite{fox2016fast} is utilised and a hierarchical Bayesian model based on the radiative transfer equation (RTE) is developed.
+First, the non-linearity of the RTE is neglected and a linear-Gaussian hierarchical Bayesian model is employed to provide a posterior distribution of ozone profiles.
+Since the RTE is weakly non-linear we use the previously obtained results to find an affine map that approximates the non-linear forward model.
 This appears to be another novelty in the field of atmospheric remote sensing.
-Lastly, the hierarchical Bayesian framework is extended to include pressure and temperature.
+Lastly, the hierarchical Bayesian framework is extended to jointly infer ozone, pressure and temperature.
 The MTC scheme is a relatively new method within the Bayesian community, and we are the first, to the best of our knowledge, to apply it to a forward model based on the RTE and to jointly provide posterior ozone, pressure, and temperature profiles.
 
 Instead of using sampling algorithms to characterise the posterior probability distribution of the hierarchical Bayesian model we approximate this distribution directly utilising the tensor-train (TT) format~\cite{cui2022deep}. 
@@ -63,10 +64,10 @@ Further, in the TT format one can calculate marginal probability distributions o
 %\textcolor{red}{likewise. Besides, this sentence is not true. You know about the Approximation and Sampling paper.}
 \section{Thesis Structure}
 \begin{itemize}
-	\item In Chapter~\ref{ch:background}, we give a brief overview of the key methods used, along with references for further reading.
+	\item In Chapter~\ref{ch:background}, a brief introduction to the key methods is given. We provide some background information along with references for further reading.
 	\item Chapter~\ref{ch:formodel} introduces the simplified forward model based on the RTE and following the Michelson interferometer for passive atmospheric sounding (MIPAS).
-	We discretise the atmosphere, simulate data based on a ground truth and explain the process of doing so.
-	Several measurement cases are tested, and a singular value decomposition (SVD) is performed to assess the information content of the forward model and to understand the forward model.
+	We simulate data based on a ground truth and explain the process of doing so.
+	Five different ways to acquire data are tested, and a singular value decomposition (SVD) is performed to assess the information content of the forward model.
 	Given the SVD of the test cases, the most effective measurement method is determined.
 	\item In Chapter~\ref{ch:LinVsReg}, the problem is treated as a linear inverse problem by neglecting the absorption term in the RTE. Some prior modelling aspects are discussed, and a linear-Gaussian hierarchical Bayesian model is established.
 	Within the MTC scheme the marginal posterior over the hyper-parameters is evaluated first and then the full conditional posterior for ozone.

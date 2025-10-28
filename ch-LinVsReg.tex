@@ -287,7 +287,7 @@ Then we initialise \linebreak the~\texttt{tt.cross.rectcross.rect\_cross.cross} 
 The number of ranks $r = 4$ is constant and we do one sweep with $2n_{\text{sweeps}}2nr =400$ function evaluations and obtain a TT approximation of $\pi( \lambda,\gamma| \bm{y})$ in about $0.02$s.
 Ironically, this the same number of functions evaluations to approximate a $20 \times 20$ point grid.
 The TT format is especially advantageous for larger grid sizes and higher-dimensional parameter spaces.
-To compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ the TT error is set to $\xi = 1 / \uplambda (\mathcal{X})$ because we observe peak values of around $10^{47}$.
+To compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ the TT error is set to $\xi = 1 / \uplambda (\mathcal{X})$ because we observe marginal posterior values of around $10^{47}$.
 For Cartesian basis the Mass matrix becomes $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ (see Eq.~\ref{eq:MassMat}) with and $\uplambda(x) = 1$ .
 The coefficient tensor $\bm{B}$ and $\bm{R}_{\text{pre}}$ are calculated as in Prop.~\ref{prob:backMarg} and Prop.~\ref{prob:ForMarg} (see Sec.~\ref{subsec:TTMarg}).
 
@@ -465,6 +465,7 @@ The corresponding regularisation parameter is $\lambda = 1.6 \times 10^{-4}$.
 \end{figure}
 The regularised estimate in Fig.~\ref{fig:O3SolplsReg} is very similar to the posterior mean and both have a similar data misfit and regularisation norm.
 Neither the regularised estimate nor the posterior ozone profiles capture the second ozone peak of the ground truth at high altitudes.
+This coincides with the prior analysis of the forward model via the SVD in Sec.~\ref{sec:SVD}.
 Note that we cannot infer the posterior mean from the regularised solutions, even if it appears to lie on the L-curve.
 It is pretty clear that the regularised estimate accounts for only one possible solution and does not provide uncertainties. 
 The data misfit and regularisation norm values of the regularised estimate and the posterior mean are not similar to the corresponding values of the samples drawn from the posterior $\pi(\bm{x}| \bm{y})$ (see Fig.~\ref{fig:O3Samp}).
