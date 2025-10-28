@@ -32,7 +32,7 @@ Here we find an affine map $\bm{M}$ based on the linear model $\bm{A}_L$ that pr
 		\node[align=center] at (0,-4) (f5) {affine map \\ $\bm{M}$};
 		
 	\end{tikzpicture}
-	\caption[Strategy to find affine map.]{The strategy to find the affine map consists of evaluating the marginal posterior for ozone $\pi(\lambda , \gamma  | \bm{y})$ for the linear forward model. Based on ozone samples from the posterior an affine map $\bm{M}$ that approximates between noise-free linear data $\bm{A}_L$ and noise-free non-linear data $\bm{A}(\bm{x})$ is calculated.}
+	\caption[Strategy to find affine map.]{The strategy to find the affine map consists of evaluating the marginal posterior for ozone $\pi(\lambda , \gamma  | \bm{y})$ for the linear forward model. For some ozone samples from the posterior the noise-free linear data $\bm{A}_L \bm{x}$ is calculated to form $\bm{W}$ and similarly $\bm{V}$ is composed using the non-linear model $\bm{A}(\bm{x})$. An affine map $\bm{M}$ approximates the non-linear model from the linear model.}
 	\label{fig:affinStrat}
 \end{figure}
 

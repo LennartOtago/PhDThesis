@@ -289,22 +289,22 @@ Alternatively, one could decorrelate the hyper-parameter space e.g.,~via Cholesk
 
 
 \paragraph{Find optimal rank and grid size}
-The aim is to approximate $\pi( \bm{\theta},\lambda,\gamma  | \bm{y})$ with a number of function evaluations as small as possible but without losing too much accuracy.
+The aim is to approximate $\pi( \bm{\theta},\lambda,\gamma  | \bm{y})$ with a number of marginal posterior evaluations as small as possible but without losing too much accuracy.
 In doing so, the number of grid points is set to $n = 150$ and different error measures for ranks $\{2,3,4,5,6,7,8,9,10,11,12,13,14,15, 20, 25, 30, 35, 50\}$ are calculated.
-Then, with a fixed rank, the number of grid points \linebreak$\{10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 90, 100\}$ is decreased until sufficient accuracy.
+For a fixed low rank, the number of grid points $\{10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 90, 100\}$ is decreased until sufficient accuracy.
 
 For stable and comparable results, we do five sweeps within \linebreak the~\texttt{tt.cross.rectcross.rect\_cross.cross} Python function initialised at a random TT.
 The ranks between TT cores are constant.
 Then $N = 1000$ independent samples  $ \{( \tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma })^{(1)} ,\dots, (\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma })^{(N)}   \} \sim \tilde{\pi}( \bm{\theta},\lambda,\gamma  | \bm{y})$ from the TT approximation $\tilde{\pi}( \bm{\theta},\lambda,\gamma  | \bm{y})$ via the SIRT-MH scheme are drawn.
 The sample mean is denoted as $\bm{\mu}_{\text{SIRT-MH}}\in \mathbb{R}^{18}$.
-Further, the marginal functions from the TT approximation are used to calculate the mean $\bm{\mu}_{\text{TT}}\in \mathbb{R}^{18}$ by weighted expectations via quadrature of each hyper-parameter.
+Further, the marginal functions from the TT approximation are used to calculate the hyper-parameter mean $\bm{\mu}_{\text{TT}}\in \mathbb{R}^{18}$ by weighted expectations via quadrature.
 For a ground truth $N = 1000$ samples $ \{( \bm{\theta},\lambda,\gamma )^{(1)} ,\dots,( \bm{\theta},\lambda,\gamma )^{(N)}   \} \sim \pi( \bm{\theta},\lambda,\gamma  | \bm{y})$
-are obatined via t-walk and the sample mean $ \bm{\mu}_{\text{t-walk}}  \in \mathbb{R}^{18}$ acts as a ground thruth.
+are obtained from the t-walk and the sample mean $ \bm{\mu}_{\text{t-walk}}  \in \mathbb{R}^{18}$ acts as a ground truth.
 The true marginal posterior is denoted as $ \pi( \bm{\theta},\lambda,\gamma  | \bm{y})$.
 
-Plotted in Fig.~\ref{fig:FindRankGrid}, for each tested TT approximation, the following error measures are calculated:
+Plotted in Fig.~\ref{fig:FindRankGrid}, for each TT approximation, the following error measures are calculated:
 \begin{itemize}
-	\item[{\includegraphics[height=0.65\baselineskip]{SIRTMH.png}}] The \textbf{relative expectation Errorr (SIRT-MH)}
+	\item[{\includegraphics[height=0.65\baselineskip]{SIRTMH.png}}] The \textbf{relative expectation Error (SIRT-MH)}
 	\begin{align*} 
 		\frac{\lVert\bm{\mu}_{\text{SIRT-MH}} - \bm{\mu}_{\text{t-walk}} \rVert_{L^2}}{  \lVert \bm{\mu}_{\text{t-walk}} \rVert_{L^2} } \, .
 	\end{align*}
@@ -324,20 +324,21 @@ Plotted in Fig.~\ref{fig:FindRankGrid}, for each tested TT approximation, the fo
 The 1-Wasserstein distance as in Eq.~\ref{eq:applWasser} is calculated between 1000 independent SIRT-MH samples from the TT approximation $\tilde{\pi}( \bm{\theta},\lambda,\gamma  | \bm{y})$ weighted by their approximated values and 1000 independent t-walk samples from the true marginal posterior weighted by $\pi( \bm{\theta},\lambda,\gamma  | \bm{y})$.
 Here $\text{vec}( \bm{\theta},\lambda,\gamma )$ denotes the vector of hyper-parameters $\big( \bm{\theta}^T,\lambda^T,\gamma^T \big)^T \in \mathbb{R}^{18}$ and $\nu_{ij} \coloneqq  \tilde{\pi}\big( (\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma})^{(j)}   | \bm{y}\big)  \pi\big( (\bm{\theta},\lambda,\gamma )^{(i)}  | \bm{y}\big) $.
 As in~\cite{feydy2020OT} we normalise over the samples so that $\sum \pi\big( (\bm{\theta},\lambda,\gamma )^{(i)}  | \bm{y}\big)  = 1$ and $\sum \tilde{\pi}\big( (\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma})^{(j)}   | \bm{y}\big) = 1$.
-We use the Python function \texttt{SamplesLoss("sinkhorn", p$=1$, blur$=0.05$, scaling=0.8)} with default settings from the Python package \texttt{geomloss}~\cite{Wassersteinaccess} to obtain $W_1$.
+We use the Python function \texttt{SamplesLoss("sinkhorn", p=$1$, blur=$0.05$, scaling=0.8)} with default settings from the Python package \texttt{geomloss}~\cite{Wassersteinaccess} to obtain $W_1$.
 This function provides the unbiased Sinkhorn divergence which converges towards the Wasserstein distance and can be understood as the generalised Quicksort algorithm~\cite{feydy2020OT}.
 Here p$ = 1$ defines the distance measure $\lVert \cdot \rVert_{L^2}$.
-The blur parameter is an entropic penalty and the scaling parameter specifies the trade-off between speed (scaling $< 0.4$) and accuracy (scaling $>0.9$)~\cite{Wassersteinaccess}.
+The blur parameter is an entropic penalty, and the scaling parameter specifies the trade-off between speed (scaling $< 0.4$) and accuracy (scaling $>0.9$)~\cite{Wassersteinaccess}.
+The relative RMS Error between approximated marginal posterior values and true marginal posterior values is calculated at sample points provided by the SIRT-MH scheme.
 
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[]{findGridRank.png}
-	\caption[Optimal rank and number of grid points for TT approximation.]{Given a TT approximation of $\sqrt{\pi( \bm{\theta},\lambda,\gamma  | \bm{y}) }$, the relative RMS error (orange squares) between approximated values at sample points provided by the SIRT-MH and true function values are calculated. The relative RMS error between the sample means provided by the t-walk and mean values for the hyper-parameters from the TT approximation is plotted (black dots). The mean values for the hyper-parameters are computed via quadrature, where the marginal functions from the TT approximation act as quadrature weights. Additionally, the relative RMS error between the sample-based mean from the SIRT-MH and the sample-based mean from the t-walk (red circles) is plotted.  The 1-Wasserstein distance (blue cross) is calculated between SIRT-MH samples and t-walk samples weighted by their repective approxiamted or true function value.}
+	\caption[Optimal rank and number of grid points for TT approximation.]{Given a TT approximation of $\sqrt{\pi( \bm{\theta},\lambda,\gamma  | \bm{y}) }$, the relative RMS error (orange squares) between approximated values at sample points provided by the SIRT-MH and true function values is calculated. The relative differences between the sample means provided by the t-walk and mean values for the hyper-parameters from the TT approximation are plotted (black dots). The mean values for the hyper-parameters are computed via quadrature, where the marginal functions from the TT approximation act as quadrature weights. Additionally, the relative differences between the sample-based mean from the SIRT-MH and the sample-based mean from the t-walk (red circles) are plotted. The 1-Wasserstein distance (blue cross) is calculated between SIRT-MH samples and t-walk samples weighted by their respective approximated or true function value.}
 	\label{fig:FindRankGrid}
 \end{figure}
  
-In Fig.~\ref{fig:FindRankGrid} we observe that a rank $r = 10$ is sufficient because the error measures are relatively stable for $r\geq10$.
+In Fig.~\ref{fig:FindRankGrid}, we observe that a rank $r = 10$ is sufficient because the error measures are relatively stable for $r\geq10$.
 For a grid size $n \geq 30$ the relative differences between $\bm{\mu}_{\text{TT}}$ and $\bm{\mu}_{\text{t-walk}}$ (red circles in Fig.~\ref{fig:FindRankGrid}) and the RMS errors at the 1000 independent SIRT-MH samples (orange squares in Fig.~\ref{fig:FindRankGrid}) are around $ 10\%$ and considered good enough.
 For an increasing number of grid points the interpolation of function values between grid points is more accurate and the sample-based relative errors decrease.
 This is because the chosen linear interpolation (see Eq.~\ref{eq:LinPol}) is a rather rudimentary choice.
@@ -385,12 +386,14 @@ The 1-Wasserstein distance is quite fluctuant but decreases with increasing rank
 
 Based on these results the grid size is set to $n = 30$.
 Next, we define ranks $r =[ 1,  10,  10, 10, 10, 10, 5, 3, 3, 3, 3, 3, 3 , 3, 3, 3, 3, 3, 1]$ between TT cores, with a maximum rank of $10$.
-This harvests the correlation structure of $\pi(\bm{\theta},\lambda,\gamma  | \bm{y})$ and decreases the number of function evaluations even further.
-One sweep in the\linebreak \texttt{tt.cross.rectcross.rect\_cross.cross} initialised at a previously calculated approximation reduces the computation time to $\approx 10$s and the number of function evaluations to 34080.
+This harvests the correlation structure of $\pi(\bm{\theta},\lambda,\gamma  | \bm{y})$ and decreases the number of marginal posterior evaluations even further.
+One sweep in the\linebreak \texttt{tt.cross.rectcross.rect\_cross.cross} initialised at a previously calculated approximation reduces the computation time to $\approx 10$s and the number of marginal posterior evaluations to 34080.
 For the samples drawn via the SIRT-MH scheme, the average IACT (provided by twice the value of~\cite{wolff2004monte, drikHesse}) is $\approx 1.2 \pm 0.2$.
+We refer to~\cite{dolgov2020approximation} for using the IACT as an error indicator.
 This means that once the TT approximation is available two function evaluations per independent sample are needed.
 To draw 1000 independent samples, including generating a TT approximation, takes $\approx30$s, and we report a relative RMS error of $\approx 12 \%$ evaluated over those 1000 independent samples.
-The relative RMS error over 1000 randomly chosen grid points is $\approx 1\%$ indicating that the linear interpolation causes most of the approximation error.
+The relative RMS error over 1000 randomly chosen grid points is $\approx 1\%$.
+This indicates that the linear interpolation causes most of the approximation error.
 The marginals for each hyper-parameter are plotted in Fig.~\ref{fig:PostHistTT0} to Fig.~\ref{fig:PostHistTT5}.
 We observe that, besides $\lambda$ and $\gamma$, only the marginal posterior of the $b$ hyper-parameter is seriously affected by the data and has significantly changed compared to the hyper-prior distribution.
 \clearpage

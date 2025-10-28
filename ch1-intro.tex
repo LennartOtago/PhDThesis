@@ -62,15 +62,26 @@ Further, in the TT format one can calculate marginal probability distributions o
 %This approach is known as hierarchical Bayesian modelling.\textcolor{red}{  OH, your trying to say that a hyperparametr controls something about the distribution of the noise, not that the noise is a hyperparameter, which is how this sentence reads.}
 %\textcolor{red}{likewise. Besides, this sentence is not true. You know about the Approximation and Sampling paper.}
 \section{Thesis Structure}
-In Chapter~\ref{ch:background}, we give a brief overview of the key methods used, along with references for further reading.
-Chapter~\ref{ch:formodel} introduces the simplified forward model based on the RTE.
-Here we test several measurement cases and assess the information content using a singular value decomposition (SVD) to understand the forward model and determine the most effective measurement method.
-Based on those results and a ground truth, we simulate noisy data for an idealised limb sounder within a simplified atmosphere.
-Then in Chapter~\ref{ch:LinVsReg}, a linear-Gaussian hierarchical Bayesian model, neglecting absorption in the RTE, is constructed.
-We discuss some prior modelling choices, apply the MTC scheme and compare posterior ozone profiles and a regularisation approach to a ground truth ozone profile.
-Using those results we find an affine map in Chapter~\ref{ch:affine} to approximate the non-linear forward model.
-In Chapter~\ref{ch:FullBay}, based on the affine map the previously built hierarchical Bayesian model is extended to include hyper-parameters corresponding to pressure and temperature.
-Again, we touch on some prior modelling choices and use the MTC method to provide joint estimates of posterior ozone, pressure and temperature profiles.
-Additionally, some important aspects for improving the effectiveness and stability of TT approximations are highlighted.
-Lastly, in Chapter~\ref{ch:Concl} we summarise and discuss our results and provide an outlook for future work.
+\begin{itemize}
+	\item In Chapter~\ref{ch:background}, we give a brief overview of the key methods used, along with references for further reading.
+	\item Chapter~\ref{ch:formodel} introduces the simplified forward model based on the RTE and following the Michelson interferometer for passive atmospheric sounding (MIPAS).
+	We discretise the atmosphere, simulate data based on a ground truth and explain the process of doing so.
+	Several measurement cases are tested, and a singular value decomposition (SVD) is performed to assess the information content of the forward model and to understand the forward model.
+	Given the SVD of the test cases, the most effective measurement method is determined.
+	\item In Chapter~\ref{ch:LinVsReg}, the problem is treated as a linear inverse problem by neglecting the absorption term in the RTE. Some prior modelling aspects are discussed, and a linear-Gaussian hierarchical Bayesian model is established.
+	Within the MTC scheme the marginal posterior over the hyper-parameters is evaluated first and then the full conditional posterior for ozone.
+	Here, the marginal posterior is approximated in the TT format and the TT approximation is compared to sample-based results.
+	Then posterior ozone profiles and a regularised estimate are compared to a ground truth.
+	The corresponding regularisation framework is the closest equivalent to the hierarchical Bayesian model in this Chapter.
+	\item In Chapter~\ref{ch:affine}, the previously obtained results are used to find an affine map that approximates the non-linear RTE. The hierarchical Bayesian model from Chapter~\ref{ch:LinVsReg}, but with the approximate forward model, is used to obtain the posterior distribution of ozone profiles.
+	\item In Chapter~\ref{ch:FullBay}, we extend the hierarchical Bayesian model to include pressure and temperature-related hyper-parameters.
+	Prior modelling choices are discussed and the MTC method is utilised to obtain the marginal posterior over the hyper-parameters first and then the full conditional posterior of ozone.
+	The reader is guided through the process of setting up an efficient 18-dimensional TT approximation of the marginal posterior.
+	Some important aspects for improving the effectiveness and stability of TT approximations are highlighted.
+	The TT approximation is compared to the results of the t-walk sampler on the marginal posterior.
+	Posterior pressure and temperature profiles are obtained by sampling from the marginal posterior.
+	Ozone samples of the full conditional posterior are drawn via the randomise then optimise method.
+	\item In Chapter~\ref{ch:Concl}, some of the key differences between a regularisation approach and a hierarchical Bayesian approach are pointed out. Further, the advantages and disadvantages of TT approximations compared to conventional sampling methods are discussed.
+	Lastly, we situate our results in the context of atmospheric physics and provide an outlook for future work.
+\end{itemize}
 All programming and analysis in this thesis are done in Python, and the reported computation times are taken on a MacBook Pro from 2019 with a 2.4 GHz quad-core Intel i5 processor.
