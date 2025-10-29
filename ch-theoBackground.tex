@@ -302,13 +302,13 @@ Cui and Dolgov~\cite{cui2022deep} refer to $\uplambda(x)$ as the ``product-form 
 		Figure~(a) is adapted from~\cite{fox2021grid}.}
 	\label{fig:TTfig}
 \end{figure}
-The approximation of a function in the TT format requires a predefine $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$ with $n$ grid points in each direction.
+The approximation of a function in the TT format requires a predefined $d$-dimensional discrete univariate grid over the parameter space $\mathcal{X}$ with $n$ grid points in each direction.
 For a fixed grid point $\bm{x} = (x_1, \dots, x_d)$,  $\pi(\bm{x})$ is approximated by
 \begin{align*}
 	\tilde{\pi}(\bm{x}) = 	\tilde{\pi}_1(x_1)  \tilde{\pi}_2(x_2)  \cdots \tilde{\pi}_d(x_d),
 \end{align*}
 which is a sequence of matrix multiplications with $\tilde{\pi}_k(x_k) \in \mathbb{R}^{r_{k-1} \times r_k}$.
-A TT core  $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ has ranks $ r_{k-1}$ and $r_k$, which connect the core to its respective neighbouring dimensions.
+A TT core $\tilde{\pi}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ has ranks $ r_{k-1}$ and $r_k$, which connect the core to its respective neighbouring dimensions.
 The outer ranks of a TT are $r_0 = r_d = 1$.
 Then, a discrete parameter space $\mathcal{X}$ is approximated by $\pi(\mathcal{X})\approx \tilde{\pi}_1  \tilde{\pi}_2  \cdots \tilde{\pi}_d$ with $2nr + (d-2)nr^2$ evaluation points for fixed ranks $r =r_{k-1} = r_k $, as illustrated in Figure~\ref{fig:TTfig}, instead of $n^d$ function evaluations.
 In the TT format the integral in Eq.~\ref{eq:margInt} can be calculated at a low computational cost and the marginal PDF
@@ -323,7 +323,7 @@ In the TT format the integral in Eq.~\ref{eq:margInt} can be calculated at a low
 		\Bigg| 
 	\end{split}
 \end{align}
-is computed by integrating over all TT cores except the $k$-th core $\pi_k$, as in~\cite{dolgov2020approximation}, and normalised by the constant $z$~\cite{cui2022deep}.
+is computed by integrating over all TT cores except the $k$-th core $\tilde{\pi}_k$, as in~\cite{dolgov2020approximation}, and normalised by the constant $z$~\cite{cui2022deep}.
 
 
 %%%%%% Squared and Basis Function %%%%%
@@ -348,7 +348,7 @@ The unnormalised density function is approximated as in~\cite[Eq.~19]{cui2022dee
 \end{align}
 with a small additive constant $\xi > 0$ to ensure positivity.
 This maintains the smoothness~\cite{cui2022deep} and strict monotonicity of the cumulative distribution functions (CDFs), and makes the IRT maps in Eq.~\ref{eq:IRTmap} well defined~\cite{foxRosen21}.
-The CDFs are needed within the IRT to draw samples from $\tilde{\pi}(\bm{x})$ (see Sec.~\ref{subsec:SamplTT}).
+The CDFs are needed within the IRT scheme to generate samples from $\tilde{\pi}(\bm{x})$ (see Sec.~\ref{subsec:SamplTT}).
 The constant $\xi$ is chosen according to the ratio of the Lebesgue weighted L2-norm error and the Lebesgue weighting (see Eq.~\ref{eq:lebesgueWeight} and \cite[Eq.~35]{cui2022deep}) such that 
 \begin{align}
 	0 \leq \xi \leq \frac{1}{\uplambda(\mathcal{X})} \lVert \tilde{g} - \sqrt{\pi} \rVert_{L^2_{\uplambda}(\mathcal{X})}^2\,  \label{eq:gamErr}.
@@ -412,7 +412,7 @@ and similarly in the last dimension
 where $\bm{D}_d[l_{d-1},i] = \bm{B}_{\text{pre},d}[l_{d-1}, i, \alpha_{d+1}]$ and $\alpha_{d+1} = 1$.
 In practice, we calculate $z$ numerically within the process of computing the marginal PDFs so that $\sum f_{X_k}(x_k) =1 $ and for Cartesian basis the mass matrix becomes $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ with $\uplambda(x) = 1$.
 \clearpage
-\begin{prop}[Backward Marginalisation as in~\cite{cui2022deep}]
+\begin{prop}[Backward marginalisation as in~\cite{cui2022deep}]
 	\label{prob:backMarg}
 	Starting with the last coordinate $k = d$, we set $\bm{B}_d = \bm{A}_d$. The following procedure can be used to obtain the coefficient tensor $\bm{B}_{k} \in \mathbb{R}^{r_{k-1} \times n_{k} \times r_{k}}$, which is needed for defining the marginal function $f_{X_k}(x_k)$ or to draw samples from $\tilde{\pi}(\bm{x})$ via the squared IRT scheme (see Alg. Box~\ref{alg:SIRT}):
 	\begin{enumerate}
@@ -430,7 +430,7 @@ In practice, we calculate $z$ numerically within the process of computing the ma
 		\end{equation}
 	\end{enumerate}
 \end{prop}
-\begin{prop}[Forward Marginalisation]
+\begin{prop}[Forward marginalisation]
 	\label{prob:ForMarg}
 	Starting with the first coordinate $k = 1$, we set $\bm{B}_{\text{pre},1} = \bm{A}_1$. The following procedure can be used to obtain $\bm{R}_{\text{pre},k-1} \in \mathbb{R}^{r_{k-1}  \times r_{k-1}}$ for defining the marginal function $f_{X_k}(x_k)$:
 	\begin{enumerate}
@@ -453,7 +453,7 @@ In practice, we calculate $z$ numerically within the process of computing the ma
 \subsection{Sampling from a TT Approximation}
 \label{subsec:SamplTT}
 Instead of evaluating marginal functions for quadrature, the inverse Rosenblatt transform (IRT) provides a scheme to draw samples from an approximated function in the TT format~\cite{dolgov2020approximation}.
-The idea is that a target function can be represented as the sequence $ f_X(\bm{x})  =   f_{X_1}(x_1)  f_{X_2|X_1}(x_2|x_1) \cdots  f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$.
+The idea is that a target PDF can be represented as the sequence $ f_X(\bm{x})  =   f_{X_1}(x_1)  f_{X_2|X_1}(x_2|x_1) \cdots  f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$.
 Within the IRT scheme samples are iteratively drawn from each $f_{X_k|X_{<k}}(x_k|x_{k-1},\dots,x_1)$ conditioned on the previous left $k-1$ samples and marginalised over the right $k + 1$ dimensions, for $k = 2 , \dots, d-1$.
 Since the square root of the target function is approximated, Cui and Dolgov~\cite{cui2022deep} call that the squared inverse Rosenblatt transform (SIRT).
 
@@ -474,9 +474,11 @@ Since the square root of the target function is approximated, Cui and Dolgov~\ci
 	\end{algorithmic}
 	\label{alg:SIRT}
 \end{algorithm}
-Given the backward marginal coefficient tensors $\bm{B}_1 , \dots,\bm{B}_d$ as in Prop.~\ref{prob:backMarg} and $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is $d$-dimensional for $s = 1, \dots, N$, the first marginal $f_{X_1}(x_1)$ is calculated as in Eq.~\ref{eq:firstMarg} and normalised with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$. 
+Given the backward marginal coefficient tensors $\bm{B}_1 , \dots,\bm{B}_d$ as in Prop.~\ref{prob:backMarg} the first marginal $f_{X_1}(x_1)$ is calculated as in Eq.~\ref{eq:firstMarg} and normalised with $z = \int_{\mathcal{X}_1} f_{X_1}(x_1) d x_1$. 
+Next, the CDF $F_{X_1}(x_1) = \int^{x_1}_{-\infty} f_{X_1}(\hat{x}_1) d \hat{x}_1$ is formed.
+For $N$ uniformly distributed seeds $\{ \bm{u}^{(1)},\dots, \bm{u}^{(N)} \} \sim \mathcal{U}(0,1)^d $, where each $\bm{u}^{(s)}$ is $d$-dimensional for $s = 1, \dots, N$, the samples $x^{(s)}_1 $ are obtained via the inverse CDF $x^{(s)}_1 = F_{X_1}(x_1)^{-1}(u^{(s)}_1)$.
 %\textcolor{red}{OK, another task -- remove all but one 'we' per page, and even then you will have 100, which is too many. FYI, I counted 397 occurrences of 'we' in this text -- so you only have to rewrite 297 sentences! Holy Toledo, here's one to zap. and another. Is this a novel about Lennart's adventures in MCMC for 10 year olds?}
-Next, the CDF $F_{X_1}(x_k) = \int^{x_k}_{-\infty} f_{X_1}(\hat{x}_1) d \hat{x}_1$ is formed, which for the general case is given as \cite[Eq. 17]{cui2022deep}:
+For the general case the CDF is given as \cite[Eq. 17]{cui2022deep}:
 \begin{align}
 	F_{X_k|X_{<k}}(x_k) = \int_{-\infty}^{x_k} f_{X_k|X_{<k}}(\hat{x}_k|x_{k-1},\dots,x_1) \diff \hat{x}_k  \, \,  \, ;
 	\label{eq:CurrCDF}
@@ -485,7 +487,7 @@ Then the seed $u^{(s)}_k$ is projected onto the parameter space to generate the 
 \begin{align}
 x^{(s)}_k = F_{X_k|X_{<k}}^{-1}(u^{(s)}_k) \, . \label{eq:IRTmap}
 \end{align} %\textcolor{red}{Argghhhh!}
-For $k = 2, \dots,d$ the general ``conditional marginal'' is given as \cite[Eq.~31]{cui2022deep}:
+For $k = 2, \dots,d$ the ``conditional marginal'' is given as \cite[Eq.~31]{cui2022deep}:
 \begin{align}\begin{split} 
 		f_{X_k|X_{<k}}(x_k|x^{(s)}_{k-1},\dots,x^{(s)}_1) \approx \frac{1}{z}
 		\Bigg( 
@@ -494,7 +496,8 @@ For $k = 2, \dots,d$ the general ``conditional marginal'' is given as \cite[Eq.~
 	\end{split} 
 	\label{eq:CurrMarg} 
 \end{align}
-where we marginalise over the dimensions $k+1 , \dots, d$ via $\bm{B}_k$ and condition on the previous $k-1$ samples through the product $\bm{G}_k(x^{(s)}_k)\in \mathbb{R}^{1 \times r_{k-1}}$. 
+where we marginalise over the dimensions $k+1 , \dots, d$ via $\bm{B}_k$ and condition on the previous $k-1$ samples through $\bm{G}_{<k}(x^{(s)}_{<k})\in \mathbb{R}^{1 \times r_{k-1}}$.
+This is the product of matrices $\bm{G}_{<k}(x^{(s)}_{<k}) = \bm{G}_{1}(x^{(s)}_{1}) \cdots \bm{G}_{k-2}(x^{(s)}_{k-2}) \bm{G}_{k-1}(x^{(s)}_{k-1}) $.
 %\textcolor{red}{God dammit, another pesky we.}
 Function values between grid points $i$ and $i+1$ are approximated with a piecewise polynomial interpolation
 \begin{align}

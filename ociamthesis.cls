@@ -121,7 +121,8 @@
 %\fancyhead[RE]{\rightmark} 
 %\fancyhead[RO,LE]{ \thepage}
 
-\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\emph{\thepage}}}
+%\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\emph{\thepage}}}
+\fancypagestyle{plain}{\fancyhf{}\fancyhead[R]{\emph{\thepage}}}
 %\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}}
 
 % JEM fix header on cleared pages for openright

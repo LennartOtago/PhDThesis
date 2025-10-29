@@ -30,8 +30,8 @@ Within a layer the signal is constant, whereas above $h_{L, n}$ and below $h_{L,
 One noise-free measurement of thermal radiation emitted by gas molecules within the atmosphere is described by the radiative transfer equation (RTE)~\cite{mipas2000handbook}
 \begin{align}
 	\label{eq:RTE} 
-	y_j =   \int_{\Gamma_j}  B(\nu,T) k(\nu, T)   \frac{p(r)}{k_{\text{B}} T(r)}  x(r)  \tau(r) \text{d}r + \eta_j \, \\
-	\tau(r) = \exp{ \Bigl\{ - \int^{r}_{r_\text{obs}}  k(\nu, T)   \frac{p(r^{\prime})}{k_B T(r^{\prime})}  x(r^{\prime}) \text{d}r^{\prime} \Bigr\} } \, \label{eq:absRTE} .
+	  \int_{\Gamma_j}  B(\nu,T) k(\nu, T)   \frac{p(r)}{k_{\text{B}} T(r)}  x(r)  \tau(r) \text{d}r \,  \\
+\text{with} \,	\tau(r) = \exp{ \Bigl\{ - \int^{r}_{r_\text{obs}}  k(\nu, T)   \frac{p(r^{\prime})}{k_B T(r^{\prime})}  x(r^{\prime}) \text{d}r^{\prime} \Bigr\} } \, \label{eq:absRTE} .
 \end{align}
 This is a path integral along the satellite's straight line of sight $\Gamma_j$ with the ozone volume mixing ratio (VMR) $x(r)$ at distance $r$ from the satellite, at the wave number $\nu$.
 Within the atmosphere, the number density $p(r) / (k_{\text{B}} T(r))$ of molecules is dependent on the pressure $p(r)$, the temperature $T(r)$, and the Boltzmann constant $k_{\text{B}}$.
@@ -136,9 +136,9 @@ Here, each entry $A_{j}$ of $\bm{A}(\bm{x},\bm{p},\bm{T})\in \mathbb{R}^{m}$ inc
 For brevity we denote the non-linear forward model as $\bm{A}(\bm{x}) \coloneqq \bm{A}(\bm{x},  \bm{p},\bm{T})$.
 The simulated data vector
 \begin{align}
-	\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}\, .
+	\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}\, 
 \end{align}
-includes an additive identically-distributed Gaussian noise vector $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I}_m)$.
+includes an additive identically-distributed Gaussian noise vector $\bm{\eta} \sim \mathcal{N}(0,\gamma^{-1} \bm{I})$.
 The noise precision is chosen so that the signal-to-noise ratio (SNR) is approximately $150$.
 The SNR is defined as
 \begin{align}
