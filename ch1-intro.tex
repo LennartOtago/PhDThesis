@@ -1,5 +1,5 @@
 \chapter{Introduction}
-\thispagestyle{empty}
+
 Here we briefly describe the standard currently used to retrieve atmospheric trace gas concentrations, e.g. ozone concentration, from limb-sounding measurements and what motivates us to employ a hierarchical Bayesian framework to address this inverse problem.
 We explain how our approach contributes to and improves upon existing methods.
 Lastly, we provide the reader with the thesis structure.
@@ -74,7 +74,7 @@ Further, in the TT format one can calculate marginal probability distributions o
 	Here, the marginal posterior is approximated in the TT format and the TT approximation is compared to sample-based results.
 	Then posterior ozone profiles and a regularised estimate are compared to a ground truth.
 	The corresponding regularisation framework is the closest equivalent to the hierarchical Bayesian model in this Chapter.
-	\item In Chapter~\ref{ch:affine}, the previously obtained results are used to find an affine map that approximates the non-linear RTE. The hierarchical Bayesian model from Chapter~\ref{ch:LinVsReg}, but with the approximate forward model, is used to obtain the posterior distribution of ozone profiles.
+	\item In Chapter~\ref{ch:affine}, the previously obtained results are used to find an affine map that approximates the non-linear RTE. The hierarchical Bayesian model from Chapter~\ref{ch:LinVsReg}, but with the approximate forward model, is used to obtain the posterior distribution of ozone profiles via the MTC scheme.
 	\item In Chapter~\ref{ch:FullBay}, we extend the hierarchical Bayesian model to include pressure and temperature-related hyper-parameters.
 	Prior modelling choices are discussed and the MTC method is utilised to obtain the marginal posterior over the hyper-parameters first and then the full conditional posterior of ozone.
 	The reader is guided through the process of setting up an efficient 18-dimensional TT approximation of the marginal posterior.

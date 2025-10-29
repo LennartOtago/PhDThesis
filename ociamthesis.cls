@@ -115,14 +115,15 @@
 \renewcommand{\headrulewidth}{0pt}
 \fancyhead[LO]{ \emph{\leftmark}} 
 \fancyhead[RE]{\emph{\rightmark}} 
-\fancyhead[RO,LE]{ \emph{\thepage}}
+%\fancyhead[RO,LE]{ \emph{\thepage}}
+\fancyfoot[C]{ \emph{\thepage}}
 % for non-italic header
 %\fancyhead[LO]{ \leftmark} 
 %\fancyhead[RE]{\rightmark} 
 %\fancyhead[RO,LE]{ \thepage}
 
-%\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\emph{\thepage}}}
-\fancypagestyle{plain}{\fancyhf{}\fancyhead[R]{\emph{\thepage}}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\emph{\thepage}}}
+%\fancypagestyle{plain}{\fancyhf{}\fancyhead[R]{\emph{\thepage}}}
 %\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}}
 
 % JEM fix header on cleared pages for openright

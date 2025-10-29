@@ -1,5 +1,5 @@
 \chapter{Theoretical and Technical Background}
-\thispagestyle{empty}
+
 
 \section{Correlation between Latent Field and Hyper-Parameter}
 \label{ap:Correlation}
@@ -126,11 +126,12 @@ More specifically, the effective sample size $\frac{ \tau_{\text{int}} }{N}$ giv
 %Finally, if a countable collection of sets $A_1, A_2, \dots \in \mathcal{F}$, then their union $\bigcup_{j \in \mathbb{N}} A_j$ must also be in $\mathcal{F}$. These three properties define the requirements for $\mathcal{F}$ to be a $\sigma$-algebra.
 \clearpage
 \section{Python Code}
+\label{sec:PythonCode}
 %\the\baselineskip
 
 \begin{lstlisting}[language=Python, columns=flexible,  numbers=none, caption={Python code to calculate backward coefficients $\bm{B}$ as in Prop.~\ref{prob:backMarg} and~\cite{cui2022deep}.}, escapeinside={"}{"}]
 def MargBack(TTCore, univarGrid):
-	''' Backward marginalisation (see "Prop.~\ref{prob:backMarg}") as in SIRT from Cui and Dolgov"~\cite{cui2022deep}" '''
+	''' backward marginalisation (see "Prop.~\ref{prob:backMarg}") as in SIRT from Cui and Dolgov"~\cite{cui2022deep}" '''
 	
 	dim = len(univarGrid)
 	B = dim * [None]  # coeffTensor
@@ -138,11 +139,12 @@ def MargBack(TTCore, univarGrid):
 	R = [None] * dim
 	C = [None] * dim
 	
+	# compute forward marginalisation coefficients sarting at k = dim - 1
 	for k in range(dim - 1, 0, -1):
 		r_kmin1, n, r_k = np.shape(TTCore[k])
 		# "Eq.~\ref{eq:MassMat}, \cite[Eq.~22]{cui2022deep}" !! we set Lebesgue Measure to const = one
 		M = np.identity(n) * (univarGrid[k][-1] - univarGrid[k][0])  # Mass matrix
-		L = scy.linalg.cholesky(M)
+		L = np.linalg.cholesky(M)
 		
 		# construct Tensor C  "Eq.~\ref{eq:constrCBack}, \cite[Eq.~27]{cui2022deep}"
 		C[k] = np.zeros((r_kmin1, n, r_k))
@@ -150,8 +152,7 @@ def MargBack(TTCore, univarGrid):
 			for l in range(0, r_k):
 				C[k][alpha, :, l] = B[k][alpha, :, l] @ L[:, :]
 		
-		# unfold along first coordinate and compute thin QR decomposition of C^T
-		#  "Eq.~\ref{eq:thinQRBack}, \cite[Eq.~28]{cui2022deep}"
+		# unfold along first coordinate and compute thin QR decomposition of C^T "Eq.~\ref{eq:thinQRBack}, \cite[Eq.~28]{cui2022deep}"
 		Q, R[k] = np.linalg.qr(C[k].reshape((r_kmin1, n * r_k), order='C').transpose(), mode='reduced')
 		
 		# compute next coefficient tensor "Eq.~\ref{eq:nextCoeffTBack}, \cite[Eq.~29]{cui2022deep}"
@@ -168,22 +169,24 @@ return B
 \clearpage
 \begin{lstlisting}[language=Python,  numbers=none, columns=flexible, caption={Python code to calculate forward coefficients $\bm{R}_{\text{pre}}, \bm{B}_{\text{pre}}$ as in Prop.~\ref{prob:ForMarg}.}, escapeinside={"}{"}]
 	def MargForw(TTCore, univarGrid):
-	''' Forward marginalisation (see "Prop.~\ref{prob:ForMarg}") 
-		similar to backward marginalsiation as in Cui and Dolgov"~\cite{cui2022deep}" '''
+	''' forward marginalisation (see "Prop.~\ref{prob:ForMarg}") 
+		similar to backward marginalsiation as in Cui and Dolgov "\cite{cui2022deep}" '''
 	
-	# compute pre marginal coefficients sarting at dim = 1, k = 0
+
 	dim = len(univarGrid)
 	Bpre = dim * [None]  # coeffTensor
-	# LebLam = 1  # !! Lebesgue Measure
-	Bpre[0] = TTCore[0]
 	Rpre = [None] * dim
 	Cpre = [None] * dim
 	
+	# initialise Bpre
+	Bpre[0] = TTCore[0]
+	
+	# compute forward marginalisation coefficients sarting at k = 0
 	for k in range(0, dim-1):
 		r_kmin1, n, r_k = np.shape(TTCore[k])
 		#  "Eq.~\ref{eq:MassMat}, \cite[Eq.~22]{cui2022deep}" !! we set Lebesgue Measure to const = one
 		M = np.identity(n) * (univarGrid[k][-1] - univarGrid[k][0])  # Mass matrix
-		L = scy.linalg.cholesky(M)
+		L = np.linalg.cholesky(M)
 		
 		# construct Tensor C  "Eq.~\ref{eq:constrCForw}"
 		Cpre[k] = np.zeros((r_kmin1, n, r_k))
@@ -191,8 +194,7 @@ return B
 			for l in range(0, r_k):
 				Cpre[k][alpha, :, l] = Bpre[k][alpha, :, l] @ L[:, :]
 		
-		# unfold along first coordinate and compute thin QR decomposition of C
-		# "Eq.~\ref{eq:thinQRForw}"
+		# unfold along first coordinate and compute thin QR decomposition of C as in "Eq.~\ref{eq:thinQRForw}"
 		Q, Rpre[k] = np.linalg.qr(Cpre[k].reshape((r_kmin1 * n, r_k), order='C'), mode='reduced')
 		
 		# compute next coefficient tensor  "Eq.~\ref{eq:nextCoeffTForw}"
@@ -200,8 +202,7 @@ return B
 		Bpre[k + 1] = np.zeros(np.shape(TTCore[k + 1]))
 		for alpha_1 in range(0, r_kpls1):
 			for l_1 in range(0, r_k):
-				Bpre[k + 1][l_1, :, alpha_1] = Rpre[k][l_1,:] 
-					"\phantom{$Bpre[k + 1][l_1, :, alpha_1] = Rpre[k][l_1,:] $}"@ TTCore[k + 1][:, :, alpha_1]
+				Bpre[k + 1][l_1, :, alpha_1] = Rpre[k][l_1,:] @ TTCore[k + 1][:, :, alpha_1]
 		
 	return Rpre, Bpre
 	
@@ -211,11 +212,11 @@ return B
 \clearpage
 \begin{lstlisting}[language=Python,	 numbers=none, columns=flexible, caption = {Python code to draw samples via the SIRT scheme as in Alg.~Box~\ref{alg:SIRT}.}, escapeinside={"}{"}]
 def SIRT(seeds, SQTT, univarGrid, B, absError):
-	''' do squared inverse rosenblatt transform (SIRT) as in Cui and Dolgov"~\cite{cui2022deep}" '''
+	''' do squared inverse rosenblatt transform (SIRT) as in "Alg.~Box~\ref{alg:SIRT}" and "\cite{cui2022deep}" '''
 	
 	dim, numbSampl = seeds.shape
 	sampls = np.zeros(seeds.shape) # samples from approximated PDF
-	probVal = np.zeros(seeds.shape) # PDF values, for MH-correction step
+	probVal = np.zeros(seeds.shape) # 'cond. marg.' PDF values, for MH-correction step
 	Approx = np.zeros(seeds.shape[1]) # TT-Approx., to compare to true function
 	
 	# Lebesgue measure for quadrature "Eq.~\ref{eq:lebesgueWeight}"
@@ -225,7 +226,6 @@ def SIRT(seeds, SQTT, univarGrid, B, absError):
 	lamX = np.ones(dim)
 	for k in range(1, dim):
 		lamX[k - 1] = np.prod(WholeLebLam[k:])
-	
 	
 	gamError = absError / np.prod(WholeLebLam) # error as in "Eq.~\ref{eq:gamErr} \cite[Eq.~35]{cui2022deep}"
 	
@@ -242,71 +242,83 @@ def SIRT(seeds, SQTT, univarGrid, B, absError):
 		# piecew. poly. interpol in first dimension "Eq.~\ref{eq:LinPol}~\cite{dolgov2020approximation}"
 		CurrApprCore = LinInterPol(SQTT[0], univarGrid[0], sampls[0][n])
 		for d in range(1, dim):
-			# marginal function, conditioned on previous samples
+			# calculate marginal PDF conditioned on previous samples
 			rank_min, gridSize, rank_pls = B[d].shape
 			MargDep = np.zeros((B[d].shape))
 			for r in range(0, rank_min):
 				# condition on previous samples
 				MargDep[r, :, :] = CurrApprCore[0, r] * B[d][r, :, :]
-			
+				
+			# calculate current 'conditional marginal' PDF as in "Eq.~\ref{eq:CurrMarg}~\cite[Eq.~31]{cui2022deep}"
 			currMarg = gamError * lamX[d] + np.sum(np.sum(np.copy(MargDep), axis=0)** 2,
-				axis=1) # "Eq.~\ref{eq:CurrMarg}~\cite[Eq.~31]{cui2022deep}"
-			
-			currCDF = np.cumsum(currMarg / np.sum(currMarg)) # "Eq.~\ref{eq:CurrCDF} \cite[Eq.~17]{cui2022deep}"
+				axis=1) 
+			 
+			# normalise current PDF and compute CDF as in "Eq.~\ref{eq:CurrCDF} \cite[Eq.~17]{cui2022deep}"
+			currCDF = np.cumsum(currMarg / np.sum(currMarg))
 			
 			# draw sample as 'inverse transform'
 			sampls[d][n] = np.interp(seeds[d][n], currCDF, univarGrid[d])
-			probVal[d][n] = np.interp(sampls[d][n], univarGrid[d],  
-				currMarg / np.sum(currMarg))
+			probVal[d][n] = np.interp(sampls[d][n], univarGrid[d], currMarg / np.sum(currMarg))
 			# piecew. poly. interpol., "Eq.~\ref{eq:LinPol}~\cite{dolgov2020approximation}", cond. on sampl. for next PDF
-			CurrApprCore = np.copy(CurrApprCore) @ LinInterPol(SQTT[d], univarGrid[d], 
-				sampls[d][n]) 
+			CurrApprCore = np.copy(CurrApprCore) @ LinInterPol(SQTT[d], univarGrid[d], sampls[d][n]) 
 	
-	Approx[n] = gamError + CurrApprCore ** 2
+		# approximated unnormalised function value may be useful for error analysis
+		Approx[n] = gamError + CurrApprCore ** 2
 	
 	return sampls, probVal, Approx
 \end{lstlisting}
 \clearpage
 \begin{lstlisting}[language=Python,	 numbers=none, columns=flexible, caption = {Python code to calculate marginal PDFs as in Sec.~\ref{subsec:TTMarg}.}, escapeinside={"}{"}]
 def getMargPDF(TTCore, univarGrid, absError):
+	''' calculate marginal PDFs as in "Sec.~\ref{subsec:TTMarg} "using the coefficients from the forward marginalisation (see "Prop.~\ref{prob:ForMarg}") and backward marginalisation (see "Prop.~\ref{prob:backMarg}") '''
+
 	dim = len(univarGrid)
 	n =  len(univarGrid[0])
 	D = [None] * dim
 	margPDF = np.zeros((dim, n))
-	# Lebesgue measure for quadrature Eq. 2.20
+	
+	# Lebesgue measure for quadrature "Eq.~\ref{eq:lebesgueWeight}"
 	WholeLebLam = np.zeros(dim)
 	for k in range(0, dim):
 		WholeLebLam[k] = (univarGrid[k][-1] - univarGrid[k][0])
+	
 	lamX = np.ones(dim)
 	for k in range(1, dim):
 		lamX[k - 1] = np.prod(WholeLebLam[k:])
+		
+	# error as in "Eq.~\ref{eq:gamErr} \cite[Eq.~35]{cui2022deep}"
 	gamError = absError / np.prod(WholeLebLam)
 	
-	Rpre, Bpre = MargForw(TTCore, univarGrid)
+	# backward marginalisation as in "Prop.~\ref{prob:backMarg}"
 	B = MargBack(TTCore, univarGrid)
 	
-	# do other dimesnion now
+	# forward marginalisation as in "Prop.~\ref{prob:ForMarg}"
+	Rpre, Bpre = MargForw(TTCore, univarGrid)
+	
+	
 	for k in range(0, dim):
 		if k == 0:
 			D[0] = B[0][0]
-			# first marginal PDF
-			# Eq. (30)
+			# first marginal PDF "Eq.~\ref{eq:firstMarg} \cite[Eq.~30]{cui2022deep}"
 			margPDF[0] = (gamError * np.prod(WholeLebLam[1:]) + np.sum(D[0] ** 2, 1))
 		
 		elif k == dim-1:
-			# last marginal PDF
-			margPDF[k] = gamError * np.prod(WholeLebLam[:k]) + np.sum(Bpre[k][:, :, 0] ** 2, 	0) * WholeLebLam[k]
+			# last marginal PDF "Eq.~\ref{eq:lastMarg}"
+			margPDF[k] = gamError * np.prod(WholeLebLam[:k]) 
+			"\phantom{margPDF[k] = gamError  }"  + np.sum(Bpre[k][:, :, 0] ** 2, 	0) * WholeLebLam[k]
 		
 		else:
+			# other dimensions
 			r_kmin1, n, r_k = np.shape(B[k])
 			D[k] = np.zeros((r_kmin1, n, r_k))
 			for l_k in range(0, r_k):
 				for l_kmin1 in range(0, r_kmin1):
 					D[k][l_kmin1,:,l_k] = Rpre[k-1][l_kmin1,:] @ B[k][:, :, l_k]
+			# marginal PDF as in "Eq.~\ref{eq:MargTT}"
 			margPDF[k] = gamError * np.prod(WholeLebLam[k + 1:]) * np.prod(WholeLebLam[:k]) 
 				"\phantom{margPDF[k] = gamError  }" + np.sum(np.sum(D[k] ** 2,0),1)  * WholeLebLam[k]
 		
-		# normalise
+		# normalised marginal PDF
 		margPDF[k] = margPDF[k] / np.sum(margPDF[k])
 		
 	return margPDF
@@ -314,8 +326,9 @@ def getMargPDF(TTCore, univarGrid, absError):
 \clearpage
 \begin{lstlisting}[language=Python,	 numbers=none, columns=flexible, caption = {Python code for Linear interpolation as in Eq.~\ref{eq:LinPol}.}, escapeinside={"}{"}]
 def LinInterPol(TTCore,univarGrid, sampl):
-	''' Piecewise polynomial interpolation as in Dolgov et al.~\cite{dolgov2020approximation}. '''
+	''' piecewise polynomial interpolation as in Dolgov et al." \cite{dolgov2020approximation}" '''
 	
+	# find index on grid
 	idx = (np.abs(sampl - univarGrid)).argmin()
 	if idx != 0 and univarGrid[idx-1] <= sampl and univarGrid[idx] >= sampl:
 		idx = np.copy(idx)-1
@@ -323,6 +336,8 @@ def LinInterPol(TTCore,univarGrid, sampl):
 	deNomX = univarGrid[idx+1] - univarGrid[idx]
 	delX1 = (univarGrid[idx+1] - sampl )/deNomX
 	delX2 = (sampl - univarGrid[idx]) /deNomX
+	
+	# interpolation as in "Eq.~\ref{eq:LinPol}"
 	LinInterPolTTCore = TTCore[:,idx,:] * delX1 + TTCore[:,idx+1,:] * delX2
 	
 	return LinInterPolTTCore

@@ -1,7 +1,7 @@
 %\the\columnwidth
 \chapter{Theoretical and Technical Background}
 \label{ch:background}
-\thispagestyle{empty}
+
 This Chapter introduces the hierarchical Bayesian approach to inverse problems, along with key concepts of Markov Chain Monte Carlo (MCMC) methods and tensor-train (TT) approximations for high-dimensional probability distributions.
 We keep it as general as possible.
 Specific sampling algorithms are not introduced here, as they are specifically tailored towards the structure of the forward model and the particular problem. Therefore, they will be presented in detail when applied.
@@ -256,9 +256,8 @@ Instead of relying on sampling-based methods to explore an unnormalised density 
 The TT approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, where $\bm{x} \in \mathbb{R}^d$, on a $d$-dimensional grid requires far fewer function evaluations compared to conventional sampling methods.
 In the following, we describe how to compute a normalised marginal probability density function (PDF) $f_{X_k}(x_k)$, for an $x_k \in \bm{x}$ and $k = 1, \dots,d$, from a target function $\pi(\bm{x})$ approximated in TT format.
 Further, a scheme similar to the inverse Rosenblatt transform (IRT) in~\cite{dolgov2020approximation} is introduced to generate samples from $\pi(\bm{x})$.
-In doing so, we follow the notation and procedure introduced by Cui and Dolgov~\cite{cui2022deep}.
-
-%\textcolor{red}{We represent a probability distribution on a d-dimensional grid with grid points n in each dimension.}
+In this section, we follow the notation and procedure introduced by Cui and Dolgov~\cite{cui2022deep}.
+Some example Python code of the presented methodology is provided in the Appendix~\ref{sec:PythonCode}.
 
 As in~\cite{cui2022deep}, the parameter space is defined as the product space $\mathcal{X} = \mathcal{X}_1 \times \mathcal{X}_2 \times \dots \times \mathcal{X}_d$ with $ x_k \in \mathcal{X}_k \subseteq \mathbb{R}$.
 % and $\bm{x} = ( x_1,\dots ,x_k,\dots,x_d )$.
@@ -407,7 +406,7 @@ For the first dimension, $f_{X_1}(x_1)$ can be expressed as \cite[Eq.~30]{cui202
 where $\bm{D}_1[i, l_1] = \bm{B}_1[\alpha_0, i, l_1]$ and $\alpha_0 = 1$,
 and similarly in the last dimension
 \begin{equation}
-	f_{X_d}(x_d)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{d-1}=1}^{r_{d-1}} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_d[l_{d-1},i] \right)^2 \right) \uplambda_d(x_d),
+	f_{X_d}(x_d)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{d-1} \uplambda_i(\mathcal{X}_i) + \sum_{l_{d-1}=1}^{r_{d-1}} \left(\sum_{i=1}^{n} \phi^{(i)}_1(x_1) \bm{D}_d[l_{d-1},i] \right)^2 \right) \uplambda_d(x_d), 	\label{eq:lastMarg}
 \end{equation}
 where $\bm{D}_d[l_{d-1},i] = \bm{B}_{\text{pre},d}[l_{d-1}, i, \alpha_{d+1}]$ and $\alpha_{d+1} = 1$.
 In practice, we calculate $z$ numerically within the process of computing the marginal PDFs so that $\sum f_{X_k}(x_k) =1 $ and for Cartesian basis the mass matrix becomes $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ with $\uplambda(x) = 1$.
