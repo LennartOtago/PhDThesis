@@ -259,7 +259,7 @@ The aim now is to approximate the square root of the marginal posterior
 with a ``normalisation constant'' $c=-200$ to stay within computer precision.
 In doing so, we run the~\texttt{tt.cross.rectcross.rect\_cross.cross} Python function from the \texttt{ttpy} Python package \cite{Oseledets2018ttpy} on a grid (see TT bounds in Tab.~\ref{tab:priors}) according to the results of the t-walk.
 Note that the ranks of the initial TT are kept constant and are not increased within this process.
-We observe marginal posterior values around $10^{27}$ so we set $\xi = 1 / \uplambda (\mathcal{X})$ with $\uplambda(x) = 1$.
+We observe unormalised marginal posterior values around $10^{27}$ so we set $\xi = 1 / \uplambda (\mathcal{X})$ with $\uplambda(x) = 1$.
 For Cartesian basis the mass matrix becomes $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$.
 To draw samples from the TT approximation the SIRT-MH scheme is used as introduced in Sec.~\ref{subsec:SamplTT}.
 
@@ -271,6 +271,7 @@ For samples via the SIRT-MH, twice the value of~\cite{wolff2004monte, drikHesse}
 Hence 1000 independent samples from the marginal posterior require 2000 samples via the SIRT-MH scheme.
 In Fig.~\ref{fig:CorrPlot} those 1000 samples and the Pearson correlation coefficients between hyper-parameter pairs are plotted.
 A coefficient close to $1$ or $-1$ indicates strong correlation, while values near zero suggest weak or no correlation.
+
 We observe that the hyper-parameters $\lambda$ and $b$, and $\lambda$ and $\gamma$ are highly correlated.
 Additionally, $h_{T,1}$ and $T_0$ describing the temperature at low altitudes (strong signal) are mildly correlated to $\lambda$.
 This is because $h_{T,1}$ and $T_0$ influence ``the smoothness'' of $\bm{p}/\bm{T}$, which is hard to see in Fig.~\ref{fig:PriorPressOverTemp}.

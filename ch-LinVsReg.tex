@@ -128,7 +128,7 @@ The the precision matrix of that prior distribution is
 \end{align}
 which is a discrete approximation to the second derivate operator with Dirichlet boundary condition and defines a 1-dimensional Graph Laplacian as in~\cite{wang2015graphs, fox2016fast}.
 This matrix will also act as the regulariser later in Sec.~\ref{sec:SolByReg}.
-We reduce the dimension of $\bm{x}$ from $45$ to $34$ by discarding every second ozone VMR over a height of $\approx47$km.
+We reduce the dimension of $\bm{x}$ from $45$ to $n = 34$ by discarding every second ozone VMR over a height of $\approx47$km.
 Doing that, while not changing $\bm{L}$ effectively induces a larger correlation between points at higher altitude.
 The corresponding prior ozone profiles according to $\bm{x}| \delta \sim \mathcal{N}(0, (\delta \bm{L})^{-1})$ are plotted in Fig.~\ref{fig:O3Prior}.
 
@@ -259,7 +259,7 @@ To remove initialisation bias the first $N_{\text{burn-in}}$ samples are discard
 
 Running the MWG sampler $f(\lambda)$ and $g(\lambda)$ are approximated around the mode $( \lambda_{0}, \gamma_0 )$ of $\pi(\lambda,\gamma| \bm{y})$ as previously described (see Fig.~\ref{fig:fandg}). 
 $f(\lambda)$ is approximated with a 1st order Taylor series (see further below on errors due to those approximations).
-The mode is provided by \linebreak the~\texttt{scipy.optimize.fmin} function, with a limit of 25 function evaluations.
+The mode is provided by the~\texttt{scipy.optimize.fmin} function, with a limit of 25 function evaluations.
 Initialised at the mode $(\lambda^{(0)} , \gamma^{(0)}  ) = ( \lambda_{0} , \gamma_{0}  )$ the MWG sampler takes $N = 10100$ , which includes burn in period of $N_{\text{burn-in}} = 100$ steps.
 The standard deviation of the normal proposal distribution $\lambda^{\prime} \sim \mathcal{N}(\lambda^{(k)} , \sigma^2_{\lambda})$ is empirically set to $\sigma_{\lambda} = 0.8 \lambda_0$, so that the acceptance rate is $\approx 0.5$ as suggested in~\cite{robertsLecNot}.
 This takes  $\approx 0.5$s.
@@ -288,7 +288,7 @@ One sweep within the \texttt{ttpy.$(\cdots)$.cross} Python function results in $
 Ironically, this is the same number of function evaluations to approximate a $20 \times 20$ point grid.
 The TT format is especially advantageous for larger grid sizes and higher-dimensional parameter spaces.
 
-To compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ the constant in Eq.~\ref{eq:SQTTapprox} is set to $\xi = 1 / \uplambda (\mathcal{X})$ because we observe marginal posterior values of around $10^{47}$.
+To compute the marginals $\pi(\lambda| \bm{y})$ and $\pi(\gamma| \bm{y})$ the constant in Eq.~\ref{eq:SQTTapprox} is set to $\xi = 1 / \uplambda (\mathcal{X})$ because we observe unormalised marginal posterior values of around $10^{47}$.
 For Cartesian basis the Mass matrix becomes $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$ (see Eq.~\ref{eq:MassMat}) with and $\uplambda(x) = 1$ .
 The coefficient tensor $\bm{B}$ and $\bm{R}_{\text{pre}}$ are calculated as in Prop.~\ref{prob:backMarg} and Prop.~\ref{prob:ForMarg} (see Sec.~\ref{subsec:TTMarg}).
 
@@ -413,11 +413,19 @@ If calculating the posterior mean and covariance matrix is too costly, see Sec.~
 %
 %The histogram in is binned as we intergate over it to 7 bins
 \subsubsection{Errors of posterior mean and covariance}
-Here, we provide an error estimate for the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and covariance $\bm{\Sigma}_{\bm{x}|\bm{y}}$ due to the grid size or number of bins of the marginal posterior. 
-This is done by comparing to the mean and covariance obtained by weighted expectations over histograms with 200 bins for the samples from $\pi(\lambda,\gamma | \bm{y})$.
+Here, we provide an average error estimate for the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and the covariance matrix $\bm{\Sigma}_{\bm{x}|\bm{y}}$ due to the TT grid size of the marginal posterior or the number of histogram bins of the marginal posterior samples. 
+In doing so, we bin the samples from $\pi(\lambda,\gamma | \bm{y})$ into a 200 bin histogram and calculate the ``true'' posterior mean $\bm{\mu}^{(200)}_{\bm{x}|\bm{y}}$ and the ``true''  covariance $\bm{\Sigma}^{(200)}_{\bm{x}|\bm{y}}$ by weighted expectations, as in Eq.~\ref{eq:MeanInt} and Eq.~\ref{eq:CovInt}.
+Then, the posterior mean $\bm{\mu}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}}$ and the covariance $\bm{\Sigma}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}}$ for various number of bins $n_{\text{bin}}$ are calculated.
+The relative RMS error for each estimate is
+\begin{align} 
+	\frac{\bigg\lVert \text{vec}\bigg(\bm{\mu}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}},\bm{\Sigma}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}}\bigg) - \text{vec}\bigg(\bm{\mu}^{(200)}_{\bm{x}|\bm{y}},\bm{\Sigma}^{(200)}_{\bm{x}|\bm{y}}\bigg) \bigg\rVert_{L_2}  }{\bigg\lVert \text{vec}(\bm{\mu}^{(200)}_{\bm{x}|\bm{y}},\bm{\Sigma}^{(200)}_{\bm{x}|\bm{y}}\bigg)\bigg \rVert_{L_2} } \, ,
+\end{align} 
+where $\text{vec}\bigg(\bm{\mu}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}},\bm{\Sigma}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}}\bigg)$ denotes a vector with $34 + 34 \times 34$ entries.
+
 In Fig. \ref{fig:MeanVarError}, the relative RMS error of the posterior mean and covariance for an increasing number of bins is plotted.
-The relative RMS error behaves roughly proportional to $1/N$, and we consider a relative RMS error less than $0.5\%$ good enough, which is easily met at 20 bins.
-This sets the TT grid size and the number of evaluations of $\bm{x}_{\lambda}$ (posterior mean, see Eq.~\ref{eq:MeanInt}) and $(\gamma \bm{B}_{\lambda})^{-1}$ (posterior covariance, see Eq.~\ref{eq:CovInt}).
+The relative RMS error decreases roughly proportional to $1/N$, and we consider a relative RMS error of less than $0.5\%$ good enough.
+This is easily met at 20 bins.
+%This sets the TT grid size and the number of evaluations of $\bm{x}_{\lambda}$ (posterior mean, see Eq.~\ref{eq:MeanInt}) and $(\gamma \bm{B}_{\lambda})^{-1}$ (posterior covariance, see Eq.~\ref{eq:CovInt}).
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{relErrO3MeanVar.png}
