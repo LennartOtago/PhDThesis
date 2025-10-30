@@ -172,9 +172,9 @@ In Fig.~\ref{fig:PriorPressOverTemp} we already observe that $\bm{p}/\bm{T}$ inh
 \section{Posterior Distribution}
 Here, the marginal posterior and the full conditional posterior distribution for the described Bayesian model are formulated.
 We either use the t-walk algorithm~\cite{christen2010general} to draw samples from the marginal posterior $\pi(p_0,b,T_0,\bm{h_T},\bm{a} ,\lambda, \gamma| \bm{y})$ with $\lambda = \delta / \gamma$ or we utilise a TT approximation on a predefined grid to generate samples via the SIRT method with an MH correction step.
-In doing so, the reader is guided through the process of obtaining an efficient TT approximation and some key aspects are pointed out. 
+In doing so, the reader is guided through the process of obtaining an efficient  higher-dimensional TT approximation.
 Lastly, the RTO method is utilised to draw ozone samples from the full conditional posterior $\pi(\bm{x}|p_0,b,T_0,\bm{h_T},\bm{a} ,\lambda, \gamma, \bm{y})$.
-Recall that the linear forward model matrix is $\bm{A}_{\bm{\theta}}$ is depending on the hyper-parameter defined as $\bm{\theta}  \coloneqq \{p_0,b,T_0,\bm{h_T},\bm{a}  \}$.
+Recall that $\bm{x} \in \mathbb{R}^n$ with $n = 34$ and $\bm{y} \in \mathbb{R}^m$ with $m = 30$, and that the linear forward model matrix $\bm{A}_{\bm{\theta}}$ is depending on the hyper-parameter defined as $\bm{\theta}  \coloneqq \{p_0,b,T_0,\bm{h_T},\bm{a}  \}$.
 %Consequently, the marginal posterior is denoted as $\pi( \bm{\theta},\lambda,\gamma  | \bm{y}) $ and the full conditional posterior as $\pi(\bm{x}|\bm{\theta}, \lambda, \gamma, \bm{y})$.
 \begin{table}[ht!]
 	\centering
@@ -293,8 +293,8 @@ Alternatively, one could decorrelate the hyper-parameter space using a coordinat
 
 \paragraph{Find optimal rank and grid size}
 The aim is to approximate $\pi( \bm{\theta},\lambda,\gamma  | \bm{y})$ with a number of marginal posterior evaluations as small as possible but without losing too much accuracy.
-In doing so, the number of grid points is set to $n = 150$ and different error measures for ranks $\{2,3,4,5,6,7,8,9,10,11,12,13,14,15, 20, 25, 30, 35, 50\}$ are calculated.
-For a fixed low rank, the number of grid points $\{10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 90, 100\}$ is decreased until sufficient accuracy.
+In doing so, the number of grid points is set to $n_{\text{grid}} = 150$ and different error measures for ranks $\{2,3,4,5,6,7,8,9,10,11,12,13,14,15, 20, 25, 30, 35, 50\}$ are calculated.
+For a fixed low rank, the number of grid points \linebreak$\{10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 90, 100\}$ is decreased until sufficient accuracy.
 
 For stable and comparable results, we do five sweeps within \linebreak the~\texttt{tt.cross.rectcross.rect\_cross.cross} Python function initialised at a random TT.
 The ranks between TT cores are constant.
