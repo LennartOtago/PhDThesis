@@ -33,7 +33,7 @@ Specific sampling algorithms are not introduced here, as they are specifically t
 	\caption[Hierarchical Bayesian Model]{A directed acyclic graph (DAG) for an inverse problem visualises statistical dependencies as solid line arrows and deterministic dependencies as dotted arrows.
 		The hyper-parameters $\bm{\theta}$ are distributed as ($\sim$) the hyper-prior distribution $\pi(\bm{\theta})$.
 		The prior distribution $ \pi_{\bm{x}}(\cdot|\bm{\theta})$ for the parameter $\bm{x}$ and the noise  $\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$ are statistically dependent on some of those hyper-parameters.
-		Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is deterministically mapped onto the space of all measurables $\Omega=\bm{A}(\bm{x})$ through the forward model.
+		Then a parameter $\bm{x} \sim \pi_{\bm{x}}(\cdot|\bm{\theta})$ is deterministically mapped onto the space of all measurables $\Omega$ through the forward model $\bm{A}(\bm{x})$.
 		From the space of all measurable noise-free data we observe (square box) a data set $\bm{y} = \bm{A}(\bm{x}) + \bm{\eta}$ with some additive random noise, which determines the likelihood function $\pi(\bm{y}|\bm{x},\bm{\theta})$.}
 	\label{fig:FirstDAG}
 \end{figure}
@@ -343,7 +343,7 @@ Here, each TT core is given by \cite[Eq.~21]{cui2022deep}
 where $\bm{A}_k \in \mathbb{R}^{r_{k-1} \times n_k \times r_k}$ is the $k$-th coefficient tensor and $\{\phi^{(i)}_k(x_k)\}_{i=1}^{n_k}$ are the basis functions corresponding to the $k$-th coordinate.
 The unnormalised density function is approximated as in~\cite[Eq.~19]{cui2022deep} so that
 \begin{align}
-	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2 
+	\pi(\bm{x}) \approx \xi + \tilde{g}(\bm{x})^2 \label{eq:SQTTapprox}
 \end{align}
 with a small additive constant $\xi > 0$ to ensure positivity.
 This maintains the smoothness~\cite{cui2022deep} and strict monotonicity of the cumulative distribution functions (CDFs), and makes the IRT maps in Eq.~\ref{eq:IRTmap} well defined~\cite{foxRosen21}.

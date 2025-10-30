@@ -257,7 +257,8 @@ The aim now is to approximate the square root of the marginal posterior
 	\label{eq:MargPostFullTT}
 \end{align}
 with a ``normalisation constant'' $c=-200$ to stay within computer precision.
-In doing so, we run the~\texttt{tt.cross.rectcross.rect\_cross.cross} Python function from the \texttt{ttpy} Python package \cite{Oseledets2018ttpy} on a grid (see TT bounds in Tab.~\ref{tab:priors}) according to the results of the t-walk. 
+In doing so, we run the~\texttt{tt.cross.rectcross.rect\_cross.cross} Python function from the \texttt{ttpy} Python package \cite{Oseledets2018ttpy} on a grid (see TT bounds in Tab.~\ref{tab:priors}) according to the results of the t-walk.
+Note that the ranks of the initial TT are kept constant and are not increased within this process.
 We observe marginal posterior values around $10^{27}$ so we set $\xi = 1 / \uplambda (\mathcal{X})$ with $\uplambda(x) = 1$.
 For Cartesian basis the mass matrix becomes $\bm{M}_k = \text{diag}(\uplambda_k(\mathcal{X}_k))$.
 To draw samples from the TT approximation the SIRT-MH scheme is used as introduced in Sec.~\ref{subsec:SamplTT}.

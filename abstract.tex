@@ -1,7 +1,8 @@
 \vspace{-1ex}
 In this thesis, we develop a hierarchical Bayesian model based on the radiative transfer equation for an idealised atmospheric limb-sounder targeting ozone, as described in~\cite{mipas2000handbook}.
 First, we linearise the radiative transfer equation by neglecting absorption.
-To ensure effective measurements, we briefly assess the informativity of different measurement approaches via a singular value decomposition of the linear forward model and adapt the data collection accordingly.
+To ensure effective measurements, we briefly assess the informativity of different measurement approaches via a singular value decomposition of the linear forward model.
+According to these test results, we simulate data based on a ground truth.
 To provide posterior distributions of hyper-parameters and ozone profiles a linear-Gaussian hierarchical Bayesian framework is established and the marginal and then conditional scheme~\cite{fox2016fast} is utilised.
 A regularised estimate is compared to the posterior distribution of ozone profiles.
 Then the non-linear forward model is approximated with an affine map.
