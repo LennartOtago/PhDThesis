@@ -25,7 +25,7 @@ Specific sampling algorithms are not introduced here, as they are specifically t
 		
 		\node[align=center] at (2.8,3.5) (tht) {$\sim \pi_{\bm{\theta}}(\cdot) $ hyper-parameters};
 		\node[align=center] at (2.4,1.5) (xt) {$\sim \pi_{\bm{x}}(\cdot|\bm{\theta}) $ parameters};
-		\node[align=center] at (2.5,0) (At) {$\{\bm{A}(\bm{x})\}$ ``noise-free data''};
+		\node[align=center] at (2.5,0) (At) {$\{\bm{A}(\bm{x})\}$ noise-free data};
 		\node[align=center] at (3,-1.5) (ut) {space of all measurables};
 		\node[align=center] at (2,-3.5) (yt) {$\sim \pi_{\bm{y}}(\cdot|\bm{x},\bm{\theta})$ data};
 		\node[align=center] at (-3.25,0) (nt) {noise\\$\bm{\eta} \sim \pi_{\bm{\eta}}(\cdot|\bm{\theta})$};
@@ -675,8 +675,9 @@ Alternatively one can introduce a Lagrangian $\mathcal{L}(\bm{x},\lambda)\colone
 For a given $\lambda$, a solution $\bm{x}_{\lambda} $ that minimises $\mathcal{L}(\bm{x},\lambda)$ is usually obtained by finding the minimum of $\left\lVert \bm{A} \bm{x} - \bm{y} \right\rVert^2_{L^2}$ with respect to the constant constrained $\bm{x}^T \bm{L} \bm{x} = c$~\cite[Fig.~2.13]{SANTOSH202265}.
 This is equivalent to $\bm{x}_{\lambda}  = \underset{\bm{x}}{\text{arg min }}\bm{x}^T \bm{L} \bm{x}$ subject to a constant constrain $\left\lVert  \bm{A} \bm{x} -\bm{y} \right\rVert^2_{L^2}= c$ (see~\cite[fn.~6]{fox2016fast}). 
 %\textcolor{red}{You need to fix this sentence, as L(x,lambda) is not a Lagrange multiplier -- it does have a name, and you should use it and not wite sentences that say : I introduce the chicken p=7 which minimizes frog. }
-So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and the L-curve presents a limit to an open set of high-dimensional posterior samples~\cite{VowelsMultiD}.
-Every sample of the high-dimensional posterior, which represents a feasible solution given the data, is less regularised and has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
+So every solution $\bm{x}_{\lambda}$ is extremely regularised for a given data misfit and the L-curve presents a limit to an open set of high-dimensional posterior samples.
+%~\cite{VowelsMultiD}.
+%For a given data misfit norm, every sample of the high-dimensional posterior, which represents a feasible solution given the data, is less regularised and has a higher $ \bm{x}^T \bm{L} \bm{x}$ value.
 If all posterior samples lie above the L-curve, then it presents a lower boundary.
 
 %\textcolor{red}{not accurate enough}

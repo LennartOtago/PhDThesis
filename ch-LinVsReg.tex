@@ -2,7 +2,7 @@
 \label{ch:LinVsReg}
 
 
-In this Chapter, we guide the reader through the process of setting up a hierarchical Bayesian framework, establishing a choice of prior distributions, and using a DAG to visualise conditional dependencies between hyper-parameters and parameters.
+In this Chapter, we guide the reader through the process of setting up a hierarchical Bayesian framework, establishing a choice of prior distributions, and using a DAG to visualise conditional dependencies between hyper-parameters and the parameter.
 Applying the MTC scheme the marginal and then full conditional posterior distributions are explicitly formulated.
 Here this inverse problem is treated as a linear inverse problem by neglecting the absorption term in the RTE (see Eq.~\ref{eq:RTE}).
 A Metropolis within Gibbs (MWG) sampler and a TT approximation are utilised to characterise the marginal posterior.
@@ -69,8 +69,8 @@ The distributions that define the hierarchical Bayesian model are:
 	\begin{align}
 		\bm{y} |  \bm{x},\gamma,\delta  &\sim \mathcal{N}(\bm{A} \, \bm{x}, \gamma^{-1} \bm{I}) \label{eq:likelihoodAppl} \\
 		\bm{x}| \delta  &\sim \mathcal{N}(\bm{0}, (\delta \bm{L})^{-1} ) \label{eq:priorXAppl} \\
-		\delta  &\sim \Gamma(\alpha_{\delta}, \beta_{\delta})\label{eq:priorDelAppl} \\
-		\gamma  &\sim \Gamma(\alpha_{\gamma}, \beta_{\gamma})\label{eq:priorGamAppl} \, .
+		\delta  &\sim \mathcal{T}(\alpha_{\delta}, \beta_{\delta})\label{eq:priorDelAppl} \\
+		\gamma  &\sim \mathcal{T}(\alpha_{\gamma}, \beta_{\gamma})\label{eq:priorGamAppl} \, .
 	\end{align} 
 \end{subequations}
 Assuming Gaussian noise $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1} \bm{I})$, the likelihood function is a normal distribution with mean $\bm{A} \bm{x}$ and covariance matrix $\gamma^{-1} \bm{I}$.
@@ -211,7 +211,7 @@ More specifically, we implement a Metropolis random walk on
 \end{align} 
 and do a Gibbs step on
 \begin{align}
-	\gamma |  \lambda, \bm{y} &\sim \Gamma \bigg( \frac{m}{2} + \alpha_\delta + \alpha_\gamma, \frac{1}{2} f (\lambda + \beta_\gamma + \beta_\delta \lambda \bigg)\label{eq:GibbsStep} \ .
+	\gamma |  \lambda, \bm{y} &\sim \mathcal{T}\bigg( \frac{m}{2} + \alpha_\delta + \alpha_\gamma, \frac{1}{2} f (\lambda) + \beta_\gamma + \beta_\delta \lambda \bigg)\label{eq:GibbsStep} \ .
 \end{align} 
 Ergodicity for this approach is proven in~\cite{roberts2006harris}.
 
@@ -414,14 +414,15 @@ If calculating the posterior mean and covariance matrix is too costly, see Sec.~
 %
 %The histogram in is binned as we intergate over it to 7 bins
 \subsubsection{Errors of posterior mean and covariance}
-Here, we provide an average error estimate for the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and the covariance matrix $\bm{\Sigma}_{\bm{x}|\bm{y}}$ due to the TT grid size of the marginal posterior or the number of histogram bins of the marginal posterior samples. 
+Here, we provide an average error estimate for the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ and the covariance matrix $\bm{\Sigma}_{\bm{x}|\bm{y}}$ due to the TT grid size of the marginal posterior or the number of histogram bins of the marginal posterior samples.
+
 In doing so, we bin the samples from $\pi(\lambda,\gamma | \bm{y})$ into a 200 bin histogram and calculate the ``true'' posterior mean $\bm{\mu}^{(200)}_{\bm{x}|\bm{y}}$ and the ``true''  covariance $\bm{\Sigma}^{(200)}_{\bm{x}|\bm{y}}$ by weighted expectations, as in Eq.~\ref{eq:MeanInt} and Eq.~\ref{eq:CovInt}.
 Then, the posterior mean $\bm{\mu}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}}$ and the covariance $\bm{\Sigma}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}}$ for various number of bins $n_{\text{bin}}$ are calculated.
 The relative RMS error for each estimate is
 \begin{align} 
 	\frac{\bigg\lVert \text{vec}\bigg(\bm{\mu}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}},\bm{\Sigma}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}}\bigg) - \text{vec}\bigg(\bm{\mu}^{(200)}_{\bm{x}|\bm{y}},\bm{\Sigma}^{(200)}_{\bm{x}|\bm{y}}\bigg) \bigg\rVert_{L_2}  }{\bigg\lVert \text{vec}(\bm{\mu}^{(200)}_{\bm{x}|\bm{y}},\bm{\Sigma}^{(200)}_{\bm{x}|\bm{y}}\bigg)\bigg \rVert_{L_2} } \, ,
 \end{align} 
-where $\text{vec}\bigg(\bm{\mu}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}},\bm{\Sigma}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}}\bigg)$ denotes a vector with $34 + 34 \times 34$ entries.
+where $\text{vec}\bigg(\bm{\mu}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}},\bm{\Sigma}^{(n_{\text{bin}})}_{\bm{x}|\bm{y}}\bigg)$ denotes a vector with $n + n \times n$ entries, for $n = 34$.
 
 In Fig. \ref{fig:MeanVarError}, the relative RMS error of the posterior mean and covariance for an increasing number of bins is plotted.
 The relative RMS error decreases roughly proportional to $1/N$, and we consider a relative RMS error of less than $0.5\%$ good enough.
@@ -464,17 +465,16 @@ Note that the eigenvalues of each matrix may correspond to different eigenvector
 Since we claim that hierarchical Bayesian frameworks provide more information than regularisation methods, we compare the MTC scheme to a regularisation approach.
 That is why the chosen regularisation approach is the closest equivalent to the here used linear-Gaussian Bayesian framework~\cite{fox2016fast}.
 
-The regularised solution is defined as in~\cite{hansen2010discrete, fox2016fast} 
+A regularised solution is defined as in~\cite{hansen2010discrete, fox2016fast} 
 \begin{align}
 	\bm{x}_{\lambda} =\underset{ \bm{x}}{\arg \min}\,  \lVert \bm{A}\bm{x} - \bm{y} \rVert_{L^2}^2 + \lambda \bm{x}^T \bm{L} \bm{x} \, ,
 	\label{eq:XLam}
 \end{align}
 with the regularisation parameter $\lambda$, linear forward model matrix $\bm{A}$, data $\bm{y}$ and the regularisation matrix $\bm{L}$ as in Eq.~\ref{eq:GLapl}.
-A regularised solution
+Solving Eq.~\ref{eq:XLam} for $\bm{x}_{\lambda}$ as in Sec.~\ref{sec:reg} gives the regularised solution
 \begin{align}
-	\bm{x}_{\lambda} = (\bm{A}^T\bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y} \label{eq:xLam} \, 
+	\bm{x}_{\lambda} = (\bm{A}^T\bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y} \label{eq:xLam} \, .
 \end{align}
-is calculated as in Sec.~\ref{sec:reg}.
 
 The regularised estimate is found using the L-curve method following~\cite{hansen1993use}.
 Within this method we compute $\bm{x}_\lambda$, for 200 different $\lambda$ values in between $10^{-8}$ to $10^{0}$ and plot the regularisation norm $\sqrt{\bm{x}_\lambda^T\mathbf{L} \bm{x}_\lambda}$ against the data misfit norm $\lVert \bm{A}\bm{x}_\lambda - \bm{y} \rVert_{L^2}$ (see Figure \ref{fig:LCurve}). 
@@ -486,17 +486,18 @@ The corresponding regularisation parameter is $\lambda = 1.6 \times 10^{-4}$.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics{LCurvePhD.png}
-	\caption[Plot of the L-curve to find the regularised solution.]{L-curve of regularisation norm $\sqrt{\bm{x}^T\bm{Lx}}$ against the data misfit norm $\lVert \bm{A}\bm{x} - \bm{y} \rVert_{L^2}$ for different $\lambda$ values, where $\bm{x}_{\lambda}$ is calculated as in Eq.~\ref{eq:xLam}. The best regularised estimate is located at the point of maximum curvature (pink triangle) of the L-curve. Additionally, we calculate the data misfit norm and the regularisation norm for the mean (black circle) and samples (blue squares) of the full posterior of ozone.}
+	\caption[Plot of the L-curve to find the regularised solution.]{L-curve of regularisation norm $\sqrt{\bm{x}^T\bm{Lx}}$ against the data misfit norm $\lVert \bm{A}\bm{x} - \bm{y} \rVert_{L^2}$ for different $\lambda$ values, where $\bm{x}_{\lambda}$ is calculated as in Eq.~\ref{eq:xLam}. The regularised estimate is located at the point of maximum curvature (pink triangle) of the L-curve. Additionally, we calculate the data misfit norm and the regularisation norm for the mean (black circle) and samples (blue squares) of the full posterior of ozone.}
 	\label{fig:LCurve}
 \end{figure}
 The regularised estimate in Fig.~\ref{fig:O3SolplsReg} is very similar to the posterior mean and both have a similar data misfit and regularisation norm.
 Neither the regularised estimate nor the posterior ozone profiles capture the second ozone peak of the ground truth at high altitudes.
 This coincides with the prior analysis of the forward model via the SVD in Sec.~\ref{sec:SVD}.
-Note that we cannot infer the posterior mean from the regularised solutions, even if it appears to lie on the L-curve.
+
 It is pretty clear that the regularised estimate accounts for only one possible solution and does not provide uncertainties. 
 The data misfit and regularisation norm values of the regularised estimate and the posterior mean are not similar to the corresponding values of the samples drawn from the posterior $\pi(\bm{x}| \bm{y})$ (see Fig.~\ref{fig:O3Samp}).
 All posterior samples of $\pi(\bm{x}| \bm{y})$ are less regularised and lie above the L-curve, and as already mentioned, are all feasible solutions to the data.
 This does make sense, if one thinks about the mean as the (smooth) average over less-smooth samples and the regularised solutions as extremely smooth ozone profiles (see Lagrangian in Sec.~\ref{sec:reg}).
+Note that we cannot infer the posterior mean from the regularised solutions, even if it appears to lie on the L-curve.
 
 Counterintuitively, it is not possible to obtain a sample that represents the mean of a multivariate probability distribution~\cite[Sec.~3.1]{VershyninMultiD2018}.
 %, despite it being the point of the highest probability.

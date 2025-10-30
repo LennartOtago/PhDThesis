@@ -6,7 +6,7 @@
 The forward map, introduced in Chapter~\ref{ch:formodel}, poses a weakly non-linear forward problem.
 One could tackle this non-linear inverse problem by fixing the absorption at a previously obtained parameter state and treating this as a linear inverse problem.
 After each parameter sample the absorption is then iteratively updated.
-Instead, as in Fig.~\ref{fig:affinStrat} illustrated, we approximate the non-linear model using an affine map, which is a linear map with a translation e.g., $\bm{A}\bm{x} + \bm{b}$.
+Instead, as in Fig.~\ref{fig:affinStrat} illustrated, we approximate the non-linear model using an affine map, which is a linear map with a translation, e.g., $\bm{A}\bm{x} + \bm{b}$.
 An affine map $ \bm{z} = \bm{A}\bm{x} + \bm{b}$ maps a Gaussian $\bm{x} \sim \mathcal{N}(\bm{\mu}, \bm{\Sigma})$ onto a Gaussian $\bm{z} \sim \mathcal{N}(\bm{A}\bm{\mu} + \bm{b}, \bm{A}^T\bm{\Sigma}\bm{A})$.
 
 Here we find an affine map $\bm{M}$ based on the linear model $\bm{A}_L$ that provides an approximation of the non-linear model $\bm{A}(\bm{x})$ for parameters $\bm{x}$ near the posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$.

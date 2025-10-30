@@ -42,8 +42,8 @@ Without the burn-in phase the t-walk requires around 1100 function evaluations p
 
 For future application, we suggest improving the efficiency of the TT approximation by, e.g., reducing the correlation structure through a coordinate system rotation (Cholesky Whitening~\cite{KessyWhitening2018}) or using better interpolators in between grid points to reduce the approximation error.
 This may be particularly important when the CDF in the SIRT scheme is not smooth due to poor approximations of the target density at previous samples.  
-Moreover, using a different reference measure for integration as in~\cite{cui2022deep}, such as a Gaussian measure instead of the current Lebesgue measure, may increase numerical stability.
-Currently, we have to predefine a normalisation constant and lower ranks manually, bounding the ranks automatically would be helpful (see e.g.,~\cite{Rohrbach2022tterror}).
+Moreover, using a different reference measure for integration as in~\cite{cui2022deep}, such as a Gaussian measure instead of the Lebesgue measure used here, may increase numerical stability.
+Currently, we have to predefine a normalisation constant and lower ranks manually, bounding the ranks automatically would be helpful (see, e.g.,~\cite{Rohrbach2022tterror}).
 
 
 \section{Atmospheric Physics}
