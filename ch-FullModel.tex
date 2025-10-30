@@ -347,13 +347,13 @@ See~\cite{dolgov2020approximation}, for using the mean rejection rate of the MH 
 \end{figure}
  
 In Fig.~\ref{fig:FindRankGrid}, we observe that a rank $r = 10$ is sufficient because the error measures are relatively stable for $r\geq10$.
-For a grid size $n \geq 30$ the relative differences between $\bm{\mu}_{\text{TT}}$ and $\bm{\mu}_{\text{t-walk}}$ (red circles in Fig.~\ref{fig:FindRankGrid}) and the RMS errors at the 1000 independent SIRT-MH samples (orange squares in Fig.~\ref{fig:FindRankGrid}) are around $ 10\%$ and considered good enough.
+For a grid size $n_{\text{grid}} \geq 30$ the relative differences between $\bm{\mu}_{\text{TT}}$ and $\bm{\mu}_{\text{t-walk}}$ (red circles in Fig.~\ref{fig:FindRankGrid}) and the RMS errors at the 1000 independent SIRT-MH samples (orange squares in Fig.~\ref{fig:FindRankGrid}) are around $ 10\%$ and considered good enough.
 For an increasing number of grid points the interpolation of function values between grid points is more accurate, and the relative RMS and sample based expectation error decrease.
 This is because the chosen linear interpolation (see Eq.~\ref{eq:LinPol}) is a rather rudimentary choice.
 The quadrature-based relative expectation error (black dots in Fig.~\ref{fig:FindRankGrid}) is almost constant for ranks $ \gtrsim 7$ and grid sizes $ > 20$.
 This indicates that the accuracy of the TT approximation is relatively stable and most of the error is due to interpolation between grid points.
-Since the hyper-parameters have different length scales, we are only interested in the trend of the sample-based 1-Wasserstein distance (blue crosses in Fig.~\ref{fig:FindRankGrid}).
-The 1-Wasserstein distance is quite fluctuant but decreases with increasing ranks and stays within a similar range for grid sizes $n \geq 30$.
+Since the hyper-parameters have different length scales, we are only interested in the trend of the sample-based 1-Wasserstein distance (blue crosses in Fig.~\ref{fig:FindRankGrid}). 
+The 1-Wasserstein distance is quite fluctuant but decreases with increasing ranks and stays within a similar range for grid sizes $n_{\text{grid}} \geq 30$.
 
 
 \begin{figure}[ht!]
@@ -393,7 +393,7 @@ The 1-Wasserstein distance is quite fluctuant but decreases with increasing rank
 	\label{fig:PostHistTT5}
 \end{figure}
 
-Based on these results the grid size is set to $n = 30$.
+Based on these results the grid size is set to $n_{\text{grid}} = 30$.
 Next, we define ranks $r =[ 1,  10,  10, 10, 10, 10, 5, 3, 3, 3, 3, 3, 3 , 3, 3, 3, 3, 3, 1]$ between TT cores, with a maximum rank of $10$.
 This harvests the correlation structure of $\pi(\bm{\theta},\lambda,\gamma  | \bm{y})$ and decreases the number of marginal posterior evaluations even further.
 One sweep in the\linebreak \texttt{tt.cross.rectcross.rect\_cross.cross} initialised at a previously calculated approximation reduces the computation time to $\approx 10$s and the number of marginal posterior evaluations to 34080.

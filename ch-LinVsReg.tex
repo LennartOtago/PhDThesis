@@ -279,12 +279,12 @@ This indicates that the chosen number of samples provides a long enough chain to
 \label{subsec:TTFirst}
 Alternatively, the square root of the marginal posterior over a predefined grid can be approximated by a TT to calculate the marginals $\pi(\gamma|\bm{y})$ and $\pi(\lambda|\bm{y})$ (see Sec.~\ref{subsec:TTMarg}).
 
-The univariate grid is defined over $\gamma = [ 0.8 \times 10^{15},1.2 \times 10^{16}]$ and $\lambda = [ 10^{-5}, 8 \times 10^{-4}]$ with $n = 20$ grid points (see Fig.~\ref{fig:MeanVarError} and Sec.~\ref{subsec:firstCond} where we argue for the number of grid points).
+The univariate grid is defined over $\gamma = [ 0.8 \times 10^{15},1.2 \times 10^{16}]$ and $\lambda = [ 10^{-5}, 8 \times 10^{-4}]$ with $n_{\text{grid}} = 20$ grid points (see Fig.~\ref{fig:MeanVarError} and Sec.~\ref{subsec:firstCond} where we argue for the number of grid points).
 The ``normalisation constant'' is set to $c=-150$ so that the values of $\sqrt{\pi(\lambda,\gamma| \bm{y})}=\exp\{0.5\log\pi(\lambda,\gamma|\bm{y})+c\}$ are within computer precision.
 %-320/2
 A TT approximation is obtained via the~\texttt{tt.cross.rectcross.rect\_cross.cross} Python function, which implements the TT cross algorithm from~\cite{OSELEDETS2010TTCross,Dolgov2018TTCross}, in the Python package \texttt{ttpy}~\cite{Oseledets2018ttpy}. The Python function is initialised with a random TT, which has a constant number of ranks $r = 4$.
 Note that the ranks are kept constant and are not increased within this process.
-One sweep within the \texttt{ttpy.$(\cdots)$.cross} Python function results in $2n_{\text{sweeps}}2nr =400$ function evaluations and takes $\approx 0.02$s.
+One sweep within the \texttt{ttpy.$(\cdots)$.cross} Python function results in $2n_{\text{sweeps}}2n_{\text{grid}} =400$ function evaluations and takes $\approx 0.02$s.
 Ironically, this is the same number of function evaluations to approximate a $20 \times 20$ point grid.
 The TT format is especially advantageous for larger grid sizes and higher-dimensional parameter spaces.
 
