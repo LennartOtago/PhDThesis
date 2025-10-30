@@ -6,7 +6,7 @@
 In the book Gaussian Markov Random Fields~\cite{rue2005gaussian}, Rue and Held demonstrate that a strong correlation between the hyper-parameter $\mu$ and the latent field $\bm{x}$ can significantly slow down convergence particularly when using Gibbs samplers.  
 They consider the hierarchical model
 \begin{subequations}
-		\label{eq:rueMod}
+	\label{eq:rueMod}
 	\begin{align}
 		\mu &\sim \mathcal{N}(0, 1) \\
 		\bm{x} | \mu &\sim \mathcal{N}(\mu \bm{1}, \bm{Q}^{-1}),
@@ -35,15 +35,15 @@ Since here $\mu$ is one-dimensional, effectively only the marginal density of $\
 	\mu^{\star}  &\sim q (\mu^{\star}|	\mu^{(k-1)} ) \\
 	\bm{x}^{(k)} | \mu^{\star} &\sim \mathcal{N} (	\mu^{\star}\bm{1}, \bm{Q}^{-1}) 
 \end{align}
-With a simple MCMC algorithm targeting $ \mu$ one can explore the sample space (of$ \mu$) efficiently and only draw a sample for $\bm{x}$ from its full conditional once the proposal $\mu^{\star} =\mu^{(k)} $ has been accepted.
+With a simple MCMC algorithm targeting $ \mu$ one can explore the sample space (of $ \mu$) efficiently and only draw a sample for $\bm{x}$ from its full conditional once the proposal $\mu^{\star} =\mu^{(k)} $ has been accepted.
 
 \section{Monte-Carlo Error and Integrated Autocorrelation Time}
 \label{ap:IATC}
 To assess the error $(\sigma^{(i)})^2$ of a samples-based estimate 
 \begin{align}
-\bar{h}_N^{(i)} \coloneqq	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}),
+	\bar{h}_N^{(i)} \coloneqq	\text{E}_{\bm{x}|\bm{y}} [h(\bm{x})] = \frac{1}{N} \sum_{k=1}^{N} h(\bm{x}^{(k)}),
 \end{align} 
-from the chain $\mathcal{M}^{(i)} = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\}$, where $ mathcal{M}^{(i)} \sim \pi(\bm{x}|\bm{y})$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
+from the chain $\mathcal{M}^{(i)} = \{\bm{x}^{(1)}, \dots,\bm{x}^{(k)},\dots, \bm{x}^{(s)},\dots, \bm{x}^{(N)}\}$, where $\mathcal{M}^{(i)} \sim \pi(\bm{x}|\bm{y})$, we ignore systematic error due to initialisation bias (burn-in period), but we have to take into account that samples produced by any system or algorithm are correlated.
 To derive the IACT, we follow Ulli Wolff's lecture notes \cite{wolff2002LecNot} (or alternatively \cite{wolff2004monte}).
 
 In general, the error of a Monte-Carlo estimate is:
