@@ -252,7 +252,8 @@ Repeating this procedure gives the chain $\{(\bm{x}, \bm{\theta})^{(1)},\dots, (
 %\textcolor{red}{Explain how to find normalisation constant and say that due to aproxiamting the sqaure root we ensure posivyt later when squaring it}
 %First, we provide a short overview of probability spaces and their associated measures. 
 %I am not claiming this overview to be complete but consider it helpful to understand the notation in \cite{cui2022deep}, which we follow to approximate functions in the TT format.
-Instead of relying on sampling-based methods to explore an unnormalised density function $\pi(\bm{x})$, which in our case will be the marginal posterior distribution over the hyper-parameters, we can approximate this function using a tensor-train (TT) approximation.
+Instead of relying on sampling-based methods to explore an unnormalised density function $\pi(\bm{x})$ we can approximate this function using a tensor-train (TT) approximation.
+%, which in our case will be the marginal posterior distribution over the hyper-parameters,
 The TT approximation $\tilde{\pi}(\bm{x}) \approx \pi(\bm{x})$, where $\bm{x} \in \mathbb{R}^d$, on a $d$-dimensional grid requires far fewer function evaluations compared to conventional sampling methods.
 In the following, we describe how to compute a normalised marginal probability density function (PDF) $f_{X_k}(x_k)$, for an $x_k \in \bm{x}$ and $k = 1, \dots,d$, from a target function $\pi(\bm{x})$ approximated in TT format.
 Further, a scheme similar to the inverse Rosenblatt transform (IRT) in~\cite{dolgov2020approximation} is introduced to generate samples from $\pi(\bm{x})$.

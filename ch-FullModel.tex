@@ -272,8 +272,8 @@ Hence 1000 independent samples from the marginal posterior require 2000 samples 
 In Fig.~\ref{fig:CorrPlot} those 1000 samples and the Pearson correlation coefficients between hyper-parameter pairs are plotted.
 A coefficient close to $1$ or $-1$ indicates strong correlation, while values near zero suggest weak or no correlation.
 We observe that the hyper-parameters $\lambda$ and $b$, and $\lambda$ and $\gamma$ are highly correlated.
-Additionally, $h_{T,1}$ describing the temperature at low altitudes (strong signal) is mildly correlated to $b$.
-This is because $h_{T,1}$ influences ``the smoothness'' of $\bm{p}/\bm{T}$, which is hard to see in Fig.~\ref{fig:PriorPressOverTemp}.
+Additionally, $h_{T,1}$ and $T_0$ describing the temperature at low altitudes (strong signal) are mildly correlated to $\lambda$.
+This is because $h_{T,1}$ and $T_0$ influence ``the smoothness'' of $\bm{p}/\bm{T}$, which is hard to see in Fig.~\ref{fig:PriorPressOverTemp}.
 Interestingly, $p_0$ appears largely uncorrelated with other hyper-parameters, while $b$ is the key parameter linking pressure to ozone and temperature.
 Hyper-parameters describing the temperature at higher altitudes are very much uncorrelated and the IACTs of the t-walk in Tab.~\ref{tab:priors} agree with those results.
 Alternatively, one could decorrelate the hyper-parameter space using a coordinate system rotation e.g.,~via Cholesky whitening~\cite{KessyWhitening2018}.
