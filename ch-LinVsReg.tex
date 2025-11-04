@@ -183,7 +183,7 @@ In  Fig.~\ref{fig:fandg} we see that $f(\lambda)$ and $g(\lambda)$ are well beha
 Because of this, we approximate $\tilde{g}(\lambda) \approx g(\lambda)$ with a linear approximation in $\lambda$ log-space and $f(\lambda) \approx \tilde{f}(\lambda)$ with a Taylor series around the mode $\lambda_0$ of $\pi(\lambda, \gamma | \bm{y})$.
 The Taylor series coefficient of $f(\lambda)$ is given by
 \begin{align}
-	f^{(r)}& (\lambda_0)= (-1)^{r+1} (\bm{A}^T \bm{y})^T (\bm{B}_0^{-1} \bm{L})^r \bm{B}_0^{-1} \bm{A}_L^T \bm{y} \label{eq:ftay} 
+	f^{(r)}& (\lambda_0)= (-1)^{r+1} (\bm{A}^T \bm{y})^T (\bm{B}_0^{-1} \bm{L})^r \bm{B}_0^{-1} \bm{A}^T \bm{y} \label{eq:ftay} 
 \end{align} 
 with $\bm{B}_0 = \bm{A}^T  \bm{A} + \lambda_0 \bm{L}$.
 Usually a Taylor series includes a factor $(r!)^{-1}$, which in this case cancels~\cite{fox2016fast} so that $f(\lambda)$ is approximated as 
