@@ -55,11 +55,11 @@ Then the mean and the covariance matrix of the posterior distribution for ozone 
 		
 	\end{tikzpicture} 
 	\caption[Directed acyclic graph for ozone retrieval and MTC scheme.]{A DAG for visualisation of the hierarchical modelling process and the conditional dependency between the parameter and the hyper-parameters. The hyper-parameter $\gamma$ deterministically (dotted line) sets the noise covariance $\bm{\Sigma} = \gamma^{-1}\bm{I}$, which then describes the random (solid line) noise vector $\bm{\eta} \sim \mathcal{N}(0, \gamma^{-1}\bm{I})$.
-		The hyper-parameter $\delta$ determines (dotted line) the prior precision matrix $\bm{Q} = \delta \bm{L}$ for the normally distributed (solid line) prior $\bm{x}| \delta \sim \mathcal{N}(0, \delta \bm{L})$, where $\bm{L}$ is a graph Laplacian, see Eq.~\ref{eq:GLapl}.
+		The hyper-parameter $\delta$ determines (dotted line) the prior precision matrix $\bm{Q} = \delta \bm{L}$ for the normally distributed (solid line) prior $\bm{x}| \delta \sim \mathcal{N}(0, (\delta \bm{L})^{-1})$, where $\bm{L}$ is a graph Laplacian, see Eq.~\ref{eq:GLapl}.
 		The hyper-prior distributions (solid line) $\pi(\delta, \gamma)$ are defined by $\bm{\theta}_{\gamma}$ and $\bm{\theta}_{\delta}$.
 		Through a linear forward model $\bm{A}$, we generate a space $\Omega$ of all measurable noise-free data $\bm{A}\bm{x}$.
 		From $\Omega$ we randomly observe a data set $\bm{y}$ including some added noise $\bm{\eta}$.
-		Within the MTC scheme, we evaluate the marginal posterior over the hyper-parameters $\pi(\gamma, \delta | \bm{y})$ first and then the full conditional posterior $\pi(\bm{x}|\delta,\gamma,\bm{y})$. This breaks the correlation structure of $\delta$ and $\gamma$, and $\bm{x}$, and allows us to evaluate the marginal posterior independent of $\bm{x}$.}
+		Within the MTC scheme, we evaluate the marginal posterior over the hyper-parameters $\pi(\gamma, \delta | \bm{y})$ first and then the full conditional posterior $\pi(\bm{x}|\delta,\gamma,\bm{y})$. This breaks the correlation structure of $\delta$ and $\gamma$, and $\bm{x}$, and allows us to evaluate the marginal posterior independently of $\bm{x}$.}
 	\label{fig:DAGO3}
 \end{figure}
 In this section, we set up the hierarchically-ordered linear-Gaussian Bayesian framework to determine the ozone posterior distribution, conditioned on ground truth temperature and pressure.
