@@ -67,7 +67,7 @@ For now the linear forward model matrix is defined as $\bm{A} \coloneqq \bm{A}_L
 The distributions that define the hierarchical Bayesian model are:
 \begin{subequations}
 	\begin{align}
-		\bm{y} |  \bm{x},\gamma,\delta  &\sim \mathcal{N}(\bm{A} \, \bm{x}, \gamma^{-1} \bm{I}) \label{eq:likelihoodAppl} \\
+		\bm{y} |  \bm{x},\delta,\gamma  &\sim \mathcal{N}(\bm{A} \, \bm{x}, \gamma^{-1} \bm{I}) \label{eq:likelihoodAppl} \\
 		\bm{x}| \delta  &\sim \mathcal{N}(\bm{0}, (\delta \bm{L})^{-1} ) \label{eq:priorXAppl} \\
 		\delta  &\sim \mathcal{T}(\alpha_{\delta}, \beta_{\delta})\label{eq:priorDelAppl} \\
 		\gamma  &\sim \mathcal{T}(\alpha_{\gamma}, \beta_{\gamma})\label{eq:priorGamAppl} \, .
