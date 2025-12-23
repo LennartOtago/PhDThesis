@@ -470,7 +470,7 @@ Similar to Sec.~\ref{sec:reg}, this expression becomes
 	\left( \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} + \bm{Q}_{\delta} \right) \bm{x}^{(k)} = \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{y} + \bm{Q}_{\delta} \bm{\mu} + \bm{v}_1 + \bm{v}_2,
 \end{align}
 %where the term $-\hat{\bm{A}}^T \bm{b}$ is decomposed as $\bm{v}_1 + \bm{v}_2$, 
-with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\delta})$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
+with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}^{-1}_{\delta})$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
 
 
 \subsubsection{Posterior ozone samples}
