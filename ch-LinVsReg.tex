@@ -113,7 +113,7 @@ Completing this Bayesian framework one has to define prior distributions over th
 Ideally, we define the prior distributions as uninformative as possible, and include functional dependencies and physical properties.
 
 By choosing a normally distributed prior $\pi(\bm{x}|\delta)$ with zero mean and no other restrictions, it is clear that our model does not take into account that ozone values cannot be negative.
-The the precision matrix of that prior distribution is
+The precision matrix of that prior distribution is
 \begin{align}
 	\delta \bm{L} =
 	\delta
@@ -126,7 +126,7 @@ The the precision matrix of that prior distribution is
 	\end{bmatrix} 
 	\label{eq:GLapl} 
 \end{align}
-which is a discrete approximation to the second derivate operator with Dirichlet boundary condition and defines a 1-dimensional Graph Laplacian as in~\cite{wang2015graphs, fox2016fast}.
+which is a discrete approximation to the second derivative operator with Dirichlet boundary condition and defines a 1-dimensional Graph Laplacian as in~\cite{wang2015graphs, fox2016fast}.
 This matrix will also act as the regulariser later in Sec.~\ref{sec:SolByReg}.
 We reduce the dimension of $\bm{x}$ from $45$ to $n = 34$ by discarding every second ozone VMR over a height of $\approx47$km.
 Doing that, while not changing $\bm{L}$ effectively induces a larger correlation between points at higher altitude.
