@@ -391,7 +391,7 @@ The proposition used to compute $\bm{B}_k$, stated in Prop.~\ref{prob:backMarg},
 
 After computing the coefficient tensors $\bm{R}_{\text{pre},k-1}$ as in Prop.~\ref{prob:ForMarg} and $\bm{B}_{k}$ from Prop.~\ref{prob:backMarg}, the marginal PDF of $k$-th dimension can be expressed as
 \begin{equation}
-	f_{X_k}(x_k)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{k-1} \uplambda_i(X_i) \prod_{i=k+1}^{d} \uplambda_i(X_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \uplambda_k(x_k), \label{eq:MargTT}
+	f_{X_k}(x_k)  \approx \frac{1}{z} \left(\xi \prod_{i=1}^{k-1} \uplambda_i(\mathcal{X}_i) \prod_{i=k+1}^{d} \uplambda_i(\mathcal{X}_i) + \sum_{l_{k-1}=1}^{r_{k-1}} \sum_{l_k=1}^{r_k} \left(\sum_{i=1}^{n} \phi^{(i)}_k(x_k) \bm{D}_k[l_{k-1},i, l_k] \right)^2 \right) \uplambda_k(x_k), \label{eq:MargTT}
 \end{equation}
 where $\bm{D}_k \in \mathbb{R}^{r_{k-1} \times n \times r_k}$ and given as
 \begin{equation}
