@@ -78,7 +78,7 @@ In practice, the estimate for the Monte-Carlo error is:
 \end{align}
 where $W$ is the summation window and we define the IACT as twice the value as in \cite[pp. 103-105]{wolff2002LecNot}.
 The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
-More specifically, the effective sample size $\frac{ \tau_{\text{int}} }{N}$ gives an estimate of how efficient a sampler is.
+More specifically, the effective sample size $\frac{N}{ \tau_{\text{int}} }$ gives an estimate of how efficient a sampler is.
 
 %\section{Measure Theory}
 %\label{ch:Mesure}
@@ -128,6 +128,214 @@ More specifically, the effective sample size $\frac{ \tau_{\text{int}} }{N}$ giv
 \section{Python Code}
 \label{sec:PythonCode}
 %\the\baselineskip
+\begin{mccorrection}
+	At the time this code was developed, I was not aware of an existing Python implementation of the SIRT framework that was under active development~\cite{alexDeepPy}. As a result, the algorithms used in this thesis were implemented independently and tailored specifically to the inverse problems considered here.
+	An alternative MATLAB implementation is available through the TT-Toolbox~\cite{ttToolbox}.
+	
+	The code focuses primarily on efficient posterior approximation and sampling from TT representations. In particular, the implementation of the TT-cross approximation using the \texttt{ttpy} package~\cite{Oseledets2018ttpy} resulted in a substantial reduction in runtime compared to the PyTorch implementation of the SIRT framework by A. de Beer~\cite{alexDeepPy} for the test problems considered in this thesis.
+	
+	Furthermore, the implementation presented here can compute marginal distributions directly, a feature that is currently not available in \cite{alexDeepPy}. Inspecting the marginal distributions provides a useful diagnostic tool for assessing the quality of the TT approximation. If the marginal distributions show unexpected behaviour, this may indicate that the TT approximation is inaccurate or that the chosen computational domain is inadequate.
+	In addition, the possibility of specifying individual TT ranks and initialising the TT approximation from a previous approximation was not available in earlier versions of~\cite{alexDeepPy} and, to the best of my knowledge, is currently under development. These features are important because they allow the approximation to exploit known problem structures, such as localised correlations, and can substantially reduce the number of function evaluations required to construct an accurate TT approximation.
+	
+	However, compared to~\cite{alexDeepPy}, this implementation currently lacks some more general-purpose features, such as changing the reference measure, using alternative interpolation bases, performing deep SIRT~\cite{cui2022deep}, or estimating normalising constants.
+	
+	To install the \texttt{ttpy} package, I found \newline
+	\texttt{pip install git+https://github.com/oseledets/ttpy}
+	to be the most reliable approach. Alternatively, the package can be run via Docker using
+	\texttt{daskol/ttpy}. 
+	The package can then be imported using either
+	\texttt{import tt} or \texttt{import ttpy},
+	depending on the installation.
+	To illustrate the workflow and potential reuse of the code, we provide an example demonstrating how samples and marginal distributions can be generated from a TT approximation.
+\end{mccorrection}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[]{TTtest.png}
+	\caption[]{Test function used in the example code below. Samples were generated using the SIRT-MH scheme (Algorithms~\ref{alg:SIRT} and~\ref{alg:MHCorr}). The figure illustrates the resulting samples, the true distribution and the corresponding marginal distributions.}
+	\label{fig:TTtest}
+\end{figure} 
+	\clearpage
+\begin{lstlisting}[language=Python, columns=flexible,  numbers=none, caption={}, escapeinside={"}{"}]
+import numpy as np
+from scipy.linalg import cho_solve
+import tt.cross
+from tt.cross.rectcross import rect_cross
+
+
+def log_func(indices, univarGrid ,means, inv_cov, const):
+	''' test function, log of a multivariate normal'''
+	Values = np.zeros(len(indices))
+	for j in range(len(indices)):
+		x0 = univarGrid[0][indices[j,0].astype(np.int32)]
+		x1 = univarGrid[1][indices[j,1].astype(np.int32)]
+		x2 = univarGrid[2][indices[j,2].astype(np.int32)]
+		x3 = univarGrid[3][indices[j,3].astype(np.int32)]
+		x = np.array([x0,x1, x2, x3])
+
+		Values[j] = ((x-means).T @  inv_cov) @ (x-means)
+		
+	# to help find an appropriate constant
+	# and to avoid numerical issues
+	# print(max(0.5 * Values - const))
+	return  -0.5 * Values + const
+
+
+# mean and covariance of multivariate normal
+# x0 and x1 are correlated
+means =np.array([1.75, 7/5, 1.4, 1.1])
+cov = np.array([[1.0, 0.8, 0.0, 0.0],
+							 [0.8, 1.0, 0.0, 0.0],
+							 [0.0, 0.0, 1.0, 0.0],
+							 [0.0, 0.0, 0.0, 1.0]])
+
+
+# Cholesky decomposition
+L = np.linalg.cholesky(cov)
+# Cholesky-based inverse
+inv_cov = cho_solve((L, True), np.eye(cov.shape[0]))
+
+# define grid for tt approximation
+gridSize = 40
+univarGrid = [np.linspace(-2, 5.5, gridSize),
+					    np.linspace(-2.5, 5, gridSize),
+					    np.linspace(-2.5, 5, gridSize),
+					    np.linspace(-2.5, 5, gridSize)]
+dim = len(univarGrid)
+
+# define squared function and choose constant to avoid numerical issues on the grid
+const = 15
+# function to be approximated
+squaredFunc = lambda indices: np.exp(0.5 * log_func(indices, univarGrid, means, inv_cov, const))
+
+# initial ranks
+# fixed rank
+# initRank = dim
+# define individual ranks and exploit correlation structure
+initRank = np.array([ 1,  10, 2, 2 , 1])
+
+
+# random initial cores
+f0 = tt.rand(gridSize, dim, r=initRank)
+# you may not want to start from a random initialisation
+# and instead initialise from a previous approximation
+# for i in range(0, dim):
+#     try:
+#         errIndicator = False
+#         f0.core[range(f0.ps[i] - 1, f0.ps[i + 1] - 1)] = np.loadtxt('TTCore' + str(i) + '.txt')
+#         # TTCore[i] = f0.core[range(f0.ps[i] - 1, f0.ps[i + 1] - 1)].reshape((f0.r[i], f0.n[i], f0.r[i + 1]), order='F')
+#     except ValueError:
+#         errIndicator = True
+#         pass
+# if errIndicator:
+#     print('Dimensions or ranks of previous TT approximation do not match current setup')
+
+# ! taken from ttpy package !
+'''
+for rect_cross.cross
+:param myfun: Vectorized function of d variables (it accepts I x D integer array as an input, and produces I numbers as output)
+:type myfun: function handle
+
+:param kickrank: Tuning parameter, what is the minimal rank increase at each step, the larger the more robust 
+is the method, but it is also slower and gives larger ranks
+:type kickrank: int
+
+:param rf: Tuning parameter, maximal rank grow factor at each microstep (i.e. the new rank can not be larger than rf * rold)
+:type rf: float
+'''
+
+# run TT-cross to generate tensor-train approximation
+ttTrain = rect_cross.cross(squaredFunc , f0, nswp=2, kickrank=0, rf=0, eps=1e-100)
+print(ttTrain)
+
+TTCore = [None] * dim
+# Cores of f must be extracted carefully, since we might have discontinuous ps
+core = np.zeros((ttTrain.core).size, dtype=np.float64)
+ps_my = 0
+for i in range(0, ttTrain.d):
+	cri = ttTrain.core[range(ttTrain.ps[i] - 1, ttTrain.ps[i + 1] - 1)]
+	#print(cri)
+	#np.savetxt('ttSQcorePT'+str(i)+'.txt', cri, header = str(ttTrain.r[i])+ ' ,'+ str( ttTrain.n[i])+ ',' +str( ttTrain.r[i + 1]) )
+	TTCore[i] = cri.reshape((ttTrain.r[i] , ttTrain.n[i] , ttTrain.r[i + 1]), order = 'F')
+	core[range(ps_my, ps_my + ttTrain.r[i] * ttTrain.n[i] * ttTrain.r[i + 1])] = cri
+	ps_my = ps_my + ttTrain.r[i] * ttTrain.n[i] * ttTrain.r[i + 1]
+
+# generate samples via the SIRT scheme
+# Inputs:
+#   seeds      : uniform random numbers used by the inverse Rosenblatt transform
+#   TTCore     : TT cores representing the target density
+#   univarGrid : grids for each parameter
+#   B          : precomputed backwards marginalisation
+#   absError   : set constant as in "Eq.~\ref{eq:SQTTapprox}"
+# Outputs:
+#   Sampl      : samples generated from the TT approximation via the SIRT scheme
+#   probVal    : values of the conditional marginal densities encountered
+#                during the inverse Rosenblatt transform
+#   Approx     : TT approximation evaluated at the generated samples
+
+numbSampl = 10000
+seeds = np.random.uniform(size = (dim,numbSampl))
+B = MargBack(TTCore, univarGrid)
+absError = 1e-5
+Sampl, probVal, Approx = SIRT(seeds, TTCore, univarGrid, B, absError)
+
+
+def logPost(x):
+	x.reshape((dim,1))
+	return  -0.5 *  ((x-means).T @  inv_cov) @ (x-means) + const
+	
+# apply Metropolis-Hastings correction to the SIRT samples
+# Inputs:
+#   Sampl      : samples generated by the SIRT scheme
+#   Approx     : TT approximation evaluated at the SIRT samples
+#   logPost    : exact log function
+#   probVal    :  conditional marginal probability values from the SIRT scheme
+# Outputs:
+#   MHSampl      : MH-corrected samples
+#   MHApproxVal  : TT approximation evaluated at accepted samples
+#   MHTrueVal    : exact log-posterior values at accepted samples
+#   SIRTTrueVal  : exact log-posterior values at SIRT proposals
+#   accProb      : MH acceptance probabilities
+MHSampl, MHApproxVal, MHTrueVal, SIRTTrueVal, accProb = MHcorrection(Sampl, Approx, logPost, probVal)
+
+#relMeanSQError = relative_rms_error(SIRTTrueVal, Approx)
+relMeanSQError = relative_rms_error(MHTrueVal[::2], MHApproxVal[::2])
+print(f'relative RMS Error: {relMeanSQError * 100:.1f}%')
+
+# integrated autocorrelation from U. Wolff
+# by Python implementation of D. Hesse
+# install via: pip install py-uwerr
+from puwr import tauint
+for i in range(0,dim):
+	mean, delta, tint, d_tint, fig = tauint([[MHSampl[i]]], 0)
+	print(f'Integrated autocorrelation time of {2*tint:.2f} \u00B1 {2*d_tint:.2f}')
+
+# calculate marginal PDFs
+margPDF = getMargPDF(TTCore, univarGrid, absError)
+
+import matplotlib.pyplot as plt
+fig, axs = plt.subplots(dim,1, tight_layout = True)
+for i in range(0,dim):
+	axs[i].plot(univarGrid[i],margPDF[i], linewidth = 6, color = 'k', label = 'TT approx.')
+	axs[i].plot(univarGrid[i], normal_func(univarGrid[i], means[i], cov[i,i]), linewidth=1.5, color='r', label = 'True func.')
+	if i == 0:
+		h, l = axs[i].get_legend_handles_labels()
+		axs[i].legend([h[i]], [l[i]], loc = 'upper right')
+	elif i == 1:
+		h, l = axs[i].get_legend_handles_labels()
+		axs[i].legend([h[i]], [l[i]], loc = 'upper right')
+	axT = axs[i].twinx()
+	# axT.hist(Sampl[i], alpha=0.75 , label = 'SIRT Samples', bins = 20)
+	axT.hist(MHSampl[i], alpha=0.75 , label = 'SIRT-MH Samples', bins = 20)
+	if i == 2:
+		axT.legend(loc = 'upper right')
+	axT.set_yticklabels([])
+	axs[i].set_yticklabels([])
+	axs[i].set_xlabel('$x_'+str(i)+'$')
+#plt.savefig('TTtest.png', dpi = 300)
+plt.show()
+\end{lstlisting}
+\clearpage
 
 \begin{lstlisting}[language=Python, columns=flexible,  numbers=none, caption={Python code to calculate backward coefficients $\bm{B}$ as in Prop.~\ref{prob:backMarg} and~\cite{cui2022deep}.}, escapeinside={"}{"}]
 def MargBack(TTCore, univarGrid):
@@ -139,7 +347,7 @@ def MargBack(TTCore, univarGrid):
 	R = [None] * dim
 	C = [None] * dim
 	
-	# compute forward marginalisation coefficients sarting at k = dim - 1
+	# compute backward marginalisation coefficients sarting at k = dim - 1
 	for k in range(dim - 1, 0, -1):
 		r_kmin1, n, r_k = np.shape(TTCore[k])
 		# "Eq.~\ref{eq:MassMat}, \cite[Eq.~22]{cui2022deep}" !! we set Lebesgue Measure to const = one
@@ -147,28 +355,29 @@ def MargBack(TTCore, univarGrid):
 		L = np.linalg.cholesky(M)
 		
 		# construct Tensor C  "Eq.~\ref{eq:constrCBack}, \cite[Eq.~27]{cui2022deep}"
-		C[k] = np.zeros((r_kmin1, n, r_k))
-		for alpha in range(0, r_kmin1):
-			for l in range(0, r_k):
-				C[k][alpha, :, l] = B[k][alpha, :, l] @ L[:, :]
-		
+		# C[k] = np.zeros((r_kmin1, n, r_k))
+		# for alpha in range(0, r_kmin1):
+		#     for l in range(0, r_k):
+		#         C[k][alpha, :, l] = B[k][alpha, :, l] @ L[:, :]
+		C[k] = np.einsum('jbi,kl->jbi', B[k], L)
+
 		# unfold along first coordinate and compute thin QR decomposition of C^T "Eq.~\ref{eq:thinQRBack}, \cite[Eq.~28]{cui2022deep}"
 		Q, R[k] = np.linalg.qr(C[k].reshape((r_kmin1, n * r_k), order='C').transpose(), mode='reduced')
 		
 		# compute next coefficient tensor "Eq.~\ref{eq:nextCoeffTBack}, \cite[Eq.~29]{cui2022deep}"
-		r_kmin2, n, r_kmin1 = np.shape(TTCore[k - 1])
-		B[k - 1] = np.zeros(np.shape(TTCore[k - 1]))
-		for alpha_2 in range(0, r_kmin2):
-			for l_1 in range(0, r_kmin1):
-				B[k - 1][alpha_2, :, l_1] = TTCore[k - 1][alpha_2, :, :] @ R[k][l_1, :]
-
-return B
+		# r_kmin2, n, r_kmin1 = np.shape(TTCore[k - 1])
+		# B[k - 1] = np.zeros(np.shape(TTCore[k - 1]))
+		# for alpha_2 in range(0, r_kmin2):
+		#     for l_1 in range(0, r_kmin1):
+		#         B[k - 1][alpha_2, :, l_1] = TTCore[k - 1][alpha_2, :, :] @ R[k][l_1, :]
+		B[k - 1] = np.einsum('jbi,ki->jbk', TTCore[k - 1], R[k])
+	return B
 
 \end{lstlisting}
 \clearpage
-\clearpage
+
 \begin{lstlisting}[language=Python,  numbers=none, columns=flexible, caption={Python code to calculate forward coefficients $\bm{R}_{\text{pre}}, \bm{B}_{\text{pre}}$ as in Prop.~\ref{prob:ForMarg}.}, escapeinside={"}{"}]
-	def MargForw(TTCore, univarGrid):
+def MargForw(TTCore, univarGrid):
 	''' forward marginalisation (see "Prop.~\ref{prob:ForMarg}") 
 		similar to backward marginalsiation as in Cui and Dolgov "\cite{cui2022deep}" '''
 	
@@ -189,20 +398,22 @@ return B
 		L = np.linalg.cholesky(M)
 		
 		# construct Tensor C  "Eq.~\ref{eq:constrCForw}"
-		Cpre[k] = np.zeros((r_kmin1, n, r_k))
-		for alpha in range(0, r_kmin1):
-			for l in range(0, r_k):
-				Cpre[k][alpha, :, l] = Bpre[k][alpha, :, l] @ L[:, :]
+		# Cpre[k] = np.zeros((r_kmin1, n, r_k))
+		# for alpha in range(0, r_kmin1):
+		#     for l in range(0, r_k):
+		#         Cpre[k][alpha, :, l] = Bpre[k][alpha, :, l] @ L[:, :]
+		Cpre[k] = np.einsum( 'ail,it->atl', Bpre[k], L)
 		
 		# unfold along first coordinate and compute thin QR decomposition of C as in "Eq.~\ref{eq:thinQRForw}"
 		Q, Rpre[k] = np.linalg.qr(Cpre[k].reshape((r_kmin1 * n, r_k), order='C'), mode='reduced')
 		
 		# compute next coefficient tensor  "Eq.~\ref{eq:nextCoeffTForw}"
-		r_k, n, r_kpls1 = np.shape(TTCore[k + 1])
-		Bpre[k + 1] = np.zeros(np.shape(TTCore[k + 1]))
-		for alpha_1 in range(0, r_kpls1):
-			for l_1 in range(0, r_k):
-				Bpre[k + 1][l_1, :, alpha_1] = Rpre[k][l_1,:] @ TTCore[k + 1][:, :, alpha_1]
+		# r_k, n, r_kpls1 = np.shape(TTCore[k + 1])
+		# Bpre[k + 1] = np.zeros(np.shape(TTCore[k + 1]))
+		# for alpha_1 in range(0, r_kpls1):
+		#     for l_1 in range(0, r_k):
+		#         Bpre[k + 1][l_1, :, alpha_1] = Rpre[k][l_1,:] @ TTCore[k + 1][:, :, alpha_1]
+		Bpre[k + 1] = np.einsum('lj,jbi->lbi', Rpre[k], TTCore[k + 1])
 		
 	return Rpre, Bpre
 	
@@ -210,6 +421,7 @@ return B
 
 
 \clearpage
+\vspace*{-1cm}
 \begin{lstlisting}[language=Python,	 numbers=none, columns=flexible, caption = {Python code to draw samples via the SIRT scheme as in Alg.~Box~\ref{alg:SIRT}.}, escapeinside={"}{"}]
 def SIRT(seeds, SQTT, univarGrid, B, absError):
 	''' do squared inverse rosenblatt transform (SIRT) as in "Alg.~Box~\ref{alg:SIRT}" and "\cite{cui2022deep}" '''
@@ -232,10 +444,10 @@ def SIRT(seeds, SQTT, univarGrid, B, absError):
 	# sample from first dimension "\cite[Eq.~30]{cui2022deep}"
 	firstMarg = gamError * lamX[0] + np.sum(B[0][0, :, :] ** 2, 1)
 	# cumulative distribution function, normalised numerically "Eq.~\ref{eq:CurrCDF}~\cite[Eq.~17]{cui2022deep}"
-	firstCDF = np.cumsum(firstMarg / np.sum(firstMarg))
+	firstCDF = scy.integrate.cumulative_trapezoid(firstMarg, univarGrid[0], initial=0)
 	# draw samples as 'inverse transform'
-	sampls[0] = np.interp(seeds[0], firstCDF, univarGrid[0])
-	probVal[0] = np.interp(sampls[0], univarGrid[0], firstMarg / np.sum(firstMarg))
+	sampls[0] = np.interp(seeds[0], firstCDF / firstCDF[-1], univarGrid[0])
+	probVal[0] = np.interp(sampls[0], univarGrid[0], firstMarg / firstCDF[-1])
 	
 	# sample from other dimensions
 	for n in range(0, numbSampl):
@@ -243,22 +455,23 @@ def SIRT(seeds, SQTT, univarGrid, B, absError):
 		CurrApprCore = LinInterPol(SQTT[0], univarGrid[0], sampls[0][n])
 		for d in range(1, dim):
 			# calculate marginal PDF conditioned on previous samples
-			rank_min, gridSize, rank_pls = B[d].shape
-			MargDep = np.zeros((B[d].shape))
-			for r in range(0, rank_min):
-				# condition on previous samples
-				MargDep[r, :, :] = CurrApprCore[0, r] * B[d][r, :, :]
+			# rank_min, gridSize, rank_pls = B[d].shape
+			# MargDep = np.zeros((B[d].shape))
+			# for r in range(0, rank_min):
+			# # condition on previous samples
+			#     MargDep[r, :, :] = CurrApprCore[0, r] * B[d][r, :, :]
+			MargDep = np.einsum('lj,jbi->jbi', CurrApprCore, B[d])
 				
 			# calculate current 'conditional marginal' PDF as in "Eq.~\ref{eq:CurrMarg}~\cite[Eq.~31]{cui2022deep}"
 			currMarg = gamError * lamX[d] + np.sum(np.sum(np.copy(MargDep), axis=0)** 2,
 				axis=1) 
 			 
 			# normalise current PDF and compute CDF as in "Eq.~\ref{eq:CurrCDF} \cite[Eq.~17]{cui2022deep}"
-			currCDF = np.cumsum(currMarg / np.sum(currMarg))
+			currCDF = scy.integrate.cumulative_trapezoid(currMarg, univarGrid[d], initial=0) 
 			
 			# draw sample as 'inverse transform'
-			sampls[d][n] = np.interp(seeds[d][n], currCDF, univarGrid[d])
-			probVal[d][n] = np.interp(sampls[d][n], univarGrid[d], currMarg / np.sum(currMarg))
+			sampls[d][n] = np.interp(seeds[d][n], currCDF/currCDF[-1], univarGrid[d])
+			probVal[d][n] = np.interp(sampls[d][n], univarGrid[d], currMarg/currCDF[-1])
 			# piecew. poly. interpol., "Eq.~\ref{eq:LinPol}~\cite{dolgov2020approximation}", cond. on sampl. for next PDF
 			CurrApprCore = np.copy(CurrApprCore) @ LinInterPol(SQTT[d], univarGrid[d], sampls[d][n]) 
 	
@@ -266,6 +479,65 @@ def SIRT(seeds, SQTT, univarGrid, B, absError):
 		Approx[n] = gamError + CurrApprCore ** 2
 	
 	return sampls, probVal, Approx
+\end{lstlisting}
+\clearpage
+\begin{lstlisting}[language=Python,	 numbers=none, columns=flexible, caption = {Python code to correct samples via the MH correction scheme.}, escapeinside={"}{"}]
+def MHcorrection(samples, approx, trueLogFunc, probVals):
+	accCount = 0
+	rejCount = 0
+	dim, numbSampl = samples.shape
+	accProb = np.zeros(numbSampl - 1)
+	correctSampl = np.zeros((dim, numbSampl))
+	
+	chainFuncTrueVal = np.zeros(numbSampl)
+	chainFuncApproxVal = np.zeros(numbSampl)
+	proposalFuncTrueVal = np.zeros(numbSampl)
+	
+	# initialise
+	correctSampl[:, 0] = np.copy(samples[:, 0])
+	
+	currLogTarget = trueLogFunc(samples[:, 0])
+	currLogTTDensity = np.sum(np.log(probVals[:, 0]))
+	currTTApprox = np.copy(approx[0])
+	
+	chainFuncApproxVal[0] = currTTApprox
+	chainFuncTrueVal[0] = np.exp(currLogTarget)
+	proposalFuncTrueVal[0] = np.exp(currLogTarget)
+	
+	for i in range(1, numbSampl):
+		propLogTarget = trueLogFunc(samples[:, i])
+		propLogTTDensity = np.sum(np.log(probVals[:, i]))
+		
+		proposalFuncTrueVal[i] = np.exp(propLogTarget)
+		
+		MHRatioTT = currLogTTDensity - propLogTTDensity
+		# alternatively
+		# MHRatioTT = np.log(approx[i-1]) - np.log(approx[i])
+		# MHRatioFunc = trueLogFunc(samples[:, i]) - trueLogFunc(correctSampl[:, i - 1])
+		MHRatioFunc = propLogTarget - currLogTarget
+		MHRatio = min(np.exp(MHRatioTT + MHRatioFunc), 1)
+		accProb[i - 1] = MHRatio
+		u = np.random.uniform()
+		if u <= MHRatio:
+			# accept
+			accCount += 1
+			correctSampl[:, i] = np.copy(samples[:, i])
+			
+			currLogTarget = propLogTarget
+			currLogTTDensity = propLogTTDensity
+			currTTApprox = np.copy(approx[i])
+		else:
+			# reject
+			rejCount += 1
+			correctSampl[:, i] = np.copy(correctSampl[:, i - 1])
+		
+		chainFuncApproxVal[i] = currTTApprox
+		chainFuncTrueVal[i] = np.exp(currLogTarget)
+	
+	print(f'MH correction with {accCount} accepted and {rejCount} rejected proposal samples')
+	
+	return correctSampl, chainFuncApproxVal, chainFuncTrueVal, proposalFuncTrueVal, accProb
+
 \end{lstlisting}
 \clearpage
 \begin{lstlisting}[language=Python,	 numbers=none, columns=flexible, caption = {Python code to calculate marginal PDFs as in Sec.~\ref{subsec:TTMarg}.}, escapeinside={"}{"}]
@@ -309,11 +581,12 @@ def getMargPDF(TTCore, univarGrid, absError):
 		
 		else:
 			# other dimensions
-			r_kmin1, n, r_k = np.shape(B[k])
-			D[k] = np.zeros((r_kmin1, n, r_k))
-			for l_k in range(0, r_k):
-				for l_kmin1 in range(0, r_kmin1):
-					D[k][l_kmin1,:,l_k] = Rpre[k-1][l_kmin1,:] @ B[k][:, :, l_k]
+			# r_kmin1, n, r_k = np.shape(B[k])
+			# D[k] = np.zeros((r_kmin1, n, r_k))
+			# for l_k in range(0, r_k):
+			#     for l_kmin1 in range(0, r_kmin1):
+			#         D[k][l_kmin1,:,l_k] = Rpre[k-1][l_kmin1,:] @ B[k][:, :, l_k]
+			D[k] = np.einsum('lj,jbi->lbi', Rpre[k - 1], B[k])
 			# marginal PDF as in "Eq.~\ref{eq:MargTT}"
 			margPDF[k] = gamError * np.prod(WholeLebLam[k + 1:]) * np.prod(WholeLebLam[:k]) 
 				"\phantom{margPDF[k] = gamError  }" + np.sum(np.sum(D[k] ** 2,0),1)  * WholeLebLam[k]
@@ -344,4 +617,112 @@ def LinInterPol(TTCore,univarGrid, sampl):
 \end{lstlisting}
 \clearpage
 
+\section{Randomise then Optimise -- Additional Information}
+\label{sec:RTO_additional}
+\begin{mccorrection} 
+Recall we want to draw a sample from the full conditional 
+\begin{equation*}
+	\adjustbox{max width=0.99\textwidth}{$
+		\bm{x} | \bm{\theta}, \delta, \gamma , \bm{y}\sim \mathcal{N}\Big(\underbrace{ \bm{\mu} + \big(\bm{Q}_{\delta} + \bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1} \bm{A}_{\bm{\theta}} \big)^{-1} \bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1} (\bm{y} - \bm{A}_{\bm{\theta}}\bm{\mu})}_{\bm{\mu}_{\bm{x} | \bm{\theta} , \delta, \gamma,  \bm{y}}},\underbrace{ \big(\bm{Q}_{\delta} + \bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1} \bm{A}_{\bm{\theta}}\big)^{-1}}_{\bm{\Sigma}_{\bm{x} | \bm{\theta} , \delta, \gamma,  \bm{y}}} \Big)\,$.}
+\end{equation*}
+Through the RTO method we obtain one independent sample $\bm{x}^{(k)} \sim \pi(\bm{x}|   \bm{\theta},  \delta, \gamma,  \bm{y})$ of the full conditional by solving the following equation:
+\begin{align*}
+	\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2  \, , \text{ where}\\
+	\hat{\bm{A}} \coloneqq 
+	\begin{bmatrix}
+		\bm{\Sigma}_{\gamma}^{-1/2} \bm{A}_{\bm{\theta}} \ \\
+		\bm{Q}_{\delta}^{1/2}
+	\end{bmatrix}, \quad 
+	\hat{\bm{y}} \coloneqq 
+	\begin{bmatrix}
+		\bm{\Sigma}_{\gamma}^{-1/2} \bm{y} \\
+		\bm{Q}_{\delta}^{1/2} \bm{\mu}
+	\end{bmatrix} , 
+\end{align*}
+$\bm{Q}_{\delta}$ is the prior precision, $\bm{\mu}$ the prior mean, $\bm{\Sigma}_{\gamma}$ the noise covariance  and $\bm{b} \sim \mathcal{N}(0,\bm{I})$ (see also~\cite{bardsley2014randomize,BardsleyTC2019RTO}).
 
+In the following, we show that this optimisation problem indeed generates a sample from the desired conditional posterior distribution. 
+We begin by considering $\lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2$, which we rewrite as:
+\begin{align*}
+	&\lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 = \big( \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \big)^T  \big(	 \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \big)  \\
+	&= \begin{bmatrix}
+		\bm{\Sigma}_{\gamma}^{-1/2} \bm{A}_{\bm{\theta}} \bm{x} - 	\bm{\Sigma}_{\gamma}^{-1/2} \bm{y} - \tilde{\bm{v}}_1  \\
+		\bm{Q}_{\delta}^{1/2} \bm{x}-	\bm{Q}_{\delta}^{1/2} \bm{\mu}-\tilde{\bm{v}}_2
+	\end{bmatrix}^T 	 \begin{bmatrix}
+		\bm{\Sigma}_{\gamma}^{-1/2} \bm{A}_{\bm{\theta}} \bm{x} - 	\bm{\Sigma}_{\gamma}^{-1/2} \bm{y} -\tilde{\bm{v}}_1  \\
+		\bm{Q}_{\delta}^{1/2} \bm{x}-	\bm{Q}_{\delta}^{1/2}  \bm{\mu} - \tilde{\bm{v}}_2
+	\end{bmatrix}\\
+	&= \begin{bmatrix}
+		\bm{x}^T \bm{A}_{\bm{\theta}}^T (\bm{\Sigma}_{\gamma}^{-1/2})^T - 	 \bm{y}^T (\bm{\Sigma}_{\gamma}^{-1/2} )^T- \tilde{\bm{v}}_1^T &
+		\bm{x}^T	(\bm{Q}_{\delta}^{1/2})^T -	\bm{\mu}^T (\bm{Q}_{\delta}^{1/2})^T -\tilde{\bm{v}}_2^T
+	\end{bmatrix}	 \begin{bmatrix}
+		\bm{\Sigma}_{\gamma}^{-1/2} \bm{A}_{\bm{\theta}} \bm{x} - 	\bm{\Sigma}_{\gamma}^{-1/2} \bm{y} -\tilde{\bm{v}}_1\\
+		\bm{Q}_{\delta}^{1/2} \bm{x}-	\bm{Q}_{\delta}^{1/2} \bm{\mu}-\tilde{\bm{v}}_2
+	\end{bmatrix}\\
+	&\begin{aligned}
+		= \big[ \bm{x}^T \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} \bm{x}   - 	 \bm{y}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} \bm{x}  -\tilde{\bm{v}}_1^T	\bm{\Sigma}_{\gamma}^{-1/2}  \bm{A}_{\bm{\theta}} \bm{x} 
+		-\bm{x}^T \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y}  +	 \bm{y}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y} +\tilde{\bm{v}}_1^T	\bm{\Sigma}_{\gamma}^{-1/2}   \bm{y}\\
+		-\bm{x}^T \bm{A}_{\bm{\theta}}^T (\bm{\Sigma}_{\gamma}^{-1/2})^T \tilde{\bm{v}}_1    + 	 \bm{y}^T (\bm{\Sigma}_{\gamma}^{-1/2})^T \tilde{\bm{v}}_1  +\tilde{\bm{v}}_1^T\tilde{\bm{v}}_1
+		+	\bm{x}^T	\bm{Q}_{\delta} \bm{x} -	\bm{\mu}^T \bm{Q}_{\delta}\bm{x} -\tilde{\bm{v}}_2^T \bm{Q}_{\delta} ^{1/2} \bm{x}\\
+		-	\bm{x}^T	\bm{Q}_{\delta}  \bm{\mu} +	\bm{\mu}^T \bm{Q}_{\delta} \bm{\mu} + \tilde{\bm{v}}_2^T \bm{Q}_{\delta} ^{1/2}\bm{\mu}
+		-	\bm{x}^T	(\bm{Q}_{\delta} ^{1/2})^T \tilde{\bm{v}}_2 +	\bm{\mu}^T (\bm{Q}_{\delta}^{1/2})^T \tilde{\bm{v}}_2 +\tilde{\bm{v}}_2^T\tilde{\bm{v}}_2 \big] 
+	\end{aligned}
+\end{align*}
+with $\tilde{\bm{v}}_1 \sim \mathcal{N}(\bm{0},  \bm{I}_m)$ and $\tilde{\bm{v}}_2 \sim \mathcal{N}(\bm{0}, \bm{I}_n )$, since $\bm{y}\in \mathbb{R}^m$ and $\bm{x}\in \mathbb{R}^n$.
+We take the derivative with respect to $\bm{x}$ and set to zero to determine $\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 $.
+\begin{align*}
+	\begin{aligned}
+		\big[ 		2 \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} \bm{x}^{(k)}    - 	 \bm{y}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}}   -\tilde{\bm{v}}_1^T	\bm{\Sigma}_{\gamma}^{-1/2}  \bm{A}_{\bm{\theta}} 
+		- \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y}  -	 
+		\bm{A}_{\bm{\theta}}^T (\bm{\Sigma}_{\gamma}^{-1/2})^T \tilde{\bm{v}}_1  \\
+		+ 	2	\bm{Q}_{\delta} \bm{x}^{(k)}  -	\bm{\mu}^T \bm{Q}_{\delta} -\tilde{\bm{v}}_2^T\bm{Q}_{\delta} ^{1/2} -		\bm{Q}_{\delta}  \bm{\mu} 
+		-	(\bm{Q}_{\delta} ^{1/2})^T \tilde{\bm{v}}_2\big] = 0
+	\end{aligned} 
+\end{align*}
+Observe that e.g. $(\bm{\Sigma}^{-1})^T = \bm{\Sigma}^{-1}$ and $ \bm{y}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} +  \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y}  =  2\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y}  $.
+Then we can rewrite
+\begin{align*}
+	\Leftrightarrow&&	0=& 2 \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} \bm{x}^{(k)} 
+	- 2 \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y}  -	 
+	2 \bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1/2} \tilde{\bm{v}}_1    
+	+2	\bm{Q}_{\delta} \bm{x}^{(k)}  -		2 \bm{Q}_{\delta}  \bm{\mu} 
+	-	2	\bm{Q}_{\delta} ^{1/2} \tilde{\bm{v}}_2  \\
+	\Leftrightarrow&&	0 =& \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} \bm{x}^{(k)}  
+	-  \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y}  
+	-	 
+	\bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1/2} \tilde{\bm{v}}_1   
+	+
+	\bm{Q}_{\delta} \bm{x}^{(k)}  -		 \bm{Q}_{\delta}  \bm{\mu} 
+	-	\bm{Q}_{\delta} ^{1/2} \tilde{\bm{v}}_2  \\
+	\Leftrightarrow&&		\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} \bm{x}^{(k)} 
+	+ \bm{Q}_{\delta} \bm{x}^{(k)}
+	=& 	\bm{Q}_{\delta} ^{1/2} \tilde{\bm{v}}_2  +
+	\bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1/2} \tilde{\bm{v}}_2  +		 \bm{Q}_{\delta}  \bm{\mu} + \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y}     \\
+	\Leftrightarrow&&  (\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} 
+	+ \bm{Q}_{\delta} )\bm{x}^{(k)} 
+	=& 	 	 \bm{Q}_{\delta}  \bm{\mu} + \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y}  +\underbrace{\bm{Q}_{\delta} ^{1/2} \tilde{\bm{v}}_2}_{\sim \mathcal{N}(0,\bm{Q}_{\delta})}  +
+	\underbrace{ \bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1/2} \tilde{\bm{v}}_1 }_{\sim \mathcal{N}(0,\bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1}\bm{A}_{\bm{\theta}})}   \\
+	\Leftrightarrow&&	(\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} 
+	+ \bm{Q}_{\delta} )\bm{x}^{(k)}
+	=& 	 	 \bm{Q}_{\delta}  \bm{\mu} + \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y}  +\bm{w}  \, , \text{with } \bm{w} \sim \mathcal{N}(0,\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} 
+	+ \bm{Q}_{\delta}) \, .
+\end{align*}
+Furthermore,
+\begin{align*}
+	\bm{x}^{(k)}
+	= 	 	(\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} 
+	+ \bm{Q}_{\delta} )^{-1}(\bm{Q}_{\delta}  \bm{\mu} + \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y})  + \tilde{\bm{w} } \, , \text{with } \tilde{\bm{w} } \sim \mathcal{N}(0,(\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} 
+	+ \bm{Q}_{\delta} )^{-1}) \, .
+\end{align*}
+Finally we show that
+\begin{align*}
+	\bm{x}^{(k)} 	&= 	 	(\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} 
+	+ \bm{Q}_{\delta} )^{-1}(\bm{Q}_{\delta}  \bm{\mu}+ \bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1}  \bm{A}_{\bm{\theta}} \bm{\mu}- \bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1}  \bm{A}_{\bm{\theta}} \bm{\mu} + \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  \bm{y})  + \tilde{\bm{w} }\\
+	&= 	 	(\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} 
+	+ \bm{Q}_{\delta} )^{-1}(( \bm{Q}_{\delta}+ \bm{A}_{\bm{\theta}}^T \bm{\Sigma}_{\gamma}^{-1}  \bm{A}_{\bm{\theta}}   )\bm{\mu}+ \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  (\bm{y}-\bm{A}_{\bm{\theta}} \bm{\mu}  ))  + \tilde{\bm{w} }\\
+	&= 	 \underbrace{\bm{\mu}+	(\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} 
+	+ \bm{Q}_{\delta} )^{-1} \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}  (\bm{y}-\bm{A}_{\bm{\theta}} \bm{\mu}  )}_{\bm{\mu}_{\bm{x} | \bm{\theta} , \delta, \gamma,  \bm{y}}}  + \tilde{\bm{w} } \, \text{ which implies }\\
+\bm{x}^{(k)}  | \bm{\theta}, \delta, \gamma , \bm{y} &\sim \mathcal{N}(\bm{\mu}+	(\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} + \bm{Q}_{\delta} )^{-1}\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma}(  \bm{y}-\bm{A}_{\bm{\theta}} \bm{\mu}),(\bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}} 
++ \bm{Q}_{\delta} )^{-1}) \, .
+\end{align*}
+\end{mccorrection} 

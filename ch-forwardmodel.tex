@@ -256,7 +256,7 @@ If the singular values decay slowly and many singular values lie above an SNR of
 	\centering
 	\includegraphics{SingValA.png}
 	\caption[Singular values of linear forward model matrix for different sequences of measurements.]{Singular values of the linear forward model matrix for different sequences of measurements.
-	The corresponding tangent heights of the test cases are plotted in Fig.~\ref{fig:TangHCases}. The dotted vertical line marks an SNR according to $\sigma_1$ of measurement case 5.}
+	The corresponding tangent heights of the test cases are plotted in Fig.~\ref{fig:TangHCases}. The dotted horizontal line marks an SNR according to $\sigma_1$ of measurement case 5.}
 \label{fig:SingA}
 \end{figure}
 In Fig.~\ref{fig:SingA}, we plot the singular values for each of the measurement cases.
@@ -267,12 +267,12 @@ Additionally, case 2 has a smaller effective rank than cases 3, 4, and 5.
 The singular values of case 1 are decreasing most rapidly compared to all other cases. Case 1 has the largest number of singular values below an SNR of 150 and the smallest effective rank.
 We conclude that neither case 1 nor case 2 is effective.
 
-Cases 3, 4, and 5 with equidistantly spaced pointing angles have similar effective ranks and the singular values do not decrease as quickly compared to case 1 and case 2.
-Case 4 measures almost twice as much compared to case 3, but does not provide much more information, which would justify the engineering effort required to achieve such pointing accuracy.
-The slightly larger pointing accuracy in case 5 compared to case 3 provides similar information.
-The last 5 to 10 singular values of case 3 are so small that the information will be lost due to the noise.
+\mccorrect{Cases 3, 4, and 5 with equidistantly spaced pointing angles have similar effective ranks, and their singular values decrease more slowly compared to cases 1 and 2. Although case 4 uses twice as many measurements as case 3, the additional measurements provide only limited additional information, as reflected by the similar effective ranks and singular value behaviour. Consequently, the additional engineering effort required to achieve the higher pointing accuracy is not justified by the comparatively small increase in information provided by the forward model. Similarly, the slightly lower pointing accuracy in case 5 compared to case 3 still provides a comparable effective rank and therefore a similar amount of usable information.
+}
+The last 5 to 10 singular values of case 3 are so small that the associated information will be lost due to the noise.
 That is why, without losing too much crucial information above the SNR of 150 case 5 measures only up to a height of $\approx 68$km instead of $\approx83$km where the data is noise-dominated.
 Note that if one wanted to obtain all information provided by the forward model, an SNR of roughly $10^4$ is required.
+
 %\textcolor{red}{Oh come on, you are showing pictures of singular values without specifying exactly what the forward map and discretization is. That's not acceptable. If these are intended to be indicative, you need to be a damn site clearer about what they represent, and are trying to show.}
 %\textcolor{red}{why? Explain your reasoning. If you don't say something specific, quantitative, it's just waffle.}
 % \textcolor{red}{where is this spacing? At the satellite? A spacing in time? On the planet Mars. Be specific. All the way through, you need to tighten up loose statements like this.}
@@ -292,7 +292,8 @@ Note that if one wanted to obtain all information provided by the forward model,
 %\textcolor{red}{where do you explain why this SNR has a line here?,
 	%Were is the clear definition of these cases? I could not find it.}
 
-In principle, this shows that it does matter how one measures, but the forward model does not provide more information by measuring more in regions where the information content is low or high.
+%In principle, this shows that it does matter how one measures, but the forward model does not provide more information by measuring more in regions where the information content is low or high.
+\mccorrect{In principle, this demonstrates that the measurement strategy influences the information of the observations. However, simply increasing the number of measurements in high-signal or low-signal regions does not necessarily provide more information.}
 The test cases show that an efficient measurement strategy may consist of equidistantly spaced pointing angles and does stop measuring when the singular values are too low. 
 Consequently, we proceed with case 5.
 Next, the right singular vectors of the forward model will be assessed to see to which parameter structures within the atmosphere our model is sensitive to.

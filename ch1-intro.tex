@@ -4,7 +4,6 @@ Here we briefly describe the standard currently used to retrieve atmospheric tra
 We explain how our approach contributes to and improves upon existing methods.
 Lastly, we provide the reader with the thesis structure.
 
-
 \section{Motivation}
 Presently, the only operating ozone limb sounder is the Microwave Limb Sounder (MLS) on NASA's Aura satellite.
 This satellite is gradually drifting away from its orbit and scheduled to be phased out by 2026~\cite{Bryan2024NASA}.
@@ -26,6 +25,10 @@ However, this does not provide comprehensive information about the parameters' u
 Additionally, the solutions may be biased and the bias is then removed based on empirical decisions~\cite{livesey2008ozonecarbonmono, Froidevaux2008snrozone}.
 Errors are provided by a local derivative of the forward map at the optimal solution, which is inherently highly sensitive to that specific point in the parameter space.
 Furthermore, these regularisation methods condition on external point estimates of other parameters such as temperature or pressure~\cite{livesey2006retrieval}.
+
+\mccorrect{The contribution of this thesis is not to propose a new atmospheric retrieval model, but rather to extend the retrieval framework to account for uncertain temperature and pressure profiles directly within the inference process. Instead of conditioning on external point estimates, temperature and pressure are treated as uncertain quantities whose variability and dependence on the ozone profile are explicitly represented. This enables the joint estimation of atmospheric quantities together with their uncertainties and allows dependencies, correlations, and competing effects between key model parameters to be quantified. Consequently, the framework provides a more complete characterisation of retrieval uncertainty than approaches based solely on point estimates and ad-hoc error propagtion.
+In particular, the framework makes it possible to investigate how uncertainties in temperature and pressure propagate into ozone retrievals and to identify the dominant sources of uncertainty.
+}
 %Recent machine learning efforts do not include noise as a retrieval hyper-parameter condition on one single noise value (point estimate) in the developed model, which is trained for about one month, and .
 %Additionally they compare to a ``ground truth'' provided by the previously described optimal estimation approach \cite{werner2023machlearn, bojkov2008NeuralNet}.
 %Recent machine learning approaches suffer from related limitations. These models are typically trained over short periods (e.g., one month), condition on a single fixed noise value, and do not treat noise as a retrieval hyper-parameter. Moreover, they are benchmarked against a “ground truth” derived from the same optimal estimation method described above~\cite{werner2023machlearn, bojkov2008NeuralNet}.

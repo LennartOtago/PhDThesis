@@ -154,16 +154,22 @@ We observe that the pressure $\bm{p}$ in between $h_{L,0} \approx 7$km and $h_{L
 depending on two hyper-parameters $p_0,b$ (see Fig.~\ref{fig:PriorPress}).
 Similarly, the temperature as described in Eq.~\ref{eq:tempFunc} can be parametrised with 14 hyper-parameters\linebreak $\bm{h}_T = \{ h_{T,1}, h_{T,2},h_{T,3},h_{T,4},h_{T,5},h_{T,6} \}$, $\bm{a} = \{a_0, a_1, a_2,a_3,a_4,a_5,a_6 \} $ and $T_0$ (see Fig.~\ref{fig:PriorTemp} and Eq.~\ref{eq:tempFunc}).
 
-The hyper-prior distributions for $p_0,b, T_0,\bm{h}_T ,\bm{a} $ are defined to be Gaussians, and to complete the model we have to choose sensible hyper-prior variances and means.
-The variances of $\pi(\bm{h}_T)$ are tuned so that the temperature profile maintains its structure and $ h_{T, i} < h_{T, i+1}$, for $i = 1,\dots, 5$ (see Fig.~\ref{fig:HeightPriors}).
-The means of $\pi(\bm{h}_T)$ and $\pi(\bm{a})$ are set to ground truth values see Tab.~\ref{tab:tempGrad} and the variances of $\pi(\bm{a})$ allow a wide range of prior temperature profiles.
-Similarly, the variance and mean of $\pi(T_0)$ are chosen to mimic a daily temperature variability of roughly $30$K around the mean sea level temperature $288$K~\cite{atmosphere1976us}.
+\begin{mccorrection} 
+The hyper-prior distributions for $p_0$, $b$, $T_0$, $\bm{h}_T$, and $\bm{a}$ are defined as Gaussian distributions. To complete the model, sensible hyper-prior means and variances must be specified.
+The variances of $\pi(\bm{h}_T)$ are chosen such that the temperature profile maintains its physical structure and satisfies $h_{T,i} < h_{T,i+1}$ for $i=1,\ldots,5$ (see Fig.~\ref{fig:HeightPriors}).
+The means of $\pi(\bm{h}_T)$ and $\pi(\bm{a})$ are set to the reference values given in Tab.~\ref{tab:tempGrad} and reported in~\cite[Tab.~5]{atmosphere1976us}. The variances of $\pi(\bm{a})$ allow for a wide range of prior temperature profiles while remaining within a physically reasonable range.
+The variance of $\pi(T_0)$ was chosen to reflect realistic atmospheric variability based on publicly available meteorological forecasts and data~\cite{meteoblue,ZoomEarth}. 
+Specifically, the mean and variance of $\pi(T_0)$ are chosen to represent a daily temperature variability of approximately $30$K around the mean sea-level temperature of $288$K~\cite{atmosphere1976us}.
 These hyper-prior distributions are rather informative, because we find that the data and the model (see Fig.~\ref{fig:PriorPressOverTemp}) are uninformative about the temperature profile.
+
 The variance of $\pi(b)$ is set to a rather large value.
-The variability of $\pi(p_0)$ is $\approx 80$hPa and close to what we can observe when looking at weather data.
+The variability of $\pi(p_0)$ is $\approx 80$hPa and close to what we can observe when looking at weather data~\cite{meteoblue,ZoomEarth}.
 Means for $\pi(b ,p_0)$ are provided by fitting the exponential in Eq.~\ref{eq:pressFunc} to ground truth pressure values via the Python function \texttt{scipy.optimize.curve\_fit}.
 The in Sec.~\ref{subsec:PriorModelO3} defined Gamma distributions $\pi(\delta,\gamma)$ are not changing, so that scale and rate are $\{  \alpha_\gamma, \beta_\gamma\}  = \{ \alpha_\delta ,\beta_\delta\} = (1,10^{-35})$.
 See Tab.~\ref{tab:priors} for a summary of the hyper-prior distributions.
+\end{mccorrection} 
+
+\mccorrect{These prior distributions are intended to represent plausible atmospheric variability rather than exact conditions and may be adjusted when the framework is applied to a specific geographical regions or seasons.}
 
 Prior samples against their ground truth profiles of the pressure $\bm{p}$ are plotted in Fig.~\ref{fig:PriorPress}, the temperature $\bm{T}$ in Fig.~\ref{fig:PriorTemp}, the ratio $\bm{p}/\bm{T}$ in Fig.~\ref{fig:PriorPressOverTemp} and additionally prior samples of $1/\bm{T}$ are plotted in Fig.~\ref{fig:OverTempPrior}.
 In Fig.~\ref{fig:PriorPressOverTemp} we already observe that $\bm{p}/\bm{T}$ inherits the structure of the pressure function and hence the model is uninformative about the temperature.
@@ -277,7 +283,11 @@ Additionally, $h_{T,1}$ and $T_0$ describing the temperature at low altitudes (s
 This is because $h_{T,1}$ and $T_0$ influence ``the smoothness'' of $\bm{p}/\bm{T}$, which is hard to see in Fig.~\ref{fig:PriorPressOverTemp}.
 Interestingly, $p_0$ appears largely uncorrelated with other hyper-parameters, while $b$ is the key parameter linking pressure to ozone and temperature.
 Hyper-parameters describing the temperature at higher altitudes are very much uncorrelated and the IACTs of the t-walk in Tab.~\ref{tab:priors} agree with those results.
-Alternatively, one could decorrelate the hyper-parameter space using a coordinate system rotation e.g.,~via Cholesky whitening~\cite{KessyWhitening2018}.
+\begin{mccorrection}Correlated variables are ideally placed close together in the TT ordering because this allows the correlation structure to be captured locally within a small number of TT ranks. As a result, only a few ranks need to become large, while the remaining ranks can stay comparatively small, improving computational efficiency.
+If strongly correlated variables are placed far apart in the ordering, the correlation structure must propagate through multiple TT cores, causing many TT ranks to be large throughout the decomposition. This significantly increases the computational complexity of the approximation.
+Alternatively, one could transform the parameter space to reduce correlations before constructing the TT approximation, e.g., through a whitening transformation or Cholesky-based decorrelation~\cite{KessyWhitening2018}. In such transformed coordinates, the dependence structure becomes weaker and lower TT ranks may be sufficient even for different orderings.
+\end{mccorrection}
+%Alternatively, one could decorrelate the hyper-parameter space using a coordinate system rotation e.g.,~via Cholesky whitening~\cite{KessyWhitening2018}.
 \clearpage
 \begin{figure}[h!]% will be the left-side figure
 	\includegraphics[]{CorrPlot.png}
@@ -297,7 +307,7 @@ In doing so, the number of grid points is set to $n_{\text{grid}} = 150$ and dif
 For a fixed low rank, the number of grid points \linebreak$\{10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 80, 90, 100\}$ is decreased until sufficient accuracy.
 
 For stable and comparable results, we do five sweeps within \linebreak the~\texttt{tt.cross.rectcross.rect\_cross.cross} Python function initialised at a random TT.
-The ranks between TT cores are constant.
+The ranks between TT cores are \mccorrect{fixed to be} constant.
 Then $N = 1000$ independent samples  $ \{( \tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma })^{(1)} ,\dots, (\tilde{ \bm{\theta}},  \tilde{\lambda},  \tilde{\gamma })^{(N)}   \} \sim \tilde{\pi}( \bm{\theta},\lambda,\gamma  | \bm{y})$ from the TT approximation $\tilde{\pi}( \bm{\theta},\lambda,\gamma  | \bm{y})$ via the SIRT-MH scheme are drawn.
 The sample mean is denoted as $\bm{\mu}_{\text{SIRT-MH}}\in \mathbb{R}^{18}$.
 Further, the marginal functions from the TT approximation are used to calculate the hyper-parameter mean $\bm{\mu}_{\text{TT}}\in \mathbb{R}^{18}$ by weighted expectations via quadrature.
@@ -406,6 +416,10 @@ The relative RMS error over 1000 randomly chosen grid points is $\approx 1\%$, s
 
 The marginals for each hyper-parameter are plotted in Fig.~\ref{fig:PostHistTT0} to Fig.~\ref{fig:PostHistTT5}.
 We observe that, besides $\lambda$ and $\gamma$, only the marginal posterior of the $b$ hyper-parameter is seriously affected by the data and has significantly changed compared to the hyper-prior distribution.
+\mccorrect{The alignment between prior and posterior distributions can have different interpretations. In one case, the posterior may remain close to the prior because the data and forward model provide only limited information about the corresponding parameter. Alternatively, similar prior and posterior distributions may occur if the chosen prior distribution already closely resembles the posterior distribution. We tested this by varying the prior distribution and examining the resulting posterior, but could not observe a significant change in behaviour. In particular, the prior and posterior distributions remained closely aligned under different reasonable prior choices. This indicates that the available data is not sufficiently informative for these parameters. 
+%If the posterior changes only slightly for various sensible priors, this further indicates that the inference is stable.
+}
+
 \clearpage
 
 \subsubsection{Posterior pressure and temperature}
@@ -435,6 +449,9 @@ Due to the large number of hyper-parameters calculating the posterior mean $\bm{
 If the full conditional posterior is a normal distribution, then the randomise then optimise (RTO) method provides a scheme to obtain an ozone sample from $\pi(\bm{x}|\bm{\theta}, \delta, \gamma, \bm{y})$ with $\delta = \lambda \, \gamma$.
 We introduce the RTO method for general case first and then draw ozone samples from $\bm{x}^{(k)} \sim \pi(\bm{x}|\bm{\theta}^{(k)} , \delta^{(k)} , \gamma^{(k)} , \bm{y})$ conditioned on independent marginal posterior samples $\bm{\theta}^{(k)} , \delta^{(k)} , \gamma^{(k)} \sim \pi(\bm{\theta} , \delta , \gamma | \bm{y})$.
 
+\begin{mccorrection} 
+The RTO method is not strictly necessary to sample from the conditional posterior. However, it provides an efficient way to generate independent samples at the cost of a single linear solve together with the generation of $n+m$ standard Gaussian random variables. The RTO method avoids explicitly forming the posterior covariance matrix by exploiting the structure of the hierarchical Bayesian model, which becomes computationally expensive in high-dimensional settings.
+\end{mccorrection} 
 
 \subsubsection{Randomise then optimise}
 \label{subsec:RTO} 
@@ -446,7 +463,6 @@ As in~\cite{bardsley2012mcmc} rewrite the full conditional posterior (see Eq.~\r
 \end{align}
 where
 \begin{align}
-	\label{eq:minimizer}
 	\hat{\bm{A}} \coloneqq 
 	\begin{bmatrix}
 		\bm{\Sigma}_{\gamma}^{-1/2} \bm{A}_{\bm{\theta}} \ \\
@@ -461,7 +477,7 @@ where
 $\bm{Q}_{\delta}$ is the prior precision, $\bm{\mu}$ the prior mean and $\bm{\Sigma}_{\gamma}$ the noise covariance (see also~\cite{bardsley2014randomize,BardsleyTC2019RTO}).
 A sample $\bm{x}^{(k)}$ from the full conditional posterior $ \pi(\bm{x}|   \bm{\theta},  \delta, \gamma,  \bm{y})$ is obtained by minimising the following equation:
 \begin{align}
-	\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 
+	\bm{x}^{(k)} = \arg \min_{\bm{x}} \lVert \hat{\bm{A}} \bm{x} - ( \hat{\bm{y}} + \bm{b} ) \rVert_{L^2}^2 	\label{eq:minimizer}
 \end{align}
 with a random additive perturbation $\bm{b} \sim \mathcal{N}(\bm{0}, \bm{I})$.
 Similar to Sec.~\ref{sec:reg}, this expression becomes
@@ -472,6 +488,9 @@ Similar to Sec.~\ref{sec:reg}, this expression becomes
 %where the term $-\hat{\bm{A}}^T \bm{b}$ is decomposed as $\bm{v}_1 + \bm{v}_2$, 
 with $\bm{v}_1 \sim \mathcal{N}(\bm{0}, \bm{A}_{\bm{\theta}}^T \bm{\Sigma}^{-1}_{\gamma} \bm{A}_{\bm{\theta}})$ and $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\delta})$, representing independent Gaussian random variables~\cite{bardsley2012mcmc, fox2016fast}.
 
+\begin{mccorrection} 
+Since the full conditional posterior is Gaussian, it is sufficient to show that the random variable generated by the RTO optimisation problem has the correct posterior mean and covariance. A detailed derivation proving that Eq.~\ref{eq:minimizer} generates an exact sample from the conditional posterior distribution is provided in Appendix~\ref{sec:RTO_additional}.
+\end{mccorrection} 
 
 \subsubsection{Posterior ozone samples}
 More explicitly, conditioned on an independent $\bm{\theta}^{(k)},\lambda^{(k)},\gamma^{(k)} \sim \pi(\bm{\theta},\lambda,\gamma | \bm{y})$, one full conditional posterior sample is given as  
@@ -480,7 +499,7 @@ More explicitly, conditioned on an independent $\bm{\theta}^{(k)},\lambda^{(k)},
 	\bm{x}^{(k)} = 	\Big(  \underbrace{\gamma^{(k)} \bm{A}_{\bm{\theta}^{(k)}}^T\bm{A}_{\bm{\theta}^{(k)}} +  \delta^{(k)}\bm{L}}_{\bm{B}^{(k)}} \Big)^{-1} \left(  \gamma^{(k)}  \bm{A}_{\bm{\theta}^{(k)}}^T\bm{y} +\sqrt{\gamma^{(k)}} \bm{A}_{\bm{\theta}^{(k)}}^T \tilde{\bm{v}}_1 + \sqrt{\delta^{(k)}}\bm{L}^{1/2}\tilde{\bm{v}}_2\right)
 \end{align}
 with $\tilde{\bm{v}}_1 \sim \mathcal{N}(\bm{0},  \bm{I})$, $\tilde{\bm{v}}_2 \sim \mathcal{N}(\bm{0}, \bm{I} )$, $\bm{Q}_{\delta} = \delta  \bm{L} $, $\bm{\Sigma}^{-1}_{\gamma} = \gamma \bm{I}$ and $\bm{L}^{1/2}$ is the Cholesky decomposition of $\bm{L}$ \cite{bardsley2012mcmc}.
-Note that $\bm{v}_1 \in \mathbb{R}^m$ and $\bm{v}_2 \in \mathbb{R}^n$.
+Note that $\bm{v}_1, \tilde{\bm{v}}_1 \in \mathbb{R}^m$ and $\bm{v}_2, \tilde{\bm{v}}_2 \in \mathbb{R}^n$.
 The Cholesky factorisation of $\bm{B}^{(k)}$ and $\bm{L}$ is obtained via the Python function \texttt{numpy.linalg.cholesky} and \texttt{scipy.linalg.cho\_solve} is used to solve for $\bm{x}^{(k)}$.
 If calculating the Cholesky decomposition of $\bm{L}$ or constructing $\bm{L}$ is expensive and $\bm{L}$ can be represented as a sum over small $2\times2$ rank-1 matrices (see $\bm{L}$ in Eq.~\ref{eq:LaplRegTheo}), then a sample $\bm{v}_2 \sim \mathcal{N}(\bm{0}, \bm{Q}_{\delta})$ can be obtained by drawing $n$ random variables from $\mathcal{N}(0,1)$ without explicitly forming $\bm{L}$~\cite{fox2016fast}.
 
