@@ -394,34 +394,36 @@ We consider this good enough.
 %\end{align}
 %is normal distribution and we compute weighted expectations, as in Eq.~\ref{eq:MargExpPos}, of the conditional mean and covariance matrix, where the weights are given by $\pi(\bm{\theta} | \bm{y})$. 
 %Note that both the noise covariance $\bm{\Sigma} = \bm{\Sigma}(\bm{\theta})$ and the prior precision matrix $\bm{Q} = \bm{Q}(\bm{\theta})$ depend on the hyper-parameters $\bm{\theta}$.
-\subsection{Full Conditional Posterior}
+\subsection{Full Conditional for Ozone}
 \label{subsec:firstCond}
 
-Given the marginal posterior over the hyper-parameters, we can evaluate the normally distributed full conditional posterior distribution of ozone
+Given the marginal posterior over the hyper-parameters, we can evaluate the normally distributed full conditional for ozone
 \begin{align}
 	\bm{x}| \delta, \gamma, \bm{y}  \sim \mathcal{N}\big( \underbrace{ (\bm{A}^T \bm{A} + \delta / \gamma \bm{L} )^{-1} \bm{A}^T \bm{y}}_{\bm{x}_{\lambda}}, ( \underbrace{ \gamma \bm{A}^T \bm{A} + \delta \bm{L} }_{\gamma \bm{B}_{\lambda}}  )^{-1} \big) \, \label{eq:CondPost},
 \end{align}
 as in Eq. \ref{eq:CondPostLin}, with $\lambda = \delta / \gamma $.
 \begin{figure}[ht!]
 	\centering
-	\includegraphics{FirstTestRes.png}
-	\caption[Ozone samples of the full posterior.]{50 ozone samples from the full posterior distribution $\pi(\bm{x}| \bm{y})$ after characterising posterior mean and covariance by weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$ based on the linear forward map $\bm{A}_L$. We set negative ozone VMR values to zero.}
+	\includegraphics{My_FirstTestRes.png}
+	\caption[Ozone samples of the full posterior.]{50 ozone samples from the full conditional for ozone, posterior mean and covariance are characterised by weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$ based on the linear forward map $\bm{A}_L$. We set negative ozone VMR values to zero.}
 	\label{fig:O3Samp}
 \end{figure}
-In this thesis, the posterior mean
+In this thesis, the posterior ozone mean
 \begin{align}
 	\bm{\mu}_{\bm{x}|\bm{y}} = \int \bm{x}_{\lambda} \pi(\lambda| \bm{y}) \diff\lambda \approx \sum \bm{x}_{\lambda_i} \pi(\lambda_i| \bm{y}) \, , \label{eq:MeanInt}
-\end{align} and posterior covariance
+\end{align} and posterior ozone covariance
 \begin{align}
 	\bm{\Sigma}_{\bm{x}|\bm{y}} = \int \gamma^{-1}  \pi(\gamma | \bm{y} ) \, \diff \gamma \, \int  \bm{B}_{\lambda}^{-1} \, \pi(\lambda | \bm{y} )  \, \text{d} \lambda  \approx \sum {\gamma_i}^{-1}\pi(\gamma_i| \bm{y}) \sum \bm{B}_{\lambda_i}^{-1}\pi(\lambda_i| \bm{y})\, \label{eq:CovInt}
 \end{align}
-of $\pi(\bm{x}| \bm{y})$ are computed as weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$ by quadrature \cite[Sec. 2.1]{Dick_Kuo_Sloan_2013} with $\sum \pi(\lambda_i| \bm{y}) = \sum \pi(\gamma_i| \bm{y}) = 1$.
+ are computed as weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$ by quadrature \cite[Sec. 2.1]{Dick_Kuo_Sloan_2013} with $\sum \pi(\lambda_i| \bm{y}) = \sum \pi(\gamma_i| \bm{y}) = 1$.
 The weights $\pi(\lambda_i| \bm{y})$ and $\pi(\gamma_i| \bm{y})$ are either given by the TT approximation or by the bars of the sample-based histograms.
 More precisely, the heights of the histogram bars act as quadrature weights, where $\lambda_i$ is defined at the centre of each bar.
 We use the Cholesky decomposition of $\bm{B}_{\lambda} = \bm{A}^T \bm{A} + \lambda \bm{L}$ to invert $\bm{B}_{\lambda}$ and to calculate $\bm{x}_{\lambda} = (\bm{A}^T \bm{A} + \lambda \bm{L} )^{-1} \bm{A}^T \bm{y}$ both via \texttt{scipy.linalg.cho\_solve}.
-It is sufficient to evaluate $\bm{x}_{\lambda}$ and invert $\bm{B}_{\lambda}$ 20 times to obtain mean and covariance values of $\pi(\bm{x}|\bm{y})$ within a reasonable error (see Fig.~\ref{fig:MeanVarError}).
+It is sufficient to evaluate $\bm{x}_{\lambda}$ and invert $\bm{B}_{\lambda}$ 20 times to obtain posterior ozone mean $	\bm{\mu}_{\bm{x}|\bm{y}} $ and covariance values $	\bm{\Sigma}_{\bm{x}|\bm{y}} $ within a reasonable error (see Fig.~\ref{fig:MeanVarError}).
 
-The posterior samples of $\pi(\bm{x}|\bm{y})$ are plotted in Fig.~\ref{fig:O3Samp} with negative ozone values set to zero.
+If calculating the posterior mean and covariance matrix is too costly, see Sec.~\ref{subsec:RTO} where we present a feasible alternative to draw a sample from the full conditional posterior.
+Posterior samples are plotted in Fig.~\ref{fig:O3Samp} with negative ozone values set to zero.
+%The posterior samples of $\pi(\bm{x}|\bm{y})$ are plotted in Fig.~\ref{fig:O3Samp} with negative ozone values set to zero.
 The fact that we have to deal with negative ozone values is due to the poor prior choice in $\pi(\bm{x}|\delta)$.
 %Note that the sample mean is slightly larger than the posterior mean at heights where the data is noise-dominated, and the ozone values are determined by the prior, or where the ground truth is close to zero.
 This indicates that one should use a different, more physically based prior or a better model for ozone in the atmosphere.
@@ -430,7 +432,7 @@ Note that the posterior samples do not capture the second ozone peak at around $
 Finding the mode of $\pi(\lambda,\gamma|\bm{y})$, running the TT cross algorithm, calculating the marginals and the posterior mean and covariance takes $0.025$s.
 Using the MWG sampler takes $\approx0.5$s for the same results, so most computational effort lays within the sampling procedure.
 
-If calculating the posterior mean and covariance matrix is too costly, see Sec.~\ref{subsec:RTO} where we present a feasible alternative to draw a sample from the full conditional posterior.
+
 \clearpage
 
 %\subsubsection{Randomize then optimize -- RTO}
@@ -527,8 +529,8 @@ Neither the regularised estimate nor the posterior ozone profiles capture the se
 This coincides with the prior analysis of the forward model via the SVD in Sec.~\ref{sec:SVD}.
 
 It is pretty clear that the regularised estimate accounts for only one possible solution and does not provide uncertainties. 
-The data misfit and regularisation norm values of the regularised estimate and the posterior mean are not similar to the corresponding values of the samples drawn from the posterior $\pi(\bm{x}| \bm{y})$ (see Fig.~\ref{fig:O3Samp}).
-All posterior samples of $\pi(\bm{x}| \bm{y})$ are less regularised and lie above the L-curve, and as already mentioned, are all feasible solutions to the data.
+The data misfit and regularisation norm values of the regularised estimate and the posterior mean are not similar to the corresponding values of the samples drawn from the full conditional for ozone $\pi(\bm{x}| \delta, \gamma,\bm{y})$ (see Fig.~\ref{fig:O3Samp}).
+All posterior ozone samples are less regularised and lie above the L-curve, and as already mentioned, are all feasible solutions to the data.
 This does make sense, if one thinks about the mean as the (smooth) average over less-smooth samples and the regularised solutions as extremely smooth ozone profiles (see Lagrangian in Sec.~\ref{sec:reg}).
 Note that we cannot infer the full posterior mean from the regularised solutions, even if it appears to lie on the L-curve.
 

@@ -152,7 +152,7 @@ This approach, known as the MTC method, is particularly advantageous when $\bm{x
 \end{align}
 as in~\cite[Lemma 2]{fox2016fast} \mccorrect{can be carried out efficiently.}
 \begin{mccorrection}
-The factorisation underlying the MTC framework is not restricted to the later introduced linear-Gaussian setting. Eq.~\ref{eq:margGen} holds more generally for hierarchical Bayesian models \cite[Lemma 2]{fox2016fast, norton2018sampling}.
+The factorisation underlying the MTC framework is not restricted to the later introduced linear-Gaussian setting. Eq.~\ref{eq:margGen} holds more generally for hierarchical Bayesian models, see \cite[Lemma 2]{fox2016fast} and \cite{norton2018sampling}.
 Furthermore, as discussed in \cite{norton2018sampling}, the MTC framework is particularly useful when the full conditional distribution
 \begin{align*}
 	\pi(\bm{x}|\bm{\theta},\bm{y})
@@ -616,11 +616,10 @@ and similarly $\int_{\mathcal{X}} \pi(\bm{x})^2 \uplambda(\bm{x})  \diff \bm{x}$
 \subsubsection{Absolute error bound}
 \label{subsec:wasser}
 If large errors occur in regions with low probability, the RMS is sensitive to those, whereas the Wasserstein distance weighs differences according to their respective probability values.
-\begin{mccorrection} 
-Further, the Wasserstein distance measures the discrepancy between the distribution due to the TT approximation and the exact distribution.
+\mccorrect{Further, the Wasserstein distance measures the discrepancy between the distribution due to the TT approximation and the exact distribution.
 As the TT approximation error decreases, the Wasserstein distance between the two distributions also decreases. 
 This is relevant because, through the Kantorovich–Rubinstein duality, the Wasserstein distance relates to the error in expectations of 1-Lipschitz functions.
-\end{mccorrection} 
+} 
 	
 The Wasserstein distance is the infimum over all couplings between two probability distributions with respect to some distance measure.
 %\textcolor{red}{why is this sensible, or is it just 'another way'?}
@@ -696,7 +695,7 @@ For example
 		& & & 0 & -1 
 	\end{bmatrix} \, ,
 \end{align}
-is the first order forward difference operator with equal spacing $h$ as in~\cite{tan2016LecNot} that approximates the first derivative.
+is the first-order forward difference operator with equal spacing $h$ as in~\cite{tan2016LecNot} that approximates the first derivative.
 %\textcolor{red}{no, it's a first order forward differnece operator, that approximates a derivative operator.}
 Then 
 \begin{align}
@@ -710,7 +709,7 @@ Then
 	\end{bmatrix} \, ,
 \label{eq:LaplRegTheo}
 \end{align}
-is a discrete approximation to the second derivative with Neumann boundary conditions~\cite{wang2015graphs}.
+is a discrete approximation to the second-order derivative with Neumann boundary conditions~\cite{wang2015graphs}.
 %\textcolor{red}{no it's not, it's a second-difference operator, that is a discrete approximation to the second derivative (no 'order')}
 
 If $\lambda$ is large, then the effect of the data on the solution $\bm{x}_{\lambda}$ is small and dominated by the regulariser, resulting in an under-fitted $\bm{x}_{\lambda}$.

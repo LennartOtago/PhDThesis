@@ -79,7 +79,7 @@ In practice, the estimate for the Monte-Carlo error is:
 where $W$ is the summation window and we define the IACT as twice the value as in \cite[pp. 103-105]{wolff2002LecNot}.
 The IACT provides a good estimate of how many steps the sampling algorithm needs to take to produce one independent sample.
 More specifically, the effective sample size $\frac{N}{ \tau_{\text{int}} }$ gives an estimate of how efficient a sampler is.
-
+\clearpage
 %\section{Measure Theory}
 %\label{ch:Mesure}
 %Assume that the triple $(\Omega, \mathcal{F}, \mathbb{P})$ defines a probability space, where $\Omega$ denotes the complete sample space, $\mathcal{F}$ is a $\sigma$-algebra consisting of a collection of countable subsets $\{A_n\}_{n \in \mathbb{N}}$ with $A_n \subseteq \Omega$, and $\mathbb{P}$ is a probability measure on $\mathcal{F}$. The formal conditions for $\mathbb{P}$ to be a probability measure, and for $\mathcal{F}$ to be a $\sigma$-algebra over $\Omega$, are given in Appendix~\ref{ch:Mesure}.
@@ -124,7 +124,7 @@ More specifically, the effective sample size $\frac{N}{ \tau_{\text{int}} }$ giv
 %In other words, the empty set $\emptyset$ and the entire sample space $\Omega$ must always be elements of $\mathcal{F}$. If a set $A \in \mathcal{F}$, then its complement $A^C = \Omega \setminus A$ must also be in $\mathcal{F}$. 
 %If, in terms of a probability measure, we are able to assign a probability $\mathbb{P}(A)$ to an event $A$, we must also be able to assign a probability to the event “not $A$”, i.e., $\mathbb{P}(A^C)$.
 %Finally, if a countable collection of sets $A_1, A_2, \dots \in \mathcal{F}$, then their union $\bigcup_{j \in \mathbb{N}} A_j$ must also be in $\mathcal{F}$. These three properties define the requirements for $\mathcal{F}$ to be a $\sigma$-algebra.
-\clearpage
+%\clearpage
 \section{Python Code}
 \label{sec:PythonCode}
 %\the\baselineskip
@@ -141,11 +141,10 @@ More specifically, the effective sample size $\frac{N}{ \tau_{\text{int}} }$ giv
 	
 	To install the \texttt{ttpy} package, I found \newline
 	\texttt{pip install git+https://github.com/oseledets/ttpy}
-	to be the most reliable approach. Alternatively, the package can be run via Docker using
+	to be the most reliable approach. Alternatively, the package can be run via the Docker-Image
 	\texttt{daskol/ttpy}. 
 	The package can then be imported using either
-	\texttt{import tt} or \texttt{import ttpy},
-	depending on the installation.
+	\texttt{import tt} or \texttt{import ttpy}.
 	To illustrate the workflow and potential reuse of the code, we provide an example demonstrating how samples and marginal distributions can be generated from a TT approximation.
 \end{mccorrection}
 
@@ -164,7 +163,7 @@ from tt.cross.rectcross import rect_cross
 
 
 def log_func(indices, univarGrid ,means, inv_cov, const):
-	''' test function, log of a multivariate normal'''
+	# test function, log of a multivariate normal
 	Values = np.zeros(len(indices))
 	for j in range(len(indices)):
 		x0 = univarGrid[0][indices[j,0].astype(np.int32)]
@@ -223,7 +222,8 @@ f0 = tt.rand(gridSize, dim, r=initRank)
 #     try:
 #         errIndicator = False
 #         f0.core[range(f0.ps[i] - 1, f0.ps[i + 1] - 1)] = np.loadtxt('TTCore' + str(i) + '.txt')
-#         # TTCore[i] = f0.core[range(f0.ps[i] - 1, f0.ps[i + 1] - 1)].reshape((f0.r[i], f0.n[i], f0.r[i + 1]), order='F')
+#         # TTCore[i] = f0.core[range(f0.ps[i] - 1, f0.ps[i + 1] - 1)].reshape((f0.r[i], f0.n[i],
+# 		 f0.r[i + 1]), order='F')
 #     except ValueError:
 #         errIndicator = True
 #         pass
@@ -231,18 +231,19 @@ f0 = tt.rand(gridSize, dim, r=initRank)
 #     print('Dimensions or ranks of previous TT approximation do not match current setup')
 
 # ! taken from ttpy package !
-'''
-for rect_cross.cross
-:param myfun: Vectorized function of d variables (it accepts I x D integer array as an input, and produces I numbers as output)
-:type myfun: function handle
+# for rect_cross.cross
+# :param myfun: Vectorized function of d variables (it accepts I x D integer array as an input, and 
+# 		produces I numbers as output)
+# :type myfun: function handle
 
-:param kickrank: Tuning parameter, what is the minimal rank increase at each step, the larger the more robust 
-is the method, but it is also slower and gives larger ranks
-:type kickrank: int
+# :param kickrank: Tuning parameter, what is the minimal rank increase at each step, the larger the 
+# 		more robust 
+# is the method, but it is also slower and gives larger ranks
+# :type kickrank: int
 
-:param rf: Tuning parameter, maximal rank grow factor at each microstep (i.e. the new rank can not be larger than rf * rold)
-:type rf: float
-'''
+# :param rf: Tuning parameter, maximal rank grow factor at each microstep (i.e. the new rank can 
+#		 not be larger than rf * rold)
+# :type rf: float
 
 # run TT-cross to generate tensor-train approximation
 ttTrain = rect_cross.cross(squaredFunc , f0, nswp=2, kickrank=0, rf=0, eps=1e-100)
@@ -255,7 +256,8 @@ ps_my = 0
 for i in range(0, ttTrain.d):
 	cri = ttTrain.core[range(ttTrain.ps[i] - 1, ttTrain.ps[i + 1] - 1)]
 	#print(cri)
-	#np.savetxt('ttSQcorePT'+str(i)+'.txt', cri, header = str(ttTrain.r[i])+ ' ,'+ str( ttTrain.n[i])+ ',' +str( ttTrain.r[i + 1]) )
+	#np.savetxt('ttSQcorePT'+str(i)+'.txt', cri, header = str(ttTrain.r[i])+ ' ,'+ str( ttTrain.n[i])
+	# 			+ ',' +str( ttTrain.r[i + 1]) )
 	TTCore[i] = cri.reshape((ttTrain.r[i] , ttTrain.n[i] , ttTrain.r[i + 1]), order = 'F')
 	core[range(ps_my, ps_my + ttTrain.r[i] * ttTrain.n[i] * ttTrain.r[i + 1])] = cri
 	ps_my = ps_my + ttTrain.r[i] * ttTrain.n[i] * ttTrain.r[i + 1]
@@ -293,8 +295,8 @@ def logPost(x):
 # Outputs:
 #   MHSampl      : MH-corrected samples
 #   MHApproxVal  : TT approximation evaluated at accepted samples
-#   MHTrueVal    : exact log-posterior values at accepted samples
-#   SIRTTrueVal  : exact log-posterior values at SIRT proposals
+#   MHTrueVal    : exact function values at accepted samples
+#   SIRTTrueVal  : exact function values at SIRT proposals
 #   accProb      : MH acceptance probabilities
 MHSampl, MHApproxVal, MHTrueVal, SIRTTrueVal, accProb = MHcorrection(Sampl, Approx, logPost, probVal)
 
@@ -307,7 +309,8 @@ print(f'relative RMS Error: {relMeanSQError * 100:.1f}%')
 # install via: pip install py-uwerr
 from puwr import tauint
 for i in range(0,dim):
-	mean, delta, tint, d_tint, fig = tauint([[MHSampl[i]]], 0)
+	mean, delta, tint, d_tint = tauint([[MHSampl[i]]], 0)
+	# mean, delta, tint, d_tint, fig = tauint([[MHSampl[i]]], 0, '',plots = True)
 	print(f'Integrated autocorrelation time of {2*tint:.2f} \u00B1 {2*d_tint:.2f}')
 
 # calculate marginal PDFs

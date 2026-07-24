@@ -144,15 +144,15 @@ The MWG samples as well as the marginal functions from the TT approximation (cal
 \clearpage
 
 Again, the full posterior mean $\bm{\mu}_{\bm{x}|\bm{y}}$ (see Eq.~\ref{eq:MeanInt}) and covariance matrix $\bm{\Sigma}_{ \bm{x}|\bm{y}}$ (see Eq.~\ref{eq:CovInt}) are calculated as weighted expectation over a $20\times 20$ grid.
-The resulting posterior mean and STD, and one sample of $\pi(\bm{x}|\bm{y})$, which represents a feasible solution to this inverse problem, are plotted in Fig.~\ref{fig:O3SolplsReg}.
+The resulting posterior mean and STD, and one sample of the full conditional $\pi(\bm{x}|\delta,\gamma,\bm{y})$, which represents a feasible solution to this inverse problem, are plotted in Fig.~\ref{fig:O3SolplsReg}.
 The ground truth lies within the STD around the posterior mean, except for the peak at around $80$km.
 Compared to the previously calculated posterior mean and covariance based on the linear model $\bm{A}_L$ (see Fig.~\ref{fig:O3Samp}), the posterior distribution based on the approximated $\bm{M A}_L$ does not differ significantly.
 This is expected since the difference between the linear and non-linear forward map of $\approx 1 \%$ is small.
 \begin{figure}[ht!]
 	\centering
-	\includegraphics{SecRecResinclRegandSampl.png}
+	\includegraphics{My_SecRecResinclRegandSampl.png}
 	%\includegraphics{SecRecResinclReg.png}
-	\caption[Full posterior mean and variance of ozone and the regularised solution compared to the ground truth.]{Full posterior mean and variance and one ozone sample from the full posterior. These results are based on the approximated forward model $\bm{M}\bm{A}_L$.}
+	\caption[]{Full posterior mean and variance and one ozone sample from the full conditional. These results are based on the approximated forward model $\bm{M}\bm{A}_L$.}
 	\label{fig:O3SolplsReg}
 \end{figure} 
 

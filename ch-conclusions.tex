@@ -66,8 +66,8 @@ This thesis showed that the underlying non-linear forward model can be approxima
 \mccorrect{
 	Beyond the computational aspects, the principal contribution of this thesis is the development of a hierarchical Bayesian framework for atmospheric limb sounding that explicitly incorporates uncertainties in temperature, pressure, and measurement noise. Rather than conditioning on externally provided point estimates, these quantities are treated as uncertain and are integrated directly into the inference process. This allows the retrieval uncertainty, parameter dependencies, and competing physical effects to be quantified within a unified probabilistic framework. In particular, the results demonstrate that pressure values can have a substantial impact on ozone retrievals and should therefore be accounted for when interpreting retrieval results.
 }
-For future application, we wish to include more measurement device-specific hyper-parameters in the forward model.
-This could include, e.g., uncertainty in pointing accuracy or an antenna response function.
+%For future application, we wish to include more measurement device-specific hyper-parameters in the forward model.
+%This could include, e.g., uncertainty in pointing accuracy or an antenna response function.
 
 For an SNR of $\approx150$, Sec.~\ref{sec:SVD} implies that there is no information gain if one measures more frequently or collects more data in noise-dominated regions.
 An SNR of $\approx10^4$ is needed to produce data that is informative about ozone at higher altitudes.
@@ -80,13 +80,17 @@ One has to consider that when conditioning on pressure estimates from other sour
 A more restrictive prior for the pressure-related hyper-parameter $b$ would provide a fix to that issue, but that would not be objective.
 By explanatory analysis, we find that data with an SNR of $\approx 1000$ recovers an ozone (without a peak in higher altitudes) and pressure profile close to the ground truth.
 
+\begin{mccorrection}
+	Furthermore, introducing additional model-describing hyper-parameters increases the uncertainty of the posterior estimate of ozone (see Fig.~\ref{fig:O3Post} compared to Fig.~\ref{fig:O3Samp} and Fig.~\ref{fig:O3SolplsReg}). This is because the model accounts for uncertainties in a larger number of interacting quantities. While this leads to broader posterior distribution for ozone, it also reduces the risk of overconfident estimates by explicitly accounting for these additional sources of uncertainty and reveals dependencies that would otherwise remain hidden.
+\end{mccorrection}
+
 %For a more physical-based prior, e.g. a truncated multivariate Gaussian $\bm{x} | \delta \sim \mathcal{N}(\bm{\mu}_{\text{Trunc}}, \bm{Q}^{-1}_{\text{Trunc}}(\delta))$ with $\bm{a}\leq \bm{x} \leq \bm{b}$ between some truncation bounds $\bm{a}$ and $\bm{b}$ the joint multivariate Gaussian in Eq. \ref{eq:jointMultiGaus} has the same form.
 %In that case, one would have to replace the non-truncated mean and precision matrix with the truncated version as in \cite[pp. 204-205]{Kotz2000truncMulti}.
 %Currently, we are not able to give analytic expression for the truncated mean and precision matrix, but \cite{ManjunathWilhel2021} provides that numerically and \cite{BotevTruncMulti} provides Python code to quickly sample from a truncated multivariate Gaussian.
 
 As mentioned in the prior analysis in Sec.~\ref{subsec:PriorFull} (see Fig.~\ref{fig:PriorPressOverTemp}) and confirmed by the results in Fig.~\ref{fig:TempPost}, the model as well as the data are uninformative about temperature and dominated by the exponentially decreasing pressure.
 
-We conclude that the main objective for future research is to develop a more accurate, potentially parametrised (prior) model, which captures physical properties and chemical processes of ozone in the atmosphere.
+%We conclude that the main objective for future research is to develop a more accurate, potentially parametrised (prior) model, which captures physical properties and chemical processes of ozone in the atmosphere.
 
 \mccorrect{
 	We conclude that future research should focus on developing more realistic prior and forward models that better capture the physical and chemical processes governing ozone in the atmosphere. In addition, extending the framework to include further instrument-specific uncertainties, such as pointing errors, calibration parameters, or antenna response functions, would allow a more complete assessment of retrieval uncertainty and support the design of future atmospheric limb-sounding missions.
