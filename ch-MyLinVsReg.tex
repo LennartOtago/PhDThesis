@@ -413,7 +413,7 @@ In this thesis, the posterior ozone mean
 	\bm{\mu}_{\bm{x}|\bm{y}} = \int \bm{x}_{\lambda} \pi(\lambda| \bm{y}) \diff\lambda \approx \sum \bm{x}_{\lambda_i} \pi(\lambda_i| \bm{y}) \, , \label{eq:MeanInt}
 \end{align} and posterior ozone covariance
 \begin{align}
-	\bm{\Sigma}_{\bm{x}|\bm{y}} = \int \gamma^{-1}  \pi(\gamma | \bm{y} ) \, \diff \gamma \, \int  \bm{B}_{\lambda}^{-1} \, \pi(\lambda | \bm{y} )  \, \text{d} \lambda  \approx \sum {\gamma_i}^{-1}\pi(\gamma_i| \bm{y}) \sum \bm{B}_{\lambda_i}^{-1}\pi(\lambda_i| \bm{y})\, \label{eq:CovInt}
+	\bm{\Sigma}_{\bm{x}|\bm{y}} &= \int \gamma^{-1}  \pi(\gamma | \bm{y} ) \, \text{d}\gamma  \int  \bm{B}_{\lambda}^{-1} \pi(\lambda | \bm{y} )  \, \text{d} \lambda + \int ( \bm{x}_{\lambda} - \bm{\mu}_{\bm{x}|\bm{y}})( \bm{x}_{\lambda} - \bm{\mu}_{\bm{x}|\bm{y}})^T  \pi(\lambda | \bm{y} )  \, \text{d} \lambda   \\ &\approx \sum {\gamma_i}^{-1}\pi(\gamma_i| \bm{y}) \sum \bm{B}_{\lambda_i}^{-1}\pi(\lambda_i| \bm{y}) + \sum ( \bm{x}_{\lambda_i} - \bm{\mu}_{\bm{x}|\bm{y}})( \bm{x}_{\lambda_i} - \bm{\mu}_{\bm{x}|\bm{y}})^T \pi(\lambda_i | \bm{y} )  \, \label{eq:CovInt}
 \end{align}
  are computed as weighted expectations over the marginal posterior $\pi(\lambda,\gamma | \bm{y})$ by quadrature \cite[Sec. 2.1]{Dick_Kuo_Sloan_2013} with $\sum \pi(\lambda_i| \bm{y}) = \sum \pi(\gamma_i| \bm{y}) = 1$.
 The weights $\pi(\lambda_i| \bm{y})$ and $\pi(\gamma_i| \bm{y})$ are either given by the TT approximation or by the bars of the sample-based histograms.
@@ -465,7 +465,8 @@ This is easily met at 20 bins.
 %This sets the TT grid size and the number of evaluations of $\bm{x}_{\lambda}$ (posterior mean, see Eq.~\ref{eq:MeanInt}) and $(\gamma \bm{B}_{\lambda})^{-1}$ (posterior covariance, see Eq.~\ref{eq:CovInt}).
 \begin{figure}[ht!]
 	\centering
-	\includegraphics{relErrO3MeanVar.png}
+	\includegraphics{My_relErrO3MeanVar.png}
+	%\includegraphics{relErrO3MeanVar.png}
 	\caption[Relative Error of full posterior mean and covariance.]{Relative RMS error of $\bm{\mu}_{\bm{x}|\bm{y}}$ and covariance $\bm{\Sigma}_{\bm{x}|\bm{y}}$ calculated by the weighted expectations and compared to a ``ground truth'' given by weighted expectations over 200 bins.}
 	\label{fig:MeanVarError}
 \end{figure}

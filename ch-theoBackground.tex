@@ -252,14 +252,23 @@ Then the marginal posterior distribution over the hyper-parameters in Eq.~\ref{e
 \end{align} 
 where, as noted by Fox and Norton~\cite{fox2016fast}, the parameter $\bm{x}$ cancels.
 Having the marginal posterior distribution $\pi (\bm{\theta}| \bm{y})$ (independent of $\bm{x}$) available breaks up the correlation structure between $\bm{x}$ and $\bm{\theta}$ and makes the MTC approach very efficient~\cite{fox2016fast} (see Appendix~\ref{ap:Correlation}).
-Within this scheme, we evaluate the marginal posterior first and then either condition on hyper-parameters to draw full conditional samples $\bm{x} \sim \pi (\bm{x} | \bm{\theta}, \bm{y})$ (see Sec.~\ref{subsec:RTO}) or evaluate the posterior mean
+\begin{mccorrection}
+Within this scheme, we evaluate the marginal posterior first and then condition on hyper-parameter samples from the marginal posterior to draw full conditional samples $\bm{x} \sim \pi (\bm{x} | \bm{\theta}, \bm{y})$ (see Sec.~\ref{subsec:RTO}).
+Alternatively we can evaluate the posterior mean
 \begin{align}
 	\mu_{\bm{x}|\bm{y}} = \int \bm{\mu}_{\bm{x} | \bm{\theta} , \bm{y}} \pi(\bm{\theta}| \bm{y}) \diff \bm{\theta} \label{eq:MeanGenInt}
 \end{align} and the posterior covariance matrix
+%\begin{align}
+%\Sigma_{\bm{x}|\bm{y}} = \int \bm{\Sigma}_{\bm{x} | \bm{\theta} , \bm{y}} \pi(\bm{\theta}| \bm{y}) \diff \bm{\theta}\label{eq:CoVarGenInt}
+%\end{align}
 \begin{align}
-	\Sigma_{\bm{x}|\bm{y}} = \int \bm{\Sigma}_{\bm{x} | \bm{\theta} , \bm{y}} \pi(\bm{\theta}| \bm{y}) \diff \bm{\theta}\label{eq:CoVarGenInt}
+	\Sigma_{\bm{x}|\bm{y}} &= \mathbb{E}_{\bm{\theta|\bm{y}}} \left[\bm{\Sigma}_{\bm{x}|\bm{\theta} ,\bm{y}}\right] + \mathbb{E}_{\bm{\theta|\bm{y}}} \left[ (\bm{\mu}_{\bm{x}|\bm{\theta} ,\bm{y}} - \bm{\mu}_{\bm{x}|\bm{y}} ) (\bm{\mu}_{\bm{x}|\bm{\theta} ,\bm{y}} - \bm{\mu}_{\bm{x}|\bm{y}} )^T \right]   \\
+	 &= \int \bm{\Sigma}_{\bm{x} | \bm{\theta} , \bm{y}} \pi(\bm{\theta}| \bm{y}) \diff \bm{\theta} + \int (\bm{\mu}_{\bm{x}|\bm{\theta} ,\bm{y}} - \bm{\mu}_{\bm{x}|\bm{y}} ) (\bm{\mu}_{\bm{x}|\bm{\theta} ,\bm{y}} - \bm{\mu}_{\bm{x}|\bm{y}} )^T  \pi(\bm{\theta}| \bm{y}) \diff \bm{\theta} \label{eq:CoVarGenInt} \, ,
 \end{align}
-of $\pi(\bm{x}| \bm{y})$ by some quadrature rule.
+which is given by the law of total covariance, of $\pi(\bm{x}| \bm{y})$ by some quadrature rule.
+\end{mccorrection}
+
+
 
 \section{Sample-Based Estimates via Markov Chain Monte-Carlo Methods}
 One may use Markov chain Monte-Carlo (MCMC) methods to calculate sample-based estimates of $\mathbb{E}_{\bm{x} ,\bm{\theta}  |\bm{y}} [h(\bm{x})] $ as in Eq.~\ref{eq:sampMean}.
